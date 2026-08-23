@@ -1372,7 +1372,7 @@ window.COURSES = [
     "title": "Learning How to Learn",
     "tagline": "How memory really works — and how to study so it sticks",
     "category": "Neuroscience",
-    "description": "Fifty years of cognitive science have settled how memory forms — and why most studying fails. Master the evidence-backed techniques (spacing, retrieval, interleaving, deliberate practice) and the neuroscience of why they work.",
+    "description": "A century and a half of memory research has settled how memory forms — and why most studying fails. Master the evidence-backed techniques (spacing, retrieval, interleaving, deliberate practice) and the neuroscience of why they work.",
     "lessons": [
       {
         "id": "how-memory-forms",
@@ -1382,7 +1382,7 @@ window.COURSES = [
           {
             "type": "intro",
             "title": "The Man With No New Memories",
-            "body": "In 1953, surgeons removed Henry Molaison's hippocampi to stop his seizures. It worked — but H.M. never formed another lasting memory. He read the same magazines fresh each time and greeted his doctors as strangers for 50 years. His loss mapped the machinery of memory: where it's made, how it's stored, and why those are different places.",
+            "body": "In 1953, a surgeon removed Henry Molaison's hippocampi to stop his seizures. It worked — but H.M. never formed another lasting memory. He read the same magazines fresh each time and greeted his doctors as strangers for 50 years. His loss mapped the machinery of memory: where it's made, how it's stored, and why those are different places.",
             "art": "key"
           },
           {
@@ -1429,7 +1429,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Sleep: The Replay Session",
-            "body": "During deep slow-wave sleep, the hippocampus replays the day's firing patterns at high speed. Matthew Wilson and Bruce McNaughton first caught this in 1994: place cells in sleeping rats re-fired the maze routes they'd run that day. Replay drills fresh patterns into the cortex. Sleep isn't downtime for consolidation — it's the main event.",
+            "body": "During deep slow-wave sleep, the hippocampus replays the day's firing patterns at high speed. Matthew Wilson and Bruce McNaughton found the first evidence in 1994: place cells that had fired together as rats ran a maze re-fired together in their sleep. Replay drills fresh patterns into the cortex. Sleep isn't downtime for consolidation — it's the main event.",
             "art": "wave"
           },
           {
@@ -1830,7 +1830,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Rule of Reciprocity",
-            "body": "Every human culture trains its members to repay what they receive. The rule works with uninvited gifts, tiny gifts, gifts from people we dislike — and it can trigger repayments far larger than the trigger. Regan's dime returned, on average, fifty cents in raffle tickets. Sociologist Alvin Gouldner surveyed cultures and found the norm everywhere.",
+            "body": "Every human culture trains its members to repay what they receive. The rule works with uninvited gifts, tiny gifts, gifts from people we dislike — and it can trigger repayments far larger than the trigger. Regan's dime returned, on average, fifty cents in raffle tickets. Sociologist Alvin Gouldner, reviewing cultures worldwide, concluded that none escapes the norm.",
             "art": "balance"
           },
           {
@@ -1878,7 +1878,7 @@ window.COURSES = [
             "type": "truefalse",
             "statement": "Commitments made in private bind about as strongly as ones made in front of others.",
             "answer": false,
-            "explain": "Public stands are defended hardest. In Thomas Moriarty's 1975 beach study, 19 of 20 sunbathers who had agreed to 'watch my things' chased a staged radio thief — versus 4 of 20 who hadn't been asked."
+            "explain": "Public stands are defended hardest. In Deutsch and Gerard's 1955 line-judgment study, students who wrote down their estimates, signed them, and handed them in stuck by them most stubbornly under group pressure; those who had written them privately and erased them gave way far more easily."
           },
           {
             "type": "quote",
@@ -2059,7 +2059,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Liking Principle",
-            "body": "We say yes to people we like, and we like people for learnable reasons: they resemble us, they compliment us, they cooperate with us toward shared goals. None of this requires deception — but every lever can be pulled on cue. The halo effect stacks on top: we unconsciously read attractive people as smarter, kinder, and more honest than they've shown.",
+            "body": "We say yes to people we like, and we like people for learnable reasons: they resemble us, they compliment us — praise breeds liking even when we sense it's empty — and they cooperate with us toward shared goals. Every lever can be pulled on cue. The halo effect stacks on top: we unconsciously read attractive people as smarter, kinder, and more honest than they've shown.",
             "art": "dialog"
           },
           {

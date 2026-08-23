@@ -89,6 +89,17 @@ if (await page.locator('.flash').count()) {
 await page.goto(url + '#/stats');
 await page.waitForSelector('.stat-grid');
 ok(await page.locator('.panel').count() >= 4, 'stats page renders panels');
+ok(await page.locator('.badge-card').count() >= 10, 'achievements gallery renders');
+ok(await page.locator('.badge-card.earned').count() >= 1, 'first-lesson badge earned');
+ok(await page.locator('.forecast .fc-col').count() === 7, 'review forecast renders 7 days');
+
+// --- search ---
+await page.goto(url + '#/search');
+await page.waitForSelector('#search-in');
+await page.fill('#search-in', 'anchor');
+await page.waitForTimeout(120);
+ok(await page.locator('.search-hit').count() >= 1, 'search finds lessons for "anchor"');
+ok((await page.locator('.search-hit mark').count()) >= 1, 'search highlights matches');
 const xpBefore = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
 await page.reload({ waitUntil: 'networkidle' });
 const xpAfter = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
@@ -98,9 +109,26 @@ ok(xpBefore > 0 && xpBefore === xpAfter, `XP persists across reload (${xpAfter})
 await page.goto(url + '#/');
 await page.locator('#btn-settings').click();
 await page.waitForSelector('.modal');
+ok(await page.locator('#set-sound').count() === 1, 'sound setting present');
+ok(await page.locator('#bk-copy').count() === 1, 'backup controls present');
 await page.selectOption('#set-theme', 'dark');
 await page.locator('#set-save').click();
 ok(await page.evaluate(() => document.documentElement.getAttribute('data-theme')) === 'dark', 'dark theme applies');
+
+// --- backup roundtrip ---
+const blob = await page.evaluate(() => localStorage.getItem('prism.v1'));
+await page.evaluate(() => localStorage.clear());
+await page.reload({ waitUntil: 'domcontentloaded' });
+await page.locator('#btn-settings').click();
+await page.waitForSelector('.modal');
+await page.locator('.backup summary').click();
+await page.locator('#bk-paste').click();          // reveals textarea
+await page.fill('#bk-text', blob);
+page.once('dialog', d => d.accept());
+await page.locator('#bk-paste').click();
+await page.waitForTimeout(200);
+const restored = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
+ok(restored > 0, `backup restore round-trips XP (${restored})`);
 
 ok(errors.length === 0, 'no console/page errors' + (errors.length ? ': ' + errors.slice(0, 3).join(' | ') : ''));
 

@@ -58,9 +58,74 @@
     setTimeout(function () { el.remove(); }, 1400);
   }
 
+  /* Distinct cover glyph per course (fallback: first lesson's intro art). */
+  var COVER_ART = {
+    'cognitive-biases': 'lens', 'stoicism': 'shield', 'psychology-of-money': 'coin',
+    'learning-how-to-learn': 'brain', 'persuasion': 'dialog', 'logical-fallacies': 'balance'
+  };
+  function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
+
+  /* ---------------- toasts ---------------- */
+
+  var toastTimer = null;
+  function toast(html) {
+    var old = document.querySelector('.toast');
+    if (old) old.remove();
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = html;
+    document.body.appendChild(el);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.add('bye'); setTimeout(function () { el.remove(); }, 350); }, 3400);
+  }
+
+  /* ---------------- XP + achievements ---------------- */
+
+  function badgeCtx() {
+    var lessonsDone = 0, coursesDone = 0, perfect = 0;
+    for (var i = 0; i < COURSES.length; i++) {
+      var p = Store.courseProgress(COURSES[i]);
+      lessonsDone += p.done;
+      if (p.total && p.done === p.total) coursesDone += 1;
+      var recs = Store.state.lessons[COURSES[i].id] || {};
+      for (var k in recs) if (recs[k].best === 100) perfect += 1;
+    }
+    return {
+      xp: Store.state.xp, streak: Store.streak(), lessonsDone: lessonsDone,
+      coursesDone: coursesDone, totalCourses: COURSES.length,
+      reviewsTotal: Store.totalReviews(), perfect: perfect,
+      hour: new Date().getHours(), deckSize: Store.srsCount()
+    };
+  }
+
+  function checkBadges() {
+    var fresh = Achieve.check(badgeCtx());
+    for (var i = 0; i < fresh.length; i++) {
+      (function (b, delay) {
+        setTimeout(function () {
+          SFX.badge();
+          toast('<span class="toast-art">' + Art.svg(b.art) + '</span><span><b>' + esc(b.title) + '</b><br>' + esc(b.desc) + '</span>');
+        }, delay);
+      })(fresh[i], i * 1800);
+    }
+  }
+
+  /* Award XP with goal-crossing celebration and badge evaluation. */
+  function gainXP(n, anchor) {
+    var goal = Store.state.settings.dailyGoal;
+    var before = Store.todayXP();
+    Store.addXP(n);
+    if (anchor !== undefined) xpFloat(n, anchor);
+    if (before < goal && Store.todayXP() >= goal) {
+      toast('<span class="toast-emoji">🔥</span><span><b>Daily goal hit</b><br>Streak secured: ' + Store.streak() + ' day' + (Store.streak() === 1 ? '' : 's') + '</span>');
+    }
+    checkBadges();
+  }
+
   /* ---------------- confetti ---------------- */
 
   function confetti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var cv = document.createElement('canvas');
     cv.className = 'confetti';
     cv.width = innerWidth; cv.height = innerHeight;
@@ -116,6 +181,9 @@
           '<a class="chip xp" href="#/stats" title="Level ' + lvl.n + ' · ' + esc(lvl.title) + '">' +
             '<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.9L22 9.5l-5.4 4.6L18.3 22 12 17.8 5.7 22l1.7-7.9L2 9.5l7.4-.6z" fill="currentColor"/></svg>' +
             Store.state.xp + ' XP</a>' +
+          '<a class="iconbtn" href="#/search" aria-label="Search" title="Search ( / )">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>' +
+          '</a>' +
           '<button class="iconbtn" id="btn-settings" aria-label="Settings" title="Settings">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5c.06-.4.1-.8.1-1.2z"/></svg>' +
           '</button>' +
@@ -210,7 +278,7 @@
       h += '<a class="cover" style="--ah:' + HUES[k % HUES.length] + '" href="#/course/' + esc(c.id) + '">' +
         '<div class="cover-top">' +
           '<span class="cat">' + esc(c.category) + '</span>' +
-          '<div class="cover-art">' + Art.svg(c.lessons[0].cards[0].art || 'lightbulb') + '</div>' +
+          '<div class="cover-art">' + Art.svg(coverArt(c)) + '</div>' +
         '</div>' +
         '<div class="cover-body">' +
           '<h3>' + esc(c.title) + '</h3>' +
@@ -235,7 +303,7 @@
     var h = headerHTML() + '<main class="page" style="--ah:' + hue + '">';
     h += '<a class="back" href="#/">‹ Library</a>';
     h += '<section class="course-hero">' +
-      '<div class="course-hero-art">' + Art.svg(c.lessons[0].cards[0].art || 'lightbulb') + '</div>' +
+      '<div class="course-hero-art">' + Art.svg(coverArt(c)) + '</div>' +
       '<div class="course-hero-text">' +
         '<span class="cat">' + esc(c.category) + '</span>' +
         '<h1>' + esc(c.title) + '</h1>' +
@@ -275,7 +343,7 @@
     if (!f) return nav('#/course/' + cid);
     session = {
       course: c, lesson: f.lesson, lessonIndex: f.index,
-      idx: 0, xp: 0, attempted: 0, correct: 0, finished: false
+      idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], finished: false
     };
     Store.setLastLesson(cid, lid);
     renderCard();
@@ -358,7 +426,7 @@
     bindCard(card);
   }
 
-  function award(n, anchor) { session.xp += n; Store.addXP(n); xpFloat(n, anchor); var el = document.querySelector('.player-xp'); if (el) el.textContent = '+' + session.xp; }
+  function award(n, anchor) { session.xp += n; gainXP(n, anchor); var el = document.querySelector('.player-xp'); if (el) el.textContent = '+' + session.xp; }
 
   function bindCard(card) {
     var exit = document.getElementById('btn-exit');
@@ -396,7 +464,16 @@
           if (isRight) choices[i].classList.add('right');
         }
         btn.classList.add(ok ? 'right' : 'wrong');
-        if (ok) { session.correct += 1; award(10, btn); } else { award(3, btn); }
+        if (ok) { session.correct += 1; SFX.correct(); award(10, btn); }
+        else {
+          SFX.wrong();
+          session.misses.push({
+            prompt: card.type === 'mcq' ? card.prompt : card.statement,
+            answer: card.type === 'mcq' ? card.choices[card.answer] : (card.answer ? 'True' : 'False'),
+            explain: card.explain || ''
+          });
+          award(3, btn);
+        }
         var ex = document.getElementById('explain');
         ex.innerHTML = '<b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + esc(card.explain || '');
         ex.hidden = false;
@@ -426,6 +503,7 @@
         revealed = true;
         var slot = document.getElementById('reveal-slot');
         slot.innerHTML = '<div class="reveal-answer">' + esc(card.answer) + '</div>';
+        SFX.flip();
         award(5, slot);
         document.getElementById('foot').innerHTML = continueBtn();
         document.getElementById('btn-next').onclick = advance;
@@ -449,10 +527,11 @@
     var acc = session.attempted ? Math.round(100 * session.correct / session.attempted) : 100;
     var first = !Store.lessonRecord(session.course.id, session.lesson.id);
     var bonus = first ? 25 : 10;
-    Store.addXP(bonus);
     session.xp += bonus;
     Store.completeLesson(session.course.id, session.lesson.id, acc);
     var added = Store.addReviewItems(session.course, session.lesson);
+    gainXP(bonus);
+    SFX.complete();
 
     var nextLesson = session.course.lessons[session.lessonIndex + 1] || null;
     var goalNow = Store.todayXP() >= Store.state.settings.dailyGoal;
@@ -469,6 +548,7 @@
       '</div>' +
       (goalNow ? '<p class="goal-note">Daily goal hit — streak: ' + Store.streak() + ' 🔥</p>'
                : '<p class="goal-note dim">' + (Store.state.settings.dailyGoal - Store.todayXP()) + ' XP to today’s goal</p>') +
+      missesHTML() +
       '</div></div>' +
       '<div class="player-foot col">' +
         (nextLesson ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
@@ -484,6 +564,17 @@
       if (e.key === 'Enter') { (nl || document.getElementById('btn-back-course')).click(); }
       if (e.key === 'Escape') nav('#/course/' + session.course.id);
     };
+  }
+
+  function missesHTML() {
+    if (!session.misses.length) return '';
+    var h = '<details class="misses"><summary>Worth another look (' + session.misses.length + ')</summary>';
+    for (var i = 0; i < session.misses.length; i++) {
+      var m = session.misses[i];
+      h += '<div class="miss"><p class="miss-q">' + esc(m.prompt) + '</p>' +
+           '<p class="miss-a"><b>' + esc(m.answer) + '</b>' + (m.explain ? ' — ' + esc(m.explain) : '') + '</p></div>';
+    }
+    return h + '</details>';
   }
 
   /* ---------------- review session ---------------- */
@@ -541,17 +632,18 @@
 
     document.getElementById('btn-exit').onclick = function () { nav('#/'); };
     if (!rev.flipped) {
-      document.getElementById('btn-flip').onclick = function () { rev.flipped = true; renderReviewCard(); };
+      document.getElementById('btn-flip').onclick = function () { rev.flipped = true; SFX.flip(); renderReviewCard(); };
       onkey = function (e) {
         if (e.key === 'Escape') return nav('#/');
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rev.flipped = true; renderReviewCard(); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rev.flipped = true; SFX.flip(); renderReviewCard(); }
       };
     } else {
       var gs = document.querySelectorAll('.grade');
       function doGrade(g) {
         var xp = [1, 3, 5, 5][g];
         Store.gradeReview(item, g);
-        Store.addXP(xp);
+        SFX.grade();
+        gainXP(xp);
         rev.xp += xp; rev.graded += 1;
         if (g === 0) { rev.again += 1; rev.queue.push(item); } // see it again this session
         rev.i += 1; rev.flipped = false;
@@ -580,13 +672,89 @@
       '</div></div></div>' +
       '<div class="player-foot"><a class="btn primary" href="#/">Done</a></div></main>';
     $app.innerHTML = h;
+    SFX.complete();
+    checkBadges();
     confetti();
     onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
+  }
+
+  /* ---------------- search ---------------- */
+
+  var searchIndex = null;
+  function buildIndex() {
+    if (searchIndex) return searchIndex;
+    searchIndex = [];
+    for (var i = 0; i < COURSES.length; i++) {
+      var c = COURSES[i];
+      for (var j = 0; j < c.lessons.length; j++) {
+        var l = c.lessons[j], parts = [];
+        for (var k = 0; k < l.cards.length; k++) {
+          var cd = l.cards[k];
+          parts.push(cd.title || '', cd.body || '', cd.prompt || '', cd.statement || '',
+            cd.explain || '', typeof cd.answer === 'string' ? cd.answer : '', cd.text || '',
+            (cd.points || []).join(' '), (cd.choices || []).join(' '));
+        }
+        var body = parts.filter(function (p) { return p && p.trim(); }).join(' · ').replace(/\s+/g, ' ');
+        searchIndex.push({ c: c, ci: i, l: l, li: j, body: body, lower: body.toLowerCase() });
+      }
+    }
+    return searchIndex;
+  }
+
+  function snippet(body, lower, q) {
+    var at = lower.indexOf(q);
+    if (at < 0) return esc(body.slice(0, 140)) + '…';
+    var from = Math.max(0, at - 55);
+    var to = Math.min(body.length, at + q.length + 85);
+    return (from > 0 ? '…' : '') + esc(body.slice(from, at)) +
+      '<mark>' + esc(body.slice(at, at + q.length)) + '</mark>' +
+      esc(body.slice(at + q.length, to)) + (to < body.length ? '…' : '');
+  }
+
+  function searchResults(qRaw) {
+    var q = qRaw.trim().toLowerCase();
+    if (q.length < 2) {
+      return '<p class="search-hint">Search every card in the library — try “anchoring”, “Seneca”, “compound”, or “strawman”.</p>';
+    }
+    var idx = buildIndex(), hits = [];
+    for (var i = 0; i < idx.length; i++) {
+      var e = idx[i], score = 0;
+      if (e.l.title.toLowerCase().indexOf(q) >= 0) score += 5;
+      if (e.c.title.toLowerCase().indexOf(q) >= 0) score += 3;
+      if (e.l.summary.toLowerCase().indexOf(q) >= 0) score += 2;
+      if (e.lower.indexOf(q) >= 0) score += 1;
+      if (score) hits.push({ e: e, score: score });
+    }
+    hits.sort(function (a, b) { return b.score - a.score; });
+    if (!hits.length) return '<p class="search-hint">Nothing matches “' + esc(qRaw.trim()) + '”. Try a shorter word.</p>';
+    var h = '';
+    for (var j = 0; j < Math.min(hits.length, 12); j++) {
+      var e2 = hits[j].e;
+      var done = Store.lessonRecord(e2.c.id, e2.l.id);
+      h += '<a class="search-hit" style="--ah:' + HUES[e2.ci % HUES.length] + '" href="#/lesson/' + esc(e2.c.id) + '/' + esc(e2.l.id) + '">' +
+        '<span class="hit-course">' + esc(e2.c.title) + ' · Lesson ' + (e2.li + 1) + (done ? ' · ✓' : '') + '</span>' +
+        '<b>' + esc(e2.l.title) + '</b>' +
+        '<p>' + snippet(e2.body, e2.lower, q) + '</p></a>';
+    }
+    return h;
+  }
+
+  function renderSearch() {
+    $app.innerHTML = headerHTML() + '<main class="page">' +
+      '<a class="back" href="#/">‹ Home</a>' +
+      '<input id="search-in" class="search-in" type="search" placeholder="Search all 6 courses…" autocomplete="off" aria-label="Search courses">' +
+      '<div id="search-out" class="search-out">' + searchResults('') + '</div></main>';
+    bindChrome();
+    var input = document.getElementById('search-in');
+    var out = document.getElementById('search-out');
+    input.focus();
+    input.oninput = function () { out.innerHTML = searchResults(input.value); };
   }
 
   /* ---------------- stats view ---------------- */
 
   function renderStats() {
+    checkBadges();   // catch any badge earned since the last event
     var lvl = Store.level();
     var st = Store.streak();
     var totalLessons = 0, doneLessons = 0;
@@ -638,6 +806,51 @@
 
     h += '<h2 class="section-title">Last 12 weeks</h2><section class="panel">' + heat + '</section>';
 
+    // upcoming reviews: due counts for today + next 6 days
+    var buckets = [0, 0, 0, 0, 0, 0, 0];
+    var endToday = new Date(); endToday.setHours(23, 59, 59, 999);
+    for (var sk in Store.state.srs) {
+      var it = Store.state.srs[sk];
+      var dd = Math.ceil((it.due - endToday.getTime()) / 86400000);
+      if (it.due <= endToday.getTime()) buckets[0] += 1;
+      else if (dd >= 1 && dd <= 6) buckets[dd] += 1;
+    }
+    var maxB = Math.max.apply(null, buckets.concat([1]));
+    var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var todayDow = new Date().getDay();
+    var fc = '<div class="forecast">';
+    for (var fb = 0; fb < 7; fb++) {
+      fc += '<div class="fc-col"><span class="fc-n">' + (buckets[fb] || '') + '</span>' +
+        '<div class="fc-bar"><i style="height:' + Math.round(100 * buckets[fb] / maxB) + '%"></i></div>' +
+        '<span class="fc-d">' + (fb === 0 ? 'Today' : DOW[(todayDow + fb) % 7]) + '</span></div>';
+    }
+    fc += '</div>';
+    h += '<h2 class="section-title">Upcoming reviews</h2><section class="panel">' + fc;
+
+    // trickiest cards by lapse count
+    var tricky = [];
+    for (var tk in Store.state.srs) if (Store.state.srs[tk].lapses >= 2) tricky.push(Store.state.srs[tk]);
+    tricky.sort(function (a, b) { return b.lapses - a.lapses; });
+    if (tricky.length) {
+      h += '<div class="tricky"><span class="panel-label">Trickiest cards</span>';
+      for (var tt = 0; tt < Math.min(3, tricky.length); tt++) {
+        h += '<p class="tricky-row">' + esc(tricky[tt].front) + ' <small>forgot ×' + tricky[tt].lapses + '</small></p>';
+      }
+      h += '</div>';
+    }
+    h += '</section>';
+
+    // achievements gallery
+    h += '<h2 class="section-title">Achievements</h2><section class="badges">';
+    for (var bi = 0; bi < Achieve.list.length; bi++) {
+      var bd = Achieve.list[bi];
+      var earned = Store.state.badges[bd.id];
+      h += '<div class="badge-card' + (earned ? ' earned' : '') + '" title="' + esc(bd.desc) + '">' +
+        '<div class="badge-art">' + Art.svg(bd.art) + '</div>' +
+        '<b>' + esc(bd.title) + '</b><small>' + esc(bd.desc) + '</small></div>';
+    }
+    h += '</section>';
+
     h += '<h2 class="section-title">Courses</h2><section class="course-bars">';
     for (var k = 0; k < COURSES.length; k++) {
       var c = COURSES[k], pr2 = Store.courseProgress(c);
@@ -668,7 +881,15 @@
       '<label class="field">Daily goal<select id="set-goal">' +
         [30, 50, 100, 200].map(function (g) { return '<option value="' + g + '"' + (s.dailyGoal === g ? ' selected' : '') + '>' + g + ' XP — ' + { 30: 'casual', 50: 'steady', 100: 'serious', 200: 'obsessed' }[g] + '</option>'; }).join('') +
       '</select></label>' +
+      '<label class="field">Sound effects<select id="set-sound">' +
+        '<option value="on"' + (s.sound !== false ? ' selected' : '') + '>On</option>' +
+        '<option value="off"' + (s.sound === false ? ' selected' : '') + '>Off</option></select></label>' +
       '<div class="modal-row"><button class="btn primary" id="set-save">Save</button><button class="btn ghost" id="set-close">Cancel</button></div>' +
+      '<details class="backup"><summary>Backup &amp; restore</summary>' +
+        '<p class="backup-note">Progress lives in this browser. Copy a backup to move it to another device.</p>' +
+        '<div class="modal-row"><button class="btn ghost" id="bk-copy">Copy backup</button><button class="btn ghost" id="bk-paste">Restore…</button></div>' +
+        '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
+      '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
     '</div>';
     document.body.appendChild(wrap);
@@ -682,9 +903,33 @@
       Store.setSetting('name', document.getElementById('set-name').value.trim());
       Store.setSetting('theme', document.getElementById('set-theme').value);
       Store.setSetting('dailyGoal', Number(document.getElementById('set-goal').value));
+      Store.setSetting('sound', document.getElementById('set-sound').value === 'on');
       applyTheme();
       close();
       route();
+    };
+    document.getElementById('bk-copy').onclick = function () {
+      var data = Store.exportData();
+      var btn = this;
+      function done() { btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = 'Copy backup'; }, 1800); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(data).then(done, function () { fallback(); });
+      } else fallback();
+      function fallback() {
+        var ta = document.getElementById('bk-text');
+        ta.hidden = false; ta.value = data; ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { /* user copies manually */ }
+      }
+    };
+    document.getElementById('bk-paste').onclick = function () {
+      var ta = document.getElementById('bk-text');
+      if (ta.hidden) { ta.hidden = false; ta.value = ''; ta.placeholder = 'Paste a backup here, then press Restore again'; ta.focus(); return; }
+      if (!ta.value.trim()) { ta.focus(); return; }
+      if (!confirm('Replace everything on this device with the pasted backup?')) return;
+      var err = Store.importData(ta.value.trim());
+      if (err) { alert(err); return; }
+      applyTheme(); close(); route();
+      toast('<span class="toast-emoji">✓</span><span><b>Backup restored</b><br>Welcome back.</span>');
     };
     document.getElementById('set-reset').onclick = function () {
       if (confirm('Erase all XP, streaks, lesson progress and your review deck? This cannot be undone.')) {
@@ -714,6 +959,7 @@
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     // let a focused button/link activate itself instead of triggering the shortcut too
     if ((e.key === 'Enter' || e.key === ' ') && (tag === 'BUTTON' || tag === 'A')) return;
+    if (e.key === '/' && !onkey) { e.preventDefault(); return nav('#/search'); }
     if (onkey) onkey(e);
   });
 
@@ -728,6 +974,7 @@
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
     else if (parts[0] === 'stats') renderStats();
+    else if (parts[0] === 'search') renderSearch();
     else renderHome();
   }
 

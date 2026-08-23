@@ -14,7 +14,8 @@
       srs: {},                // itemId -> SRS item
       reviewsByDay: {},       // 'YYYY-MM-DD' -> cards reviewed
       lastLesson: null,       // {courseId, lessonId}
-      settings: { theme: 'system', dailyGoal: 50, name: '' },
+      badges: {},             // badgeId -> earnedAt timestamp
+      settings: { theme: 'system', dailyGoal: 50, name: '', sound: true },
       firstSeen: Date.now()
     };
   };
@@ -28,6 +29,7 @@
         var s = JSON.parse(raw);
         var d = defaults();
         for (var k in d) if (!(k in s)) s[k] = d[k];
+        for (var k2 in d.settings) if (!(k2 in s.settings)) s.settings[k2] = d.settings[k2];
         if (!s.settings.theme) s.settings.theme = 'system';
         if (!s.settings.dailyGoal) s.settings.dailyGoal = 50;
         return s;
@@ -130,6 +132,25 @@
 
   function srsCount() { var n = 0; for (var k in state.srs) n += 1; return n; }
 
+  function totalReviews() { var n = 0; for (var k in state.reviewsByDay) n += state.reviewsByDay[k]; return n; }
+
+  function exportData() { return JSON.stringify(state); }
+
+  /* Replace state with a backup blob. Returns error string or null on success. */
+  function importData(str) {
+    var s;
+    try { s = JSON.parse(str); } catch (e) { return 'That doesn’t look like valid backup text.'; }
+    if (!s || typeof s !== 'object' || typeof s.xp !== 'number' || !s.settings || !s.xpByDay) {
+      return 'That text isn’t a Prism backup — copy one from Settings on the device you’re importing from.';
+    }
+    var d = defaults();
+    for (var k in d) if (!(k in s)) s[k] = d[k];
+    for (var k2 in d.settings) if (!(k2 in s.settings)) s.settings[k2] = d.settings[k2];
+    state = s;
+    save();
+    return null;
+  }
+
   function setLastLesson(cid, lid) { state.lastLesson = { courseId: cid, lessonId: lid }; save(); }
 
   function setSetting(k, v) { state.settings[k] = v; save(); }
@@ -142,6 +163,7 @@
     streakIncludesToday: streakIncludesToday, level: level, dayKey: dayKey,
     lessonRecord: lessonRecord, completeLesson: completeLesson, courseProgress: courseProgress,
     addReviewItems: addReviewItems, gradeReview: gradeReview, srsCount: srsCount,
+    totalReviews: totalReviews, exportData: exportData, importData: importData,
     setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
   };
 })();
