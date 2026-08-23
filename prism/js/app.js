@@ -654,6 +654,7 @@
   /* ---------------- settings ---------------- */
 
   function openSettings() {
+    if (document.querySelector('.modal-wrap')) return;
     var s = Store.state.settings;
     var wrap = document.createElement('div');
     wrap.className = 'modal-wrap';
@@ -671,19 +672,23 @@
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
     '</div>';
     document.body.appendChild(wrap);
-    wrap.addEventListener('click', function (e) { if (e.target === wrap) wrap.remove(); });
-    document.getElementById('set-close').onclick = function () { wrap.remove(); };
+    function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
+    function onEsc(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+    document.addEventListener('keydown', onEsc, true);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    document.getElementById('set-name').focus();
+    document.getElementById('set-close').onclick = close;
     document.getElementById('set-save').onclick = function () {
       Store.setSetting('name', document.getElementById('set-name').value.trim());
       Store.setSetting('theme', document.getElementById('set-theme').value);
       Store.setSetting('dailyGoal', Number(document.getElementById('set-goal').value));
       applyTheme();
-      wrap.remove();
+      close();
       route();
     };
     document.getElementById('set-reset').onclick = function () {
       if (confirm('Erase all XP, streaks, lesson progress and your review deck? This cannot be undone.')) {
-        Store.resetAll(); applyTheme(); wrap.remove(); route();
+        Store.resetAll(); applyTheme(); close(); route();
       }
     };
   }
@@ -704,7 +709,11 @@
 
   var onkey = null;
   document.addEventListener('keydown', function (e) {
-    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;               // browser shortcuts stay browser shortcuts
+    var t = e.target, tag = t && t.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    // let a focused button/link activate itself instead of triggering the shortcut too
+    if ((e.key === 'Enter' || e.key === ' ') && (tag === 'BUTTON' || tag === 'A')) return;
     if (onkey) onkey(e);
   });
 
