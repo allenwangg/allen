@@ -2297,8 +2297,8 @@ window.COURSES = [
         "cards": [
           {
             "type": "intro",
-            "title": "The Ape's Grandmother",
-            "body": "Oxford, 1860. Bishop Samuel Wilberforce reportedly asked Thomas Huxley whether he claimed descent from an ape on his grandfather's side or his grandmother's. The crowd roared. Notice what the bishop didn't do: touch Darwin's evidence. Mockery is faster than rebuttal, and it still wins rooms today.",
+            "title": "The Monkey's Grandmother",
+            "body": "Oxford, 1860. Bishop Samuel Wilberforce reportedly asked Thomas Huxley whether he claimed descent from a monkey on his grandfather's side or his grandmother's. The crowd roared. Notice what the quip didn't do: touch Darwin's evidence. Mockery is faster than rebuttal, and it still wins rooms today.",
             "art": "flame"
           },
           {
@@ -2350,7 +2350,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Steelmanning",
-            "body": "In Intuition Pumps (2013), Daniel Dennett relays Anatol Rapoport's rules for criticism: restate your opponent's view so vividly they say 'I wish I'd put it that way,' list your points of agreement, mention what you learned — and only then rebut. You earn a hearing, and you stress-test your own case first.",
+            "body": "In Intuition Pumps (2013), Daniel Dennett relays Anatol Rapoport's rules for criticism: restate your opponent's view so vividly they say 'Thanks, I wish I'd thought of putting it that way,' list your points of agreement, mention what you learned — and only then rebut. You earn a hearing, and you stress-test your own case first.",
             "art": "shield"
           },
           {
@@ -2578,8 +2578,8 @@ window.COURSES = [
           },
           {
             "type": "reveal",
-            "prompt": "In 1906, Francis Galton collected 787 guesses of an ox's weight at an English county fair. How did the crowd do?",
-            "answer": "The middle guess landed within about 1% of the ox's true 1,198 pounds — Galton reported it in Nature. Crowds inform when judgments are independent; ad populum fails when they merely echo."
+            "prompt": "In 1906, Francis Galton collected 787 guesses of an ox's weight at an English livestock fair. How did the crowd do?",
+            "answer": "The middle guess landed within about 1% of the true dressed weight, 1,198 pounds — Galton reported it in Nature. Crowds inform when judgments are independent; ad populum fails when they merely echo."
           },
           {
             "type": "concept",
