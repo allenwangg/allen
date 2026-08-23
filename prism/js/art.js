@@ -1,0 +1,49 @@
+/* Prism — illustration library.
+   32 geometric line-art glyphs, keyed by name, drawn in a shared style.
+   Classes (styled in app.css): .s ink stroke · .a accent stroke · .d accent dot ·
+   .f soft accent fill · .w faint ink stroke */
+(function () {
+  'use strict';
+
+  var G = {
+    anchor: '<circle class="s" cx="100" cy="36" r="11"/><path class="s" d="M100 47v66"/><path class="s" d="M74 66h52"/><path class="a" d="M58 88a42 42 0 0 0 84 0"/><path class="a" d="M58 88l-10-8m10 8l2-13M142 88l10-8m-10 8l-2-13"/><path class="w" d="M40 138q12-10 24 0t24 0 24 0 24 0 24 0"/>',
+    balance: '<path class="s" d="M100 30v86"/><circle class="d" cx="100" cy="26" r="6"/><path class="s" d="M48 52h104"/><path class="s" d="M84 116h32"/><path class="w" d="M48 52l-14 34m14-34l14 34"/><path class="a" d="M34 86a17 17 0 0 0 28 0"/><path class="w" d="M152 52l-14 30m14-30l14 30"/><path class="a" d="M138 82a17 17 0 0 0 28 0"/><circle class="d" cx="48" cy="52" r="4"/><circle class="d" cx="152" cy="52" r="4"/>',
+    bell: '<path class="s" d="M100 34c-24 0-34 18-34 38 0 18-4 28-12 36h92c-8-8-12-18-12-36 0-20-10-38-34-38z"/><path class="s" d="M100 34v-8"/><circle class="d" cx="100" cy="22" r="5"/><path class="a" d="M88 122a12 12 0 0 0 24 0"/><path class="w" d="M42 52a58 58 0 0 0-10 24M158 52a58 58 0 0 1 10 24"/>',
+    book: '<path class="s" d="M100 44c-14-10-34-12-52-8v76c18-4 38-2 52 8 14-10 34-12 52-8V36c-18-4-38-2-52 8z"/><path class="s" d="M100 44v76"/><path class="a" d="M62 58c10-2 20-2 28 2M62 74c10-2 20-2 28 2M62 90c10-2 20-2 28 2"/><path class="w" d="M110 60c8-4 18-4 28-2M110 76c8-4 18-4 28-2M110 92c8-4 18-4 28-2"/>',
+    brain: '<path class="s" d="M96 30c-12-4-26 2-28 14-12 2-18 14-12 24-8 8-6 22 4 26 0 12 12 20 24 16 6 8 20 8 12-2V32"/><path class="s" d="M104 30c12-4 26 2 28 14 12 2 18 14 12 24 8 8 6 22-4 26 0 12-12 20-24 16-6 8-20 8-12-2V32"/><path class="a" d="M74 56c8 2 12 8 12 16M126 56c-8 2-12 8-12 16M78 92c6-2 12 0 16 6M122 92c-6-2-12 0-16 6"/>',
+    bridge: '<path class="s" d="M28 104h144"/><path class="s" d="M60 104V52m80 52V52"/><path class="a" d="M28 96q32-38 66-42M60 52q40-6 80 0M172 96q-32-38-66-42"/><path class="w" d="M76 104v-14m24 14v-18m24 18v-14"/><circle class="d" cx="60" cy="48" r="5"/><circle class="d" cx="140" cy="48" r="5"/><path class="w" d="M36 128q12-8 24 0t24 0 24 0 24 0 24 0"/>',
+    clock: '<circle class="s" cx="100" cy="82" r="52"/><path class="s" d="M100 54v28l20 14"/><circle class="d" cx="100" cy="82" r="5"/><path class="w" d="M100 36v-6m46 52h6m-98 0h-6m46 46v6"/><path class="a" d="M140 34l10-8m-100 8l-10-8"/>',
+    coin: '<ellipse class="w" cx="96" cy="118" rx="44" ry="10"/><ellipse class="w" cx="98" cy="106" rx="44" ry="10"/><circle class="s" cx="102" cy="64" r="34"/><circle class="a" cx="102" cy="64" r="23"/><path class="s" d="M102 50v28m-8-22h16m-16 16h16"/><path class="w" d="M156 36l8-8m-4 22l12-4"/>',
+    compass: '<circle class="s" cx="100" cy="80" r="52"/><path class="f" d="M100 80L82 116l54-54z"/><path class="s" d="M118 62L82 116l18-36z"/><path class="a" d="M118 62L136 44"/><circle class="d" cx="100" cy="80" r="5"/><path class="w" d="M100 28v8m52 44h-8m-96 0h8m44 52v-8"/>',
+    dialog: '<path class="s" d="M36 42h84a10 10 0 0 1 10 10v34a10 10 0 0 1-10 10H72l-20 18v-18h-16a10 10 0 0 1-10-10V52a10 10 0 0 1 10-10z"/><path class="a" d="M92 70h72a10 10 0 0 1 10 10v26a10 10 0 0 1-10 10h-8v16l-18-16H92a10 10 0 0 1-10-10"/><circle class="d" cx="64" cy="69" r="4"/><circle class="d" cx="83" cy="69" r="4"/><circle class="d" cx="102" cy="69" r="4"/>',
+    eye: '<path class="s" d="M28 82q72-64 144 0-72 64-144 0z"/><circle class="f" cx="100" cy="80" r="26"/><circle class="s" cx="100" cy="80" r="26"/><circle class="d" cx="100" cy="80" r="10"/><circle class="w" cx="110" cy="70" r="4"/><path class="a" d="M52 46l-8-10m112 10l8-10M100 36v-12"/>',
+    flame: '<path class="s" d="M100 26c6 22 34 34 34 62a34 34 0 0 1-68 0c0-16 10-26 18-36 2 10 6 14 10 16-2-14 0-30 6-42z"/><path class="a" d="M100 76c10 10 16 16 16 26a16 16 0 0 1-32 0c0-8 4-14 10-20 0 6 2 10 6 12z"/><path class="w" d="M56 132h88"/>',
+    fork: '<path class="s" d="M100 132V88"/><path class="s" d="M100 88Q100 62 68 48"/><path class="a" d="M100 88q0-26 32-40"/><path class="s" d="M74 58l-8-12 14-2"/><path class="a" d="M126 58l8-12-14-2"/><circle class="d" cx="100" cy="138" r="6"/><path class="w" d="M56 34l-6-6m100 6l6-6"/>',
+    graph: '<path class="s" d="M40 32v96h124"/><path class="a" d="M52 108l28-22 22 10 34-38 16 8"/><circle class="d" cx="80" cy="86" r="5"/><circle class="d" cx="102" cy="96" r="5"/><circle class="d" cx="136" cy="58" r="5"/><path class="w" d="M40 56h8m-8 26h8m-8 26h8"/><path class="s" d="M144 46l10-6 2 12"/>',
+    hourglass: '<path class="s" d="M64 32h72M64 128h72M70 32c0 26 12 34 30 48 18-14 30-22 30-48M70 128c0-26 12-34 30-48 18 14 30 22 30 48"/><path class="f" d="M78 40c2 16 10 24 22 32 12-8 20-16 22-32z"/><path class="f" d="M76 124c2-14 10-22 24-30 14 8 22 16 24 30z"/><circle class="d" cx="100" cy="96" r="3"/><circle class="d" cx="100" cy="108" r="3"/>',
+    key: '<circle class="s" cx="64" cy="80" r="26"/><circle class="w" cx="64" cy="80" r="12"/><path class="s" d="M90 80h74"/><path class="a" d="M132 80v18m20-18v24"/><circle class="d" cx="64" cy="80" r="4"/><path class="w" d="M160 44l8-8m-4 84l8 8"/>',
+    ladder: '<path class="s" d="M70 136L92 28m38 108L108 28"/><path class="s" d="M82 116h44M86 96h40M90 76h34M94 56h30"/><circle class="a" cx="100" cy="26" r="14"/><path class="w" d="M52 140h96"/>',
+    layers: '<path class="a" d="M100 34L156 60l-56 26-56-26z"/><path class="f" d="M100 34L156 60l-56 26-56-26z"/><path class="s" d="M44 84l56 26 56-26"/><path class="w" d="M44 108l56 26 56-26"/>',
+    lens: '<circle class="s" cx="88" cy="70" r="40"/><path class="s" d="M117 99l34 34"/><path class="a" d="M70 56a24 24 0 0 1 20-10"/><circle class="d" cx="84" cy="72" r="4"/><circle class="w" cx="99" cy="80" r="3"/><circle class="w" cx="72" cy="84" r="3"/><path class="w" d="M150 40l10-10m-124 94l-10 10"/>',
+    lightbulb: '<circle class="s" cx="100" cy="66" r="36"/><path class="s" d="M88 98v14h24V98"/><path class="s" d="M88 118h24m-20 10h16"/><path class="a" d="M92 76c0-12 4-18 8-22 4 4 8 10 8 22"/><path class="w" d="M100 14v-2m44 22l8-8m-96 8l-8-8m104 44h10M30 66H20"/>',
+    map: '<path class="s" d="M36 44l42-14 44 14 42-14v86l-42 14-44-14-42 14z"/><path class="w" d="M78 30v86m44-72v86"/><path class="a" d="M52 96c14-18 36-2 48-22 8-14 24-16 40-24" stroke-dasharray="1 12"/><circle class="d" cx="52" cy="96" r="6"/><path class="a" d="M136 44l10 12m0-12l-10 12"/>',
+    mirror: '<path class="s" d="M100 24v112" stroke-dasharray="2 10"/><path class="s" d="M64 116V72a18 18 0 0 1 0-28 18 18 0 0 1 0 28"/><circle class="s" cx="58" cy="52" r="14"/><path class="s" d="M40 116c0-20 8-30 18-30s18 10 18 30z"/><circle class="w" cx="142" cy="52" r="14"/><path class="w" d="M124 116c0-20 8-30 18-30s18 10 18 30z"/><circle class="d" cx="100" cy="24" r="4"/><circle class="d" cx="100" cy="136" r="4"/>',
+    mountain: '<path class="s" d="M28 124L80 44l28 42 20-26 44 64z"/><path class="w" d="M68 62l12 10 10-10"/><path class="a" d="M108 34V14m0 0l16 6-16 6"/><circle class="w" cx="160" cy="34" r="12"/><path class="w" d="M40 138h120"/>',
+    network: '<path class="w" d="M56 48l44 30m0 0l46-22m-46 22l-42 40m42-40l38 44m-38-44V30"/><circle class="s" cx="56" cy="48" r="10"/><circle class="s" cx="146" cy="56" r="10"/><circle class="s" cx="58" cy="118" r="10"/><circle class="s" cx="138" cy="122" r="10"/><circle class="w" cx="100" cy="30" r="7"/><circle class="a" cx="100" cy="78" r="14"/><circle class="d" cx="100" cy="78" r="5"/>',
+    orbit: '<ellipse class="w" cx="100" cy="80" rx="72" ry="28"/><ellipse class="s" cx="100" cy="80" rx="40" ry="52" transform="rotate(24 100 80)"/><circle class="f" cx="100" cy="80" r="18"/><circle class="s" cx="100" cy="80" r="18"/><circle class="d" cx="164" cy="66" r="7"/><circle class="d" cx="66" cy="118" r="5"/>',
+    path: '<path class="a" d="M40 132c40 8 44-28 20-32-20-4-12-32 16-30 34 2 40-22 68-28" stroke-dasharray="1 13"/><circle class="d" cx="40" cy="132" r="7"/><path class="s" d="M148 40V16m0 0l18 7-18 7"/><path class="w" d="M60 52l-8-8m110 68l8 8"/>',
+    puzzle: '<path class="s" d="M52 60h28a12 12 0 1 1 24 0h24v26a12 12 0 1 0 0 24v26h-76z"/><path class="a" d="M156 74a12 12 0 1 0-2 22" /><circle class="d" cx="76" cy="88" r="4"/><path class="w" d="M160 40l10-8m-10 96l10 8"/>',
+    pyramid: '<path class="s" d="M100 28L168 128H32z"/><path class="w" d="M69 82h62M52 106h96"/><path class="f" d="M100 28L118 54H82z"/><path class="a" d="M82 54h36"/><circle class="w" cx="38" cy="38" r="10"/>',
+    seed: '<path class="w" d="M32 112h136"/><path class="s" d="M100 112V64"/><path class="s" d="M100 84c-24 4-34-10-36-28 22-2 34 8 36 28z"/><path class="a" d="M100 72c22 2 32-8 34-26-20-2-32 6-34 26z"/><circle class="w" cx="100" cy="132" r="8" stroke-dasharray="3 7"/><path class="w" d="M60 40v-8m84 12v-8"/>',
+    shield: '<path class="s" d="M100 24c20 12 38 16 52 16 0 48-16 76-52 96-36-20-52-48-52-96 14 0 32-4 52-16z"/><path class="a" d="M76 80l16 16 32-34"/><circle class="w" cx="160" cy="36" r="4"/><circle class="w" cx="40" cy="36" r="4"/>',
+    target: '<circle class="s" cx="104" cy="84" r="50"/><circle class="w" cx="104" cy="84" r="32"/><circle class="f" cx="104" cy="84" r="14"/><circle class="d" cx="104" cy="84" r="6"/><path class="a" d="M104 84L156 30m0 0h-20m20 0v20"/>',
+    wave: '<path class="a" d="M32 108c10-44 44-52 66-34-14 2-22 10-24 22 26-14 54-2 60 20H32z"/><path class="s" d="M28 128q16-10 32 0t32 0 32 0 32 0"/><circle class="w" cx="156" cy="40" r="14"/><path class="w" d="M156 18v-6m22 28h6"/>'
+  };
+
+  function svg(key) {
+    var inner = G[key] || G.lightbulb;
+    return '<svg viewBox="0 0 200 160" role="img" aria-hidden="true" focusable="false">' + inner + '</svg>';
+  }
+
+  window.Art = { svg: svg, keys: Object.keys(G) };
+})();
