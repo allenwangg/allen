@@ -464,7 +464,7 @@ window.COURSES = [
     "title": "Stoicism in Practice",
     "tagline": "The 2,000-year-old operating system for a steady mind",
     "category": "Philosophy",
-    "description": "Marcus Aurelius ran an empire on it, Seneca faced exile with it, and Epictetus built it as a slave. Four lessons turn the core Stoic practices into tools you can run this week.",
+    "description": "Marcus Aurelius ran an empire on it, Seneca faced exile with it, and Epictetus learned it as a slave. Four lessons turn the core Stoic practices into tools you can run this week.",
     "lessons": [
       {
         "id": "dichotomy-of-control",
@@ -532,7 +532,7 @@ window.COURSES = [
           {
             "type": "example",
             "title": "From Chains to the Classroom",
-            "body": "Freed from slavery, then banished from Rome around 93 AD when Domitian expelled the philosophers, Epictetus rebuilt in Nicopolis, Greece. He lived with famous simplicity: when his iron lamp was stolen, he replaced it with clay, noting the thief had paid dearly — he'd become a thief for the price of a lamp. His student Arrian wrote it all down, around 125 AD.",
+            "body": "Freed from slavery, then banished from Rome around 93 AD when Domitian expelled the philosophers, Epictetus rebuilt in Nicopolis, Greece. He lived with famous simplicity: when his iron lamp was stolen, he replaced it with clay, noting the thief had paid dearly — he'd become a thief for the price of a lamp. His student Arrian recorded it all in the Discourses, around 108 AD.",
             "art": "ladder"
           },
           {
@@ -738,7 +738,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The View From Above",
-            "body": "Meditations 9.30: 'take a view from above' — the herds, the harvests, the weddings, lawsuits, and funerals; whole generations appearing and vanishing. The scholar Pierre Hadot identified this zoom-out as a core Stoic 'spiritual exercise.' The aim isn't to make life feel meaningless — it's to let your problem shrink back to its actual size.",
+            "body": "Meditations 9.30: 'look down from above' — the countless herds and their ceremonies, the voyages in storm and calm, whole generations being born, living together, vanishing. The scholar Pierre Hadot identified this zoom-out as a core Stoic 'spiritual exercise.' The aim isn't to make life feel meaningless — it's to let your problem shrink back to its actual size.",
             "art": "eye"
           },
           {
@@ -870,14 +870,14 @@ window.COURSES = [
           },
           {
             "type": "truefalse",
-            "statement": "The Stoic ideal, apatheia, means feeling nothing when someone you love dies.",
-            "answer": false,
-            "explain": "Apatheia is freedom from destructive passions — the rage and despair built on false judgments — not numbness. Seneca expected tears; what he condemned was performing them and feeding them."
+            "statement": "The Stoic ideal of apatheia still leaves room for tears at the death of a friend.",
+            "answer": true,
+            "explain": "True — apatheia is freedom from destructive passions, the rage and despair built on false judgments, not numbness. Seneca expected tears for Flaccus; what he condemned was performing them and feeding them with protest."
           },
           {
             "type": "example",
             "title": "From the Stoa to the Clinic",
-            "body": "Albert Ellis, founding rational emotive behavior therapy in 1955, cited Epictetus's line on opinions as a cornerstone; Aaron Beck's cognitive therapy grew from the same soil. The best-tested modern talk therapies operate inside the Stoic gap: find the judgment sitting between event and emotion, and put it on trial. The checkpoint was there all along.",
+            "body": "Albert Ellis, launching what became rational emotive behavior therapy in 1955, cited Epictetus's line on opinions as a cornerstone; Aaron Beck's cognitive therapy grew from the same soil. The best-tested modern talk therapies operate inside the Stoic gap: find the judgment sitting between event and emotion, and put it on trial. The checkpoint was there all along.",
             "art": "bridge"
           },
           {
