@@ -939,7 +939,7 @@ window.COURSES = [
           {
             "type": "reveal",
             "prompt": "Take a sheet of paper 0.1 mm thick. Fold it in half 50 times (humor the physics). How tall is the stack?",
-            "answer": "Over 100 million kilometers—roughly two-thirds of the way to the sun. Fifty doublings turn a tenth of a millimeter into an astronomical distance. If your gut said 'a few meters,' that gap is exactly why compounding keeps surprising you."
+            "answer": "Over 100 million kilometers—roughly three-quarters of the way to the sun. Fifty doublings turn a tenth of a millimeter into an astronomical distance. If your gut said 'a few meters,' that gap is exactly why compounding keeps surprising you."
           },
           {
             "type": "concept",
@@ -958,12 +958,12 @@ window.COURSES = [
             "prompt": "Simons compounded three times faster than Buffett. Why did Buffett end up roughly four times richer?",
             "choices": [
               "Buffett used more leverage and took bigger risks",
-              "Buffett started at 11 and never stopped—about 50 more years of compounding",
+              "Buffett started at 11 and never stopped—roughly 45 more years of compounding",
               "Medallion's high fees consumed Simons's edge",
               "Buffett's holdings were more tax-efficient"
             ],
             "answer": 1,
-            "explain": "Duration beats rate. Fifty extra years means dozens of extra doublings, and each doubling matters more than the last. A good return sustained for decades outruns a spectacular one started late."
+            "explain": "Duration beats rate. Those extra decades stack up extra doublings, and each doubling matters more than the last. A good return sustained for decades outruns a spectacular one started late."
           },
           {
             "type": "example",
@@ -1066,7 +1066,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Tails Drive Everything",
-            "body": "Outcomes aren't spread evenly; a handful of extremes do nearly all the work. Correlation Ventures examined about 21,000 venture financings from 2004 to 2014: 65% lost money, while roughly half a percent—the deals returning 50x or more—drove most of the industry's gains. The typical outcome is failure; the aggregate is a fortune.",
+            "body": "Outcomes aren't spread evenly; a handful of extremes do nearly all the work. Correlation Ventures examined about 21,000 venture financings from 2004 to 2013: 65% lost money, while roughly half a percent—the deals returning 50x or more—drove the majority of the industry's gains. Public stocks skew the same way: most lose, a sliver carries the index.",
             "art": "pyramid"
           },
           {
@@ -1173,7 +1173,7 @@ window.COURSES = [
           {
             "type": "example",
             "title": "March 2020",
-            "body": "COVID cut the S&P 500 by 34% in 23 trading days, and investors fled to cash at a record pace—money-market funds took in roughly $686 billion that March. The market bottomed on March 23, 2020; twelve months later it stood about 75% higher. Panic sellers converted a temporary decline into a permanent loss, then missed the rebound.",
+            "body": "COVID cut the S&P 500 by 34% in 23 trading days, and investors fled to cash at a record pace—money-market funds took in roughly $680 billion that March alone. The market bottomed on March 23, 2020; twelve months later it stood about 75% higher. Panic sellers converted a temporary decline into a permanent loss, then missed the rebound.",
             "art": "wave"
           },
           {
