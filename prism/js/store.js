@@ -9,6 +9,7 @@
     return {
       xp: 0,
       xpByDay: {},            // 'YYYY-MM-DD' -> xp earned that day
+      goalDays: {},           // 'YYYY-MM-DD' -> true once that day's goal was met
       lessons: {},            // courseId -> lessonId -> {completedAt, best (0-100), runs}
       srs: {},                // itemId -> SRS item
       reviewsByDay: {},       // 'YYYY-MM-DD' -> cards reviewed
@@ -49,20 +50,26 @@
     state.xp += n;
     var k = dayKey();
     state.xpByDay[k] = (state.xpByDay[k] || 0) + n;
+    // freeze goal completion at the goal in force that day, so changing the
+    // daily goal later never rewrites streak history
+    if (state.xpByDay[k] >= state.settings.dailyGoal) state.goalDays[k] = true;
     save();
     return n;
   }
 
   function todayXP() { return state.xpByDay[dayKey()] || 0; }
 
-  function goalMet(k) { return (state.xpByDay[k] || 0) >= state.settings.dailyGoal; }
+  function goalMet(k) {
+    return state.goalDays[k] === true || (state.xpByDay[k] || 0) >= state.settings.dailyGoal;
+  }
 
-  /* Consecutive days (ending today or yesterday) with the daily goal met. */
+  /* Consecutive days (ending today or yesterday) with the daily goal met.
+     Walks calendar days, not fixed 24h steps, so DST transitions don't skip. */
   function streak() {
     var n = 0;
-    var t = Date.now();
-    if (!goalMet(dayKey(t))) t -= DAY_MS;          // today not yet met: streak survives from yesterday
-    while (goalMet(dayKey(t))) { n += 1; t -= DAY_MS; }
+    var d = new Date(); d.setHours(0, 0, 0, 0);
+    if (!goalMet(dayKey(d.getTime()))) d.setDate(d.getDate() - 1);
+    while (goalMet(dayKey(d.getTime()))) { n += 1; d.setDate(d.getDate() - 1); }
     return n;
   }
 
@@ -131,7 +138,7 @@
 
   window.Store = {
     get state() { return state; },
-    save: save, addXP: addXP, todayXP: todayXP, streak: streak,
+    save: save, addXP: addXP, todayXP: todayXP, streak: streak, goalMet: goalMet,
     streakIncludesToday: streakIncludesToday, level: level, dayKey: dayKey,
     lessonRecord: lessonRecord, completeLesson: completeLesson, courseProgress: courseProgress,
     addReviewItems: addReviewItems, gradeReview: gradeReview, srsCount: srsCount,

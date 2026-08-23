@@ -596,25 +596,25 @@
     }
     var due = SRS.dueItems(Store.state.srs, Date.now()).length;
 
-    // best streak from history
+    // best streak from history (day keys parse as UTC, so consecutive local days differ by exactly 24h)
     var days = Object.keys(Store.state.xpByDay).sort();
     var best = 0, run = 0, prev = null;
     for (var d = 0; d < days.length; d++) {
-      if (Store.state.xpByDay[days[d]] >= Store.state.settings.dailyGoal) {
+      if (Store.goalMet(days[d])) {
         if (prev && (new Date(days[d]) - new Date(prev)) === 86400000) run += 1; else run = 1;
         best = Math.max(best, run); prev = days[d];
       } else { run = 0; prev = null; }
     }
     best = Math.max(best, st);
 
-    // 12-week heatmap, columns = weeks, rows = weekday
+    // 12-week heatmap, columns = weeks, rows = weekday; calendar stepping keeps DST days aligned
     var today = new Date(); today.setHours(0, 0, 0, 0);
-    var start = new Date(today.getTime() - (7 * 11 + today.getDay()) * 86400000);
+    var start = new Date(today); start.setDate(start.getDate() - (7 * 11 + today.getDay()));
     var heat = '<div class="heat">';
     for (var w = 0; w < 12; w++) {
       heat += '<div class="heat-col">';
       for (var dow = 0; dow < 7; dow++) {
-        var dt = new Date(start.getTime() + (w * 7 + dow) * 86400000);
+        var dt = new Date(start); dt.setDate(start.getDate() + w * 7 + dow);
         if (dt > today) { heat += '<i class="future"></i>'; continue; }
         var xp = Store.state.xpByDay[Store.dayKey(dt.getTime())] || 0;
         var cls = xp === 0 ? '' : xp < Store.state.settings.dailyGoal / 2 ? 'l1' : xp < Store.state.settings.dailyGoal ? 'l2' : 'l3';

@@ -21,7 +21,8 @@
   --good-soft: #1e9e6a1c;
   --bad: #d64550;
   --bad-soft: #d6455019;
-  --gold: #e8a020;
+  --gold: #b3790e;
+  --on-status: #ffffff;
   --shadow: 0 1px 2px #14122008, 0 8px 28px #14122010;
   --shadow-lift: 0 2px 4px #1412200a, 0 14px 44px #1412201c;
   --radius: 18px;
@@ -47,6 +48,7 @@
     --bad: #ff6b74;
     --bad-soft: #ff6b7421;
     --gold: #f5b942;
+    --on-status: #14121f;
     --shadow: 0 1px 2px #00000030, 0 8px 28px #00000038;
     --shadow-lift: 0 2px 4px #00000035, 0 16px 48px #00000055;
   }
@@ -68,6 +70,7 @@
   --bad: #ff6b74;
   --bad-soft: #ff6b7421;
   --gold: #f5b942;
+  --on-status: #14121f;
   --shadow: 0 1px 2px #00000030, 0 8px 28px #00000038;
   --shadow-lift: 0 2px 4px #00000035, 0 16px 48px #00000055;
 }
@@ -162,7 +165,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing:
 .action-art svg { width: 100%; height: auto; }
 .badge {
   position: absolute; top: -8px; right: -6px; min-width: 26px; height: 26px; padding: 0 7px;
-  background: var(--bad); color: #fff; border-radius: 999px;
+  background: var(--bad); color: var(--on-status); border-radius: 999px;
   display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
   box-shadow: var(--shadow);
 }
@@ -322,9 +325,9 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
   background: var(--surface); border: 1px solid var(--line); color: var(--mut);
 }
 .choice.right { border-color: var(--good); background: var(--good-soft); }
-.choice.right .key { background: var(--good); border-color: var(--good); color: #fff; }
+.choice.right .key { background: var(--good); border-color: var(--good); color: var(--on-status); }
 .choice.wrong { border-color: var(--bad); background: var(--bad-soft); animation: shake .35s; }
-.choice.wrong .key { background: var(--bad); border-color: var(--bad); color: #fff; }
+.choice.wrong .key { background: var(--bad); border-color: var(--bad); color: var(--on-status); }
 .choice:disabled { cursor: default; opacity: .92; }
 @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 
