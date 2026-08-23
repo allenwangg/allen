@@ -57,16 +57,16 @@
       } else if (g === 2) {
         if (item.step >= 1) {
           item.state = 'review';
-          item.ivl = 1;
-          item.due = now + DAY_MS;
+          item.ivl = Math.max(1, item.ivl);   // a lapsed card keeps its halved interval
+          item.due = now + item.ivl * DAY_MS;
         } else {
           item.step = 1;
           item.due = now + 60 * MIN_MS;
         }
       } else {
         item.state = 'review';
-        item.ivl = 3;
-        item.due = now + 3 * DAY_MS;
+        item.ivl = Math.max(3, item.ivl);
+        item.due = now + item.ivl * DAY_MS;
       }
     }
     return item;
@@ -89,8 +89,8 @@
       var easyIvl = clampIvl(item.ivl * (item.ease + 0.15) * 1.35);
       return ['10m', fmtIvl(hardIvl * DAY_MS), fmtIvl(goodIvl * DAY_MS), fmtIvl(easyIvl * DAY_MS)];
     }
-    var good = item.step >= 1 ? '1d' : '1h';
-    return ['10m', '30m', good, '3d'];
+    var good = item.step >= 1 ? fmtIvl(Math.max(1, item.ivl) * DAY_MS) : '1h';
+    return ['10m', '30m', good, fmtIvl(Math.max(3, item.ivl) * DAY_MS)];
   }
 
   function dueItems(items, now) {
