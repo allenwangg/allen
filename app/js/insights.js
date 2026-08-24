@@ -24,7 +24,7 @@
  *    logging", not a fabricated revelation.
  */
 
-import { DRIVER_FIELDS, OUTCOME_FIELDS, LOWER_IS_BETTER, FIELDS, addDays } from './model.js';
+import { DRIVER_FIELDS, OUTCOME_FIELDS, LOWER_IS_BETTER, FIELDS, addDays, daysBetween } from './model.js';
 
 export const MIN_PAIRS = 21;          // below this, we refuse to report anything
 export const DEFAULT_LAGS = [0, 1, 2];
@@ -264,7 +264,8 @@ const round2 = (x) => Math.round(x * 100) / 100;
  * is the cardinal sin of this category.
  */
 export function alignedPairs(entriesByDate, driver, outcome, lag) {
-  const xs = [], ys = [];
+  const xs = [], ys = [], times = [];
+  let origin = null;
   for (const [date, e] of entriesByDate) {
     const x = e[driver];
     if (x == null) continue;
@@ -272,9 +273,49 @@ export function alignedPairs(entriesByDate, driver, outcome, lag) {
     if (!target) continue;
     const y = target[outcome];
     if (y == null) continue;
+    if (origin === null) origin = date;
     xs.push(x); ys.push(y);
+    // Real elapsed days, not array position, so a gap is not silently squeezed
+    // out of the time axis.
+    times.push(daysBetween(origin, date));
   }
-  return { xs, ys };
+  return { xs, ys, times };
+}
+
+/**
+ * Remove a linear time trend from a series.
+ *
+ * WHY THIS EXISTS. This is the spurious-regression problem (Yule, 1926) and it
+ * is not academic here — it is the single most likely way this feature would
+ * mislead a real user. Anyone who starts taking their health seriously improves
+ * many habits at once: protein goes up, fiber goes up, ultra-processed food
+ * goes down, and resting heart rate drifts down over the same months. Every one
+ * of those pairs is then strongly correlated, and every one of those
+ * correlations is driven by nothing but the shared calendar.
+ *
+ * Validation on 120 days of synthetic data with exactly that structure produced
+ * twelve confident findings, of which only one reflected a genuine day-to-day
+ * relationship. The rest were the time trend showing up twelve times.
+ *
+ * Removing the least-squares line in time from both series before correlating
+ * leaves the day-to-day covariation, which is the thing the user can actually
+ * act on: "when I drink, the NEXT day is worse" survives detrending, while
+ * "my protein and my HRV both improved over four months" does not.
+ *
+ * @param values  the series
+ * @param times   day offsets matching values (not indices, so gaps count)
+ */
+export function detrend(values, times) {
+  const n = values.length;
+  if (n < 4) return values.slice();
+  const mt = times.reduce((a, b) => a + b, 0) / n;
+  const mv = values.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (times[i] - mt) * (values[i] - mv); den += (times[i] - mt) ** 2; }
+  if (den === 0) return values.slice();
+  const slope = num / den;
+  const intercept = mv - slope * mt;
+  return values.map((v, i) => v - (slope * times[i] + intercept));
 }
 
 /** Guard against a "correlation" driven by three outlier days on a flat series. */
@@ -308,6 +349,7 @@ export function discover(entries, opts = {}) {
     q = FDR_Q,
     minPairs = MIN_PAIRS,
     limit = 12,
+    detrend: detrend_enabled = true,
   } = opts;
 
   const sorted = [...entries].sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -333,14 +375,30 @@ export function discover(entries, opts = {}) {
         // a bad day makes you rate stress high AND mood low in one sitting.
         if (lag === 0 && isSelfReport(driver) && isSelfReport(outcome)) continue;
 
-        const { xs, ys } = alignedPairs(byDate, driver, outcome, lag);
+        const { xs, ys, times } = alignedPairs(byDate, driver, outcome, lag);
         if (xs.length < minPairs) continue;
         if (!hasUsableVariance(xs) || !hasUsableVariance(ys)) continue;
 
-        const r = spearman(xs, ys);
+        const rRaw = spearman(xs, ys);
+        if (rRaw == null || !Number.isFinite(rRaw)) continue;
+
+        // Correlate the detrended series. Both are kept: `r` is what we report
+        // and test, `rRaw` is retained so the UI can tell a user when a
+        // relationship is mostly a long-term trend rather than a daily effect.
+        const dx = detrend(xs, times);
+        const dy = detrend(ys, times);
+        const r = detrend_enabled ? spearman(dx, dy) : rRaw;
         if (r == null || !Number.isFinite(r)) continue;
 
-        raw.push({ driver, outcome, lag, r: round2(r), n: xs.length, xs, ys });
+        raw.push({
+          driver, outcome, lag,
+          r: round2(r), rRaw: round2(rRaw),
+          trendDriven: Math.abs(rRaw) - Math.abs(r) > 0.25,
+          n: xs.length,
+          xs: detrend_enabled ? dx : xs,
+          ys: detrend_enabled ? dy : ys,
+          rawXs: xs, rawYs: ys,
+        });
       }
     }
   }
@@ -358,13 +416,15 @@ export function discover(entries, opts = {}) {
       outcome: c.outcome,
       lag: c.lag,
       r: c.r,
+      rRaw: c.rRaw,
+      trendDriven: c.trendDriven,
       n: c.n,
       p: round4(pValues[i]),
       pAdjusted: round4(adjusted[i]),
       ci: correlationCI(c.r, c.n),
       passesFDR: passing.has(i),
       effect: effectSize(c.r),
-      practical: practicalEffect(c),
+      practical: practicalEffect({ xs: c.rawXs, ys: c.rawYs }),
     }))
     .filter((f) => f.passesFDR && Math.abs(f.r) >= 0.20)
     .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));

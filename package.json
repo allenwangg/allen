@@ -1,0 +1,15 @@
+{
+  "name": "vitalarc",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VitalArc — a local-first healthspan tracker with a statistically honest personal insight engine.",
+  "scripts": {
+    "test": "node tests/run.mjs",
+    "serve": "node scripts/serve.mjs",
+    "e2e": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

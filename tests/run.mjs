@@ -5,7 +5,7 @@
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, studentTTwoSided, betai } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -288,6 +288,84 @@ t('RECOVERS a planted effect', () => {
   ok(hit, 'planted alcohol->next-day-energy effect was not recovered');
   ok(hit.r < 0, 'direction must be negative');
   ok(hit.lag === 1, 'should identify lag 1, got ' + hit.lag);
+});
+
+t('detrend removes a linear time trend', () => {
+  const times = Array.from({ length: 50 }, (_, i) => i);
+  const trended = times.map((t) => 10 + 0.5 * t);
+  const out = detrend(trended, times);
+  for (const v of out) near(v, 0, 1e-9, 'pure trend must detrend to zero');
+});
+t('detrend preserves residual structure', () => {
+  // A least-squares line absorbs a small share of any finite alternating
+  // signal (the alternation is not exactly orthogonal to time at finite n), so
+  // the residual comes back near 3 rather than exactly 3. What matters is that
+  // the structure survives essentially intact, not that it is untouched.
+  const times = Array.from({ length: 50 }, (_, i) => i);
+  const vals = times.map((t) => 10 + 0.5 * t + (t % 2 ? 3 : -3));
+  const out = detrend(vals, times);
+  for (const v of out) ok(Math.abs(Math.abs(v) - 3) < 0.35, 'alternating residual must survive, got ' + v);
+  // and the sign pattern must be preserved exactly
+  for (let i = 0; i < out.length; i++) ok((out[i] > 0) === (i % 2 === 1), 'sign pattern lost at ' + i);
+});
+t('detrend is a no-op on a flat-in-time series', () => {
+  const times = Array.from({ length: 40 }, (_, i) => i);
+  const vals = times.map((t) => (t % 3) - 1);
+  const out = detrend(vals, times);
+  const before = spearman(vals, vals.map((v, i) => v + (i % 5)));
+  const after = spearman(out, detrend(vals.map((v, i) => v + (i % 5)), times));
+  ok(Math.abs(before - after) < 0.12, 'untrended data should be barely affected');
+});
+t('detrend tolerates short input', () => { eq(detrend([1, 2], [0, 1]).length, 2); });
+t('studentT matches known critical values', () => {
+  near(studentTTwoSided(2.776, 4), 0.05, 1e-3);
+  near(studentTTwoSided(2.228, 10), 0.05, 1e-3);
+  near(studentTTwoSided(0, 10), 1, 1e-9);
+});
+t('betai is monotone', () => {
+  let prev = -1;
+  for (let x = 0; x <= 1; x += 0.05) { const v = betai(2, 3, x); ok(v >= prev - 1e-12); prev = v; }
+});
+
+t('DEFEATS spurious correlations from a shared time trend', () => {
+  // The failure mode this guards against: someone starts a health kick, so
+  // protein/fiber/produce all rise while resting HR falls, over months. Every
+  // pair correlates strongly and every correlation is the calendar, not a
+  // daily effect. Only the planted day-to-day effect should survive.
+  const es = synth(120, 2024, (e, i, r) => {
+    const p = i / 119;
+    e.sleepHours = 6.2 + p * 1.0 + r() * 0.9;
+    e.steps = Math.round(4200 + p * 3500 + r() * 4000);
+    e.exerciseMinutes = (i % 2 === 0) ? Math.round(15 + p * 30 + r() * 20) : Math.round(r() * 10);
+    e.proteinGrams = Math.round(78 + p * 45 + r() * 30);
+    e.produceServings = Math.round(1.5 + p * 2.5 + r() * 2);
+    e.ultraProcessed = Math.max(0, Math.round(4.5 - p * 2.5 + r() * 2));
+    e.fiberGrams = Math.round(16 + p * 10 + r() * 10);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.sunlightMinutes = Math.round(12 + p * 28 + r() * 30);
+    e.stress = Math.max(1, Math.min(5, Math.round(3.6 - p * 0.9 + r() * 1.4)));
+    e.mood = Math.max(1, Math.min(5, Math.round(2.9 + p * 1.1 + r() * 1.2)));
+    e.sleepQuality = Math.max(1, Math.min(5, Math.round(2.4 + p * 1.4 + r() * 1.2)));
+    e.restingHR = Math.round(66 - p * 6 + r() * 5);
+    e.hrv = Math.round(36 + p * 14 + r() * 10);
+    e.energy = 3;
+  });
+  const rn = mulberry32(777);
+  for (let i = 1; i < es.length; i++) {
+    es[i].energy = Math.max(1, Math.min(5, Math.round(4.5 - es[i - 1].alcoholUnits * 0.55 + (rn() - 0.5) * 1.8)));
+  }
+
+  const withTrend = discover(es, { detrend: false });
+  const detrended = discover(es, { detrend: true });
+  const real = (f) => f.driver === 'alcoholUnits' && f.outcome === 'energy';
+
+  console.log(`\n  [confound] trend-confounded data: ${withTrend.findings.length} findings raw -> ${detrended.findings.length} after detrending`);
+
+  ok(withTrend.findings.length >= 8, 'setup check: raw analysis should be flooded with spurious hits');
+  ok(detrended.findings.some(real), 'the genuine day-to-day effect must survive detrending');
+  ok(detrended.findings.length <= 3, `too many spurious findings survived: ${detrended.findings.length}`);
+  const survivor = detrended.findings.find(real);
+  ok(Math.abs(survivor.r) > 0.6, 'genuine effect should be barely attenuated, got r=' + survivor.r);
 });
 
 t('phrasing states the right verdict', () => {
