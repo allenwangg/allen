@@ -304,3 +304,103 @@ function roundQty(q, unit) {
   if (countable.includes(unit)) return Math.max(1, Math.ceil(q - 1e-9));
   return Math.round(q * 100) / 100;
 }
+
+/* ==================================================== user price book ===== */
+
+/**
+ * The shipped catalog is a starting point, not the truth. A contractor's real
+ * costs differ by market, by supplier, and by month, and a price book they
+ * cannot correct is one they stop trusting — at which point the whole tool
+ * degrades into a calculator.
+ *
+ * Overrides are stored separately from the shipped catalog rather than mutating
+ * it, so that a future update to the shipped costs never silently overwrites a
+ * number someone deliberately set.
+ *
+ * @typedef {object} PriceBookOverride
+ * @property {number} [unitCost]  the user's own cost
+ * @property {boolean} [hidden]   removed from the picker
+ * @property {boolean} [custom]   an item the user created; carries full fields
+ */
+
+/** Merge shipped items with user overrides and custom additions. */
+export function effectivePriceBook(overrides = {}) {
+  const out = [];
+  for (const item of PRICE_BOOK) {
+    const ov = overrides[item.sku];
+    if (ov?.hidden) continue;
+    out.push(ov ? { ...item, ...ov, edited: ov.unitCost !== undefined && ov.unitCost !== item.unitCost } : item);
+  }
+  for (const [sku, ov] of Object.entries(overrides)) {
+    if (!ov?.custom || ov.hidden) continue;
+    out.push({
+      sku,
+      description: ov.description || 'Custom item',
+      trade: ov.trade || 'Custom',
+      category: ov.category || 'material',
+      unit: ov.unit || 'ea',
+      unitCost: Number(ov.unitCost) || 0,
+      custom: true,
+    });
+  }
+  return out;
+}
+
+/** Resolve one sku against the user's overrides. */
+export function effectiveItem(sku, overrides = {}) {
+  return effectivePriceBook(overrides).find((i) => i.sku === sku) || null;
+}
+
+/** Trades present in the effective book, including any the user invented. */
+export function effectiveTrades(overrides = {}) {
+  return [...new Set(effectivePriceBook(overrides).map((i) => i.trade))].sort();
+}
+
+/**
+ * Search over the effective book. Same ranking as searchPriceBook: whole-word
+ * prefix hits outrank mid-string hits, so typing "til" surfaces Tile before
+ * Ventilation.
+ */
+export function searchEffective(query, { overrides = {}, trade = null, limit = 60 } = {}) {
+  const q = String(query || '').trim().toLowerCase();
+  let rows = effectivePriceBook(overrides);
+  if (trade) rows = rows.filter((i) => i.trade === trade);
+  if (!q) return rows.slice(0, limit);
+
+  const scored = [];
+  for (const item of rows) {
+    const hay = `${item.description} ${item.sku} ${item.trade}`.toLowerCase();
+    const idx = hay.indexOf(q);
+    if (idx === -1) continue;
+    const wordStart = idx === 0 || /[\s\-\/]/.test(hay[idx - 1]);
+    scored.push({ item, score: (wordStart ? 0 : 100) + idx });
+  }
+  scored.sort((a, b) => a.score - b.score || a.item.description.localeCompare(b.item.description));
+  return scored.slice(0, limit).map((s) => s.item);
+}
+
+/** Expand an assembly using the user's own costs where they have set them. */
+export function expandAssemblyWith(assembly, driverQty, overrides = {}) {
+  const qty = Number(driverQty) || 0;
+  return assembly.items.map((ref) => {
+    // A hidden item means "I don't sell this", so an assembly must not quietly
+    // insert one either. Only fall back to the shipped catalog when the sku is
+    // genuinely unknown, never to resurrect something deliberately hidden.
+    if (overrides[ref.sku]?.hidden) return null;
+    const book = effectiveItem(ref.sku, overrides) || findSku(ref.sku);
+    if (!book) return null;
+    let q = qty * ref.factor * (book.waste || 1);
+    if (ref.min !== undefined) q = Math.max(q, ref.min);
+    q = roundQty(q, book.unit);
+    return {
+      description: book.description,
+      category: book.category,
+      unit: book.unit,
+      qty: q,
+      unitCost: book.unitCost,
+      markup: book.category === 'other' ? 0 : null,
+      sku: book.sku,
+      trade: book.trade,
+    };
+  }).filter(Boolean);
+}

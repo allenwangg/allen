@@ -488,6 +488,27 @@ dialog > footer {
 .pb-row .desc { font-weight: 500; }
 .pb-row .meta { font-size: 11.5px; color: var(--text-3); }
 
+/* Inline cost editing. The input must read as editable without turning the
+   whole row into a form — the row is still a click target for adding. */
+.pb-cost { display: flex; align-items: center; gap: 4px; }
+.pb-cost-input {
+  width: 78px;
+  padding: 3px 6px;
+  text-align: right;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--surface-3);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.pb-cost-input:hover { border-color: var(--border-strong); }
+.pb-cost-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
 .assembly-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .assembly-card {
   text-align: left; cursor: pointer;

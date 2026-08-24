@@ -139,6 +139,53 @@ console.log('\n  estimator');
   await page.waitForTimeout(250);
   check('work survives a reload', (await page.locator('.items tbody tr').count()) > 10);
 
+  /* --- price book editing: the contractor's own costs --- */
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(150);
+  await page.keyboard.press('k');
+  await page.waitForTimeout(200);
+  await page.locator('#pbQuery').fill('lead carpenter');
+  await page.waitForTimeout(150);
+  const costBox = page.locator('.pb-cost-input').first();
+  check('price book costs are editable inline', (await costBox.inputValue()) === '58');
+
+  await costBox.fill('72');
+  await page.waitForTimeout(250);
+  check('an edited cost is marked as yours',
+    /edited/.test(await page.locator('.pb-row').first().textContent()));
+
+  // Editing a cost must not add the line to the estimate.
+  const dlgStillOpen = await page.locator('#dlgPriceBook').isVisible();
+  check('editing a cost does not add the line', dlgStillOpen);
+
+  // The new cost must flow into assemblies.
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  await page.locator('#btnAssembly').click();
+  await page.waitForTimeout(200);
+  const nBefore = await page.locator('.items tbody tr').count();
+  await page.locator('[data-asm="asm-roof"]').click();
+  await page.waitForTimeout(300);
+  const leadCost = await page.locator('.items tbody tr').nth(nBefore)
+    .locator('..').locator('[data-f="unitCost"]').first().inputValue().catch(() => null);
+  const anyLead = await page.locator('.items tbody tr').evaluateAll((rows) =>
+    rows.some((r) => r.querySelector('[data-f="description"]')?.value === 'Lead carpenter'
+                  && r.querySelector('[data-f="unitCost"]')?.value === '72'));
+  check('an edited cost flows into new assemblies', anyLead,
+    '(assembly should have used the 72 cost, not the shipped 58)');
+
+  // And it must survive a reload.
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(300);
+  await page.keyboard.press('k');
+  await page.waitForTimeout(250);
+  await page.locator('#pbQuery').fill('lead carpenter');
+  await page.waitForTimeout(150);
+  check('edited costs persist across a reload',
+    (await page.locator('.pb-cost-input').first().inputValue()) === '72');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(150);
+
   await page.locator('.tab[data-tab="jobs"]').click();
   await page.waitForTimeout(200);
   check('jobs dashboard shows pipeline stats', (await page.locator('.stat').count()) === 4);

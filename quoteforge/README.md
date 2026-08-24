@@ -16,7 +16,10 @@ Open `index.html` in a browser. There is no build step, no dependencies, and no 
 
 - **Assemblies.** One driving quantity — "45 square feet of bathroom" — expands into a
   full coordinated scope with waste factors applied. 16 lines instead of a blank page.
-- **A 60-item price book** across 21 trades, holding *your cost*, never a sell price.
+- **A 60-item price book** across 21 trades, holding *your cost*, never a sell price —
+  and fully editable. Set your own numbers, hide what you don't sell, add your own items.
+  Overrides layer over the shipped catalog rather than replacing it, so a future update
+  to the defaults never silently overwrites a cost someone deliberately set.
 - **A live profit panel** showing real profit, margin against target, break-even, and
   the exact dollar amount you can discount before the job stops clearing your floor.
 - **A margin coach** that says in plain language what is wrong with the number and
@@ -40,7 +43,7 @@ Four modules, no framework, no build:
 | File | Responsibility |
 |---|---|
 | `js/pricing.js` | All money math. Pure functions, no DOM, no state. |
-| `js/pricebook.js` | The starter catalog and assembly expansion. Pure data plus search. |
+| `js/pricebook.js` | The starter catalog, the user-override layer, and assembly expansion. |
 | `js/store.js` | State, persistence, undo/redo, import/export, migration. |
 | `js/app.js` | UI wiring. Renders from state; owns no truth of its own. |
 | `js/proposal.js` | The client-facing document, as a pure function of state. |
@@ -77,7 +80,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-64 unit assertions with no test framework and no install step, plus 44 browser
+ unit assertions with no test framework and no install step, plus 49 browser
 assertions in `test/browser.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
@@ -87,7 +90,8 @@ focus across re-renders, reprice-to-target landing on the target, undo across an
 assembly insert, persistence across reload, signature capture producing real pixels,
 print producing a clean multi-page PDF, and — importantly — the proposal never leaking
 cost, markup, margin, or a "Subcontractor" heading to the client. It also checks that
-neither page scrolls sideways on a 390px phone.
+neither page scrolls sideways on a 390px phone, and that an edited price book cost
+flows into assemblies and survives a reload.
 
 ### Two bugs the tests caught
 

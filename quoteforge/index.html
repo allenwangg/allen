@@ -297,13 +297,14 @@
   <header>
     <h2>Price book</h2>
     <span class="spacer"></span>
-    <span class="tiny faint">Costs are yours to edit — markup is applied automatically</span>
+    <span class="tiny faint" id="pbEditNote"></span>
     <button class="btn sm ghost" data-close>✕</button>
   </header>
   <div class="body">
     <div class="pb-search">
       <input id="pbQuery" placeholder="Search: tile, electrician, dumpster…" autocomplete="off">
       <select id="pbTrade"><option value="">All trades</option></select>
+      <button class="btn sm" id="btnPbCustom" title="Add an item of your own">+ Mine</button>
     </div>
     <div class="pb-list" id="pbList"></div>
   </div>

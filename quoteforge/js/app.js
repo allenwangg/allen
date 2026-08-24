@@ -15,7 +15,10 @@ import {
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
-import { PRICE_BOOK, ASSEMBLIES, UNITS, UNIT_LABELS, searchPriceBook, trades, expandAssembly } from './pricebook.js';
+import {
+  ASSEMBLIES, UNITS, searchEffective, effectiveItem,
+  effectiveTrades, expandAssemblyWith,
+} from './pricebook.js';
 import { renderProposal, proposalAsText, esc } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -82,7 +85,7 @@ function seedFirstRun() {
     client: { name: 'Sample Client', email: '', phone: '', address: '' },
   });
   const asm = ASSEMBLIES[0];
-  store.addItems(expandAssembly(asm, asm.defaultDriver));
+  store.addItems(expandAssemblyWith(asm, asm.defaultDriver, store.state.priceBookOverrides));
   store.addItems([{
     description: 'Heated floor mat, installed',
     category: 'subcontractor', unit: 'sf', qty: 32, unitCost: 18.5,
@@ -596,14 +599,27 @@ function openPriceBook() {
   $('#dlgPriceBook').showModal();
   const q = $('#pbQuery');
   q.value = '';
+  renderTradeFilter();
   renderPriceBookList();
   requestAnimationFrame(() => q.focus());
 }
 
+function renderTradeFilter() {
+  const sel = $('#pbTrade');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All trades</option>'
+    + effectiveTrades(store.state.priceBookOverrides)
+      .map((t) => `<option value="${esc(t)}"${t === cur ? ' selected' : ''}>${esc(t)}</option>`).join('');
+}
+
 function wirePriceBook() {
   $('#btnPriceBook').onclick = openPriceBook;
-  $('#pbTrade').innerHTML = '<option value="">All trades</option>'
-    + trades().map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('#btnPbCustom').onclick = () => {
+    if (!$('#pbQuery').value.trim()) {
+      $('#pbQuery').value = 'New item';
+    }
+    addCustomFromQuery();
+  };
   $('#pbQuery').addEventListener('input', renderPriceBookList);
   $('#pbTrade').addEventListener('change', renderPriceBookList);
 
@@ -617,42 +633,146 @@ function wirePriceBook() {
 }
 
 function renderPriceBookList() {
-  const rows = searchPriceBook($('#pbQuery').value, { trade: $('#pbTrade').value || null });
+  const overrides = store.state.priceBookOverrides;
+  const rows = searchEffective($('#pbQuery').value, {
+    overrides, trade: $('#pbTrade').value || null,
+  });
   const list = $('#pbList');
+
+  const edits = store.priceBookEditCount();
+  $('#pbEditNote').textContent = edits
+    ? `${edits} cost${edits === 1 ? '' : 's'} set to your own numbers.`
+    : 'Costs are national averages — click one to set your own.';
+
   if (!rows.length) {
-    list.innerHTML = '<p class="muted tiny">No matches. Add a blank line and type it in — it will price the same.</p>';
-    return;
+    list.innerHTML = `<p class="muted tiny">No matches.
+      <button class="btn sm" data-newcustom>Create "${esc($('#pbQuery').value)}" as your own item</button></p>`;
+  } else {
+    list.innerHTML = rows.map((i) => `
+      <div class="pb-row" data-sku="${esc(i.sku)}" tabindex="0" role="button">
+        <span>
+          <span class="desc">${esc(i.description)}</span>
+          <span class="meta"> · ${esc(i.trade)}${i.custom ? ' · yours' : ''}${i.edited ? ' · edited' : ''}</span>
+        </span>
+        <span class="cat-chip">${CATEGORY_LABELS[i.category]}</span>
+        <span class="pb-cost">
+          <input class="num pb-cost-input" type="number" step="0.01" min="0"
+                 value="${i.unitCost}" data-cost="${esc(i.sku)}"
+                 title="Your cost per ${esc(i.unit)}">
+          <span class="faint tiny">/${esc(i.unit)}</span>
+          ${i.edited || i.custom
+            ? `<button class="btn sm icon ghost" data-pbreset="${esc(i.sku)}" title="${i.custom ? 'Delete this item' : 'Restore the default cost'}">↺</button>`
+            : `<button class="btn sm icon ghost" data-pbhide="${esc(i.sku)}" title="Hide — I do not sell this">−</button>`}
+        </span>
+      </div>`).join('');
   }
-  list.innerHTML = rows.map((i) => `
-    <button class="pb-row" data-sku="${esc(i.sku)}">
-      <span>
-        <span class="desc">${esc(i.description)}</span>
-        <span class="meta"> · ${esc(i.trade)}${i.note ? ` · ${esc(i.note)}` : ''}</span>
-      </span>
-      <span class="cat-chip">${CATEGORY_LABELS[i.category]}</span>
-      <span class="num">${formatMoney(Math.round(i.unitCost * 100))}<span class="faint">/${esc(i.unit)}</span></span>
-    </button>`).join('');
+
+  // Editing a cost must not add the line; only the description area does that.
+  // The row is patched in place rather than re-rendered, because re-rendering
+  // the list under an active cursor would eat the keystroke — the same trap
+  // the item grid has to work around.
+  list.oninput = (e) => {
+    const sku = e.target.dataset.cost;
+    if (!sku) return;
+    store.setPriceBookCost(sku, e.target.value);
+    markRowEdited(e.target.closest('.pb-row'), sku);
+  };
 
   list.onclick = (e) => {
+    if (e.target.closest('[data-newcustom]')) { addCustomFromQuery(); return; }
+
+    const reset = e.target.closest('[data-pbreset]')?.dataset.pbreset;
+    if (reset) { store.resetPriceBookItem(reset); renderPriceBookList(); return; }
+
+    const hide = e.target.closest('[data-pbhide]')?.dataset.pbhide;
+    if (hide) {
+      store.hidePriceBookItem(hide);
+      renderPriceBookList();
+      toast('Hidden from your price book.', { undo: true });
+      return;
+    }
+
+    // A click inside the cost editor is an edit, not an add.
+    if (e.target.closest('.pb-cost')) return;
+
     const sku = e.target.closest('[data-sku]')?.dataset.sku;
-    if (!sku) return;
-    const book = PRICE_BOOK.find((i) => i.sku === sku);
-    const item = store.addItem({
-      description: book.description,
-      category: book.category,
-      unit: book.unit,
-      qty: 1,
-      unitCost: book.unitCost,
-      markup: book.category === 'other' ? 0 : null,
-      sku: book.sku,
-      trade: book.trade,
-    });
-    toast(`Added ${book.description}.`, { undo: true });
-    $('#dlgPriceBook').close();
-    requestAnimationFrame(() => {
-      $(`tr[data-id="${CSS.escape(item.id)}"] [data-f="qty"]`)?.select();
-    });
+    if (sku) addFromPriceBook(sku);
   };
+
+  list.onkeydown = (e) => {
+    if (e.key !== 'Enter' || e.target.dataset.cost) return;
+    const sku = e.target.closest('[data-sku]')?.dataset.sku;
+    if (sku) { e.preventDefault(); addFromPriceBook(sku); }
+  };
+}
+
+/**
+ * Reflect an edit on the row without rebuilding the list: refresh the meta
+ * label, swap the hide button for a restore button, and update the counter.
+ */
+function markRowEdited(row, sku) {
+  if (!row) return;
+  const item = effectiveItem(sku, store.state.priceBookOverrides);
+  if (!item) return;
+
+  const meta = row.querySelector('.meta');
+  if (meta) {
+    meta.textContent = ` · ${item.trade}${item.custom ? ' · yours' : ''}${item.edited ? ' · edited' : ''}`;
+  }
+
+  const btn = row.querySelector('[data-pbhide], [data-pbreset]');
+  if (btn) {
+    const shouldReset = item.edited || item.custom;
+    const isReset = btn.hasAttribute('data-pbreset');
+    if (shouldReset !== isReset) {
+      btn.removeAttribute(isReset ? 'data-pbreset' : 'data-pbhide');
+      btn.setAttribute(shouldReset ? 'data-pbreset' : 'data-pbhide', sku);
+      btn.textContent = shouldReset ? '↺' : '−';
+      btn.title = shouldReset
+        ? (item.custom ? 'Delete this item' : 'Restore the default cost')
+        : 'Hide — I do not sell this';
+    }
+  }
+
+  const edits = store.priceBookEditCount();
+  $('#pbEditNote').textContent = edits
+    ? `${edits} cost${edits === 1 ? '' : 's'} set to your own numbers.`
+    : 'Costs are national averages — click one to set your own.';
+}
+
+function addFromPriceBook(sku) {
+  const book = effectiveItem(sku, store.state.priceBookOverrides);
+  if (!book) return;
+  const item = store.addItem({
+    description: book.description,
+    category: book.category,
+    unit: book.unit,
+    qty: 1,
+    unitCost: book.unitCost,
+    markup: book.category === 'other' ? 0 : null,
+    sku: book.sku,
+    trade: book.trade,
+  });
+  toast(`Added ${book.description}.`, { undo: true });
+  $('#dlgPriceBook').close();
+  requestAnimationFrame(() => {
+    $(`tr[data-id="${CSS.escape(item.id)}"] [data-f="qty"]`)?.select();
+  });
+}
+
+/** Turn whatever the user just searched for into an item of their own. */
+function addCustomFromQuery() {
+  const description = $('#pbQuery').value.trim();
+  if (!description) return;
+  const sku = store.addCustomPriceBookItem({ description, unitCost: 0 });
+  renderTradeFilter();
+  renderPriceBookList();
+  requestAnimationFrame(() => {
+    const el = $(`[data-cost="${CSS.escape(sku)}"]`);
+    el?.focus();
+    el?.select();
+  });
+  toast(`Added "${description}" to your price book — set its cost.`);
 }
 
 /* ------------------------------------------------------------ assemblies -- */
@@ -681,7 +801,7 @@ function renderAssemblies() {
     if (!id) return;
     const asm = ASSEMBLIES.find((a) => a.id === id);
     const qty = Number($(`#asm-${CSS.escape(asm.id)}`).value) || asm.defaultDriver;
-    const items = expandAssembly(asm, qty);
+    const items = expandAssemblyWith(asm, qty, store.state.priceBookOverrides);
     store.addItems(items);
     $('#dlgAssembly').close();
     const after = priceEstimate(store.active(), store.state.settings);

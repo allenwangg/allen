@@ -508,3 +508,63 @@ function migrateEstimate(raw) {
 }
 
 export { STORAGE_KEY, SCHEMA_VERSION };
+
+/* ------------------------------------------------- price book overrides --- */
+
+/**
+ * The user's own costs, layered over the shipped catalog. Kept on the Store
+ * rather than in pricebook.js so that persistence, undo, and export all apply
+ * to them exactly like any other edit.
+ */
+Object.assign(Store.prototype, {
+  /** Set the user's cost for a shipped or custom sku. */
+  setPriceBookCost(sku, unitCost) {
+    this.update((s) => {
+      const cur = s.priceBookOverrides[sku] || {};
+      s.priceBookOverrides[sku] = { ...cur, unitCost: Number(unitCost) || 0 };
+    }, { label: `pb-${sku}`, coalesce: true });
+  },
+
+  /** Drop an override so the shipped cost applies again. */
+  resetPriceBookItem(sku) {
+    this.update((s) => {
+      const ov = s.priceBookOverrides[sku];
+      if (!ov) return;
+      if (ov.custom) delete s.priceBookOverrides[sku];
+      else {
+        const { unitCost, ...rest } = ov;
+        if (Object.keys(rest).length) s.priceBookOverrides[sku] = rest;
+        else delete s.priceBookOverrides[sku];
+      }
+    }, { label: 'pb-reset' });
+  },
+
+  /** Hide a shipped item the user never sells. */
+  hidePriceBookItem(sku) {
+    this.update((s) => {
+      s.priceBookOverrides[sku] = { ...(s.priceBookOverrides[sku] || {}), hidden: true };
+    }, { label: 'pb-hide' });
+  },
+
+  /** Add an item of the user's own. */
+  addCustomPriceBookItem(item) {
+    const sku = `USR-${uid('x').slice(2, 10).toUpperCase()}`;
+    this.update((s) => {
+      s.priceBookOverrides[sku] = {
+        custom: true,
+        description: item.description || 'Custom item',
+        trade: item.trade || 'Custom',
+        category: item.category || 'material',
+        unit: item.unit || 'ea',
+        unitCost: Number(item.unitCost) || 0,
+      };
+    }, { label: 'pb-add' });
+    return sku;
+  },
+
+  /** How many shipped costs the user has corrected — drives a nudge in the UI. */
+  priceBookEditCount() {
+    return Object.values(this.state.priceBookOverrides || {})
+      .filter((o) => o && !o.custom && o.unitCost !== undefined).length;
+  },
+});
