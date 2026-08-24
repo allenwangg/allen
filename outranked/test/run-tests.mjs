@@ -157,6 +157,72 @@ await test("XSS in listing name is escaped", async () => {
   assert(!pwned, "XSS executed");
 });
 
+await test("demo ribbon is shown until a payment link is configured", async () => {
+  assert(await page.locator("#demoRibbon.show").isVisible(), "ribbon hidden in demo mode");
+});
+
+await test("brag share bar appears after a bid with rank and amount in the tweet", async () => {
+  const href = await page.locator("#bragBtn").getAttribute("href");
+  assert(href.startsWith("https://twitter.com/intent/tweet?text="), "not a tweet intent");
+  const text = decodeURIComponent(href.split("text=")[1]);
+  assert(text.includes("$10") && text.includes("OUTRANKED"), `bad brag text: ${text}`);
+  assert(await page.locator("#sharebar.show").isVisible(), "share bar not shown");
+});
+
+await test("crown card carries a dare-to-dethrone tweet intent", async () => {
+  const href = await page.locator("#dareLink").getAttribute("href");
+  const text = decodeURIComponent(href.split("text=")[1]);
+  assert(text.includes("#1 on OUTRANKED") && text.includes("$"), `bad dare text: ${text}`);
+});
+
+await test("with a Stripe link configured, bidding opens checkout with client_reference_id", async () => {
+  const opened = [];
+  await page.exposeFunction("__recordOpen", u => opened.push(u));
+  await page.evaluate(() => {
+    CONFIG.STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_abc123";
+    window.open = u => { window.__recordOpen(u); return null; };
+  });
+  await page.click("[data-open-bid]");
+  await page.fill("#fName", "RealMoneyCo");
+  await page.fill("#fAmt", "50");
+  await page.click("#payBtn");
+  await page.waitForTimeout(200);
+  assert(opened.length === 1, `expected 1 checkout open, got ${opened.length}`);
+  assert(opened[0].startsWith("https://buy.stripe.com/test_abc123?client_reference_id=RealMoneyCo_50_"),
+    `bad checkout URL: ${opened[0]}`);
+  const toastText = await page.locator("#toast").textContent();
+  assert(toastText.includes("Stripe"), "toast missing payment instruction");
+  await page.evaluate(() => { CONFIG.STRIPE_PAYMENT_LINK = ""; });
+});
+
+await test("webhook feed merges as VERIFIED bids, idempotently", async () => {
+  const rocketBefore = await page.evaluate(() => state.entries.find(e => e.name === "TestRocket").total);
+  await page.evaluate(async () => {
+    const feed = [
+      { id: "cs_test_001", ref: "FeedCo_120_abc", amount: 120 },
+      { id: "cs_test_002", ref: "TestRocket_500_def", amount: 500 },
+    ];
+    CONFIG.BOARD_FEED_URL = "stub://board";
+    window.fetch = async () => ({ json: async () => feed });
+    await mergeBoardFeed();
+    await mergeBoardFeed();      // second pass must be a no-op
+  });
+  await page.waitForTimeout(100);
+  const rows = await page.locator(".board .row .nm").allTextContents();
+  const feedCo = rows.find(t => t.includes("FeedCo"));
+  assert(feedCo && feedCo.includes("VERIFIED"), "FeedCo not merged as verified");
+  const totals = await page.evaluate(() => {
+    const s = state.entries;
+    return {
+      feedCo: s.find(e => e.name === "FeedCo").total,
+      rocket: s.find(e => e.name === "TestRocket").total,
+    };
+  });
+  assert(totals.feedCo === 120, `FeedCo should be $120 once, got ${totals.feedCo}`);
+  assert(totals.rocket === rocketBefore + 500, `TestRocket should gain exactly $500 once (${rocketBefore}+500), got ${totals.rocket}`);
+  await page.evaluate(() => { CONFIG.BOARD_FEED_URL = ""; });
+});
+
 await ctx.close();
 
 // ---------- performance benchmark ----------

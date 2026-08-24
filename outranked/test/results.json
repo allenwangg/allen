@@ -55,16 +55,36 @@
     {
       "name": "XSS in listing name is escaped",
       "pass": true
+    },
+    {
+      "name": "demo ribbon is shown until a payment link is configured",
+      "pass": true
+    },
+    {
+      "name": "brag share bar appears after a bid with rank and amount in the tweet",
+      "pass": true
+    },
+    {
+      "name": "crown card carries a dare-to-dethrone tweet intent",
+      "pass": true
+    },
+    {
+      "name": "with a Stripe link configured, bidding opens checkout with client_reference_id",
+      "pass": true
+    },
+    {
+      "name": "webhook feed merges as VERIFIED bids, idempotently",
+      "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 84,
-    "medianDOMContentLoadedms": 54.2,
-    "medianLoadms": 55.5,
+    "medianFCPms": 88,
+    "medianDOMContentLoadedms": 55.5,
+    "medianLoadms": 57.1,
     "totalRequests": 1
   },
   "weight": {
-    "htmlBytes": 27759,
-    "gzipBytes": 9675
+    "htmlBytes": 35934,
+    "gzipBytes": 12103
   }
 }

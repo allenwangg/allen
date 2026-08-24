@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OUTRANKED — pay more, rank higher, stay on top</title>
 <meta name="description" content="The pay-to-rank leaderboard with teeth: live outbid feed, reign timers, auto-defend budgets. Pay more. Rank higher. Stay on top.">
+<meta property="og:title" content="OUTRANKED — pay more, rank higher, stay on top">
+<meta property="og:description" content="A leaderboard where your rank is exactly what you paid for it. Watch the crown change hands in real time — or take it yourself.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://allenwangg.github.io/allen/">
+<meta property="og:image" content="https://allenwangg.github.io/allen/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OUTRANKED — pay more, rank higher, stay on top">
+<meta name="twitter:description" content="A leaderboard where your rank is exactly what you paid for it. Someone is #1 right now. It costs exactly one dollar more than they paid to take it.">
+<meta name="twitter:image" content="https://allenwangg.github.io/allen/og.png">
+<link rel="canonical" href="https://allenwangg.github.io/allen/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
 <style>
 :root{
@@ -102,6 +112,7 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 8
 .who .nm{font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .badge{font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:99px;flex-shrink:0}
 .badge.shield{background:color-mix(in srgb,var(--blue) 18%,transparent);color:var(--blue)}
+.badge.ok{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
 .badge.hot{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}
 .who .url{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .spark{width:84px;height:26px;flex-shrink:0}
@@ -146,6 +157,21 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--green);color:var(--text);padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);transition:transform .25s;z-index:60;font-size:14px}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
+/* demo ribbon + share bar + confetti */
+.ribbon{display:none;background:color-mix(in srgb,var(--gold) 14%,var(--panel));border:1px solid var(--gold);border-radius:10px;padding:9px 14px;font-size:13px;color:var(--muted);margin:0 0 4px;text-align:center}
+.ribbon.show{display:block}
+.ribbon b{color:var(--text)}
+.sharebar{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(140px);display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--gold);padding:10px 12px;border-radius:12px;box-shadow:var(--shadow);transition:transform .25s;z-index:59}
+.sharebar.show{transform:translateX(-50%) translateY(0)}
+.sharebar a,.sharebar button{font-size:13px;font-weight:700;padding:7px 12px;border-radius:8px;white-space:nowrap}
+.sharebar .brag{background:var(--gold);color:#181203}
+.sharebar .brag:hover{filter:brightness(1.1);text-decoration:none}
+.sharebar .copy{border:1px solid var(--line);color:var(--muted)}
+.sharebar .x{color:var(--dim);padding:7px 4px}
+.dare{display:block;margin-top:6px;font-size:12px;color:var(--muted);text-decoration:none}
+.dare:hover{color:var(--gold);text-decoration:none}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+
 @media (max-width:640px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .row{grid-template-columns:40px 1fr auto}
@@ -175,6 +201,8 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
     <h1>Pay more. Rank higher.<br><em>Stay on top.</em></h1>
     <p>The leaderboard where your rank is exactly what you paid for it — and everyone watches you defend it.</p>
   </section>
+
+  <div class="ribbon" id="demoRibbon"><b>Demo mode</b> — payments aren't connected yet, so bids are free play-money clicks. The operator flips this to real Stripe checkout with one config line.</div>
 
   <section class="stats" aria-label="Live stats">
     <div class="stat"><b class="num" id="statRaised">$0</b><span>Total raised</span></div>
@@ -247,10 +275,27 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
   </form>
 </dialog>
 
+<div class="sharebar" id="sharebar">
+  <a class="brag" id="bragBtn" href="#" target="_blank" rel="noopener">Brag on 𝕏</a>
+  <button class="copy" id="copyBtn">Copy link</button>
+  <button class="x" id="shareClose" aria-label="Dismiss">✕</button>
+</div>
 <div class="toast" id="toast" role="status"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
 
 <script>
 "use strict";
+/* ============ operator config ============ */
+/* Paste your Stripe Payment Link (create one in the Stripe dashboard with
+   "Customer chooses price") and bids become real charges to your account.
+   Until then the site runs in clearly-labeled demo mode. */
+const CONFIG = {
+  STRIPE_PAYMENT_LINK: "",                                // e.g. "https://buy.stripe.com/xxxxxxxx"
+  SITE_URL: "https://allenwangg.github.io/allen/",
+  X_HANDLE: "",                                           // optional, e.g. "yourhandle" — added to brag tweets
+  BOARD_FEED_URL: "",                                     // optional: webhook worker /board URL → ✔ VERIFIED bids
+};
+
 /* ============ state ============ */
 const $ = s => document.querySelector(s);
 const fmt = n => "$" + n.toLocaleString("en-US");
@@ -313,6 +358,7 @@ function render(){
       <div class="crown-right">
         <div class="crown-amt num">${fmt(top.total)}</div>
         <button class="take" data-take="${top.id}">Dethrone — ${fmt(top.total+1)} total<small>top-ups only pay the difference</small></button>
+        <a class="dare" id="dareLink" href="${dareIntent(top)}" target="_blank" rel="noopener">📣 dare someone to dethrone them</a>
       </div>
     </div>`;
 
@@ -330,6 +376,7 @@ function render(){
       <div class="rank num">${rank}${mv}</div>
       <div class="who">
         <span class="nm">${esc(e.name)}
+          ${e.verified?'<span class="badge ok" title="Payment confirmed by Stripe webhook">✔ VERIFIED</span>':""}
           ${e.defend>0?'<span class="badge shield" title="Auto-defend armed">🛡 DEFENDED</span>':""}
           ${hot?'<span class="badge hot">🔥 HOT</span>':""}
         </span>
@@ -515,8 +562,20 @@ $("#bidForm").addEventListener("submit", e=>{
   const res = placeBid({name,url,amount,defendBudget});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
   modal.close();
+  if (CONFIG.STRIPE_PAYMENT_LINK){
+    /* Real money: open Stripe checkout with the bid encoded in
+       client_reference_id so the payment reconciles to the listing. */
+    const ref = (res.entry.name + "_" + amount + "_" + Date.now().toString(36))
+      .replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 190);
+    window.open(CONFIG.STRIPE_PAYMENT_LINK + (CONFIG.STRIPE_PAYMENT_LINK.includes("?") ? "&" : "?") +
+      "client_reference_id=" + encodeURIComponent(ref), "_blank", "noopener");
+    toast(`🏦 Finish paying ${fmt(amount)} in the Stripe tab — ${esc(res.entry.name)} is provisionally #${res.rank}`);
+  } else {
+    toast(`💸 Paid ${fmt(amount)} — ${esc(res.entry.name)} is #${res.rank}${defendBudget?` · 🛡 defending with ${fmt(defendBudget)}`:""}`);
+  }
   render(); flash(res.entry.id);
-  toast(`💸 Paid ${fmt(amount)} — ${esc(res.entry.name)} is #${res.rank}${defendBudget?` · 🛡 defending with ${fmt(defendBudget)}`:""}`);
+  confetti();
+  showShareBar(res.entry, res.rank, amount);
 });
 $("#search").addEventListener("input", e=>{ query = e.target.value; render(); });
 $("#themeBtn").addEventListener("click", ()=>{
@@ -528,6 +587,92 @@ try{ const t = localStorage.getItem("outranked_theme"); if(t) document.documentE
 
 let toastTimer;
 function toast(html){ const el=$("#toast"); el.innerHTML=html; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3500); }
+
+/* ============ viral loops ============ */
+function tweetIntent(text){
+  return "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+}
+function dareIntent(top){
+  return tweetIntent(`Someone paid ${fmt(top.total)} to be #1 on OUTRANKED. It costs exactly ${fmt(top.total+1)} to take it from them. ${CONFIG.SITE_URL}`);
+}
+function bragIntent(entry, rank, amount){
+  const via = CONFIG.X_HANDLE ? ` (@${CONFIG.X_HANDLE})` : "";
+  return tweetIntent(`I just paid ${fmt(amount)} to make ${entry.name} #${rank} on OUTRANKED 👑 Outbid me if you dare${via}: ${CONFIG.SITE_URL}`);
+}
+let shareTimer;
+function showShareBar(entry, rank, amount){
+  $("#bragBtn").href = bragIntent(entry, rank, amount);
+  const bar = $("#sharebar");
+  bar.classList.add("show");
+  clearTimeout(shareTimer);
+  shareTimer = setTimeout(()=>bar.classList.remove("show"), 30000);
+}
+$("#shareClose").addEventListener("click", ()=>$("#sharebar").classList.remove("show"));
+$("#copyBtn").addEventListener("click", async ()=>{
+  try { await navigator.clipboard.writeText(CONFIG.SITE_URL); $("#copyBtn").textContent = "Copied!"; }
+  catch(e){ $("#copyBtn").textContent = CONFIG.SITE_URL; }
+  setTimeout(()=>$("#copyBtn").textContent = "Copy link", 2000);
+});
+
+/* ============ confetti ============ */
+function confetti(){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d");
+  cv.width = innerWidth; cv.height = innerHeight;
+  const colors = ["#d9a944","#63c08e","#ecefe6","#d95c6e"];
+  const bits = Array.from({length: 90}, ()=>({
+    x: innerWidth/2 + (Math.random()-.5)*160, y: innerHeight*0.62,
+    vx: (Math.random()-.5)*11, vy: -(5+Math.random()*9),
+    s: 4+Math.random()*4, c: colors[Math.floor(Math.random()*colors.length)], r: Math.random()*Math.PI
+  }));
+  let frames = 0;
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for (const b of bits){
+      b.x += b.vx; b.y += b.vy; b.vy += .32; b.r += .1;
+      ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.r);
+      ctx.fillStyle = b.c; ctx.fillRect(-b.s/2,-b.s/2,b.s,b.s); ctx.restore();
+    }
+    if (++frames < 110) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+}
+
+/* demo ribbon: visible until a real payment link is configured */
+if (!CONFIG.STRIPE_PAYMENT_LINK) $("#demoRibbon").classList.add("show");
+
+/* ============ verified-bids feed (webhook worker) ============ */
+async function mergeBoardFeed(){
+  if (!CONFIG.BOARD_FEED_URL) return;
+  try {
+    const res = await fetch(CONFIG.BOARD_FEED_URL);
+    const confirmed = await res.json();
+    if (!Array.isArray(confirmed)) return;
+    state.applied = state.applied || [];
+    let changed = false;
+    for (const c of confirmed){
+      if (!c || !c.id || state.applied.includes(c.id)) continue;
+      const name = String(c.ref || "").split("_")[0] || "Anonymous";
+      const amount = Math.floor(+c.amount || 0);
+      if (amount < 1) continue;
+      let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
+      if (entry){
+        entry.total += amount; entry.bids++; entry.history.push(entry.total);
+      } else {
+        entry = {id:"v"+c.id.slice(-10), name, url:"—", total:amount, bids:1, history:[amount], defend:0, mine:false};
+        state.entries.push(entry);
+      }
+      entry.verified = true;
+      state.applied.push(c.id);
+      state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
+      feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
+      changed = true;
+    }
+    if (changed){ checkCrown(sorted()[0]); render(); }
+  } catch(e) { /* feed unreachable — board still works from local state */ }
+}
+mergeBoardFeed();
+if (CONFIG.BOARD_FEED_URL) setInterval(mergeBoardFeed, 20000);
 
 /* seed feed if empty */
 if (!state.feed.length){
