@@ -118,6 +118,29 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 9
 .who .nm{font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .badge{font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:99px;flex-shrink:0}
 .badge.shield{background:color-mix(in srgb,var(--bill) 16%,transparent);color:var(--bill)}
+.badge.title{background:color-mix(in srgb,var(--foil) 15%,transparent);color:var(--foil)}
+.med{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:15px;color:var(--text);background:var(--panel2);border:2px solid var(--dim)}
+.med.t1{border-color:#a08055;color:#c9a878}
+.med.t2{border-color:#aebdc4;color:#c9d6dc}
+.med.t3{border-color:var(--foil);color:var(--foil)}
+.med.t4{border-color:#dfe6ea;color:#eef3f6;box-shadow:0 0 10px rgba(223,230,234,.35)}
+.med.t5{border:2px solid transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,conic-gradient(var(--foil),var(--bill),var(--foil)) border-box;color:var(--foil);box-shadow:0 0 12px color-mix(in srgb,var(--foil) 45%,transparent)}
+.tiername{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--dim);text-transform:uppercase;display:block;margin-top:1px}
+.who{display:flex;gap:10px;align-items:center}
+.who > div{min-width:0}
+.crown-card{position:relative;overflow:hidden}
+.crown-card::after{content:"";position:absolute;top:0;bottom:0;left:-80%;width:45%;background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--foil) 9%,transparent),transparent);animation:shimmer 6.5s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%,58%{left:-80%}78%,100%{left:130%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.crown-card.final{border-color:var(--seal);outline-color:var(--seal)}
+.final-tag{display:none;font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--seal);animation:blink 1.2s infinite}
+.crown-card.final .final-tag{display:inline}
+.hall{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:16px;scrollbar-width:thin}
+.hall .h-title{flex-shrink:0;font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:14px;color:var(--foil);padding:10px 4px 10px 2px;white-space:nowrap}
+.trophy{flex-shrink:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--muted);white-space:nowrap}
+.trophy b{display:block;color:var(--text);font-size:13px}
+.trophy .num{color:var(--foil)}
+@media (prefers-reduced-motion:reduce){.crown-card::after{animation:none}.final-tag{animation:none}}
 .badge.hot{background:color-mix(in srgb,var(--seal) 16%,transparent);color:var(--seal)}
 .who .url{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .spark{width:84px;height:26px;flex-shrink:0}
@@ -211,6 +234,7 @@ const BODY_HTML = `
   </div>
   <div class="toolbar"><input class="search" id="search" type="search" placeholder="Search the board…" aria-label="Search the board"></div>
   <section class="board" id="board" aria-label="Leaderboard"></section>
+  <div class="hall" id="hall" aria-label="Hall of Fame"></div>
   <details class="rules">
     <summary>Rules — all seven of them</summary>
     <ol>
@@ -308,7 +332,50 @@ function ensureToday(e){
   if (e.todayDate !== todayStr()){ e.todayDate = todayStr(); e.todayTotal = 0; }
   return e;
 }
-function touchToday(e, amount){ ensureToday(e); e.todayTotal += amount; }
+function touchToday(e, amount){
+  ensureToday(e);
+  if (state.firstBloodDay !== todayStr()){ state.firstBloodDay = todayStr(); award(e, "🩸 First Blood"); }
+  e.todayTotal += amount;
+}
+
+const TIERS = [
+  { at: 10000, cls:"t5", name:"Sovereign" },
+  { at: 2000,  cls:"t4", name:"Archduke" },
+  { at: 500,   cls:"t3", name:"Duke" },
+  { at: 100,   cls:"t2", name:"Viscount" },
+  { at: 0,     cls:"t1", name:"Baron" },
+];
+function tier(e){ return TIERS.find(t => e.total >= t.at); }
+function medallion(e){
+  const t = tier(e);
+  return '<span class="med ' + t.cls + '" title="' + t.name + ' — lifetime ' + fmt(e.total) + '">' + esc(e.name[0].toUpperCase()) + '</span>';
+}
+function award(e, title){
+  e.titles = e.titles || [];
+  if (e.titles.includes(title)) return;
+  e.titles.push(title);
+  feed('🎖 <b>' + esc(e.name) + '</b> earned the title <b>' + title + '</b>');
+}
+function prevDayStr(day){
+  const d = new Date(day + "T00:00:00Z"); d.setUTCDate(d.getUTCDate()-1);
+  return d.toISOString().slice(0,10);
+}
+function rollover(){
+  if (state.lastDay && state.lastDay !== todayStr()){
+    let king = null;
+    for (const e of state.entries)
+      if (e.todayDate === state.lastDay && e.todayTotal > 0 && (!king || e.todayTotal > king.todayTotal)) king = e;
+    if (king){
+      state.hall = state.hall || [];
+      state.hall.unshift({ date: state.lastDay, name: king.name, amount: king.todayTotal });
+      state.hall = state.hall.slice(0, 30);
+      king.streak = (king.lastWin === prevDayStr(state.lastDay)) ? (king.streak||1)+1 : 1;
+      king.lastWin = state.lastDay;
+      feed('🏆 <b>' + esc(king.name) + '</b> won ' + state.lastDay + ' with <span class="amt">' + fmt(king.todayTotal) + '</span> — engraved forever');
+    }
+  }
+  state.lastDay = todayStr();
+}
 function sorted(){ return [...state.entries].sort((a,b) => b.total - a.total); }
 function sortedToday(){ return state.entries.map(ensureToday).filter(e => e.todayTotal > 0).sort((a,b) => b.todayTotal - a.todayTotal); }
 function rankMap(){ const m = {}; sorted().forEach((e,i) => m[e.id] = i+1); return m; }
@@ -316,6 +383,24 @@ function msToMidnightUTC(){
   const now = new Date();
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1) - now.getTime();
 }
+rollover();
+
+/* demo hall + titles so the trophy shelf never starts empty */
+if (!state.hall){
+  const d = todayStr();
+  state.hall = [
+    { date: prevDayStr(d), name: "JONI", amount: 4210 },
+    { date: prevDayStr(prevDayStr(d)), name: "ShipFast", amount: 2150 },
+    { date: prevDayStr(prevDayStr(prevDayStr(d))), name: "JONI", amount: 3675 },
+  ];
+  const joni = state.entries.find(e => e.name === "JONI");
+  if (joni){ joni.titles = ["🩸 First Blood"]; joni.streak = 1; joni.lastWin = prevDayStr(d); }
+  const ship = state.entries.find(e => e.name === "ShipFast");
+  if (ship) ship.titles = ["⚔️ Kingslayer", "🛡 Defender"];
+  const cal = state.entries.find(e => e.name === "CalAI");
+  if (cal) cal.titles = ["🐋 Whale"];
+}
+
 /* demo seeding: give today's board a small bid war on days with no activity yet */
 if (state.todaySeed){
   for (const e of state.entries){
@@ -348,12 +433,13 @@ function render(){
 
   if (isToday){
     const king = list[0];
+    const finalHour = msToMidnightUTC() < 3600000;
     $("#crown").innerHTML = king
-      ? '<div class="crown-card">' +
-        '<div class="crown-emoji">🔥</div>' +
+      ? '<div class="crown-card' + (finalHour ? ' final' : '') + '">' +
+        '<div class="crown-emoji">' + (finalHour ? '⏳' : '🔥') + '</div>' +
         '<div><div class="crown-name">' + esc(king.name) + '</div>' +
-        '<div class="crown-sub">King of Today · board resets in <b class="num">' + dur(msToMidnightUTC()) + '</b></div>' +
-        '<div class="crown-sub">All-time total: <b class="num">' + fmt(king.total) + '</b></div></div>' +
+        '<div class="crown-sub"><span class="final-tag">FINAL HOUR — </span>King of Today · resets in <b class="num">' + dur(msToMidnightUTC()) + '</b></div>' +
+        '<div class="crown-sub">Win the day and enter the Hall of Fame forever</div></div>' +
         '<div class="crown-right"><div class="crown-amt num">' + fmt(king.todayTotal) + '</div>' +
         '<button class="take" data-take="' + king.id + '">Take today\'s crown — ' + fmt(king.todayTotal+1) + '<small>everyone starts even again at midnight</small></button></div></div>'
       : '<div class="crown-card">' +
@@ -388,12 +474,16 @@ function render(){
     const amt = isToday ? e.todayTotal : e.total;
     const sub = isToday ? ('all-time ' + fmt(e.total)) : (e.bids + ' bid' + (e.bids === 1 ? '' : 's'));
     const takeLabel = rank === 1 ? (isToday ? 'Take today\'s #1' : 'Dethrone') : 'Take #' + rank;
+    const titles = (e.titles||[]).slice(0,2).map(t => '<span class="badge title">' + t + '</span>').join("");
+    const more = (e.titles||[]).length > 2 ? '<span class="badge title">+' + (e.titles.length-2) + '</span>' : '';
     return '<div class="row" data-id="' + e.id + '">' +
       '<div class="rank num">' + rank + mv + '</div>' +
-      '<div class="who"><span class="nm">' + esc(e.name) +
+      '<div class="who">' + medallion(e) + '<div><span class="nm">' + esc(e.name) +
         (e.defend > 0 ? ' <span class="badge shield" title="Auto-defend armed">🛡 DEFENDED</span>' : '') +
-        (hot ? ' <span class="badge hot">🔥 HOT</span>' : '') + '</span>' +
-        '<a class="url" href="https://' + esc(e.url) + '" target="_blank" rel="noopener nofollow">' + esc(e.url) + '</a></div>' +
+        (hot ? ' <span class="badge hot">🔥 HOT</span>' : '') + titles + more +
+        (e.streak > 1 ? ' <span class="badge title">👑 ' + e.streak + '-day streak</span>' : '') + '</span>' +
+        '<span class="tiername">' + tier(e).name + '</span>' +
+        '<a class="url" href="https://' + esc(e.url) + '" target="_blank" rel="noopener nofollow">' + esc(e.url) + '</a></div></div>' +
       spark(e.history) +
       '<div class="money"><div class="amt num">' + fmt(amt) + '</div>' +
       '<div class="bids num">' + sub + '</div>' +
@@ -409,6 +499,12 @@ function render(){
 
   const items = state.feed.slice(0,12).map(f => '<span class="tick">' + f + '</span>').join("");
   $("#tickerInner").innerHTML = items + items;
+
+  $("#hall").innerHTML = (state.hall && state.hall.length)
+    ? '<span class="h-title">🏆 Hall of Fame</span>' + state.hall.slice(0,14).map(h =>
+        '<span class="trophy"><b>' + esc(h.name) + '</b>' + h.date + ' · <span class="num">' + fmt(h.amount) + '</span></span>').join("")
+    : "";
+
   if (!isToday) prevRanks = rankMap();
 }
 
@@ -444,6 +540,7 @@ function checkCrown(){
     const old = state.entries.find(e => e.id === state.crownId);
     if (reignMs > state.longestReign.ms && old) state.longestReign = { name: old.name, ms: reignMs };
     if (old) feed('👑 <b>' + esc(top.name) + '</b> DETHRONED <b>' + esc(old.name) + '</b> after a ' + dur(reignMs) + ' reign');
+    award(top, "⚔️ Kingslayer");
     state.crownId = top.id;
     state.crownedAt = Date.now();
   }
@@ -465,6 +562,7 @@ function runAutoDefend(aggressor){
           touchToday(e, need);
           state.stats.bids++;
           feed('🛡 <b>' + esc(e.name) + '</b> auto-defended with <span class="amt">' + fmt(need) + '</span> — back above <b>' + esc(aggressor.name) + '</b>');
+          award(e, "🛡 Defender");
           acted = true;
         }
       }
@@ -485,6 +583,7 @@ function placeBid(name, url, amount, defendBudget){
     state.entries.push(entry);
   }
   touchToday(entry, amount);
+  if (amount >= 500) award(entry, "🐋 Whale");
   if (defendBudget > 0) entry.defend = defendBudget;
   state.stats.bids++;
   state.stats.biggest = Math.max(state.stats.biggest, amount);

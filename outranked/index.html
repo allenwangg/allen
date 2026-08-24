@@ -15,6 +15,10 @@
 <meta name="twitter:description" content="A leaderboard where your rank is exactly what you paid for it. Someone is #1 right now. It costs exactly one dollar more than they paid to take it.">
 <meta name="twitter:image" content="https://allenwangg.github.io/allen/og.png">
 <link rel="canonical" href="https://allenwangg.github.io/allen/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Libre+Franklin:wght@400;600;700;800&family=Spline+Sans+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Libre+Franklin:wght@400;600;700;800&family=Spline+Sans+Mono:wght@500;700&display=swap"></noscript>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
 <style>
 :root{
@@ -35,11 +39,48 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--bg); color:var(--text);
-  font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font:16px/1.5 "Libre Franklin",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   min-height:100vh;
 }
-.num{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
-.display,.logo,.hero h1,.rank,.crown-name,.mbody h2{font-family:Georgia,"Times New Roman",serif}
+.num{font-family:"Spline Sans Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.display,.logo,.hero h1,.rank,.crown-name,.mbody h2{font-family:"Fraunces",Georgia,"Times New Roman",serif}
+
+/* nobility tiers */
+.med{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;
+  font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:15px;color:var(--text);
+  background:var(--panel2);border:2px solid var(--dim)}
+.med.t1{border-color:#a08055;color:#c9a878}
+.med.t2{border-color:#aebdc4;color:#c9d6dc}
+.med.t3{border-color:var(--gold);color:var(--gold)}
+.med.t4{border-color:#dfe6ea;color:#eef3f6;box-shadow:0 0 10px rgba(223,230,234,.35)}
+.med.t5{border:2px solid transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,conic-gradient(var(--gold),var(--green),var(--gold)) border-box;color:var(--gold);box-shadow:0 0 12px color-mix(in srgb,var(--gold) 45%,transparent)}
+.tiername{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--dim);text-transform:uppercase;display:block;margin-top:1px}
+.badge.title{background:color-mix(in srgb,var(--gold) 15%,transparent);color:var(--gold)}
+
+/* premium motion */
+.crown-card{position:relative;overflow:hidden}
+.crown-card::after{content:"";position:absolute;top:0;bottom:0;left:-80%;width:45%;
+  background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--gold) 9%,transparent),transparent);
+  animation:shimmer 6.5s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%,58%{left:-80%}78%,100%{left:130%}}
+.crown-card.final{border-color:var(--red);outline-color:var(--red)}
+.crown-card.final .final-tag{display:inline-block}
+.final-tag{display:none;font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--red);animation:pulse 1.2s infinite}
+.row{view-transition-class:boardrow}
+::view-transition-group(*){animation-duration:.45s}
+
+/* hall of fame + empire */
+.hall{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:16px;scrollbar-width:thin}
+.hall .h-title{flex-shrink:0;font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:14px;color:var(--gold);padding:10px 4px 10px 2px;white-space:nowrap}
+.trophy{flex-shrink:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--muted);white-space:nowrap}
+.trophy b{display:block;color:var(--text);font-size:13px}
+.trophy .num{color:var(--gold)}
+.empire{display:none;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 7%,var(--panel)),var(--panel));border:1px solid var(--line);border-radius:12px;padding:10px 16px;margin:0 0 12px;font-size:13.5px;color:var(--muted);align-items:center;gap:8px;flex-wrap:wrap}
+.empire.show{display:flex}
+.empire b{color:var(--text)}
+.empire .next{margin-left:auto;color:var(--gold);font-weight:700}
+.empire .bar{flex-basis:100%;height:5px;border-radius:99px;background:var(--panel2);overflow:hidden}
+.empire .fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:99px;transition:width .6s}
 a{color:var(--blue);text-decoration:none}
 a:hover{text-decoration:underline}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
@@ -242,11 +283,15 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
     <button class="tab active" id="tabToday" data-view="today" role="tab" aria-selected="true">🔥 Today — resets at midnight</button>
   </div>
 
+  <div class="empire" id="empire"></div>
+
   <div class="toolbar">
     <input class="search" id="search" type="search" placeholder="Search the board…" aria-label="Search the board">
   </div>
 
   <section class="board" id="board" aria-label="Leaderboard"></section>
+
+  <div class="hall" id="hall" aria-label="Hall of Fame"></div>
 
   <details class="rules">
     <summary>Rules — all seven of them</summary>
@@ -359,7 +404,74 @@ function ensureToday(e){
   if (e.todayDate !== todayStr()){ e.todayDate = todayStr(); e.todayTotal = 0; }
   return e;
 }
-function touchToday(e, amount){ ensureToday(e); e.todayTotal += amount; }
+function touchToday(e, amount){
+  ensureToday(e);
+  if (state.firstBloodDay !== todayStr()){ state.firstBloodDay = todayStr(); award(e, "🩸 First Blood"); }
+  e.todayTotal += amount;
+}
+
+/* ---- nobility tiers: lifetime spend buys permanent, visible rank ---- */
+const TIERS = [
+  { at: 10000, cls:"t5", name:"Sovereign" },
+  { at: 2000,  cls:"t4", name:"Archduke" },
+  { at: 500,   cls:"t3", name:"Duke" },
+  { at: 100,   cls:"t2", name:"Viscount" },
+  { at: 0,     cls:"t1", name:"Baron" },
+];
+function tier(e){ return TIERS.find(t => e.total >= t.at); }
+function nextTier(e){ return [...TIERS].reverse().find(t => e.total < t.at); }
+function medallion(e){
+  const t = tier(e);
+  return `<span class="med ${t.cls}" title="${t.name} — lifetime ${fmt(e.total)}">${esc(e.name[0].toUpperCase())}</span>`;
+}
+
+/* ---- earned titles ---- */
+function award(e, title){
+  e.titles = e.titles || [];
+  if (e.titles.includes(title)) return;
+  e.titles.push(title);
+  feed(`🎖 <b>${esc(e.name)}</b> earned the title <b>${title}</b>`);
+}
+
+/* ---- midnight rollover: yesterday's king enters the Hall of Fame ---- */
+function rollover(){
+  if (state.lastDay && state.lastDay !== todayStr()){
+    let king = null;
+    for (const e of state.entries)
+      if (e.todayDate === state.lastDay && e.todayTotal > 0 && (!king || e.todayTotal > king.todayTotal)) king = e;
+    if (king){
+      state.hall = state.hall || [];
+      state.hall.unshift({ date: state.lastDay, name: king.name, amount: king.todayTotal });
+      state.hall = state.hall.slice(0, 30);
+      king.streak = (king.lastWin === prevDayStr(state.lastDay)) ? (king.streak||1)+1 : 1;
+      king.lastWin = state.lastDay;
+      feed(`🏆 <b>${esc(king.name)}</b> won ${state.lastDay} with <span class="amt">${fmt(king.todayTotal)}</span> — engraved forever`);
+    }
+  }
+  state.lastDay = todayStr();
+}
+function prevDayStr(day){
+  const d = new Date(day + "T00:00:00Z"); d.setUTCDate(d.getUTCDate()-1);
+  return d.toISOString().slice(0,10);
+}
+
+rollover();
+
+/* demo hall of fame + titles so the trophy shelf never starts empty */
+if (!state.hall){
+  const d = todayStr();
+  state.hall = [
+    { date: prevDayStr(d), name: "JONI", amount: 4210 },
+    { date: prevDayStr(prevDayStr(d)), name: "ShipFast", amount: 2150 },
+    { date: prevDayStr(prevDayStr(prevDayStr(d))), name: "JONI", amount: 3675 },
+  ];
+  const joni = state.entries.find(e => e.name === "JONI");
+  if (joni){ joni.titles = ["🩸 First Blood"]; joni.streak = 1; joni.lastWin = prevDayStr(d); }
+  const ship = state.entries.find(e => e.name === "ShipFast");
+  if (ship) ship.titles = ["⚔️ Kingslayer", "🛡 Defender"];
+  const cal = state.entries.find(e => e.name === "CalAI");
+  if (cal) cal.titles = ["🐋 Whale"];
+}
 
 /* seed a small bid war on today's board so it never starts empty in demo */
 if (!state.seededToday || state.seededToday !== todayStr()){
@@ -397,14 +509,15 @@ function render(){
   // crown
   if (isToday){
     const king = list[0];
+    const finalHour = msToMidnightUTC() < 3600000;
     if (king){
       $("#crown").innerHTML = `
-      <div class="crown-card">
-        <div class="crown-emoji">🔥</div>
+      <div class="crown-card${finalHour?" final":""}">
+        <div class="crown-emoji">${finalHour?"⏳":"🔥"}</div>
         <div>
           <div class="crown-name">${esc(king.name)}</div>
-          <div class="crown-sub">King of Today · board resets in <b class="num">${dur(msToMidnightUTC())}</b></div>
-          <div class="crown-sub">All-time total: <b class="num">${fmt(king.total)}</b></div>
+          <div class="crown-sub"><span class="final-tag">FINAL HOUR — </span>King of Today · resets in <b class="num">${dur(msToMidnightUTC())}</b></div>
+          <div class="crown-sub">Win the day and enter the Hall of Fame forever</div>
         </div>
         <div class="crown-right">
           <div class="crown-amt num">${fmt(king.todayTotal)}</div>
@@ -458,16 +571,25 @@ function render(){
       ? `all-time ${fmt(e.total)}`
       : `${e.bids} bid${e.bids===1?"":"s"} · ${(e.clicks||0).toLocaleString()} clicks`;
     const takeLabel = rank===1 ? (isToday?"Take today's #1":"Dethrone") : `Take #${rank}`;
+    const titles = (e.titles||[]).slice(0,2).map(t=>`<span class="badge title">${t}</span>`).join("");
+    const more = (e.titles||[]).length>2 ? `<span class="badge title">+${e.titles.length-2}</span>` : "";
     return `
-    <div class="row" data-id="${e.id}">
+    <div class="row" data-id="${e.id}" style="view-transition-name:r-${e.id}">
       <div class="rank num">${rank}${mv}</div>
-      <div class="who">
-        <span class="nm">${esc(e.name)}
-          ${e.verified?'<span class="badge ok" title="Payment confirmed by Stripe webhook">✔ VERIFIED</span>':""}
-          ${e.defend>0?'<span class="badge shield" title="Auto-defend armed">🛡 DEFENDED</span>':""}
-          ${hot?'<span class="badge hot">🔥 HOT</span>':""}
-        </span>
-        <a class="url" href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>
+      <div class="who" style="display:flex;gap:10px;align-items:center;min-width:0">
+        ${medallion(e)}
+        <div style="min-width:0">
+          <span class="nm">${esc(e.name)}
+            ${e.verified?'<span class="badge ok" title="Payment confirmed by Stripe webhook">✔ VERIFIED</span>':""}
+            ${inRivalry(e)?'<span class="badge hot">⚔️ AT WAR</span>':""}
+            ${e.defend>0?'<span class="badge shield" title="Auto-defend armed">🛡 DEFENDED</span>':""}
+            ${hot&&!inRivalry(e)?'<span class="badge hot">🔥 HOT</span>':""}
+            ${titles}${more}
+            ${e.streak>1?`<span class="badge title">👑 ${e.streak}-day streak</span>`:""}
+          </span>
+          <span class="tiername">${tier(e).name}</span>
+          <a class="url" href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>
+        </div>
       </div>
       ${spark(e.history)}
       <div class="money">
@@ -480,11 +602,33 @@ function render(){
     ? `<div class="row" style="grid-template-columns:1fr;color:var(--muted)">No bids yet today — first ${fmt(MIN_NEW)} owns the board until midnight.</div>`
     : `<div class="row" style="grid-template-columns:1fr;color:var(--muted)">Nothing matches "${esc(query)}".</div>`);
 
-  // stats
+  // stats (odometer-animated)
   const raised = state.entries.reduce((s,e)=>s+e.total,0);
-  $("#statRaised").textContent = fmt(raised);
-  $("#statBids").textContent = state.stats.bids.toLocaleString();
-  $("#statBiggest").textContent = fmt(state.stats.biggest);
+  setStat("statRaised", raised, v=>fmt(v));
+  setStat("statBids", state.stats.bids, v=>v.toLocaleString());
+  setStat("statBiggest", state.stats.biggest, v=>fmt(v));
+
+  // hall of fame
+  $("#hall").innerHTML = (state.hall && state.hall.length)
+    ? `<span class="h-title">🏆 Hall of Fame</span>` + state.hall.slice(0,14).map(h =>
+        `<span class="trophy"><b>${esc(h.name)}</b>${h.date} · <span class="num">${fmt(h.amount)}</span></span>`).join("")
+    : "";
+
+  // your empire (returning bidders see their standing + the next rung)
+  let myName = null;
+  try { myName = localStorage.getItem("outranked_name"); } catch(e){}
+  const mine = myName && state.entries.find(x => x.name.toLowerCase() === myName.toLowerCase());
+  const emp = $("#empire");
+  if (mine){
+    const r = rankMap()[mine.id];
+    const t = tier(mine), nt = nextTier(mine);
+    const base = nt ? TIERS.find(x=>x.name===t.name).at : 0;
+    const pct = nt ? Math.min(100, Math.round((mine.total-base)/(nt.at-base)*100)) : 100;
+    emp.innerHTML = `👑 <b>${esc(mine.name)}</b> · #${r} all-time · <b class="num">${fmt(mine.total)}</b> · ${t.name}` +
+      `<span class="next num">${nt ? fmt(nt.at-mine.total)+" to "+nt.name : "MAX RANK"}</span>` +
+      `<span class="bar"><span class="fill" style="width:${pct}%"></span></span>`;
+    emp.classList.add("show");
+  } else emp.classList.remove("show");
 
   // ticker (duplicate content for seamless loop)
   const items = state.feed.slice(0,12).map(f=>`<span class="tick">${f}</span>`).join("");
@@ -499,6 +643,29 @@ function render(){
     : `<button data-open-bid>🔥 Today's crown is free — ${fmt(MIN_NEW)}</button>`;
 
   save();
+}
+
+/* odometer: numbers roll to their new value instead of snapping */
+const statPrev = {};
+function setStat(id, value, fmtFn){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const from = statPrev[id] ?? value;
+  statPrev[id] = value;
+  if (from === value || matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent = fmtFn(value); return; }
+  const t0 = performance.now(), dur = 550;
+  (function tick(now){
+    const p = Math.min(1, (now-t0)/dur), ease = 1-Math.pow(1-p,3);
+    el.textContent = fmtFn(Math.round(from + (value-from)*ease));
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* premium reorder: rows glide to their new rank via view transitions */
+function rerender(){
+  if (!NOSIM && document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches){
+    document.startViewTransition(() => render());
+  } else render();
 }
 
 function costToBeat(target, exclude){
@@ -558,7 +725,10 @@ function placeBid({name,url,amount,defendBudget}){
   touchToday(entry, amount);
   entry.mine = true;
   if (defendBudget>0) entry.defend = defendBudget;
+  if (amount >= 500) award(entry, "🐋 Whale");
+  trackRivalry(entry);
   state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
+  milestone();
   const rank = rankMap()[entry.id];
   feed(`<b>${esc(entry.name)}</b> bid <span class="amt">${fmt(amount)}</span> → now #${rank}`);
   checkCrown(entry);
@@ -573,7 +743,38 @@ function checkCrown(mover){
     const old = state.entries.find(e=>e.id===state.crownId);
     if (reignMs > state.longestReign.ms && old) state.longestReign = {name:old.name, ms:reignMs};
     if (old) feed(`👑 <b>${esc(top.name)}</b> DETHRONED <b>${esc(old.name)}</b> after a ${dur(reignMs)} reign`);
+    award(top, "⚔️ Kingslayer");
     state.crownId = top.id; state.crownedAt = Date.now();
+  }
+}
+
+/* ---- rivalry: two entries trading bids within 10 minutes = a public war ---- */
+function trackRivalry(entry){
+  const last = state.lastBid;
+  state.lastBid = { id: entry.id, at: Date.now() };
+  if (last && last.id !== entry.id && Date.now() - last.at < 600000){
+    const other = state.entries.find(e => e.id === last.id);
+    if (other && (!state.rivalry || state.rivalry.until < Date.now() ||
+        (state.rivalry.a !== entry.id && state.rivalry.b !== entry.id))){
+      state.rivalry = { a: entry.id, b: last.id, until: Date.now() + 600000 };
+      feed(`⚔️ RIVALRY: <b>${esc(entry.name)}</b> vs <b>${esc(other.name)}</b> — the war is live`);
+    } else if (state.rivalry){
+      state.rivalry.until = Date.now() + 600000;
+    }
+  }
+}
+function inRivalry(e){
+  const r = state.rivalry;
+  return r && r.until > Date.now() && (r.a === e.id || r.b === e.id);
+}
+
+/* ---- board milestones ---- */
+function milestone(){
+  const raised = state.entries.reduce((s,e)=>s+e.total,0);
+  const step = Math.floor(raised/10000);
+  if (step > (state.milestone||0)){
+    state.milestone = step;
+    feed(`💰 The board crossed <span class="amt">$${(step*10).toLocaleString()}k</span> total`);
   }
 }
 
@@ -595,6 +796,7 @@ function runAutoDefend(aggressor){
           touchToday(e, need);
           state.stats.bids++;
           feed(`🛡 <b>${esc(e.name)}</b> auto-defended with <span class="amt">${fmt(need)}</span> — back above <b>${esc(aggressor.name)}</b>`);
+          award(e, "🛡 Defender");
           acted = true;
         }
       }
@@ -617,13 +819,16 @@ function simulate(){
     amount = Math.max(1, above.total - target.total + 1 + Math.floor(Math.random()*20));
     target.total += amount; target.bids++; target.history.push(target.total);
     touchToday(target, amount);
+    if (amount >= 500) award(target, "🐋 Whale");
+    trackRivalry(target);
     state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
+    milestone();
     feed(`<b>${esc(target.name)}</b> bid <span class="amt">${fmt(amount)}</span> → passed <b>${esc(above.name)}</b>`);
     flash(target.id);
     runAutoDefend(target);
   } else if (roll < 0.45){
     name = NAMES[Math.floor(Math.random()*NAMES.length)] + " " + Math.floor(Math.random()*90+10);
-    amount = MIN_NEW + Math.floor(Math.random()*120);
+    amount = MIN_NEW + Math.floor(Math.random()*120) + (Math.random()<0.08 ? 500+Math.floor(Math.random()*700) : 0);
     const fresh = {id:"s"+Date.now(), name, url:name.toLowerCase().replace(/\s+/g,"")+".io", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
     touchToday(fresh, amount);
     state.entries.push(fresh);
@@ -637,11 +842,13 @@ function simulate(){
       touchToday(target, amount);
       state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
       feed(`⚔️ <b>${esc(target.name)}</b> went for the crown — <span class="amt">${fmt(amount)}</span>!`);
+      if (amount >= 500) award(target, "🐋 Whale");
+      trackRivalry(target);
       flash(target.id);
       runAutoDefend(target);
     }
   }
-  render();
+  rerender();
 }
 function flash(id){
   requestAnimationFrame(()=>{
@@ -698,7 +905,7 @@ $("#bidForm").addEventListener("submit", e=>{
   } else {
     toast(`💸 Paid ${fmt(amount)} — ${esc(res.entry.name)} is #${res.rank}${defendBudget?` · 🛡 defending with ${fmt(defendBudget)}`:""}`);
   }
-  render(); flash(res.entry.id);
+  rerender(); flash(res.entry.id);
   confetti();
   showShareBar(res.entry, res.rank, amount);
 });

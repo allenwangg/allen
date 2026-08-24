@@ -161,8 +161,9 @@ await test("state persists across reload (localStorage)", async () => {
   assert(rows.some(t => t.includes("TestRocket")), "bids lost on reload");
 });
 
-await test("zero external network requests (self-contained page)", async () => {
-  assert(externalRequests.length === 0, `external requests: ${externalRequests.join(", ")}`);
+await test("no third-party requests besides Google Fonts", async () => {
+  const bad = externalRequests.filter(u => !/^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(u));
+  assert(bad.length === 0, `unexpected external requests: ${bad.join(", ")}`);
 });
 
 await test("XSS in listing name is escaped", async () => {
@@ -243,6 +244,36 @@ await test("webhook feed merges as VERIFIED bids, idempotently", async () => {
   assert(totals.feedCo === 120, `FeedCo should be $120 once, got ${totals.feedCo}`);
   assert(totals.rocket === rocketBefore + 500, `TestRocket should gain exactly $500 once (${rocketBefore}+500), got ${totals.rocket}`);
   await page.evaluate(() => { CONFIG.BOARD_FEED_URL = ""; });
+});
+
+await test("nobility tiers render with medallions and tier names", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+  const meds = await page.locator(".board .row .med").count();
+  assert(meds >= 18, `expected a medallion per row, got ${meds}`);
+  const joniRow = await page.locator('.row[data-id="e0"]').textContent();
+  assert(joniRow.includes("Sovereign"), "JONI ($14k lifetime) should be Sovereign tier");
+  const smallRow = await page.locator('.row[data-id="e17"]').textContent();
+  assert(smallRow.includes("Baron"), "Duckhorn ($40) should be Baron tier");
+});
+
+await test("dethroning #1 awards the Kingslayer title", async () => {
+  await page.click("[data-open-bid]");
+  await page.fill("#fName", "Usurper");
+  await page.fill("#fAmt", "20000");
+  await page.click("#payBtn");
+  await page.waitForTimeout(600);
+  const rows = await page.locator(".board .row").allTextContents();
+  assert(rows[0].includes("Usurper") && rows[0].includes("Kingslayer"), `Usurper should lead with ⚔️ Kingslayer, got: ${rows[0].slice(0,120)}`);
+  const feed = await page.locator("#tickerInner").textContent();
+  assert(feed.includes("DETHRONED"), "dethroning missing from live feed");
+});
+
+await test("Hall of Fame shelf and Your Empire chip render", async () => {
+  const trophies = await page.locator("#hall .trophy").count();
+  assert(trophies >= 3, `expected seeded trophies, got ${trophies}`);
+  const empire = await page.locator("#empire").textContent();
+  assert(empire.includes("Usurper") && empire.includes("MAX RANK"), `empire chip wrong: ${empire}`);
 });
 
 await test("Today board ranks by today's bids, independent of all-time totals", async () => {

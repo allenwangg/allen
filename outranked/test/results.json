@@ -57,7 +57,7 @@
       "pass": true
     },
     {
-      "name": "zero external network requests (self-contained page)",
+      "name": "no third-party requests besides Google Fonts",
       "pass": true
     },
     {
@@ -85,6 +85,18 @@
       "pass": true
     },
     {
+      "name": "nobility tiers render with medallions and tier names",
+      "pass": true
+    },
+    {
+      "name": "dethroning #1 awards the Kingslayer title",
+      "pass": true
+    },
+    {
+      "name": "Hall of Fame shelf and Your Empire chip render",
+      "pass": true
+    },
+    {
       "name": "Today board ranks by today's bids, independent of all-time totals",
       "pass": true
     },
@@ -94,13 +106,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 112,
-    "medianDOMContentLoadedms": 72.3,
-    "medianLoadms": 73.7,
-    "totalRequests": 1
+    "medianFCPms": 116,
+    "medianDOMContentLoadedms": 80.6,
+    "medianLoadms": 12642.1,
+    "totalRequests": 2
   },
   "weight": {
-    "htmlBytes": 44458,
-    "gzipBytes": 14542
+    "htmlBytes": 55256,
+    "gzipBytes": 17705
   }
 }
