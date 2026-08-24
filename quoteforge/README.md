@@ -72,19 +72,22 @@ afterthought, and the UI says so.
 ## Tests
 
 ```sh
-./run-tests.sh          # every suite
-node js/pricing.test.js # just the money math
+./run-tests.sh           # unit suites — no dependencies, always runnable
+./run-tests.sh --all     # adds the browser suite (needs playwright + chromium)
+node js/pricing.test.js  # just the money math
 ```
 
-64 assertions with no test framework and no install step. The pricing suite includes a
+64 unit assertions with no test framework and no install step, plus 44 browser
+assertions in `test/browser.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
 
-The browser end-to-end suites live outside the repo but cover: the item grid keeping
+The browser suite drives the real app in Chromium and covers: the item grid keeping
 focus across re-renders, reprice-to-target landing on the target, undo across an
 assembly insert, persistence across reload, signature capture producing real pixels,
 print producing a clean multi-page PDF, and — importantly — the proposal never leaking
-cost, markup, margin, or a "Subcontractor" heading to the client.
+cost, markup, margin, or a "Subcontractor" heading to the client. It also checks that
+neither page scrolls sideways on a 390px phone.
 
 ### Two bugs the tests caught
 

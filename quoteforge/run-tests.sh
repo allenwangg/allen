@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
-# Runs every QuoteForge test suite. No dependencies — just node.
-set -euo pipefail
+# Runs the QuoteForge test suites.
+#   ./run-tests.sh          unit suites only (no dependencies, always runnable)
+#   ./run-tests.sh --all    also runs the browser suite (needs playwright + chromium)
+set -uo pipefail
 cd "$(dirname "$0")/.."
+
 fail=0
 for suite in quoteforge/js/*.test.js; do
   node "$suite" || fail=1
 done
+
+if [ "${1:-}" = "--all" ]; then
+  echo "  browser suite"
+  node quoteforge/test/browser.mjs || fail=1
+fi
+
 if [ "$fail" -ne 0 ]; then
   echo "  SUITES FAILED"
   exit 1
