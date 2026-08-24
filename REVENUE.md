@@ -16,6 +16,9 @@ What you have is not revenue. It is the two things that are genuinely hard to bu
    customer segment with real money.
 2. **A wedge** — a single sharp claim ("a 20% markup is a 16.7% margin") that is true,
    verifiable in ten seconds, and uncomfortable enough to be remembered.
+3. **A second leak the tool now closes** — unsigned change orders. Mispricing loses money
+   at the moment of the bid; unsigned changes lose it during the job, and unlike
+   mispricing the contractor usually knows it is happening and does it anyway.
 
 Distribution is the part you do not have, and it is the part that decides the outcome.
 
@@ -38,10 +41,15 @@ Most software ideas die on willingness to pay. This one is better positioned tha
 ### 1. Sell the outcome, not the software — highest expected value
 Do not compete with Jobber on features. Charge for the thing the tool reveals.
 
-A **pricing audit**: a contractor sends you three recent quotes, you rebuild them in
-QuoteForge and hand back a document showing what each job actually kept versus what
-they thought. Charge $300–800. The tool makes the work take an hour instead of a day.
+A **margin audit**: a contractor sends you three recent jobs, you rebuild them in
+QuoteForge and hand back a document showing what each one actually kept versus what
+they thought — and, separately, what they did on those jobs that never made it onto an
+invoice. Charge $300–800. The tool makes the work take an hour instead of a day.
 Roughly 40 of those a year is a real income, and it needs zero engineering.
+
+The unbilled-work half of that audit is often the more persuasive number, because it is
+not a disagreement about pricing philosophy. It is work they remember doing, for free,
+recently.
 
 This is the highest-probability path because it converts the product's insight into
 money without requiring you to win a software distribution fight.
@@ -51,8 +59,14 @@ The current architecture makes the free tier nearly free to run, which is defens
 messaging. Charge for what the browser cannot do:
 
 - Sync across phone and office computer
-- A hosted proposal link (client opens, signs, you get notified) — this one has real
-  pull, because chasing signatures is a genuine daily pain
+- **A hosted signature link** (client opens, signs, you get notified). This is the
+  strongest candidate on the list, and change orders are why. A proposal gets signed
+  once, at a kitchen table, where printing is fine. A change order gets signed
+  mid-job, urgently, while the client is at work and the crew is standing in a room
+  they cannot finish — and that is exactly the moment "I'll sign it tonight" turns
+  into work performed on a handshake. Texting a link that can be signed on a phone in
+  thirty seconds is worth real money to the contractor precisely because the
+  alternative costs them real money
 - Team seats, shared price book
 - Job costing against actuals
 
@@ -93,12 +107,19 @@ what actually works for this segment:
 
 ## What I would do first
 
-If you only do one thing: **run five pricing audits for actual contractors, free.**
+If you only do one thing: **run five margin audits for actual contractors, free.**
 
-Not to make money — to find out whether the margin gap is real and painful in their
-books, or just true on a landing page. That answer determines which path above is worth
-building and which are fantasy. It costs you a week and it is the only step here that
-cannot be skipped.
+Not to make money — to find out whether the gaps are real and painful in their books, or
+just true on a landing page. Ask each one two questions:
+
+1. What did you quote this job at, and what did it actually cost you?
+2. What did you do on it that you never billed for?
+
+The second question is the one to watch. If contractors answer it quickly and with
+irritation, the change-order half of this product is the wedge and the hosted signature
+link is the thing to build. If they shrug, it is not, and you have saved yourself
+months. That answer determines which path above is worth building and which are fantasy.
+It costs you a week and it is the only step here that cannot be skipped.
 
 ## Risks worth stating
 
@@ -113,5 +134,10 @@ cannot be skipped.
   editable estimates; keep that framing prominent.
 - **This is a crowded market with funded incumbents.** The wedge is sharp but narrow.
   Being better at one thing is a real strategy, but it is not a moat.
+- **Change orders are a discipline problem before they are a software problem.** The app
+  makes writing one fast and makes the exposure visible, but a contractor who does not
+  want to have the awkward conversation with their client still will not have it. Tools
+  do not supply nerve. Expect this to help the contractors who already half-know they
+  should be doing it, and to bounce off the ones who do not.
 - **Nothing here is a guarantee.** Most software products, including good ones, make
   approximately nothing. The product being solid raises the odds; it does not settle them.
