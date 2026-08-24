@@ -44,6 +44,10 @@ const state = {
   theme: 'system',
   storageMode: null,
   dirty: false,
+  // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
+  // only ~140px tall on a phone and the trend line becomes unreadable. The
+  // views pick chart dimensions from this instead.
+  narrow: typeof window !== 'undefined' && window.innerWidth < 620,
 };
 
 /* ------------------------------------------------------------------ *
@@ -371,6 +375,17 @@ function wire() {
   });
 
   window.addEventListener('hashchange', () => go(location.hash.slice(1) || 'today'));
+
+  // Re-render on a width change that crosses the narrow breakpoint, so chart
+  // geometry follows an orientation change or a resized window.
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const narrow = window.innerWidth < 620;
+      if (narrow !== state.narrow) { state.narrow = narrow; render(); }
+    }, 150);
+  });
 
   // Don't silently lose a half-filled day.
   window.addEventListener('beforeunload', (ev) => {

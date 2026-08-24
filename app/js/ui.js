@@ -72,7 +72,7 @@ export function todayView(state) {
 
   const pillarRadar = radarChart(
     Object.fromEntries(Object.entries(PILLAR_LABELS).map(([k, label]) => [k, { label, value: report.pillarAverages[k] }])),
-    { size: 300, label: 'Pillar balance (28-day average)' }
+    { size: state.narrow ? 320 : 300, label: 'Pillar balance (28-day average)' }
   );
 
   const scorePoints = report.scored.map((s) => ({ date: s.date, value: s.score }));
@@ -111,7 +111,11 @@ export function todayView(state) {
     <div class="card">
       <div class="card-head"><h2>Score history</h2><div class="spacer"></div>
         <span class="subtle">${state.entitlement.tier === 'free' ? 'Last 14 days (Free)' : `All ${entries.length} days`}</span></div>
-      ${lineChart(scorePoints, { smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time', height: 300 })}
+      ${lineChart(scorePoints, {
+        smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time',
+        width: state.narrow ? 380 : 720,
+        height: state.narrow ? 260 : 300,
+      })}
       <p class="subtle" style="margin-top:8px">Solid line is your daily score. Dashed line is a 7-day smoothed average — that is the one to watch.</p>
     </div>
     <div class="card">
@@ -153,12 +157,12 @@ function pillarTable(scored) {
       <td><strong>${esc(PILLAR_LABELS[key])}</strong>
         <div class="subtle">${p.parts.filter((x) => x.score != null).map((x) => `${esc(x.key)} ${x.score}`).join(' · ') || 'not logged'}</div></td>
       <td class="num">${p.score == null ? '--' : p.score}</td>
-      <td class="num">${Math.round(p.weight * 100)}%</td>
-      <td class="num">${contribution == null ? '--' : contribution}</td>
+      <td class="num col-optional">${Math.round(p.weight * 100)}%</td>
+      <td class="num col-optional">${contribution == null ? '--' : contribution}</td>
     </tr>`;
   }).join('');
   return `<div class="table-wrap"><table class="table">
-    <thead><tr><th>Pillar</th><th class="num">Score</th><th class="num">Weight</th><th class="num">Contribution</th></tr></thead>
+    <thead><tr><th>Pillar</th><th class="num">Score</th><th class="num col-optional">Weight</th><th class="num col-optional">Contribution</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
     <p class="subtle" style="margin-top:8px">Unlogged pillars are excluded from the weighted average rather than counted as zero, so partial logging never unfairly drags your score down.</p>`;
 }
@@ -169,7 +173,12 @@ function leverageCard(state) {
     : barChart(state.leverage.map((l) => ({
         label: l.label, value: l.scoreDelta,
         display: `+${l.scoreDelta} pts${l.yearsDelta ? ` · ${l.yearsDelta} yrs` : ''}`,
-      })), { label: 'Highest-leverage changes', pad: { t: 8, r: 96, b: 8, l: 210 } });
+      })), {
+        label: 'Highest-leverage changes',
+        width: state.narrow ? 380 : 720,
+        barHeight: state.narrow ? 22 : 26,
+        pad: state.narrow ? { t: 8, r: 74, b: 8, l: 150 } : { t: 8, r: 96, b: 8, l: 210 },
+      });
 
   return `<div class="card">
     <div class="card-head"><h2>Your highest-leverage changes</h2><span class="pill pill-pro">Pro</span></div>
@@ -302,7 +311,11 @@ export function insightsView(state) {
     ${barChart(wp.stats.filter((s) => s.mean != null).map((s) => ({
       label: s.day, value: Math.round((s.mean - wp.overall) * 10) / 10,
       display: `${s.mean.toFixed(1)} (${s.mean >= wp.overall ? '+' : ''}${(s.mean - wp.overall).toFixed(1)})`,
-    })), { signed: true, label: 'Score by weekday, relative to your average' })}
+    })), {
+      signed: true, label: 'Score by weekday, relative to your average',
+      width: state.narrow ? 380 : 720,
+      pad: state.narrow ? { t: 8, r: 14, b: 8, l: 78 } : { t: 8, r: 14, b: 8, l: 118 },
+    })}
     <p class="muted" style="margin-top:10px">Your best day is <strong>${esc(wp.best.day)}</strong> (${wp.best.mean}) and your worst is
     <strong>${esc(wp.worst.day)}</strong> (${wp.worst.mean}) — a spread of ${wp.spread} points.
     Most people find one specific day is quietly costing them; fixing that one day is usually easier than changing every day.</p>

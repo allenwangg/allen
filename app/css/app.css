@@ -177,7 +177,19 @@ a  { color: var(--accent); }
 /* ---------------- headline ---------------- */
 
 .hero { display: grid; grid-template-columns: minmax(180px, 220px) 1fr; gap: 24px; align-items: center; }
-@media (max-width: 620px) { .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+@media (max-width: 620px) {
+  .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  /* Without this the second hero column shrink-wraps and the stat tiles stack
+     one per row, wasting most of a phone's width. */
+  .hero > * { width: 100%; }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Weight and contribution are reference detail, not the story. Dropping them
+     lets the table fit instead of clipping mid-header. */
+  .col-optional { display: none; }
+  .card { padding: 15px; }
+  .stat-value { font-size: 1.3rem; }
+}
 
 .stat { background: var(--surface-2); border-radius: var(--radius-s); padding: 12px 14px; }
 .stat-label { font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 650; }
@@ -251,7 +263,9 @@ textarea { min-height: 76px; resize: vertical; }
 /* ---------------- buttons ---------------- */
 
 .btn {
-  appearance: none; font: inherit; font-weight: 600; cursor: pointer;
+  /* text-decoration matters because .btn is used on <a> as well as <button>;
+     without it every call to action on the landing page renders underlined. */
+  appearance: none; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
   border-radius: var(--radius-s); padding: 10px 17px;
   border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;

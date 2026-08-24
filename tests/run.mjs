@@ -443,6 +443,42 @@ t('permutationP is deterministic across calls', () => {
   eq(a, b, 'the same data must always give the same p-value');
 });
 
+t('reports NOTHING when every habit trends but none actually matters', () => {
+  // This backs the "0 of 60" claim on the landing page: thirty datasets where
+  // habits all improve together over four months, with no real day-to-day
+  // relationship anywhere. Naive analysis finds a dozen "insights" in data like
+  // this; the correct answer is silence.
+  let datasetsWithFindings = 0;
+  const trials = 30;
+  for (let s = 0; s < trials; s++) {
+    const es = synth(120, 7000 + s, (e, i, r) => {
+      const p = i / 119;
+      e.sleepHours = 6.2 + p * 1.0 + r() * 0.9;
+      e.steps = Math.round(4200 + p * 3500 + r() * 4000);
+      e.exerciseMinutes = Math.round(r() * 60);
+      e.proteinGrams = Math.round(78 + p * 45 + r() * 30);
+      e.produceServings = Math.round(1.5 + p * 2.5 + r() * 2);
+      e.ultraProcessed = Math.max(0, Math.round(4.5 - p * 2.5 + r() * 2));
+      e.fiberGrams = Math.round(16 + p * 10 + r() * 10);
+      e.hydrationLitres = Math.round((1.4 + p * 0.7 + r() * 0.9) * 4) / 4;
+      e.sunlightMinutes = Math.round(12 + p * 28 + r() * 30);
+      e.caffeineAfter2pm = r() < 0.35 ? Math.round(r() * 4) * 50 : 0;
+      e.bedtimeMinutes = 1320 + Math.round(r() * 90);
+      e.socialMinutes = Math.round(r() * 180);
+      e.alcoholUnits = Math.round(r() * 4);
+      e.stress = Math.max(1, Math.min(5, Math.round(3.6 - p * 0.9 + r() * 1.4)));
+      e.mood = Math.max(1, Math.min(5, Math.round(2.9 + p * 1.1 + r() * 1.2)));
+      e.sleepQuality = Math.max(1, Math.min(5, Math.round(2.4 + p * 1.4 + r() * 1.2)));
+      e.restingHR = Math.round(66 - p * 6 + r() * 5);
+      e.hrv = Math.round(36 + p * 14 + r() * 10);
+      e.energy = 1 + Math.floor(r() * 5);       // deliberately unrelated to anything
+    });
+    if (discover(es).findings.length > 0) datasetsWithFindings++;
+  }
+  console.log(`\n  [trending] ${datasetsWithFindings}/${trials} all-habits-trending datasets produced any finding`);
+  ok(datasetsWithFindings === 0, `expected silence, got findings in ${datasetsWithFindings} datasets`);
+});
+
 t('RECOVERS an effect in weekly-clustered data', () => {
   // The realistic shape: drinking clusters at weekends, so the driver is zero
   // on most days and strongly periodic. Two separate mechanisms previously
