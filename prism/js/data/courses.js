@@ -17109,5 +17109,478 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "world-in-data",
+    "title": "The World in Data",
+    "tagline": "What the numbers really say about our world",
+    "category": "Global Issues",
+    "description": "Most people guess worse than random chance about basic global facts, and they guess wrong in one direction. This course walks through the improvements you probably missed, the problems genuinely getting worse, and the habits that keep a striking statistic from fooling you.",
+    "lessons": [
+      {
+        "id": "knowledge-gap",
+        "title": "Worse Than Chimpanzees",
+        "summary": "Why well-educated audiences systematically misjudge the state of the world, and how to separate 'bad' from 'getting worse'.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Test You Would Fail",
+            "body": "Imagine a room of doctors, journalists and executives answering simple multiple-choice questions about global health and poverty. Three options each. They are experts, well-read, and confident. They score below what blind guessing would produce. This is one of the most replicated findings in public understanding.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Chimpanzee Benchmark",
+            "body": "Physician Hans Rosling framed it memorably: hand the same three-option questions to chimpanzees picking bananas at random, and they would average around 33% correct. Human audiences, across dozens of countries and professions, often scored well below that. Ignorance alone cannot do this.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "Ignorance Would Be Random",
+            "body": "If you simply did not know, your errors would scatter in every direction and land near chance. Scoring below chance means something is actively steering you wrong. The errors are not noise; they line up. Almost everyone errs on the same side of the truth.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Scoring below 33% on three-option questions tells you that people are:",
+            "choices": [
+              "Simply uninformed, with answers scattered at random",
+              "Holding a shared wrong picture that points them one direction",
+              "Careless readers who misunderstood the questions"
+            ],
+            "answer": 1,
+            "explain": "Genuine ignorance produces chance-level scores. Doing worse than chance requires a systematic bias — a shared mental model that is pointing in the wrong direction.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "The Bias Has a Direction",
+            "body": "The direction is pessimism. Asked what share of children are vaccinated, or how girls' schooling compares to boys', people reliably guess that the world is poorer, sicker and more divided than the measurements show. Very few people err by being too optimistic.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Survey respondents are roughly as likely to overestimate global progress as to underestimate it.",
+            "answer": false,
+            "explain": "The misses are lopsided. Across countries and professions, people overwhelmingly guess that conditions are worse than the data indicate, which is why average scores fall below random chance.",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "News Covers Events, Not Trends",
+            "body": "A bridge collapse is an event. A bridge standing for another year is not. Child mortality falling a fraction of a percent this month is real and enormous over decades, but on any given Tuesday it is nothing a newsroom can lead with. The slow good news has no news hook.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "Improvement Is Too Slow to Be a Story",
+            "body": "This is not a claim that reporters lie. It is a structural point about what counts as new. Sudden harm arrives as an image with a date; gradual gains arrive as a spreadsheet with no date at all. Your picture of the world is built from datelines, so it skews toward rupture.",
+            "art": "clock"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two statements: 'child mortality is a tragedy' and 'child mortality is falling fast'. Which one is true?",
+            "answer": "Both, and holding them together is the whole skill. One describes a level — how bad things are now. The other describes a direction — which way they move. A level can be appalling while the trend is the best on record, and a comfortable level can quietly deteriorate.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Level and Direction Come Apart",
+            "body": "Confusing the two produces bad thinking in both directions. Treat a good trend as proof that nothing is wrong and you excuse present suffering. Treat a bad level as proof that nothing works and you discard the methods that produced the improvement. Track both numbers separately.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which pairing is impossible?",
+            "choices": [
+              "A terrible level with a rapidly improving trend",
+              "A comfortable level with a worsening trend",
+              "None — all combinations of level and trend can occur"
+            ],
+            "answer": 2,
+            "explain": "Level and direction are independent measurements. Any combination can occur, which is exactly why a single verdict like 'things are bad' or 'things are fine' is almost never enough.",
+            "art": "layers"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Educated audiences score below random chance on basic global-development questions.",
+              "Below-chance scores prove a systematic bias, not mere ignorance.",
+              "The bias runs one way: people assume the world is worse than measurements show.",
+              "News reports events; improvement is slow and produces no event to report.",
+              "Always separate the level (how bad) from the direction (which way it is moving)."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why is scoring below chance different from being uninformed?",
+            "back": "Ignorance scatters answers around chance level. Falling below it requires a shared bias pushing everyone the same wrong way."
+          },
+          {
+            "front": "Which direction does the public's error run?",
+            "back": "Pessimistic. People consistently guess that global poverty, health and education are worse than the data show."
+          },
+          {
+            "front": "Why does the news under-report progress?",
+            "back": "Newsrooms report events. Gradual improvement produces no single dated event, so it rarely becomes a story."
+          },
+          {
+            "front": "What is the difference between level and direction?",
+            "back": "Level is how bad conditions are now; direction is which way they are moving. Both can be measured, and they can disagree."
+          }
+        ]
+      },
+      {
+        "id": "what-improved",
+        "title": "The Gains You Missed",
+        "summary": "Extreme poverty, child mortality, life expectancy and literacy over two centuries — with honest caveats about how each is measured.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Centuries in Numbers",
+            "body": "Set aside how you feel about the world for a moment and look at what has been counted. Several of the longest-running measurements of human welfare have moved further in the last seventy years than in all previous recorded history. Here is what they show, and what they cannot show.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Extreme Poverty",
+            "body": "Around 1820, most researchers estimate that the large majority of humanity — something close to three quarters or more — lived in extreme material deprivation. Today the figure is roughly a tenth, even as the population grew about eightfold. Both the share and the absolute count have fallen.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "The Poverty Line Is a Convention",
+            "body": "That number depends on a threshold someone chose — a low daily consumption figure adjusted for prices across countries and time. Move the line and the story changes in size, though not in direction. Historical estimates before the 20th century are reconstructions, not censuses.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The share of people in extreme poverty has fallen, but the absolute number has risen because the population grew.",
+            "answer": false,
+            "explain": "Both fell. Even with roughly eight times more people than in 1820, the total number living in extreme poverty is lower now — one of the least intuitive facts in the data.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Children Surviving",
+            "body": "For most of history, roughly a third of children died before their fifth birthday — in rich and poor societies alike. Globally that figure is now under 4%. It is the single largest change in human experience, and it happened mostly within living memory.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Roughly what share of the world's children now die before age five?",
+            "choices": [
+              "About 1 in 4",
+              "About 1 in 8",
+              "Fewer than 1 in 20"
+            ],
+            "answer": 2,
+            "explain": "Under 4% globally, or fewer than one in twenty. The historical rate was near one in three. Surveys find most people guess several times too high.",
+            "art": "shield"
+          },
+          {
+            "type": "example",
+            "title": "Life Expectancy Roughly Doubled",
+            "body": "Global life expectancy at birth was somewhere near the low thirties in 1900 and is now near seventy-three. Much of the early gain came from children surviving, which pulls the average up sharply — but adult lifespans lengthened too, and the gain reaches every inhabited continent.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Reading and Vaccines",
+            "body": "Two centuries ago roughly one adult in ten could read; today it is over 85%, and the gap between girls' and boys' primary schooling has nearly closed worldwide. Smallpox is gone. Polio and guinea worm are near zero. Measles deaths fell dramatically, though outbreaks return where coverage slips.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If this progress is real, why did almost nobody tell you about it?",
+            "answer": "Because none of it happened on a particular day. There was no morning when extreme poverty halved. The lesson is not that the media lies but that improvement is a rate, and rates do not generate headlines. Nobody hid the story; it never had a moment to report.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "These figures mean poverty and child death are solved problems.",
+            "answer": false,
+            "explain": "A tenth of humanity in extreme poverty is still hundreds of millions of people, and millions of children still die young. A falling rate describes direction, never the size of what remains.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Measured Well, Not Perfectly",
+            "body": "Household surveys miss people. Some governments report figures that statisticians treat with caution. Pre-1950 numbers are modelled estimates. The honest position is that the direction of these trends is robust across independent sources, while any single decimal place is not.",
+            "art": "balance"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Extreme poverty fell from most of humanity around 1820 to roughly a tenth today — in share and in absolute count.",
+              "The poverty line is a chosen convention and early figures are reconstructions.",
+              "Child mortality fell from roughly a third of children to under 4% globally.",
+              "Life expectancy roughly doubled since 1900; literacy rose from about one in ten adults to over 85%.",
+              "Progress is a rate, not an event, which is why it produces no headline — and why it does not mean the problem is finished."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How did extreme poverty change from 1820 to today?",
+            "back": "From most of humanity to roughly a tenth. Both the share and the total number fell, despite roughly eightfold population growth."
+          },
+          {
+            "front": "What caveat belongs with any poverty statistic?",
+            "back": "The line is a chosen threshold adjusted across prices and time, and historical figures are modelled estimates rather than counts."
+          },
+          {
+            "front": "How has child mortality changed?",
+            "back": "From roughly a third of children dying before five, historically, to under 4% globally today."
+          },
+          {
+            "front": "Why is 'the media lies' the wrong lesson?",
+            "back": "Improvement is a rate with no single dated moment. It fails the test of what counts as news, so it goes unreported without anyone hiding it."
+          }
+        ]
+      },
+      {
+        "id": "what-is-worse",
+        "title": "The Lines Going Wrong",
+        "summary": "Climate, biodiversity, metabolic disease, inequality within countries, regional reversals and antimicrobial resistance.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Other Half of the Ledger",
+            "body": "The same discipline that reveals unnoticed progress also reveals unnoticed decline. Some of the world's most important measurements are moving the wrong way, steadily, with the same lack of drama that hid the good news. These lines deserve exactly the same scrutiny.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Greenhouse Gases and Warming",
+            "body": "Atmospheric carbon dioxide sat near 280 parts per million before industrialisation and has passed 420. Global average surface temperature is roughly 1.2 to 1.3 degrees Celsius above the late-1800s baseline. Both series are measured directly and both are still climbing.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "Living Systems Under Pressure",
+            "body": "Roughly half the world's habitable land is now farmed, mostly for livestock and their feed. Monitored wildlife populations, wetlands and old-growth forest have declined sharply. Population indices are contested in their exact magnitude; the direction of habitat loss is not.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Roughly where does atmospheric CO2 stand relative to pre-industrial levels?",
+            "choices": [
+              "Slightly above, near 300 parts per million",
+              "Above 420 parts per million, up from about 280",
+              "Roughly triple, near 840 parts per million"
+            ],
+            "answer": 1,
+            "explain": "Pre-industrial concentrations were near 280 parts per million; the figure has passed 420 — about a 50% increase, measured continuously since the 1950s.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "The Metabolic Reversal",
+            "body": "As food became abundant, a new burden arrived. Adult obesity has risen in nearly every country, and type 2 diabetes now affects hundreds of millions of people. Many countries carry both undernutrition and obesity at once, sometimes within the same household.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Rising obesity is confined to wealthy countries.",
+            "answer": false,
+            "explain": "Rates are rising fastest in many middle- and lower-income countries, which often face undernutrition and obesity simultaneously — a double burden on the same health systems.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Two Inequalities, Two Directions",
+            "body": "Gaps between countries narrowed for decades as populous economies grew quickly. Meanwhile, income and wealth gaps inside many countries widened. Global inequality can fall while the inequality you personally experience rises — and both statements can be honestly quoted.",
+            "art": "pyramid"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do arguments about inequality so often deadlock?",
+            "answer": "Because the two sides are often measuring different things. One cites the gap between nations, which narrowed. The other cites the gap within a nation, which in many places widened. Neither is lying. Ask which comparison a number describes before calling it wrong.",
+            "art": "dialog"
+          },
+          {
+            "type": "example",
+            "title": "Progress Is Not Guaranteed",
+            "body": "Global averages hide reversals. Conflict and displacement have pushed acute hunger back up in parts of the Sahel, the Horn of Africa and beyond. Life expectancy has fallen in specific countries and periods. Trends are not laws of nature; they are the sum of decisions that can be undone.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Antimicrobial Resistance",
+            "body": "The drugs that made surgery and childbirth survivable are losing potency. Resistant infections are associated with well over a million deaths a year, and the pipeline of genuinely new antibiotic classes is thin. This is a slow line moving against one of the largest gains in the previous lesson.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You believe extreme poverty fell sharply and that warming is accelerating. What does that make you?",
+            "choices": [
+              "Inconsistent — the two claims pull against each other",
+              "Accurate, since level and direction are measured separately for each issue",
+              "An optimist who is downplaying the climate problem"
+            ],
+            "answer": 1,
+            "explain": "Different indicators move independently. Reading each series on its own evidence is not inconsistency; it is the only way to avoid forcing every measurement into a single mood.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Optimism Is Not Complacency",
+            "body": "Knowing that child mortality fell is not an argument for doing less; it is evidence that deliberate effort works, which is the strongest case for more of it. The point of the data is never to soothe you. It is to aim you at the problems that are actually the largest.",
+            "art": "compass"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "CO2 has passed 420 parts per million from about 280, with roughly 1.2-1.3C of warming so far.",
+              "Habitat loss and land-use change continue; about half of habitable land is farmed.",
+              "Obesity and type 2 diabetes are rising almost everywhere, including where hunger persists.",
+              "Inequality between countries fell while inequality within many countries rose.",
+              "Antimicrobial resistance threatens past gains — and optimism about trends never excuses complacency about problems."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Where does atmospheric CO2 stand versus pre-industrial levels?",
+            "back": "Above 420 parts per million, up from roughly 280 — about a 50% rise, with roughly 1.2-1.3C of warming."
+          },
+          {
+            "front": "Why can two people disagree about inequality using correct numbers?",
+            "back": "Between-country inequality narrowed while within-country inequality widened in many places. They are citing different comparisons."
+          },
+          {
+            "front": "What is the 'double burden' in nutrition?",
+            "back": "Many countries now face undernutrition and rising obesity at the same time, sometimes within a single household."
+          },
+          {
+            "front": "Why is optimism about trends not complacency?",
+            "back": "Improvement is evidence that effort works, which argues for more of it. Data should aim attention, not provide reassurance."
+          }
+        ]
+      },
+      {
+        "id": "reading-numbers",
+        "title": "How Numbers Fool You",
+        "summary": "Absolute versus relative risk, base rates, axis tricks, hidden distributions, survivorship bias, and a checklist for any striking figure.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "True and Still Misleading",
+            "body": "Almost every number that misleads you is technically correct. That is what makes this hard. The manipulation happens in the framing — which comparison is offered, where the chart begins, what the average conceals. Here are the moves, so you can spot them at speed.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "Relative Risk Hides the Size",
+            "body": "'Doubles your risk' sounds alarming until you ask: doubles it from what? If two people in a hundred thousand were affected and now four are, the risk doubled and remains negligible. Percent changes describe motion, never magnitude. Always demand the starting number.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Base Rates Anchor Everything",
+            "body": "The base rate is how common something is before any new information arrives. A test that is 99% accurate for a condition affecting one person in ten thousand will still produce far more false alarms than true ones, simply because there are so many more healthy people to misclassify.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A study reports a habit raises a disease risk by 40%. What do you ask first?",
+            "choices": [
+              "How large the study's sample was",
+              "What the underlying risk was before the 40% increase",
+              "Whether the researchers were independently funded"
+            ],
+            "answer": 1,
+            "explain": "Sample size and funding matter, but a relative change is meaningless without the base rate. Forty percent of a tiny risk is still a tiny risk.",
+            "art": "key"
+          },
+          {
+            "type": "example",
+            "title": "The Axis Does the Arguing",
+            "body": "Take a series that wobbles slightly around a flat line. Crop the vertical axis to the narrow band where it moves and the wobble becomes a mountain range. Nothing was falsified. The chart simply chose a zoom level that makes noise look like a trend.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Start Dates Are Chosen",
+            "body": "Any series with ups and downs contains a start date that will produce almost any story you want. Begin at an unusual peak and the trend looks like collapse; begin at a trough and it looks like a boom. If a start year seems oddly specific, plot the longest series available.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A chart can create a false impression without containing a single incorrect data point.",
+            "answer": true,
+            "explain": "Axis cropping and cherry-picked start dates work entirely with accurate values. The distortion is in the framing, which is why checking the numbers is not enough.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Averages Hide the Shape",
+            "body": "An average income can rise while most people's income falls, if gains concentrate at the top. A country's average health can look fine while a region collapses. Ask for the distribution — the median, the spread, the tails — before you trust any single summary figure.",
+            "art": "bell"
+          },
+          {
+            "type": "example",
+            "title": "Counting Only the Survivors",
+            "body": "Study successful founders and you will find they took bold risks. So did the far larger number who failed and never got interviewed. When the data set is assembled from things that made it through, its lessons describe the filter as much as the cause.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A country emits far more total CO2 than another, but far less per person. Which figure is correct?",
+            "answer": "Both, and they answer different questions. Totals tell you where physical emissions must fall to change the atmosphere. Per-capita figures describe the typical person's footprint and compare responsibility more fairly. Quoting only one is where the argument starts.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "True Versus Relevant",
+            "body": "The most common trick needs no falsehood at all: an accurate statistic answering a question nobody asked. Crime in one category fell while the discussion is about another. The statistic survives fact-checking and still leaves you with the wrong picture.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these can be true even when every number quoted is accurate?",
+            "choices": [
+              "A chart implying a trend that does not exist",
+              "An average that describes almost no one in the group",
+              "A statistic that is real but irrelevant to the question",
+              "All of the above"
+            ],
+            "answer": 3,
+            "explain": "Axis choice, hidden distributions and topic-swapping all work with correct figures. Accuracy is necessary for a number to inform you, but nowhere near sufficient.",
+            "art": "layers"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Ask for the base rate: a doubled tiny risk is still tiny.",
+              "Check the axis and the start date before believing a trend.",
+              "Ask what the average hides — the median, the spread, the regions.",
+              "Ask who is missing from the data, and whether totals or per-capita fits the question.",
+              "Finally ask whether a true number is even relevant to what is being claimed."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why is 'doubles your risk' incomplete?",
+            "back": "It gives the change but not the starting size. Doubling a risk of two in a hundred thousand leaves it negligible."
+          },
+          {
+            "front": "Two ways a chart misleads with accurate data?",
+            "back": "Cropping the vertical axis to magnify noise, and picking a start date at an unusual peak or trough."
+          },
+          {
+            "front": "What does survivorship bias do to a data set?",
+            "back": "It includes only what made it through the filter, so the lessons drawn describe the filter rather than the cause."
+          },
+          {
+            "front": "The last question to ask about a striking statistic?",
+            "back": "Whether it is relevant. A true figure answering a different question passes fact-checking and still misleads."
+          }
+        ]
+      }
+    ]
   }
 ];
