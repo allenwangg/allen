@@ -17582,5 +17582,1398 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "creativity",
+    "title": "Where Ideas Come From",
+    "tagline": "Not a lightning bolt. A recombination you can practise.",
+    "category": "Creativity",
+    "description": "What the research actually says about creative work: ideas are recombinations of parts you already have, arriving slowly and under constraint. Four lessons that retire the right-brain and tortured-genius myths and end with a routine you can start this week.",
+    "lessons": [
+      {
+        "id": "lightning-bolt-myth",
+        "title": "The Myth of the Lightning Bolt",
+        "summary": "Why every invention turns out to be a recombination of existing parts, why hunches are slow, and why nobody is right-brained.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Bolt That Never Struck",
+            "body": "Picture the moment an idea arrives: a flash, a bolt, a lightbulb over the head. Now look closely at any invention and the bolt disappears. What you find instead is a slow assembly of parts that already existed, borrowed from somewhere else. Gutenberg is the cleanest case.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Gutenberg's Borrowed Parts",
+            "body": "Around 1440 in Mainz, Johannes Gutenberg combined a screw press built for crushing grapes with the metal punches goldsmiths used to stamp coins. Neither part was new. One squeezed wine, the other stamped marks into metal. Put them together and you get printing.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "So what was actually new about Gutenberg's printing press?",
+            "choices": [
+              "A technology nobody had ever built any version of before",
+              "The combination of a wine press and metal punches",
+              "A sudden insight unconnected to anything in his training",
+              "Paper, which had only just reached Europe"
+            ],
+            "answer": 1,
+            "explain": "Gutenberg was a trained goldsmith living in a wine region. Both parts were already lying around his life. The invention was the connection between them, not either piece on its own."
+          },
+          {
+            "type": "concept",
+            "title": "The Adjacent Possible",
+            "body": "Biologist Stuart Kauffman named the set of things that could exist next, given what exists now: the adjacent possible. Every new part opens doors to combinations that were unreachable before. You cannot skip ahead. A 1400s inventor could not build a search engine, because the rooms leading to it had not been built.",
+            "art": "network"
+          },
+          {
+            "type": "example",
+            "title": "Why Inventions Arrive in Pairs",
+            "body": "The telephone: Alexander Graham Bell and Elisha Gray filed at the same patent office on the same day in February 1876. Calculus: Newton and Leibniz, working separately. When all the parts are finally on the table, several people reach for the same combination at once.",
+            "art": "orbit"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A sufficiently brilliant person born in 1600 could have invented the internet.",
+            "answer": false,
+            "explain": "Ideas are built from available parts, and the internet needed electricity, telegraphy, computing and packet switching first. Brilliance carries you through the open doors faster. It does not conjure new ones."
+          },
+          {
+            "type": "concept",
+            "title": "Slow Hunches",
+            "body": "Steven Johnson, who popularised Kauffman's idea, calls the other half of the story the slow hunch: a half-formed question you carry for years, useless on its own, until it collides with a second half-formed question. Most hunches die of loneliness. The survivors are the ones somebody wrote down.",
+            "art": "seed"
+          },
+          {
+            "type": "example",
+            "title": "Darwin's Missing Eureka",
+            "body": "Darwin remembered natural selection arriving in a flash while he read Malthus in September 1838. Then psychologist Howard Gruber read the notebooks. The key pieces are sitting there in Darwin's own handwriting before the supposed flash, and he kept fumbling with them for months afterwards.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Popular science puts creativity in the right hemisphere. What does the brain research actually show?",
+            "answer": "Lateralisation is real: language leans left, some spatial processing leans right. But creative thinking recruits networks spread across both hemispheres. A 2013 University of Utah study scanned 1,011 brains and found no left-brained or right-brained people at all."
+          },
+          {
+            "type": "concept",
+            "title": "Where the Myth Came From",
+            "body": "Roger Sperry won a Nobel Prize in 1981 for split-brain research on patients whose hemispheres had been surgically disconnected. Real science, badly borrowed. Pop psychology turned 'these functions lean left' into 'you are a left-brained person'. Sperry's patients had had brain surgery. You have not.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A colleague says she is 'a right-brain type, so she takes the creative work'. What is the accurate correction?",
+            "choices": [
+              "She is right: creativity is a right-hemisphere function",
+              "Creative work runs across both hemispheres, and the personality split is not real",
+              "Only left-handed people are genuinely right-brained",
+              "Lateralisation is a myth and nothing in the brain is lateralised"
+            ],
+            "answer": 1,
+            "explain": "There are two ways to get this wrong. Lateralisation is real for specific functions like language. What is not real is the idea that people come in creative-right and logical-left types."
+          },
+          {
+            "type": "quote",
+            "text": "Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something.",
+            "by": "Steve Jobs"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The lightning bolt is a story told afterwards. Gutenberg's press was a winepress plus a coin punch.",
+              "The adjacent possible: you can only build what the current parts allow, which is why the same invention often arrives twice in one year.",
+              "Slow hunches outnumber flashes. Darwin had the theory in his notebooks before he had his eureka.",
+              "Lateralisation is real; right-brained people are not. Creative work runs across both hemispheres."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Gutenberg's press combined which two existing technologies?",
+            "back": "A screw press for crushing grapes and the metal punches goldsmiths used to stamp coins. The invention was the combination itself."
+          },
+          {
+            "front": "What is the adjacent possible?",
+            "back": "Stuart Kauffman's term for the set of next steps reachable from what already exists. Each new part opens doors that were previously shut."
+          },
+          {
+            "front": "What is a slow hunch?",
+            "back": "Steven Johnson's term for a half-formed idea carried for years until it meets its missing half. Most die alone; writing them down keeps them alive."
+          },
+          {
+            "front": "Are creative people right-brained?",
+            "back": "No. Lateralisation is real for functions like language, but a 2013 Utah study of 1,011 brains found no left- or right-brained types."
+          }
+        ]
+      },
+      {
+        "id": "divergent-convergent",
+        "title": "Divergent and Convergent",
+        "summary": "Guilford's two modes of thinking, why the brainstorming meeting loses ideas, and why quantity is the honest route to quality.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Psychology's Blind Spot",
+            "body": "In 1950, J. P. Guilford used his presidential address to the American Psychological Association to scold his own field: psychologists had almost entirely ignored creativity. His fix was to split thinking in two, and that split still runs every good creative process today.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Two Modes, One Process",
+            "body": "Divergent thinking generates: many answers, branching outwards, judgment suspended. Convergent thinking selects: narrowing the options down to the one that works. Guilford's point was not that one is creative and the other is not. Real work needs both, in sequence. It fails when you run them at once.",
+            "art": "fork"
+          },
+          {
+            "type": "example",
+            "title": "Name Every Use for a Brick",
+            "body": "Guilford's alternative uses test gives you an ordinary object and two minutes. Doorstop, weapon, paperweight, chalk, crude drum, ballast for a boat. It is the standard laboratory measure of divergent thinking, and it is still in use seventy years on.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your brick list is scored. What exactly are the graders counting?",
+            "answer": "Four things: fluency, or how many uses; flexibility, or how many different categories you crossed; originality, or how rare your answers are compared with everyone else tested; and elaboration, or how much detail you gave. Sheer count is only the first of the four."
+          },
+          {
+            "type": "concept",
+            "title": "Osborn's Promise",
+            "body": "Advertising executive Alex Osborn published Applied Imagination in 1953 and handed the world brainstorming: no criticism, wild ideas welcome, go for volume, build on each other. He also claimed a group would produce roughly twice the ideas of the same people working alone. The rules were sound. That claim was not.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Five people brainstorming in a room produce more ideas than those same five people working separately.",
+            "answer": false,
+            "explain": "Taylor, Berry and Block found the opposite as early as 1958, and dozens of studies have repeated it. The same people working alone and then pooling their lists produce more ideas, and better ones. The room is the problem."
+          },
+          {
+            "type": "concept",
+            "title": "Why the Room Loses Ideas",
+            "body": "Diehl and Stroebe pinned down the causes in 1987. Production blocking: only one person can talk at a time, so you sit holding your idea, rehearsing it, and it fades. Evaluation apprehension: you quietly drop anything that might sound stupid in front of your boss. Social loafing: in a crowd, effort diffuses.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Diehl and Stroebe tested all three causes against each other. Which one did the most damage?",
+            "choices": [
+              "Evaluation apprehension, the fear of looking foolish",
+              "Production blocking, waiting your turn to speak",
+              "Social loafing, coasting on other people's effort",
+              "None of them; groups actually outperformed individuals"
+            ],
+            "answer": 1,
+            "explain": "Blocking is mechanical rather than emotional. While one person talks, everyone else is stuck holding and rehearsing, and ideas evaporate during the wait. That is why silent, parallel generation fixes so much."
+          },
+          {
+            "type": "concept",
+            "title": "Alone First, Then Together",
+            "body": "The fix follows from the cause. Generate alone and in silence, on paper, then pool and build. Bernd Rohrbach's 6-3-5 brainwriting does exactly that: six people, three ideas each, five minutes, pass the sheet along. Researchers call the alone-first arrangement a nominal group, and it beats the meeting.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "The Equal-Odds Rule",
+            "body": "Dean Keith Simonton studied careers across the sciences and the arts and found something deflating. The ratio of hits to total attempts stays roughly flat, within a career and between people. More swings, more hits, the same batting average. Quantity is not the enemy of quality. It is the mechanism.",
+            "art": "graph"
+          },
+          {
+            "type": "example",
+            "title": "Edison's Ratio",
+            "body": "Thomas Edison held 1,093 US patents. You can probably name three. Bach left over a thousand catalogued works and most are never performed. In Simonton's data the pattern holds for composers, physicists and poets alike: the years with the most total output are the years with the most masterpieces.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Under the equal-odds rule, celebrated creators succeed because a higher share of their work is excellent.",
+            "answer": false,
+            "explain": "Simonton found the reverse. The hit rate stays roughly constant, so the famous produced more masterpieces because they produced more of everything. Every celebrated body of work sits on a pile of forgotten work."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Divergent thinking generates, convergent thinking selects. Run them in sequence; running them together kills both.",
+              "The brainstorming room leaks ideas through production blocking, evaluation apprehension and social loafing.",
+              "Generate alone, combine together. Brainwriting and nominal groups beat the meeting with the same people in it.",
+              "Equal odds: your hit rate is roughly fixed, so more attempts is the honest route to more hits."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Divergent versus convergent thinking",
+            "back": "Guilford, 1950. Divergent generates many options; convergent narrows to the one that works. Creative work needs both, in sequence rather than at once."
+          },
+          {
+            "front": "Why do brainstorming groups underperform?",
+            "back": "Production blocking, evaluation apprehension and social loafing (Diehl & Stroebe, 1987). Blocking, the wait for your turn to speak, does the most damage."
+          },
+          {
+            "front": "What beats a brainstorming meeting?",
+            "back": "Having people generate alone first, then pooling and building: brainwriting or a nominal group. Same people, more ideas, better ones."
+          },
+          {
+            "front": "What is the equal-odds rule?",
+            "back": "Simonton: hit rate stays roughly constant, so more total output means more hits. Prolific creators are not more accurate, just more prolific."
+          }
+        ]
+      },
+      {
+        "id": "constraints-incubation",
+        "title": "Constraints and Incubation",
+        "summary": "Why hard limits generate better work, what happens to a stuck problem while you walk or sleep, and how to steal parts from other fields.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Fifty-Dollar Bet",
+            "body": "In 1960 Bennett Cerf, Dr Seuss's publisher, bet him fifty dollars that he could not write a book using only fifty different words. Seuss wrote Green Eggs and Ham, one of the best-selling children's books ever printed. Cerf, by Seuss's account, never paid up.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "Why a Cage Helps",
+            "body": "A blank page offers infinite moves, which is exactly why it paralyses. A constraint deletes most of the search space and pushes you into the corners of whatever is left. Fifty words is not a handicap. It is a map with most of the roads removed, so you have to find the strange one still open.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why would a fifty-word limit make Green Eggs and Ham better rather than worse?",
+            "choices": [
+              "Short words are inherently more poetic than long ones",
+              "The limit shrank the options and forced unusual combinations",
+              "Seuss simply worked faster when money was on the line",
+              "It did not help; the book succeeded despite the bet"
+            ],
+            "answer": 1,
+            "explain": "Infinite choice is paralysing. Cutting the search space forces you off the obvious paths and into the odd corners, which is exactly where the interesting combinations are waiting."
+          },
+          {
+            "type": "example",
+            "title": "The 225-Word Assignment",
+            "body": "Three years earlier, William Spaulding at Houghton Mifflin handed Seuss a vocabulary list for first-graders and told him to use no more than 225 of the words, but to write something children would actually want to read. Seuss scanned the list for two words that rhymed. Cat. Hat.",
+            "art": "book"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The best conditions for creative work are total freedom and unlimited time.",
+            "answer": false,
+            "explain": "Both of Seuss's most famous books came out of assignments with hard limits attached. Freedom is not the same as generativity. An unbounded problem gives you nothing to push against and no reason to reach past your first obvious answer."
+          },
+          {
+            "type": "concept",
+            "title": "The Incubation Effect",
+            "body": "Henri Poincaré spent weeks failing at a mathematical problem, gave up, left on a geology trip, and the solution arrived as his foot touched the step of the omnibus at Coutances. Psychologists call this incubation. The catch: it only works on a problem you have already loaded in.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "Mind-Wandering Beats Grinding",
+            "body": "In 2012 Benjamin Baird's team gave people creativity problems, then a break. Some rested, some did a demanding task, some did an easy one that let the mind drift. Only the drifters improved, by around 40% on problems they had already seen. The dull task beat both hard work and doing nothing.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In 2004 Ullrich Wagner's team gave volunteers a number task with a hidden shortcut buried in it, then sent some of them to sleep. What happened?",
+            "answer": "About 59% of the sleepers spotted the shortcut, against roughly 23% of those who stayed awake for the same eight hours, whether day or night. Sleep more than doubled the rate of insight. The brain had kept restructuring the problem while nobody was working on it."
+          },
+          {
+            "type": "quote",
+            "text": "It is by logic that we prove, but by intuition that we discover.",
+            "by": "Henri Poincaré"
+          },
+          {
+            "type": "concept",
+            "title": "Trade With Other Fields",
+            "body": "Recombination needs parts from more than one bin. If everything you read comes from your own field, your combinations are the same ones your competitors are making. The reliable move is deliberate: read one thing a month from somewhere unconnected to your work, and hunt for the transferable shape.",
+            "art": "bridge"
+          },
+          {
+            "type": "example",
+            "title": "The Burrs on the Dog",
+            "body": "In 1941 the Swiss engineer George de Mestral came home from a hunting walk and picked burdock burrs off his dog. Under a microscope: tiny hooks. He spent years reproducing them as hooks and loops in nylon, and patented Velcro in 1955. A seed-dispersal mechanism became a fastener.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You have been stuck on the same problem for three hours. What does this lesson say to do next?",
+            "choices": [
+              "Push through, because persistence separates finishers from quitters",
+              "Take a walk or do an undemanding chore, then come back to it",
+              "Switch to a different hard problem so the time stays productive",
+              "Empty your mind completely and deliberately think about nothing"
+            ],
+            "answer": 1,
+            "explain": "Three hours means the problem is loaded, which is the precondition. Baird's data says the undemanding task, the one that lets your mind drift, beats both grinding and demanding distraction. And if it is late, sleep on it."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Constraints delete most of the search space and push you into the corners where the interesting answers are.",
+              "Incubation is real, but only on a problem you have already loaded in.",
+              "Mind-wandering beats both grinding and idle rest: Baird's drifting group improved about 40%.",
+              "Sleep more than doubled insight in Wagner's number task. Walk away, then come back.",
+              "Read outside your field on purpose. That is where the unmatched parts come from."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do constraints help creative work?",
+            "back": "They shrink an infinite search space and push you off the obvious paths. Seuss wrote Green Eggs and Ham on a fifty-word bet from Bennett Cerf."
+          },
+          {
+            "front": "What is the incubation effect?",
+            "back": "Step away from a loaded problem and the answer often arrives while you do something else. It only works after you have done the loading."
+          },
+          {
+            "front": "What did Baird's 2012 study find?",
+            "back": "After working on creativity problems, only the group given an undemanding, mind-wandering task improved, by about 40%. Grinding and idle rest did not."
+          },
+          {
+            "front": "What did Wagner's 2004 sleep study find?",
+            "back": "On a number task with a hidden shortcut, 59% of sleepers found it against 23% of those kept awake. Sleep more than doubled insight."
+          }
+        ]
+      },
+      {
+        "id": "doing-the-work",
+        "title": "Doing the Work",
+        "summary": "The tortured genius examined honestly, expertise as raw material, deliberate practice in fuzzy fields, and a routine to start this week.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Tortured Genius",
+            "body": "Van Gogh sold almost nothing in his lifetime, cut off part of his own ear, and died at 37. The story writes itself: suffering is the price of genius, perhaps even its source. It is the most seductive myth about creative work, and the evidence is thinner and stranger than you would guess.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "What the Registries Say",
+            "body": "Simon Kyaga's team combed Swedish national health registries covering more than a million psychiatric patients and their relatives. Most disorders showed no excess of creative professions at all. Bipolar disorder did. Writers stood out specifically. A real signal, narrow and modest.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Mental illness is an engine of creative output: the worse the episode, the better the work.",
+            "answer": false,
+            "explain": "The association is narrow and modest, and acute episodes wreck output rather than fuelling it. Kay Redfield Jamison's work finds people producing during recovery and stable periods, not in the depths. Illness is a tax, not a fuel."
+          },
+          {
+            "type": "concept",
+            "title": "You Can Only Recombine What You Know",
+            "body": "Go back to lesson one. If ideas are recombinations, expertise has a specific job: it stocks the shelves. Gutenberg could see the press-and-punch connection because he had spent years as a goldsmith in a wine region. With empty shelves there is nothing to combine, and no box to think outside of.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "If creativity is recombination, what follows about learning your field deeply?",
+            "choices": [
+              "It is a trap, since expertise makes people conventional",
+              "It is the raw material, because you cannot combine parts you do not have",
+              "It is irrelevant, since the good ideas arrive from nowhere",
+              "It matters in the sciences but not in the arts"
+            ],
+            "answer": 1,
+            "explain": "Expertise can calcify into habit, which is the grain of truth in the first option. But the antidote is cross-pollination from other fields, not ignorance of your own. Empty shelves produce nothing."
+          },
+          {
+            "type": "example",
+            "title": "The Ten-Year Rule",
+            "body": "John Hayes examined the careers of 76 composers, hunting for masterworks. Almost none appeared in a composer's first decade of work, Mozart included, whose celebrated early concertos are largely arrangements of other people's themes. The same shape shows up in painting and poetry.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Practice, Precisely",
+            "body": "Anders Ericsson's 1993 study of violinists found the best performers separated by hours of one particular kind of work: a specific weakness targeted, immediate feedback, repetition right at the edge of ability. Not 10,000 hours, a number Ericsson spent years objecting to. The design of the practice is the mechanism.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "How do you run deliberate practice on something as fuzzy as writing, design or music?",
+            "answer": "Pick one narrow element: dialogue, colour transitions, the first ten seconds. Copy work you admire, then compare yours against it line by line. That comparison is your feedback signal. The general version, 'write more', gives you no edge to push against and no error to correct."
+          },
+          {
+            "type": "concept",
+            "title": "Nobody's First Draft Is Good",
+            "body": "The gap you feel between your taste and your output is not evidence that you lack talent. It is the normal condition of anyone whose taste grew faster than their skill, and the only thing that closes it is volume plus honest feedback. Revision is not the tidying phase. It is where the work gets made.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "All of us who do creative work, we get into it because we have good taste. But there is this gap. For the first couple years you make stuff, it's just not that good.",
+            "by": "Ira Glass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Spending a year perfecting one piece is a better bet than finishing twelve pieces in that year.",
+            "answer": false,
+            "explain": "Equal odds says your hit rate is roughly fixed, so total attempts is the lever you actually control. Twelve finished pieces also generate twelve rounds of feedback. One polished piece generates none until the year is over."
+          },
+          {
+            "type": "example",
+            "title": "A Week You Can Actually Run",
+            "body": "Start Monday. Three fixed ninety-minute sessions, booked like meetings you cannot move. A running notes file for every half-formed hunch, dated and never deleted. One narrow skill drilled against work you admire. One walk with no podcast when you get stuck. One thing finished and shown to a person by Sunday.",
+            "art": "path"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The tortured-genius link is narrow and modest, and illness costs output rather than creating it.",
+              "Expertise is raw material: you can only recombine what you actually know.",
+              "Practice needs a target and a feedback signal. Accumulated hours on their own do nothing.",
+              "Nobody's first draft is good. Volume plus revision, rather than waiting for a better first draft.",
+              "Start this week: fixed sessions, a hunch file, one drilled skill, one walk, one thing shipped."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Does mental illness drive creativity?",
+            "back": "Barely. Kyaga's Swedish registry study found an excess only for bipolar disorder and for writers. Acute episodes cut output; people create in recovery."
+          },
+          {
+            "front": "If creativity is recombination, why does expertise matter?",
+            "back": "It stocks the shelves. You cannot combine parts you do not have: Gutenberg needed the goldsmith's punch before he could see the connection."
+          },
+          {
+            "front": "What is Hayes's ten-year rule?",
+            "back": "Across 76 composers, almost no masterworks appeared in the first decade of a career. Talent shows early; the contribution takes about ten years."
+          },
+          {
+            "front": "How do you practise deliberately in a creative field?",
+            "back": "Target one narrow element, compare your attempt against work you admire, and use the gap as feedback. Ericsson: design of practice beats raw hours."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "exercise-science",
+    "title": "The Science of Exercise",
+    "tagline": "What movement really does to a body, and what it doesn't.",
+    "category": "Health",
+    "description": "The physiology behind training — stroke volume, myokines, hypertrophy, recovery — and the gym folklore the evidence never supported. What actually changes when you move, reported at its real effect size.",
+    "lessons": [
+      {
+        "id": "what-exercise-does",
+        "title": "What Exercise Actually Does",
+        "summary": "The adaptations behind aerobic fitness — stroke volume, capillaries, mitochondria, VO2max — plus myokines, the brain, and where on the dose curve the benefit really sits.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Heart That Slows Down",
+            "body": "Sit still and your heart beats perhaps 70 times a minute. Train for a year and the same body at rest may need only 55; some endurance athletes idle in the 40s. Nothing was removed from your day. Your heart simply learned to move more blood per beat.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "A Bigger Pump, Not a Faster One",
+            "body": "Endurance training enlarges the left ventricle's filling volume and expands blood plasma, so each contraction ejects more blood. That is stroke volume. At rest you still need the same litres per minute, so the beats slow down. Under load, the extra volume is headroom at every heart rate.",
+            "art": "orbit"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A resting pulse in the 40s in a trained endurance athlete is a warning sign that the heart is struggling.",
+            "answer": false,
+            "explain": "It is the opposite. A larger stroke volume, plus stronger vagal tone, means fewer beats are needed to move the same blood at rest. The trained heart is doing less work for the same output."
+          },
+          {
+            "type": "concept",
+            "title": "New Roads and More Furnaces",
+            "body": "Inside trained muscle, capillary networks grow denser, shortening the trip oxygen makes from blood to fibre. The fibres also build more mitochondria: John Holloszy showed in 1967 that trained rats roughly doubled their muscle's mitochondrial enzymes. More furnaces means more fuel burned aerobically at any pace.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Six weeks in, a pace that once left you gasping now feels conversational. Your legs look identical. What changed?",
+            "answer": "The plumbing and the power plants. More plasma and stroke volume delivering oxygen, denser capillaries handing it across, and more mitochondria burning fat and lactate aerobically — so far less of the effort spills over into breathlessness."
+          },
+          {
+            "type": "concept",
+            "title": "VO2max: The Headline Number",
+            "body": "VO2max is the most oxygen your body can take in and use per minute: delivery times extraction. A sedentary adult sits near 30 ml per kg per minute, elite endurance athletes above 70. For most people the ceiling is delivery — how much blood the heart can push, not how much the muscle can burn.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "For most untrained people, what sets the ceiling on VO2max?",
+            "choices": [
+              "How much oxygenated blood the heart can deliver each minute",
+              "The volume of air the lungs can move",
+              "Willpower — how much discomfort you can tolerate",
+              "How much lactic acid the muscles can neutralise"
+            ],
+            "answer": 0,
+            "explain": "Cardiac output — stroke volume times heart rate — is the usual limiter, which is why the heart's adaptations matter so much. Healthy lungs keep blood nearly fully saturated even at maximum effort, and lactate is a fuel, not a brake."
+          },
+          {
+            "type": "concept",
+            "title": "Muscle Is an Endocrine Organ",
+            "body": "A contracting muscle is not only a motor. It secretes signalling proteins called myokines into the blood. Interleukin-6, released during exercise and traced by Bente Pedersen's group, helps mobilise fuel and dampens chronic inflammation. Hundreds of candidate myokines are known; only a handful are well mapped.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "The Brain Takes Its Cut",
+            "body": "Exercise raises BDNF, a protein that supports neuron survival and connection. In Kirk Erickson's 2011 trial, 120 older adults walked three times a week for a year: their anterior hippocampus grew about 2 percent, while the stretching group's shrank about 1.4 percent.",
+            "art": "brain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Erickson's walking trial showed that a year of aerobic exercise reverses decades of brain ageing.",
+            "answer": false,
+            "explain": "The gain was roughly 2 percent in one hippocampal region against a 1.4 percent decline in controls — about a couple of years of typical shrinkage bought back. Later meta-analyses find the effect smaller and patchier still. Real, and modest.",
+            "_x": 0
+          },
+          {
+            "type": "concept",
+            "title": "Where Most of the Benefit Lives",
+            "body": "Plot mortality against activity and the curve falls like a cliff at the start, then flattens. Pooling 661,000 adults, Arem's 2015 analysis found people doing less than the recommended 150 minutes a week still had about 20 percent lower mortality than the inactive, with gains levelling off near 39 percent.",
+            "art": "path"
+          },
+          {
+            "type": "recap",
+            "title": "What Exercise Actually Does",
+            "points": [
+              "Endurance training rebuilds the delivery system: more stroke volume, denser capillaries, more mitochondria — a slower resting pulse and more oxygen used at every pace.",
+              "VO2max is the headline measure of aerobic fitness, and for most people the limiter is cardiac delivery, not the lungs.",
+              "Working muscle secretes myokines, which is how exercise reaches organs the muscle never touches — including the brain, via BDNF.",
+              "Brain effects are real but modest: about 2 percent hippocampal growth over a year of walking, not a reversal of ageing.",
+              "The dose-response curve is steepest at the start. Going from nothing to something is the biggest step available to you."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is stroke volume, and how does endurance training change it?",
+            "back": "The blood ejected per heartbeat. Training enlarges ventricular filling and plasma volume, so each beat moves more — and resting heart rate falls."
+          },
+          {
+            "front": "What is VO2max, and what usually limits it?",
+            "back": "The maximum oxygen you can use per minute. In most people the limiter is cardiac output — oxygen delivery — not lung capacity or muscle enzymes."
+          },
+          {
+            "front": "What did Erickson's 2011 walking trial actually find?",
+            "back": "In 120 older adults, a year of walking grew the anterior hippocampus about 2%, versus a 1.4% decline in controls. Modest, not a reversal of ageing."
+          },
+          {
+            "front": "Where on the dose-response curve does most of the benefit sit?",
+            "back": "At the very start. Even under 150 min/week links to roughly 20% lower mortality than inactivity; the curve flattens well before high doses."
+          }
+        ]
+      },
+      {
+        "id": "strength-and-muscle",
+        "title": "Strength and Muscle",
+        "summary": "Why early strength gains are neural, what really drives hypertrophy, how little rep ranges and protein timing matter, and why muscle is the currency of later-life independence.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Strength Arrives Before Size",
+            "body": "Four weeks into lifting, your squat has climbed by a third and the mirror shows nothing new. You have not grown muscle that fast; nobody does. What improved is the signal. Your nervous system has learned to drive the muscle you already had.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "Neural Drive: Learning the Lift",
+            "body": "Early strength comes from recruiting more motor units, firing them faster, timing them better, and switching off the opposing muscles that used to brake the movement. It is skill acquisition in the nervous system — which is why it transfers poorly to lifts you have not practised.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A beginner adds 30 kg to their deadlift in six weeks with no visible change in size. What best explains it?",
+            "choices": [
+              "Neural adaptation — better recruitment and coordination of existing muscle",
+              "Muscle fibres splitting to form new fibres",
+              "Water drawn into the muscle cells",
+              "The muscle got denser without getting larger"
+            ],
+            "answer": 0,
+            "explain": "Contractile tissue is built over months, not weeks. The fast early jump is the nervous system learning to use what is already there, and it is specific to the lift you practised."
+          },
+          {
+            "type": "concept",
+            "title": "Hypertrophy: The Slower Build",
+            "body": "Real growth means adding contractile protein inside existing fibres. Hard training lifts muscle protein synthesis for a day or two; repeat that often enough, with enough protein, and the fibre thickens. Even in beginners the honest pace is a few hundred grams of muscle a month, not a week.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Progressive Overload",
+            "body": "Muscle adapts to demands it has not already met. If the load, the reps, the sets or the range of motion never advance, the stimulus becomes routine and adaptation stops. Progression need not mean weight on the bar: one more rep at the same weight is a larger demand than last week.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Reps Are Negotiable. Effort Is Not.",
+            "body": "Brad Schoenfeld's meta-analyses keep landing in the same place: sets of six and sets of twenty-five build similar muscle when they are taken close to failure. Heavier loads do build more maximal strength, because strength is specific. For size, proximity to failure and total hard sets carry the result.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "You have to train in the 8-to-12-rep hypertrophy range to build muscle.",
+            "answer": false,
+            "explain": "Loads from roughly 30 to 85 percent of your one-rep max grow muscle comparably when sets are taken near failure. The range is a convenience, not a biological window — lighter sets simply need more reps to arrive there."
+          },
+          {
+            "type": "concept",
+            "title": "Protein: Total Beats Timing",
+            "body": "Across trials, extra protein helps muscle gain up to roughly 1.6 grams per kilogram of bodyweight per day, then flattens out. The synthesis window after training stays open for a day or more, so the famous thirty-minute window is far wider than it was sold as. Hit the daily total from ordinary food.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You finish a hard session and do not eat for three hours. How much of the workout did you waste?",
+            "answer": "None of it. Muscle protein synthesis stays elevated for 24 to 48 hours after training, so what matters is your protein total across the day, not a sprint to the kitchen. Timing is a rounding error next to consistency."
+          },
+          {
+            "type": "concept",
+            "title": "Muscle Is a Retirement Account",
+            "body": "From your thirties you lose roughly 3 to 8 percent of muscle mass per decade, and strength falls faster still. That is sarcopenia, and it rarely announces itself until a chair, a staircase or a slip becomes decisive. Grip and leg strength predict later-life disability and mortality.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "Ninety-Year-Olds Under a Barbell",
+            "body": "In 1990 Maria Fiatarone put ten frail nursing-home residents aged 86 to 96 through eight weeks of heavy leg training. Quadriceps strength rose 174 percent, mid-thigh muscle area about 9 percent, and walking speed nearly 50 percent. Two of them stopped using canes.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Past a certain age, resistance training can no longer add muscle or strength.",
+            "answer": false,
+            "explain": "Fiatarone's nonagenarians nearly tripled their leg strength in eight weeks, with muscle area and gait speed rising too. Adaptation slows with age and recovery takes longer, but the machinery is blunted, not switched off."
+          },
+          {
+            "type": "recap",
+            "title": "Strength and Muscle",
+            "points": [
+              "Early strength gains are largely neural — more recruitment, faster firing, less braking — and specific to the movement you trained.",
+              "Hypertrophy is slow protein accretion, and progressive overload is the non-negotiable: load, reps, sets or range must advance.",
+              "A wide span of rep ranges builds similar muscle when sets go near failure; heavy loads matter most for maximal strength.",
+              "Total daily protein, up to about 1.6 g/kg, beats timing — the post-training window is a day wide, not half an hour.",
+              "Muscle and strength are what later-life independence is made of, and resistance training still works in the tenth decade."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do beginners get much stronger before they look any different?",
+            "back": "Early gains are neural: more motor units recruited, faster firing, better coordination, less antagonist braking. Contractile tissue builds far slower."
+          },
+          {
+            "front": "Which rep ranges build muscle?",
+            "back": "A wide span. Roughly 30-85% of 1RM grows muscle comparably when sets are taken near failure; heavier loads mainly win on maximal strength."
+          },
+          {
+            "front": "Does post-workout protein timing matter much?",
+            "back": "Barely. Synthesis stays elevated 24-48h and benefits plateau near 1.6 g/kg/day, so the daily total from ordinary food is what counts."
+          },
+          {
+            "front": "Can resistance training still work in very old age?",
+            "back": "Yes. Fiatarone's 1990 trial had 86-to-96-year-olds raise quadriceps strength 174% in eight weeks, with muscle area and walking speed up too."
+          }
+        ]
+      },
+      {
+        "id": "cardio-and-myths",
+        "title": "Cardio and the Myths",
+        "summary": "The fat-burning zone, spot reduction, intervals versus steady state, and the constrained-energy evidence for why exercise is a weak lever on the scale and a superb one on health.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Sticker on the Treadmill",
+            "body": "Every gym has one: a chart on the console promising a fat-burning zone, low and gentle, with a cardio zone above it. The chart is not lying about physiology. It is answering a question about fuel that you thought was a question about fat loss.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "What the Zone Actually Measures",
+            "body": "At an easy pace a larger share of your energy comes from fat; as intensity climbs the mix shifts toward carbohydrate, which releases energy faster. But share is not amount. A hard half hour burns far more total energy, and often more total fat, than a gentle one.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Thirty minutes easy versus thirty minutes hard — which does more for fat loss?",
+            "choices": [
+              "Easy, because a higher percentage of the calories burned come from fat",
+              "Hard, because it burns more total energy, and the day's balance is what responds",
+              "Neither — only fasted exercise touches stored body fat",
+              "Easy, because hard training converts fat into muscle"
+            ],
+            "answer": 1,
+            "explain": "The zone describes a fuel percentage, not a bigger deficit. Body fat follows total energy balance across the day, and the harder session usually wins on total calories. The choice that matters more is which one you will actually repeat.",
+            "_x": 0
+          },
+          {
+            "type": "concept",
+            "title": "Fat Burned Now Isn't Fat Lost",
+            "body": "Your body settles its fuel books over 24 hours, not per session. Burn more carbohydrate on a hard run and you oxidise more fat afterwards; burn fat on a slow walk and you store more of what you eat next. What is left at the end of the day is decided by energy in against energy out.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Sit-Ups Don't Drain the Belly",
+            "body": "Fat is released into the bloodstream from all over the body and burned wherever it is needed; a working muscle has no private supply beneath it. When Frank Katch's team had people perform thousands of sit-ups over 27 days, fat cells shrank about equally at the abdomen, buttock and upper back.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Training one muscle hard burns off the fat sitting on top of it.",
+            "answer": false,
+            "explain": "That is spot reduction, and it does not survive testing: fat mobilisation is systemic and hormonal. In one-legged training studies the trained leg loses no more fat than the untrained one. You choose where you build, not where you lose."
+          },
+          {
+            "type": "concept",
+            "title": "Steady State Versus Intervals",
+            "body": "Both raise VO2max, and head-to-head trials mostly land in the same place. Intervals get there in less total time, which is their genuine edge. Steady work is easier to recover from, easier to sustain, and gentler when you are new. The difference is smaller than the argument about it.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "So which should you actually do — intervals or long steady sessions?",
+            "answer": "Either, honestly. Matched over weeks, they produce similar aerobic gains; intervals just compress the time and cost more recovery. Choose by schedule and tolerance, then mix. The variable that predicts your result is how many sessions you finish."
+          },
+          {
+            "type": "example",
+            "title": "The Hadza Puzzle",
+            "body": "Herman Pontzer measured daily energy burn in Hadza hunter-gatherers in Tanzania, who walk and forage for hours every day. Adjusted for body size, their total daily expenditure came out much like that of sedentary adults in Chicago or London. Enormous activity gap, similar calorie total.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Constrained Energy Expenditure",
+            "body": "Pontzer's reading is that the body budgets rather than adds: raise activity and it quietly trims elsewhere, while appetite nudges upward. It is why exercise-only trials usually shed a kilo or two at most, even as blood pressure, insulin sensitivity and visceral fat improve regardless.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "The treadmill says you burned 500 calories. Why is your real daily deficit likely to be smaller?",
+            "choices": [
+              "Machines cannot measure effort at all, so the number is random",
+              "Compensation — the body trims other energy use, and appetite nudges intake up",
+              "Calories burned during exercise do not count toward the daily total",
+              "Because muscle keeps burning fat for 48 hours afterwards"
+            ],
+            "answer": 1,
+            "explain": "Console estimates do run high, but the deeper issue is the constrained model Pontzer's Hadza data pointed to: added activity gets partly absorbed elsewhere, and you eat a little more. The afterburn from a normal session is real but small — tens of calories."
+          },
+          {
+            "type": "quote",
+            "text": "Physical inactivity is the biggest public health problem of the 21st century.",
+            "by": "Steven Blair"
+          },
+          {
+            "type": "recap",
+            "title": "Cardio and the Myths",
+            "points": [
+              "The fat-burning zone is a fuel percentage, not a fat-loss advantage; total energy across the day is what moves body fat.",
+              "Spot reduction fails because fat is mobilised systemically — you do not choose where you lose it.",
+              "Intervals and steady state both build aerobic fitness. HIIT's real edge is time efficiency, not magic.",
+              "Exercise alone is a weak lever on the scale: the body compensates, as the Hadza measurements suggested.",
+              "It is an excellent lever on everything else — blood pressure, insulin sensitivity, visceral fat, fitness, mortality risk."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is wrong with the fat-burning zone?",
+            "back": "It describes the share of fuel coming from fat, highest at easy paces. Harder work burns more total energy, and daily balance is what shifts body fat."
+          },
+          {
+            "front": "Why doesn't spot reduction work?",
+            "back": "Fat is released into the blood from all over the body, not from the tissue above the working muscle — as sit-up and one-legged training trials showed."
+          },
+          {
+            "front": "Intervals or steady state?",
+            "back": "Both raise VO2max similarly. Intervals do it in less time, at higher effort and recovery cost. Consistency matters more than the choice between them."
+          },
+          {
+            "front": "What is constrained total energy expenditure?",
+            "back": "Pontzer's finding that highly active Hadza adults burn about as much per day as sedentary Westerners: the body offsets added activity elsewhere."
+          }
+        ]
+      },
+      {
+        "id": "recovery-and-adherence",
+        "title": "Recovery, Injury, Adherence",
+        "summary": "Supercompensation, sleep, what soreness really is, the stretching evidence, the arithmetic behind most injuries, and the finding that outranks every programme argument.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Session Is Only the Signal",
+            "body": "Training does not make you fitter. It makes you temporarily worse: fuel depleted, fibres damaged, nervous system tired. The fitness arrives afterwards, while you sleep and eat and do nothing in particular. Rest is not the gap between training. It is where training gets cashed.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Supercompensation",
+            "body": "The classic curve: a hard session drops your capacity, recovery restores it, and the rebound overshoots slightly above where you began. Train again on that overshoot and you climb. Train repeatedly while still in the hole and you dig — the road to stagnation and overreaching.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If some training is good, training hard every single day must be better.",
+            "answer": false,
+            "explain": "Adaptation happens during recovery, so unrelieved training stacks fatigue rather than fitness. Progress comes from the pattern of stress and recovery, not from the stress alone."
+          },
+          {
+            "type": "concept",
+            "title": "Sleep: The Strongest Recovery Lever",
+            "body": "No supplement, ice bath or massage gun comes close. Short sleep degrades reaction time and power output, blunts muscle protein synthesis, and raises injury odds — in one study of teenage athletes, those sleeping under eight hours were about 1.7 times as likely to be hurt.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "Why You're Sore Two Days Later",
+            "body": "Delayed-onset soreness peaks 24 to 72 hours after unfamiliar work, especially the lowering half of a movement. The cause is microscopic damage to fibres and connective tissue, an inflammatory response, and sensitised nerve endings. Lactate has nothing to do with it: it clears within about an hour.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Two days after a new leg workout your quads are screaming. What is happening?",
+            "choices": [
+              "Lactic acid pooled in the muscle and has not drained away",
+              "Microdamage to fibres and connective tissue, inflammation, and sensitised nerve endings",
+              "The muscle is still burning fat from the session",
+              "Dehydration has left the tissue cramped"
+            ],
+            "answer": 1,
+            "explain": "Lactate clears within about an hour of stopping, and it is a fuel rather than a waste product. Soreness follows unaccustomed, mostly eccentric loading — and repeat the same session next week and it will hurt far less."
+          },
+          {
+            "type": "concept",
+            "title": "Warm Up. Don't Stretch Cold.",
+            "body": "Holding a static stretch for a minute or more before lifting temporarily cuts force output by a few percent, and it does not prevent injuries. What works is raising temperature: five to ten easy minutes, dynamic movement through the range you are about to use, then ramp-up sets of the actual lift.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Stretching before exercise is the best way to prevent injury.",
+            "answer": false,
+            "explain": "Reviews find stretching has little effect on injury rates, and long static holds blunt force output for a while afterwards. The intervention with the strongest injury-prevention evidence is progressive strength training."
+          },
+          {
+            "type": "concept",
+            "title": "Too Much, Too Soon",
+            "body": "Most training injuries are arithmetic rather than accident: workload climbed faster than tissue could remodel. Heart and lungs improve within weeks, but tendon and bone turn over across months. Week four is exactly when your engine can write a cheque your chassis cannot cash.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Three weeks after taking up running, your knees ache and your shins are tender. What went wrong?",
+            "answer": "Almost certainly the ramp, not your resolve or your shoes. Aerobic fitness improved fast enough to let you run more than your tendons and bone had adapted to carry. The fix is a smaller weekly increase and real easy days, not more toughness."
+          },
+          {
+            "type": "concept",
+            "title": "The Programme You Keep Doing",
+            "body": "About half the people who start an exercise programme have stopped within six months, a finding that dwarfs every argument about splits and rep schemes. What predicts sticking is enjoying the session, a fixed time and place, and a dose small enough to survive a bad week.",
+            "art": "path"
+          },
+          {
+            "type": "quote",
+            "text": "Those who think they have not time for bodily exercise will sooner or later have to find time for illness.",
+            "by": "Edward Stanley, Earl of Derby"
+          },
+          {
+            "type": "recap",
+            "title": "Recovery, Injury, Adherence",
+            "points": [
+              "Training is the stimulus; adaptation happens in recovery — supercompensation only pays if you let the rebound arrive.",
+              "Sleep is the highest-yield recovery tool there is; short sleep costs performance and raises injury risk.",
+              "Soreness comes from mechanical damage and inflammation after unfamiliar work, not lactic acid, and it fades as you repeat the session.",
+              "Long static stretches before lifting reduce force and do not prevent injury; warm up properly and build strength instead.",
+              "Injuries usually come from load rising faster than tissue adapts — and the best programme is the one you are still doing in a year."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why are rest days part of training?",
+            "back": "The session lowers capacity; fitness arrives during recovery, overshooting baseline. Train through it constantly and fatigue accumulates instead."
+          },
+          {
+            "front": "What actually causes delayed-onset muscle soreness?",
+            "back": "Microdamage and inflammation after unfamiliar, mostly eccentric work, peaking 24-72h later. Not lactic acid — that clears within an hour of stopping."
+          },
+          {
+            "front": "Should you stretch statically before lifting?",
+            "back": "No. Holds of a minute or more cut force output for a while and do not prevent injury. Warm up and ramp into the movement instead."
+          },
+          {
+            "front": "What predicts training results more than programme design?",
+            "back": "Adherence. Roughly half of starters quit within six months, so enjoyment, a fixed slot and a survivable dose beat any optimal split."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "writing-well",
+    "title": "Writing Well",
+    "tagline": "Clear prose, and the moves that make it clear.",
+    "category": "Communication",
+    "description": "Why capable people write badly, and what to do about it. Four lessons on sentences, structure, and revision — the specific, repeatable moves that turn a private draft into prose a stranger can follow.",
+    "lessons": [
+      {
+        "id": "why-writing-is-hard",
+        "title": "Why Writing Is Hard",
+        "summary": "The curse of knowledge, classic style, and the difference between writing to think and writing to be read.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Gap Between Knowing and Telling",
+            "body": "You understand your subject. You sit down to explain it. What lands on the page is fog. This is not a failure of intelligence or effort — it is a predictable side effect of knowing something well, and the first thing a writer has to work against.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "The Curse of Knowledge",
+            "body": "Once you know something, you cannot imagine not knowing it. Steven Pinker calls this the curse of knowledge, and he argues it explains more bad prose than laziness or vanity do. You skip the step your reader needs because, to you, it is no longer a step.",
+            "art": "brain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Most bad prose comes from writers trying to sound clever.",
+            "answer": false,
+            "explain": "Vanity exists, but the ordinary cause is duller: the writer has forgotten what it was like not to know. The cure is not modesty as a mood — it is deliberately rebuilding the reader's ignorance in your head."
+          },
+          {
+            "type": "concept",
+            "title": "Classic Style: Show, Don't Perform",
+            "body": "In Clear and Simple as the Truth, Francis-Noel Thomas and Mark Turner describe classic style: the writer has seen something in the world and simply points at it, trusting the reader to look. The prose is a window onto the thing, not a stage for the writer.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which sentence is written in classic style?",
+            "choices": [
+              "It should be noted that a variety of factors may contribute to the observed decline.",
+              "Sales fell because the store moved two blocks off the main road.",
+              "This essay will explore the multifaceted determinants of the sales trajectory.",
+              "One might reasonably posit that consumer behaviour is not wholly deterministic."
+            ],
+            "answer": 1,
+            "explain": "Classic style points at something in the world and lets the reader see it. The others hedge, announce themselves, or describe the writer's thinking instead of the thing being described."
+          },
+          {
+            "type": "example",
+            "title": "Jargon as Armour",
+            "body": "Compare: 'We leveraged a cross-functional synergy framework to action key deliverables.' Now: 'Three teams shared one deadline, so we met every Monday.' The first hides behind vocabulary. The second risks being judged on what it actually says.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does heavy jargon show up so often in the writing of people new to a field?",
+            "answer": "Because borrowed words feel like membership. A newcomer unsure of their standing reaches for the tribe's vocabulary as proof of belonging. People secure in their standing can afford plain words: they have nothing to prove and something to explain."
+          },
+          {
+            "type": "concept",
+            "title": "Writing to Think, Writing to Be Read",
+            "body": "A first draft is a thinking tool. It may wander, because you are still finding out what you believe. A finished piece is a delivery tool, organised for a stranger's convenience — not for the order in which you happened to work things out.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You have a messy draft that follows your own path of discovery. What is the main revision job?",
+            "choices": [
+              "Add transitions so the wandering reads smoothly",
+              "Reorder it around what the reader needs, in the order they need it",
+              "Replace plain words with more precise technical terms",
+              "Cut it in half to respect the reader's time"
+            ],
+            "answer": 1,
+            "explain": "Writing to think and writing to be read are different jobs. Smoothing or shortening a self-ordered draft leaves it self-ordered. Re-sequencing for the reader is the actual work."
+          },
+          {
+            "type": "quote",
+            "text": "The curse of knowledge is the single best explanation I know of why good people write bad prose.",
+            "by": "Steven Pinker, The Sense of Style"
+          },
+          {
+            "type": "example",
+            "title": "Putting the Missing Step Back",
+            "body": "Before: 'Run the migration, then the app will hydrate normally.' After: 'Run the migration — it adds the two new columns. Until you do, every page loads blank.' The second version restores the facts the writer had stopped noticing they knew.",
+            "art": "mirror"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The curse of knowledge, not vanity, is the usual source of unclear prose.",
+              "Classic style shows the reader something in the world rather than performing expertise.",
+              "Jargon signals insecurity more often than mastery.",
+              "A draft written to think must be re-sequenced before it is fit to be read."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the curse of knowledge?",
+            "back": "The inability to imagine not knowing what you know. It makes writers skip the steps a reader needs, and it explains most bad prose."
+          },
+          {
+            "front": "What does classic style assume about the reader?",
+            "back": "That they can see what you have seen, if you point clearly. Prose is a window onto the world, not a stage for expertise."
+          },
+          {
+            "front": "What does heavy jargon usually signal?",
+            "back": "Insecurity rather than mastery. Borrowed vocabulary proves membership; plain words expose the idea to judgement."
+          },
+          {
+            "front": "Writing to think versus writing to be read?",
+            "back": "A draft follows your discovery; a finished piece follows the reader's questions. Revision converts one order into the other."
+          }
+        ]
+      },
+      {
+        "id": "sentences",
+        "title": "Sentences",
+        "summary": "Concrete nouns, strong verbs, honest voice, zombie nouns, and the rhythm that keeps a reader awake.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Where Clarity Is Actually Won",
+            "body": "Structure gets the credit, but a reader's trust is won or lost sentence by sentence. Four habits do most of the work: concrete nouns, strong verbs, a subject that is really doing something, and a rhythm that does not flatten into drone.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Nouns and Verbs Do the Lifting",
+            "body": "Adjectives and adverbs are patches over vague choices. 'He walked quickly and angrily across the very large room' asks four modifiers to do what two words can: 'He stormed across the ballroom.' Pick the right noun and verb and the modifiers fall away.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which revision best follows the noun-and-verb principle?",
+            "choices": [
+              "She spoke in a very loud and forceful manner.",
+              "She spoke loudly and forcefully.",
+              "She shouted.",
+              "Her manner of speaking was extremely forceful."
+            ],
+            "answer": 2,
+            "explain": "One exact verb replaces the whole modifier pile. The others stack adverbs or bury the action inside a noun phrase like 'manner of speaking'."
+          },
+          {
+            "type": "concept",
+            "title": "Active by Default",
+            "body": "Prefer 'the committee rejected the proposal': actor, action, object. Passive earns its place when the actor is unknown ('the file was deleted overnight'), when the actor is irrelevant, or when the object is what the paragraph is about and belongs up front.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Every passive sentence should be rewritten in the active voice.",
+            "answer": false,
+            "explain": "Passive is a tool for managing emphasis. When the actor is unknown or irrelevant, or the object is the paragraph's topic, passive keeps the sentence pointed the right way. Reach for active first, not always."
+          },
+          {
+            "type": "example",
+            "title": "Zombie Nouns",
+            "body": "Helen Sword's name for nominalisations: verbs turned into nouns that shamble through a sentence eating the action. 'We made a decision to conduct an investigation' becomes 'We decided to investigate.' Eight words down to four, and now someone is doing something.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "How do you hunt zombie nouns without knowing any grammar terms?",
+            "answer": "Scan for words ending in -tion, -ment, -ance, -ity and -al, then ask what the sentence is really doing. If the live verb is trapped inside one of those nouns, dig it out and let it run the sentence again."
+          },
+          {
+            "type": "concept",
+            "title": "Cut the Throat-Clearing",
+            "body": "Drafts often open with the writer warming up: 'In today's fast-paced world', 'It is important to note that'. Delete from the top until the first sentence carries information. Readers never miss the runway. They only notice the takeoff.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A memo opens: 'It is important to note that our latency has tripled.' What is the best fix?",
+            "choices": [
+              "It should be noted that our latency has tripled.",
+              "Our latency has tripled.",
+              "Latency, it must be said, has undergone a tripling.",
+              "In the current environment, latency has tripled."
+            ],
+            "answer": 1,
+            "explain": "Throat-clearing announces importance instead of demonstrating it. The other options swap one warm-up phrase for another, and 'undergone a tripling' buries the verb in a zombie noun."
+          },
+          {
+            "type": "quote",
+            "text": "If it is possible to cut a word out, always cut it out.",
+            "by": "George Orwell, Politics and the English Language"
+          },
+          {
+            "type": "concept",
+            "title": "Rhythm and Length",
+            "body": "Sentences of identical length flatten into drone. Vary them. A long sentence can carry a chain of reasoning, holding one clause against the next until the whole thought finally closes. Then a short one lands. Length is punctuation for the ear.",
+            "art": "wave"
+          },
+          {
+            "type": "example",
+            "title": "All Four Moves at Once",
+            "body": "Before: 'A determination was made by the review board that the applicant's submission was lacking in required documentation.' After: 'The board rejected the application: two documents were missing.' Same facts, a third of the words, and somebody finally acts.",
+            "art": "path"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Exact nouns and strong verbs make most modifiers unnecessary.",
+              "Active is the default; passive is right when the actor is unknown or the object is the topic.",
+              "Zombie nouns hide the verb — dig it out and let it work.",
+              "Delete the throat-clearing, then vary sentence length so the prose has a pulse."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why prefer nouns and verbs to adjectives and adverbs?",
+            "back": "Modifiers patch vague choices. A precise noun and a strong verb say more in fewer words: 'stormed out' beats 'walked quickly and angrily out'."
+          },
+          {
+            "front": "When is the passive voice the right choice?",
+            "back": "When the actor is unknown or irrelevant, or when the object is the paragraph's topic and needs to stay in the subject position."
+          },
+          {
+            "front": "What is a zombie noun?",
+            "back": "A nominalisation — a verb turned into a noun, as in 'make a decision' for 'decide'. It drains the action out of the sentence."
+          },
+          {
+            "front": "What is throat-clearing?",
+            "back": "The warm-up phrases a draft opens with, like 'It is important to note that'. Cut from the top until the first sentence carries information."
+          }
+        ]
+      },
+      {
+        "id": "structure",
+        "title": "Structure",
+        "summary": "Answering the reader's questions in order: shape, topic sentences, known-to-new flow, signposting, and endings.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Order Is a Service to the Reader",
+            "body": "A reader moves through your piece in one direction, forming questions as they go. Structure is nothing more mystical than answering those questions in the order they arise, and making each paragraph earn the one that follows it.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Reader's Questions, In Order",
+            "body": "Every reader silently asks: What is this about? Why should I care? What do you mean? How do you know? What now? Structure fails when a piece answers the fourth question before the second, and the reader leaves before the evidence arrives.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A report opens with three paragraphs of methodology. Which reader question has it skipped?",
+            "choices": [
+              "How do you know?",
+              "Why should I care?",
+              "What do you mean?",
+              "What now?"
+            ],
+            "answer": 1,
+            "explain": "Methodology answers 'how do you know' — the fourth question. Without the stakes, the reader has no reason to work through the evidence at all."
+          },
+          {
+            "type": "concept",
+            "title": "Inverted Pyramid or Delayed Reveal",
+            "body": "News puts the conclusion first: readers may leave at any line, so every paragraph matters less than the one above it. Narrative withholds, because the arrival is the pleasure. Choose by asking whether your reader is scanning for a decision or reading for an experience.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The most important information should always come first.",
+            "answer": false,
+            "explain": "It should when the reader may stop at any moment — news, memos, status updates. In a story or a built argument, the withheld conclusion is what pulls them through. Match the shape to why they are reading."
+          },
+          {
+            "type": "concept",
+            "title": "Topic Sentences That Carry the Load",
+            "body": "A real topic sentence states the paragraph's claim, so a reader skimming only first lines still gets the argument. 'There are several considerations here' states nothing. 'The delay came from the vendor, not from us' commits — and the paragraph must now prove it.",
+            "art": "anchor"
+          },
+          {
+            "type": "reveal",
+            "prompt": "What is known-to-new information flow, and why does it create coherence?",
+            "answer": "Begin each sentence with something the reader already has and end it with what is new. The new item then becomes the familiar starting point of the next sentence, so the paragraph hands the reader forward instead of asking them to leap."
+          },
+          {
+            "type": "example",
+            "title": "Repairing the Flow",
+            "body": "Choppy: 'Latency tripled in June. A vendor migration happened that month. Cache misses rose sharply afterwards.' Linked: 'Latency tripled in June, when a vendor migration landed. That migration emptied our cache, and the misses did the rest.'",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "After 'The board approved the budget in March', which opening best follows known-to-new flow?",
+            "choices": [
+              "A new hiring plan was drafted by the operations team in April.",
+              "That approval freed the operations team to draft a hiring plan.",
+              "Operations, in April, produced a document of some importance.",
+              "It is worth noting that hiring plans followed shortly thereafter."
+            ],
+            "answer": 1,
+            "explain": "'That approval' picks up the previous sentence's new information and makes it the familiar starting point. The others open with people the reader has not met, or with throat-clearing."
+          },
+          {
+            "type": "quote",
+            "text": "The most important sentence in any article is the first one. If it doesn't induce the reader to proceed to the second sentence, your article is dead.",
+            "by": "William Zinsser, On Writing Well"
+          },
+          {
+            "type": "concept",
+            "title": "Signposts Made of Content",
+            "body": "'In this section we will examine three factors' is a table of contents pretending to be a sentence. A better signpost carries meaning: 'The second failure was quieter.' The reader learns where they are from what you are saying, not from an announcement.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Endings That Land",
+            "body": "Weak endings summarise what the reader just read or apologise for what was left out. Strong ones do one of three things: name the consequence, hand the reader a decision, or return to the opening image with new meaning. Then they stop.",
+            "art": "target"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Answer the reader's questions in the order those questions arise.",
+              "Inverted pyramid for scanning readers; delayed reveal when the arrival is the point.",
+              "A topic sentence should make a claim the paragraph then proves.",
+              "Known-to-new flow creates coherence without connective filler.",
+              "End on a consequence, a decision, or a returned image — then stop."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "In what order should a piece answer the reader's questions?",
+            "back": "What is this? Why care? What do you mean? How do you know? What now? Evidence before stakes loses the reader."
+          },
+          {
+            "front": "When does the inverted pyramid beat a delayed reveal?",
+            "back": "When readers may stop at any line and need the conclusion — news, memos, updates. Narrative can withhold, because arrival is the pleasure."
+          },
+          {
+            "front": "What makes a topic sentence real?",
+            "back": "It states a claim the paragraph then proves, so someone reading only first lines still follows the argument."
+          },
+          {
+            "front": "How does known-to-new flow work?",
+            "back": "Open each sentence with familiar information and close it with the new; the new becomes the next sentence's starting point."
+          }
+        ]
+      },
+      {
+        "id": "revision",
+        "title": "Revision",
+        "summary": "Drafting without editing, reading aloud, cutting ten percent, killing darlings, and asking readers the right question.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Draft Is Not the Writing",
+            "body": "Almost nobody writes well in one pass. A draft exists so that there is something to fix; the quality arrives later, through moves you can learn and repeat. Revision is where amateur and professional writing actually part company.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The First Draft Only Has to Exist",
+            "body": "Anne Lamott's chapter on shitty first drafts makes the case: nothing can be improved until it is on the page. Editing while drafting stalls both jobs at once, and the sentence you polish for ten minutes is often the one you cut tomorrow.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Polishing sentences as you draft saves time later.",
+            "answer": false,
+            "explain": "It costs time twice. It interrupts the thinking the draft is for, and much of what you polish gets cut once the real shape appears. Draft to the end, then revise."
+          },
+          {
+            "type": "concept",
+            "title": "Read It Aloud",
+            "body": "Your eye repairs your own prose automatically, because it knows what you meant. Your mouth does not. Read the draft aloud and mark every place you stumble, run out of breath, or hear a false note. Those are the sentences a reader would have to reread.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Reading a draft aloud is most reliable at exposing which problem?",
+            "choices": [
+              "Factual errors in your evidence",
+              "Sentences a reader would have to reread",
+              "A weak argument across the whole piece",
+              "Inconsistent citation formatting"
+            ],
+            "answer": 1,
+            "explain": "The mouth catches what the eye forgives: tangled clauses, dead rhythm, a phrase that will not go down in one breath. Facts, argument and formatting each need their own pass."
+          },
+          {
+            "type": "concept",
+            "title": "Cut Ten Percent",
+            "body": "Stephen King reports the formula from an old rejection slip: second draft equals first draft minus ten percent. As a quota it forces real choices — the paragraph you were fond of, the example that repeats an earlier one, the clause that only restates its subject.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Where does that ten percent usually come from?",
+            "answer": "From repetition you could not see while drafting: the second example that makes the first one's point, sentences that restate their own subject, adverbs propping up weak verbs, and the passage you kept because it was hard to write rather than because a reader needs it."
+          },
+          {
+            "type": "quote",
+            "text": "Whenever you feel an impulse to perpetrate a piece of exceptionally fine writing, obey it — whole-heartedly — and delete it before sending your manuscript to press. Murder your darlings.",
+            "by": "Arthur Quiller-Couch, On the Art of Writing (1916)"
+          },
+          {
+            "type": "example",
+            "title": "A Darling, Murdered",
+            "body": "Before: 'The data, like a lantern swinging in the fog of our uncertainty, lit a path we had not dared to hope for.' After: 'The data pointed one way, and it was not the way we expected.' The first sentence is busy admiring itself.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Who first wrote 'murder your darlings'?",
+            "choices": [
+              "William Faulkner",
+              "Stephen King",
+              "Arthur Quiller-Couch",
+              "Oscar Wilde"
+            ],
+            "answer": 2,
+            "explain": "Quiller-Couch used the line in On the Art of Writing in 1916. Faulkner and King are the usual misattributions; King repeats the advice in On Writing but never claims it as his own."
+          },
+          {
+            "type": "concept",
+            "title": "Ask for the Experience, Not the Edit",
+            "body": "Readers are excellent instruments and poor mechanics. Ask where they got lost, what they skimmed, and what they expected next — not what to change. A reader's account of their own experience is evidence; their proposed fix is a guess.",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "What does a good editor check, and in what order?",
+            "answer": "Structure first: does the piece answer the reader's questions in order, and does every paragraph earn its place? Then sentences: a clear actor in each one, no throat-clearing, no repetition, no zombie nouns. Then the ending. Commas last."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The first draft's only job is to exist; polishing belongs to a later pass.",
+              "Read aloud — the mouth catches what the eye forgives.",
+              "Cut ten percent as a quota, not a mood.",
+              "'Murder your darlings' is Quiller-Couch, 1916, not Faulkner or King.",
+              "Ask readers where they got lost; the fix is your job, not theirs."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why draft without editing?",
+            "back": "Editing mid-draft interrupts the thinking and polishes sentences you may cut. The first draft's only job is to exist."
+          },
+          {
+            "front": "What does reading aloud catch?",
+            "back": "Sentences a reader would reread: tangled clauses, dead rhythm, phrases too long for one breath. The eye forgives your prose; the mouth does not."
+          },
+          {
+            "front": "Who wrote 'murder your darlings'?",
+            "back": "Arthur Quiller-Couch, On the Art of Writing (1916). Often misattributed to Faulkner or to King, who quotes the advice."
+          },
+          {
+            "front": "What should you ask a test reader?",
+            "back": "Where they got lost, skimmed, or were surprised. Treat their experience as evidence and their proposed fixes as guesses."
+          }
+        ]
+      }
+    ]
   }
 ];
