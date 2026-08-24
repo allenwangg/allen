@@ -62,7 +62,11 @@
   var COVER_ART = {
     'cognitive-biases': 'lens', 'stoicism': 'shield', 'psychology-of-money': 'coin',
     'learning-how-to-learn': 'brain', 'persuasion': 'dialog', 'logical-fallacies': 'balance',
-    'science-of-habits': 'seed', 'big-ideas-physics': 'orbit'
+    'science-of-habits': 'seed', 'big-ideas-physics': 'orbit',
+    'how-economies-work': 'graph', 'art-of-strategy': 'puzzle', 'eastern-philosophy': 'wave',
+    'story-of-evolution': 'path', 'brain-on-emotions': 'flame', 'negotiation': 'bridge',
+    'science-of-sleep': 'hourglass', 'psychology-of-happiness': 'key',
+    'great-experiments': 'lightbulb', 'probability-and-luck': 'fork'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 

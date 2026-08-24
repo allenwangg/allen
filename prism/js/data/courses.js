@@ -2749,5 +2749,930 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "big-ideas-physics",
+    "title": "Big Ideas in Physics",
+    "tagline": "Entropy, relativity, quanta, cosmos - no myths, no math",
+    "category": "Science",
+    "description": "From scrambled eggs to the edge of the observable universe: the four most mind-bending ideas in physics, told straight. Real experiments, real numbers, zero equations.",
+    "lessons": [
+      {
+        "id": "entropy-arrow-of-time",
+        "title": "Entropy and the Arrow of Time",
+        "summary": "Why heat flows one way, eggs never unscramble, and time itself has a direction - Boltzmann's statistical revolution.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The law that gives time a direction",
+            "body": "Play a film of two billiard balls colliding in reverse and no one notices. Play a film of an egg scrambling in reverse and everyone laughs. Yet the microscopic laws of physics run equally well both ways. Something else - not the laws themselves - gives time its arrow. That something is entropy, and it is really just counting.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "The laws don't know which way time flows",
+            "body": "Newton's mechanics, electromagnetism, even quantum theory are time-symmetric: reverse every particle's velocity and any legal motion becomes another legal motion. Molecule by molecule, an egg unscrambling breaks no law of physics. So why do you only ever see it happen one way? The answer turns out to be arithmetic, not a rule.",
+            "art": "mirror"
+          },
+          {
+            "type": "concept",
+            "title": "Boltzmann's big idea: entropy counts",
+            "body": "Ludwig Boltzmann saw that entropy measures how many microscopic arrangements - microstates - look identical from the outside. Toss 100 coins: exactly one arrangement is all heads, but around a hundred billion billion billion arrangements give roughly half heads. 'Disordered' just means 'achievable in vastly more ways.'",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Stir milk into coffee and it never unmixes, no matter how long you stir. Why?",
+            "choices": [
+              "Mixing releases energy that can never be recovered",
+              "Mixed arrangements outnumber unmixed ones astronomically",
+              "A fundamental force of nature drives fluids toward disorder",
+              "The milk chemically bonds to the coffee"
+            ],
+            "answer": 1,
+            "explain": "No force pushes toward disorder - the molecules just wander at random, and nearly every arrangement they can wander into looks mixed. Unmixing isn't forbidden; it's outvoted."
+          },
+          {
+            "type": "concept",
+            "title": "Heat flow is a numbers game",
+            "body": "Touch a hot pan and energy floods into your hand, never the reverse. There are far more ways to share energy among many jostling molecules than to hoard it in a few, so heat flowing from hot to cold is simply energy spreading into the overwhelmingly more numerous arrangements. Temperatures equalize by statistics, not by decree.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Could all the air in your room suddenly rush into one corner, leaving you gasping?",
+            "answer": "Nothing in physics forbids it - but the odds are so small you could wait trillions of times the age of the universe and never see it. The second law isn't a decree; it's probability so overwhelming it behaves like one."
+          },
+          {
+            "type": "example",
+            "title": "Why the egg stays scrambled",
+            "body": "To unscramble an egg, each of its roughly trillion trillion molecules would need its velocity reversed exactly, all at once - one arrangement out of a number that dwarfs the count of atoms in the observable universe. Cooking, shattering, and burning are 'irreversible' only because reversing them requires absurd molecular luck.",
+            "art": "flame"
+          },
+          {
+            "type": "quote",
+            "text": "If your theory is found to be against the Second Law of Thermodynamics I can give you no hope; there is nothing for it but to collapse in deepest humiliation.",
+            "by": "Arthur Eddington"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A growing snowflake or a living cell creates order, so each one violates the second law of thermodynamics.",
+            "answer": false,
+            "explain": "The second law governs isolated systems. Snowflakes and cells build local order by exporting entropy - dumping heat into their surroundings, whose disorder rises more than enough to pay the bill."
+          },
+          {
+            "type": "concept",
+            "title": "Time's arrow is a probability gradient",
+            "body": "Why do you remember breakfast but not tomorrow? Because the universe began in an extraordinarily low-entropy state, and entropy has climbed ever since. Memory, cause-and-effect, aging - all ride that one-way statistical slope. Time doesn't flow; the odds do. The deep open question is why the Big Bang started so tidy.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to Boltzmann's statistics, why does time have a direction at all?",
+            "choices": [
+              "Time is a substance that flows from past to future",
+              "The microscopic laws of physics only run forward",
+              "The universe started in a rare low-entropy state and entropy has climbed since",
+              "Human consciousness imposes an order on events"
+            ],
+            "answer": 2,
+            "explain": "The laws run fine in both directions - the arrow comes from a boundary condition: a startlingly tidy Big Bang. Every irreversible thing you have ever seen is that initial orderliness still unwinding."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Microscopic laws are time-symmetric; the arrow of time comes from statistics, not the laws.",
+              "Entropy counts microstates: 'disorder' means achievable in vastly more ways.",
+              "Heat flows hot to cold because spread-out energy has overwhelmingly more arrangements.",
+              "The second law is probabilistic - violations are possible but absurdly unlikely.",
+              "Time's arrow traces back to the Big Bang's extraordinarily low entropy."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does entropy actually count?",
+            "back": "The number of microscopic arrangements (microstates) that look the same from outside. Higher entropy means achievable in more ways."
+          },
+          {
+            "front": "Why does heat flow from hot to cold and never back?",
+            "back": "Energy spread among many molecules has vastly more possible arrangements - the flow is statistics, not a force."
+          },
+          {
+            "front": "Can entropy ever decrease in an isolated system?",
+            "back": "In principle yes - the second law is statistical - but for everyday systems the odds are so tiny it never happens in practice."
+          },
+          {
+            "front": "Where does the arrow of time come from?",
+            "back": "The universe began in a very low-entropy state; entropy has climbed ever since, and that one-way gradient is time's arrow."
+          }
+        ]
+      },
+      {
+        "id": "special-relativity",
+        "title": "Special Relativity",
+        "summary": "How one stubborn fact - light's speed never changes - forces time to slow, lengths to shrink, and GPS to obey Einstein.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Your phone runs on Einstein",
+            "body": "Every time your phone pins you on a map, it consults satellite clocks that tick at a different rate than clocks on the ground - and engineers planned for it. Ignore relativity and GPS would drift by roughly ten kilometers every day. The strangest theory in physics is also one of the most practical.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "1887: the most famous failed experiment",
+            "body": "Physicists believed light rippled through an invisible 'ether' filling space. In 1887 Albert Michelson and Edward Morley split a light beam, raced the halves along perpendicular arms, and looked for Earth's motion through the ether to slow one beam. Result: nothing. Light's speed came out identical in every direction, all year round.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Einstein's 1905 bet: take light seriously",
+            "body": "In 1905, a 26-year-old patent clerk proposed two rules: the laws of physics look the same to anyone moving uniformly, and everyone measures light at the same 299,792 km per second - whether you chase the beam or flee it. Keep both rules and something else must give. What gives is space and time themselves.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You chase a light beam at 99% of light speed. How fast does it pull away from you?",
+            "choices": [
+              "At 1% of light speed",
+              "At full light speed, as if you were standing still",
+              "Faster than light, since speeds add together",
+              "It appears frozen beside you"
+            ],
+            "answer": 1,
+            "explain": "This is the postulate everything else follows from: light's speed is the same for every observer. Since your motion can't change what you measure for light, your time and space must change instead."
+          },
+          {
+            "type": "concept",
+            "title": "Time dilation: moving clocks run slow",
+            "body": "Picture a clock that ticks as light bounces between two mirrors. Watch that clock fly past and the light traces a longer, diagonal path - yet still travels at the same speed. Longer path, same speed: the moving clock ticks slower. And not just clocks - chemistry, heartbeats, and particle decay all slow with it.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Time dilation affects clocks but not biological processes, so a fast-moving astronaut would not actually age more slowly.",
+            "answer": false,
+            "explain": "Time itself dilates, not the gadgets in it. Every process - atomic vibrations, heartbeats, thoughts - slows identically, which is exactly why the effect is undetectable from inside the moving ship."
+          },
+          {
+            "type": "example",
+            "title": "The muons that shouldn't be here",
+            "body": "Cosmic rays strike the upper atmosphere about 15 km up, spraying particles called muons that survive on average just 2.2 microseconds. Even at near light speed that buys about 660 meters of travel - yet muons pour into detectors at sea level. Seen from Earth, their internal clocks run several times slower.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Length contraction: the muon's own story",
+            "body": "From the muon's point of view its clock ticks normally - but the atmosphere rushing past is contracted to a small fraction of 15 km, a distance short enough to cross before decaying. Moving observers measure moving distances as shortened. The two accounts disagree on times and lengths, yet agree on what happens: the muon arrives.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You watch a spaceship fly by: its clocks run slow. But to the crew, YOUR clocks are the moving ones. Who is right?",
+            "answer": "Both. Each frame measures the other's clocks as slow, and neither is mistaken, because they disagree about which events are simultaneous. Only if one ship turns around and comes back do the totals differ - and then the traveler who accelerated is younger."
+          },
+          {
+            "type": "example",
+            "title": "GPS: relativity with a deadline",
+            "body": "GPS satellites orbit at about 14,000 km/h, so special relativity slows their clocks by about 7 microseconds per day. But at 20,200 km altitude, Earth's gravity is weaker, and general relativity runs them fast by about 45. Net effect: satellite clocks gain roughly 38 microseconds daily - so engineers slow their tick rate before launch.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How do GPS engineers handle the two relativistic effects on satellite clocks?",
+            "choices": [
+              "They ignore them - microseconds are too small to matter",
+              "The effects cancel each other exactly, so no correction is needed",
+              "They pre-adjust the clocks for a net gain of about 38 microseconds per day",
+              "Nothing travels faster than light, so relativity doesn't apply to radio signals"
+            ],
+            "answer": 2,
+            "explain": "The effects pull in opposite directions - motion slows the clocks about 7 microseconds a day, weaker gravity speeds them about 45 - but they don't cancel. Uncorrected, the 38-microsecond daily gain would smear positions by roughly 10 km per day."
+          },
+          {
+            "type": "quote",
+            "text": "Henceforth space by itself, and time by itself, are doomed to fade away into mere shadows, and only a kind of union of the two will preserve an independent reality.",
+            "by": "Hermann Minkowski"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Michelson-Morley (1887) found no ether: light's speed is identical in every direction.",
+              "Einstein (1905): everyone measures the same light speed, so time and space must flex.",
+              "Moving clocks run slow - and so does everything else in motion, aging included.",
+              "Muons reach the ground via time dilation (our view) or length contraction (theirs).",
+              "GPS clocks gain about 38 microseconds a day (gravity +45, motion -7) and are pre-corrected."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did the Michelson-Morley experiment (1887) find?",
+            "back": "No ether wind: light's speed measured identical in every direction, regardless of Earth's motion. The null result set the stage for Einstein."
+          },
+          {
+            "front": "What is Einstein's light postulate (1905)?",
+            "back": "Every observer measures the same light speed, 299,792 km/s, no matter how they move - so time and space must differ between observers."
+          },
+          {
+            "front": "Why do short-lived atmospheric muons reach the ground?",
+            "back": "From Earth's frame their 2.2-microsecond clocks run slow (time dilation); in their frame the 15 km atmosphere is length-contracted."
+          },
+          {
+            "front": "What is the net relativistic correction for GPS satellite clocks?",
+            "back": "They run about 38 microseconds per day fast: weaker gravity speeds them ~45, orbital motion slows them ~7. Clock rates are pre-adjusted before launch."
+          }
+        ]
+      },
+      {
+        "id": "quantum-weirdness",
+        "title": "Quantum Weirdness",
+        "summary": "The double-slit experiment, uncertainty, and entanglement - what quantum mechanics really says, minus the mysticism.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "One electron, two paths, real stripes",
+            "body": "Fire electrons at a barrier with two slits - one electron at a time, each landing as a single dot - and the dots slowly organize into zebra stripes: an interference pattern. Each electron behaves as if it took both paths at once. Richard Feynman called this the only mystery of quantum mechanics; everything else follows.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Young's stripes: how waves interfere",
+            "body": "In 1801 Thomas Young shone light through two slits and saw bands of bright and dark. Waves from the two slits overlap: where crest meets crest they reinforce; where crest meets trough they cancel. Stripes are the signature of a wave - which is why finding them in particles arriving one by one was such a shock.",
+            "art": "wave"
+          },
+          {
+            "type": "example",
+            "title": "Tonomura, 1989: watching it happen",
+            "body": "At Hitachi, Akira Tonomura's team sent electrons toward a detector so sparsely that each arrived before the next was emitted. The first minutes showed random-looking dots. After tens of thousands of electrons: crisp interference stripes. No electron had a partner to interfere with. Each one interferes with itself.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The stripes form because electrons in the beam collide with and deflect one another on the way through the slits.",
+            "answer": false,
+            "explain": "Tonomura's electrons flew one at a time, with the apparatus empty between arrivals - and the stripes still built up. The interference lives in each electron's own quantum wave, not in traffic between particles."
+          },
+          {
+            "type": "concept",
+            "title": "Look at the slits, lose the stripes",
+            "body": "Add a device that records which slit each electron uses, and the stripes vanish - you get two plain heaps instead. The culprit isn't a human watching: any physical process that leaves a which-path record destroys the interference. In quantum mechanics, 'measurement' means an interaction that makes a mark, not a conscious observer.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You install a device that records which slit each electron passes through. What appears on the screen?",
+            "choices": [
+              "Sharper stripes, since you know more about each electron",
+              "Two plain bands - the interference disappears",
+              "Nothing; recorded electrons are absorbed by the detector",
+              "Stripes, but only when someone reads the record"
+            ],
+            "answer": 1,
+            "explain": "Once the path is physically recorded anywhere, the two routes can no longer combine into one wave pattern. Consciousness is irrelevant - an unread detector kills the stripes just as dead."
+          },
+          {
+            "type": "concept",
+            "title": "Uncertainty is about waves, not clumsiness",
+            "body": "Heisenberg's principle: the more precisely a particle's position is pinned down, the less precisely its momentum can be, and vice versa. That trade-off is a property of all waves. A pure musical tone must ring on and on; a brief click has no definite pitch. Squeeze a quantum wave into a point, and its wavelength - its momentum - spreads wide.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Could a sufficiently gentle, clever instrument measure position and momentum exactly at the same time?",
+            "answer": "No. The limit isn't in the instrument - it's in the mathematics of waves. A sharply located wave is built from many wavelengths, so a single definite momentum simply doesn't exist for it, any more than a drumbeat has one pitch."
+          },
+          {
+            "type": "concept",
+            "title": "Entanglement: correlations, not telepathy",
+            "body": "Two particles can share a single quantum state, so their measurement results stay correlated however far apart they fly. In 1964 John Bell proved no theory of pre-set hidden answers can reproduce the pattern quantum mechanics predicts - and experiments by Clauser, Aspect, and Zeilinger (Nobel Prize, 2022) confirmed the quantum pattern is real.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Entanglement lets you send a message faster than light: measure your particle, and your distant partner instantly sees the change.",
+            "answer": false,
+            "explain": "Each side alone sees pure randomness - a coin-flip sequence carrying no message. The correlations only surface when the two records are brought together over an ordinary, light-speed-limited channel."
+          },
+          {
+            "type": "quote",
+            "text": "I think I can safely say that nobody understands quantum mechanics.",
+            "by": "Richard Feynman"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Single particles build interference stripes one dot at a time (Tonomura, 1989).",
+              "Any physical which-path record destroys interference - no conscious observer needed.",
+              "Uncertainty is a wave property: sharp position means spread-out momentum. Better tools can't beat it.",
+              "Entangled particles show correlations no pre-set answers could - but carry no faster-than-light messages.",
+              "Quantum mechanics is strange, precise, and spectacularly well tested - mysticism not required."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Tonomura's 1989 single-electron experiment show?",
+            "back": "Electrons sent one at a time each landed as a dot, yet tens of thousands of dots built an interference pattern - each electron interferes with itself."
+          },
+          {
+            "front": "What happens to double-slit stripes if you record which slit each particle used?",
+            "back": "They vanish. Any physical which-path record destroys interference - no conscious observer required."
+          },
+          {
+            "front": "Is Heisenberg uncertainty caused by clumsy instruments disturbing the particle?",
+            "back": "No - it's a property of waves: a sharply located wave needs many wavelengths, so momentum is spread. No instrument can beat it."
+          },
+          {
+            "front": "Can entanglement be used to send signals faster than light?",
+            "back": "No. Each side sees only randomness; the correlations appear only when results are compared over normal, light-speed-limited channels."
+          }
+        ]
+      },
+      {
+        "id": "universe-at-large",
+        "title": "The Universe at Large",
+        "summary": "Expanding space, the Big Bang's afterglow, and the dark ingredients that make up 95 percent of everything.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The static that won a Nobel Prize",
+            "body": "Tune an old analog TV between channels, and about one percent of that hissing snow is microwave light from the infant universe, released 13.8 billion years ago. You have, in a small way, watched the Big Bang's afterglow. This is the story of how we learned the universe had a beginning - and what it is actually made of.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Hubble, 1929: everything is leaving",
+            "body": "Using Henrietta Leavitt's pulsing Cepheid stars as distance markers, Edwin Hubble measured dozens of galaxies and found a clean pattern: the farther the galaxy, the faster it recedes. Twice as far, twice as fast. The universe was not a fixed stage - the distances themselves were growing.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Space stretches; there is no center",
+            "body": "The galaxies aren't fleeing through space from some central blast - space itself is expanding, carrying them apart like raisins in a rising loaf. Every raisin sees every other raisin receding, with the farthest receding fastest. There is no center and no edge; the Big Bang happened everywhere at once.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Nearly every galaxy is rushing away from the Milky Way. What does that say about our location?",
+            "choices": [
+              "We sit at the center of the cosmic explosion",
+              "Nothing special - every observer in an expanding universe sees the same thing",
+              "We happen to sit inside a giant void that repels galaxies",
+              "The galaxies are being pulled toward something directly behind us"
+            ],
+            "answer": 1,
+            "explain": "In rising raisin bread, every raisin sees all the others receding, the distant ones fastest. Distance-proportional recession is exactly what uniform expansion looks like from any seat in the house."
+          },
+          {
+            "type": "example",
+            "title": "1965: pigeons, then the Big Bang",
+            "body": "Arno Penzias and Robert Wilson found their Bell Labs horn antenna plagued by a faint microwave hiss from every direction, day and night. They evicted nesting pigeons and scrubbed away the droppings; the hiss remained. It was the cosmic microwave background - light set free 380,000 years after the Big Bang, now chilled to 2.7 degrees above absolute zero.",
+            "art": "bell"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The cosmic microwave background is the combined glow of the universe's very first stars.",
+            "answer": false,
+            "explain": "It's older than any star. The CMB was released when the young universe first turned transparent, 380,000 years in; the first stars ignited roughly a hundred million years later. It's a baby picture, not starlight."
+          },
+          {
+            "type": "concept",
+            "title": "Rubin's flat curves and missing mass",
+            "body": "Planets obey a clear rule: the farther from the Sun, the slower the orbit. Vera Rubin and Kent Ford expected the same for stars circling the Andromeda galaxy. Instead, through the 1970s, they found outer stars moving as fast as inner ones - flat rotation curves. The visible galaxy can't gravitationally hold itself together; something unseen outweighs it several times over.",
+            "art": "orbit"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Fritz Zwicky suspected unseen mass back in 1933, decades before Rubin. What tipped him off?",
+            "answer": "Galaxies in the Coma cluster were swarming far too fast - the cluster's visible matter had nowhere near the gravity to hold them. He blamed 'dunkle Materie': dark matter. It took Rubin's rotation curves, forty years later, to make the case stick."
+          },
+          {
+            "type": "example",
+            "title": "1998: the expansion is speeding up",
+            "body": "Two rival teams - Saul Perlmutter's, and one led by Brian Schmidt and Adam Riess - used Type Ia supernovae, exploding stars of known intrinsic brightness, to chart the universe's expansion history. The distant blasts came out dimmer, hence farther, than steady expansion allows: the expansion is accelerating. The push was named dark energy; the work won the 2011 Nobel Prize.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In 1998, distant Type Ia supernovae looked dimmer than expected. Why did that imply accelerating expansion?",
+            "choices": [
+              "Dimmer means farther away than steady expansion predicts - something is speeding up the stretch",
+              "Cosmic dust dimmed the light, and dust implies acceleration",
+              "Dimmer supernovae are older, and older objects move faster",
+              "Supernovae were intrinsically smaller in the early universe"
+            ],
+            "answer": 0,
+            "explain": "Type Ia blasts are standard candles - the same true brightness everywhere - so dimmer must mean farther, and farther than coasting expansion can explain. Both teams ruled out dust; it can't mimic the pattern."
+          },
+          {
+            "type": "concept",
+            "title": "The 95 percent universe",
+            "body": "Take stock: atoms - stars, planets, you - make up about 5 percent of the universe's contents. Dark matter is roughly 27 percent; dark energy, about 68. And the observable universe, home to hundreds of billions of galaxies, spans about 93 billion light-years - wider than its 13.8-billion-year age suggests, because space kept stretching behind every ray of light in transit.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "Equipped with his five senses, man explores the universe around him and calls the adventure Science.",
+            "by": "Edwin Hubble"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Hubble (1929): the farther the galaxy, the faster it recedes - space itself expands.",
+              "The expansion has no center; every observer sees the same recession.",
+              "The CMB (Penzias and Wilson, 1965) is the Big Bang's afterglow, released at 380,000 years.",
+              "Flat rotation curves (Rubin) reveal dark matter; dim 1998 supernovae reveal dark energy.",
+              "Atoms are about 5 percent of the universe; dark matter and dark energy are the rest."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Edwin Hubble establish in 1929?",
+            "back": "Galaxies recede with speed proportional to distance - the signature of expanding space, measured using Cepheid stars as distance markers."
+          },
+          {
+            "front": "What is the cosmic microwave background?",
+            "back": "The Big Bang's afterglow, released 380,000 years in, found by Penzias and Wilson (1965) as a uniform microwave hiss, now at 2.7 K."
+          },
+          {
+            "front": "What is the key evidence for dark matter?",
+            "back": "Flat galaxy rotation curves (Rubin and Ford): outer stars orbit too fast for the visible mass. Zwicky's fast-moving cluster galaxies (1933) hinted first."
+          },
+          {
+            "front": "How was dark energy discovered?",
+            "back": "In 1998 two teams found distant Type Ia supernovae dimmer (farther) than steady expansion allows - the expansion is accelerating."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "science-of-habits",
+    "title": "The Science of Habits",
+    "tagline": "Rewire your autopilot with evidence, not willpower",
+    "category": "Behavior",
+    "description": "Roughly 43% of what you do each day runs on autopilot. Learn what behavioral science actually says about how habits form, why they stick, and how to change them — from the 66-day curve to temptation bundling.",
+    "lessons": [
+      {
+        "id": "the-habit-loop",
+        "title": "The Habit Loop",
+        "summary": "Why nearly half of what you do is automatic — and what's actually pulling the strings.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The 43% You Don't Notice",
+            "body": "This morning you got dressed, made coffee, and took your usual route — while thinking about something else entirely. Psychologist Wendy Wood tracked people hour by hour and found about 43% of daily actions run this way: same behavior, same context, mind elsewhere. Nearly half your life is on autopilot. This lesson is about who's flying the plane.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "The Loop: Cue, Routine, Reward",
+            "body": "Habits run on a three-part loop. A cue (3pm, the couch, a ping) triggers a routine (snack, scroll, cigarette), which delivers a reward (relief, novelty, a hit of calm). Charles Duhigg popularized the loop; the neuroscience behind it goes back decades. The crucial part: with enough repetition, the loop runs whether or not you still want the reward.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Wendy Wood's diary studies, roughly what share of people's daily actions were habitual — repeated in the same context, usually while thinking about something else?",
+            "choices": [
+              "About 10%",
+              "About 25%",
+              "About 43%",
+              "About 90%"
+            ],
+            "answer": 2,
+            "explain": "About 43% — and participants' minds were typically elsewhere while doing them. You can't redesign behavior you don't even notice, which is why habit change starts with observation, not resolutions."
+          },
+          {
+            "type": "concept",
+            "title": "Your Brain's Chunking Machine",
+            "body": "MIT's Ann Graybiel watched rat brains learn a maze. Early on, neurons in the basal ganglia fired furiously the whole way through. Once the route became habit, activity collapsed into two spikes — one at the start, one at the end. The brain had chunked the sequence into a single unit it could run cheaply, freeing the thinking cortex for other business.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Once a behavior becomes a habit, your brain works harder each time you repeat it.",
+            "answer": false,
+            "explain": "The opposite: Graybiel's recordings show neural activity plummets once a sequence is chunked, spiking only at start and finish. Habits exist precisely because they are cheap to run."
+          },
+          {
+            "type": "example",
+            "title": "The Man Who Couldn't Remember",
+            "body": "In 1993, viral encephalitis destroyed Eugene Pauly's ability to form new conscious memories. He couldn't sketch his own house or say where its kitchen was. Yet he took daily walks and found his way home, and when asked, walked straight to the bathroom he couldn't describe. His intact basal ganglia kept learning habits his conscious mind never met.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Habits Don't Chase Goals",
+            "body": "Here's the finding that surprises people: a mature habit isn't driven by wanting the outcome. It's a direct association between context and response — see cue, run routine. Wood's research shows this is why 'I don't even want this anymore' rarely stops a habit, and why January's resolve keeps losing to a familiar couch at 9pm.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "The Stale Popcorn Test",
+            "body": "In a 2011 study, David Neal, Wendy Wood, and colleagues handed moviegoers popcorn that was either fresh or a week old. People with strong cinema-popcorn habits ate just as much of the stale stuff — in a cinema. In a campus meeting room, with the context cue gone, they mostly left it alone. The setting, not the taste, was pulling the lever.",
+            "art": "eye"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Weeks after changing your password, why do your fingers still type the old one?",
+            "answer": "Because the cue — the login box — is unchanged, and habits are context-response links, not goals. Your intention updated instantly; the association didn't. It only fades through new repetitions in that same context."
+          },
+          {
+            "type": "concept",
+            "title": "The Reward's Real Job",
+            "body": "Rewards matter most while a habit is forming. Wolfram Schultz found that dopamine neurons initially fire when a reward arrives — but once the pattern is learned, they fire at the cue instead, in anticipation. That's why the urge hits when your phone buzzes, before anything good has happened. The reward built the habit; the cue now owns it.",
+            "art": "bell"
+          },
+          {
+            "type": "quote",
+            "text": "All our life, so far as it has definite form, is but a mass of habits.",
+            "by": "William James"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did habitual moviegoers eat stale popcorn in the cinema but not in a meeting room?",
+            "choices": [
+              "They were hungrier at the movies",
+              "The cinema context cued the eating routine automatically",
+              "Popcorn tastes better in the dark",
+              "Politeness — they didn't want to waste it"
+            ],
+            "answer": 1,
+            "explain": "Same popcorn, same people — only the context changed. Strip away the cue and the habit loses its trigger, which is the single most useful fact in this course for changing behavior."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "About 43% of daily actions are habits, usually performed while thinking about something else (Wendy Wood).",
+              "Habits run as a loop — cue, routine, reward — chunked by the basal ganglia so they cost almost no thought.",
+              "A formed habit is a context-response link, not goal pursuit: stale popcorn still gets eaten in the cinema.",
+              "Dopamine shifts from the reward to the cue, so the urge arrives before the payoff does.",
+              "To change behavior, work on cues and context — not on wanting it more."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Roughly what share of daily actions did Wendy Wood find to be habitual?",
+            "back": "About 43% — repeated in the same context, usually while thinking about something else."
+          },
+          {
+            "front": "What are the three parts of the habit loop?",
+            "back": "Cue (the trigger), routine (the behavior), reward (the payoff that teaches the loop)."
+          },
+          {
+            "front": "Which brain structure automates habits, and what's the evidence?",
+            "back": "The basal ganglia — Graybiel's maze-chunking rats, and Eugene Pauly forming new habits despite total amnesia."
+          },
+          {
+            "front": "What actually triggers a mature habit: the goal or the context?",
+            "back": "The context. Habits are cue-response links — habitual moviegoers ate stale popcorn in cinemas but not in meeting rooms."
+          }
+        ]
+      },
+      {
+        "id": "habits-that-stick",
+        "title": "Building Habits That Stick",
+        "summary": "The 66-day reality, if-then planning, habit stacking, and starting absurdly small.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The 21-Day Myth",
+            "body": "The claim that habits take 21 days traces to Maxwell Maltz, a 1960s plastic surgeon who noticed patients took about three weeks to adjust to their new faces. Self-help flattened 'a minimum of about 21 days' into a law of nature. When researchers finally timed real habit formation, the answer was messier — and far more useful.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "The Real Number: 18 to 254",
+            "body": "In 2010, Phillippa Lally's team at UCL had 96 people repeat a chosen behavior — drinking water with lunch, a daily run — after the same daily cue, rating how automatic it felt. Automaticity climbed fast at first, then plateaued. Time to plateau ranged from 18 to 254 days, with a median of 66. Harder behaviors took longer; nobody's curve read 21.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Lally's UCL study, what was the median time for a new behavior to reach peak automaticity?",
+            "choices": [
+              "21 days",
+              "30 days",
+              "66 days",
+              "254 days"
+            ],
+            "answer": 2,
+            "explain": "66 days was the median; the full range ran 18 to 254 depending on the person and the behavior. Budget two to eight months, not three weeks — then the plateau does the work for you."
+          },
+          {
+            "type": "concept",
+            "title": "Missing a Day Doesn't Matter",
+            "body": "Buried in Lally's data is the study's most forgiving finding: missing a single opportunity had no measurable effect on the automaticity curve. One skipped run, one forgotten rep — the line just kept climbing. What kills habits isn't the miss; it's the story you attach to it and the second and third misses that follow. 'Never miss twice' is a rule worth stealing.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "According to Lally's data, skipping one day essentially resets your progress toward a habit.",
+            "answer": false,
+            "explain": "A single miss made no measurable difference to formation. The all-or-nothing story is the real hazard — it converts one skipped day into a license to quit."
+          },
+          {
+            "type": "concept",
+            "title": "If-Then: Deciding in Advance",
+            "body": "Peter Gollwitzer's implementation intentions are among psychology's best-replicated tools: spell out 'If situation X arises, then I will do Y.' A meta-analysis of 94 studies found a medium-to-large effect (d = .65) on follow-through. The trick isn't motivation — it's handing the decision to the cue in advance, so the moment arrives pre-solved.",
+            "art": "fork"
+          },
+          {
+            "type": "example",
+            "title": "91% vs. 38%",
+            "body": "In a 2002 British study by Sarah Milne, Sheina Orbell, and Paschal Sheeran, 38% of a control group exercised in a given week. A group given motivational reading on heart disease: 35%. A third group wrote one sentence — exactly when and where they would work out. 91% of them followed through. The pamphlet did nothing; the plan nearly tripled the rate.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "Stack It on Something Solid",
+            "body": "Your day is already full of reliable habits — waking, coffee, brushing, commuting. Habit stacking borrows their cues: 'After I pour my coffee, I will write one sentence.' BJ Fogg calls the existing routine an anchor; James Clear popularized the stacking recipe. You're not building a cue from scratch — you're renting one that already fires daily.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You want to start meditating. What's the single highest-leverage sentence you could write down?",
+            "answer": "An if-then stacked on an existing anchor, shrunk until it's trivial: 'After I pour my morning coffee, I will take three slow breaths.' Cue chosen, decision pre-made, size too small to refuse."
+          },
+          {
+            "type": "concept",
+            "title": "Start Smaller Than Feels Sensible",
+            "body": "Stanford's BJ Fogg builds habits by shrinking them until failure is nearly impossible: floss one tooth, do two push-ups, read one paragraph. Tiny behaviors dodge the motivation problem — you can do them on your worst day — and it's repetition on the cue, not intensity, that grows automaticity. Then celebrate immediately: behaviors that feel good get repeated.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "It's day 12 of your new running habit and you skipped yesterday. What does the evidence suggest you do?",
+            "choices": [
+              "Restart your habit tracker from day one",
+              "Run today as planned — one miss didn't dent formation in Lally's data",
+              "Run twice today to make up the loss",
+              "Pick an easier habit; this one clearly isn't working"
+            ],
+            "answer": 1,
+            "explain": "Formation survived single misses just fine; what matters is the next repetition on the next cue. Restarting or doubling up both feed the all-or-nothing thinking that actually breaks habits."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Habit formation took 18–254 days in Lally's UCL study — median 66. Plan in months, not weeks.",
+              "Missing a single day didn't hurt formation; never missing twice is the rule that matters.",
+              "Implementation intentions ('If X, then I will Y') showed a d = .65 effect across 94 studies — decide before the moment arrives.",
+              "Stack new habits on existing anchors: 'After I [current habit], I will [tiny new habit].'",
+              "Start smaller than feels sensible — repetition on a reliable cue builds automaticity, not intensity."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How long does it take a new behavior to become automatic?",
+            "back": "18–254 days in Lally's 2010 UCL study, median 66 — depending on the person and the behavior's difficulty."
+          },
+          {
+            "front": "What is an implementation intention (Gollwitzer)?",
+            "back": "A pre-made plan in the form 'If situation X, then I will do Y' — d = .65 effect on follow-through across 94 studies."
+          },
+          {
+            "front": "In the 2002 British exercise study, what did writing a when-and-where plan achieve?",
+            "back": "91% exercised, vs 38% control and 35% given motivational reading. The plan, not the motivation, did the work."
+          },
+          {
+            "front": "What is habit stacking?",
+            "back": "Attaching a tiny new behavior to an existing daily routine that serves as its cue: 'After I pour my coffee, I will…'"
+          }
+        ]
+      },
+      {
+        "id": "environment-beats-willpower",
+        "title": "Environment Beats Willpower",
+        "summary": "Friction, defaults, and building a world where the good choice is the lazy one.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The 88-Point Mystery",
+            "body": "Germany and Austria are neighbors with similar cultures, wealth, and healthcare. Yet in a 2003 analysis, 12% of Germans were consenting organ donors — and 99.98% of Austrians. No campaign explains it, no moral gulf. The difference was one box on one form, and it's the cleanest demonstration ever published of a force steering your habits every day.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Defaults: The Unchosen Choice",
+            "body": "Eric Johnson and Daniel Goldstein's 2003 Science paper 'Do Defaults Save Lives?' explained the gap: Germany asked people to opt in to donation; Austria enrolled everyone unless they opted out. In both countries, most people did what required no action. Defaults win because doing nothing is the easiest routine there is — zero repetitions required.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why were 99.98% of Austrians organ donors while only 12% of Germans were?",
+            "choices": [
+              "Austrians score higher on altruism measures",
+              "Austrian religious teaching encourages donation",
+              "Austria compensated donors' families",
+              "Austria's system was opt-out; Germany's was opt-in"
+            ],
+            "answer": 3,
+            "explain": "Same human inertia, different form. When the default changed, behavior followed — meaning whoever sets the default quietly makes the decision. At home, that person can be you."
+          },
+          {
+            "type": "concept",
+            "title": "The 20-Second Rule",
+            "body": "Psychologist Shawn Achor wanted to practice guitar; for weeks the guitar lost to the couch. His fix: put the guitar on a stand mid-room, take the TV remote's batteries out, and stash them 20 seconds away. Practice became daily. His rule: cut about 20 seconds of friction from habits you want, add 20 to habits you don't. Activation energy, not desire, is the usual bottleneck.",
+            "art": "flame"
+          },
+          {
+            "type": "example",
+            "title": "Google's M&M Problem",
+            "body": "Google's New York office once kept M&Ms in open bins. When the food team moved them into opaque jars and put healthier snacks at eye level in clear containers, the 2,000-person office reportedly ate 3.1 million fewer M&M calories over seven weeks. Nobody banned anything, and nobody's willpower improved. The candy just stopped asking.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Willpower Mirage",
+            "body": "The famous 'ego depletion' studies — willpower draining like a muscle after resisting cookies — ran into trouble: a 2016 pre-registered replication across 23 labs found an effect near zero. Meanwhile, diary research shows people who score high in self-control face fewer temptations, not more. Their secret isn't grit. They arrange life so the fight rarely starts.",
+            "art": "shield"
+          },
+          {
+            "type": "truefalse",
+            "statement": "People with high self-control succeed mainly by resisting more temptations than everyone else.",
+            "answer": false,
+            "explain": "Experience-sampling research (Hofmann and colleagues, 2012) found they encounter fewer temptations in the first place. Self-control looks less like a muscle and more like good urban planning."
+          },
+          {
+            "type": "example",
+            "title": "Ten Inches of Salad Bar",
+            "body": "Paul Rozin's team quietly rearranged a pay-by-weight cafeteria: moving a food about 10 inches out of easy reach, or swapping its serving spoon for tongs, cut how much of it diners took by 8–16%. Nobody noticed and nobody felt deprived. If ten inches can steer strangers who don't know they're in a study, imagine what your kitchen counter is doing to you.",
+            "art": "pyramid"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your phone is the last thing you see at night and the first thing you reach for in bed. What would Achor prescribe?",
+            "answer": "Charge it across the room — or outside the bedroom — and leave a book on the pillow. You've added 20 seconds of friction to scrolling and removed 20 from reading. The 11pm version of you takes the default."
+          },
+          {
+            "type": "quote",
+            "text": "Environment is the invisible hand that shapes human behavior.",
+            "by": "James Clear"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You want to stop grazing on office candy. Which move does the evidence favor?",
+            "choices": [
+              "Keep the dish visible and practice resisting, to train willpower",
+              "Move the candy into an opaque jar in a drawer across the room",
+              "Vow each morning to skip it",
+              "Adopt a strict 'just one piece' rule"
+            ],
+            "answer": 1,
+            "explain": "Distance plus invisibility beat resolve: the proximity studies and Google's jar swap show intake tracks effort and sightlines. Resisting in place is the one option that spends willpower — the currency you can't count on."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Defaults decide: opt-out organ donation meant 99.98% consent in Austria vs 12% in opt-in Germany (Johnson & Goldstein, 2003).",
+              "Achor's 20-second rule: subtract friction from habits you want, add it to habits you don't.",
+              "Small distances, big effects: ten inches or an opaque jar cut consumption 8–16% in cafeteria and office studies.",
+              "Ego depletion failed a 23-lab replication — don't build your system on a willpower fuel tank.",
+              "People high in self-control mostly face fewer temptations. Design your environment; don't duel it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Johnson & Goldstein's 2003 organ-donation study show?",
+            "back": "Defaults dominate: opt-out countries had near-universal consent (Austria 99.98%) vs opt-in neighbors (Germany 12%)."
+          },
+          {
+            "front": "What is Shawn Achor's 20-second rule?",
+            "back": "Make good habits about 20 seconds easier to start and bad ones 20 seconds harder — activation energy is the usual bottleneck, not desire."
+          },
+          {
+            "front": "What happened to the 'willpower drains like a muscle' (ego depletion) effect?",
+            "back": "A 2016 pre-registered replication across 23 labs found an effect near zero — treat willpower-as-fuel claims with caution."
+          },
+          {
+            "front": "How do people with high self-control actually succeed?",
+            "back": "They face fewer temptations (Hofmann et al., 2012), structuring environments and habits so resisting is rarely needed."
+          }
+        ]
+      },
+      {
+        "id": "breaking-bad-habits",
+        "title": "Breaking Bad Habits",
+        "summary": "Cue disruption, routine swaps, temptation bundling, and careful identity work.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Strike That Stuck",
+            "body": "In February 2014, a strike closed much of the London Underground for two days, forcing commuters onto unfamiliar routes. When service resumed, economists tracking fare cards found about 5% never went back — the forced experiment had revealed a better commute they'd never tried. Habits rarely die by argument. They die when the world stops cueing them.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Habits Are Homebodies",
+            "body": "Wendy Wood tracked students transferring between universities. Their exercise, TV, and newspaper habits survived the move only when the new context resembled the old. When contexts changed, the habits collapsed and behavior fell back under conscious control — for better or worse. Cues live in places; change the place, and the loop loses its trigger.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Wood's study of students transferring universities, whose habits survived the move?",
+            "choices": [
+              "Students with the strongest intentions to continue",
+              "Athletes, whose habits were strongest",
+              "Students whose new context resembled the old one",
+              "Students whose habits were the most long-standing"
+            ],
+            "answer": 2,
+            "explain": "Context similarity, not resolve, predicted survival. That cuts both ways: disruption breaks good habits and bad ones alike — which makes any big life change a rare editing window."
+          },
+          {
+            "type": "concept",
+            "title": "The Three-Month Window",
+            "body": "Bas Verplanken calls it the habit discontinuity effect: behavior-change interventions work markedly better on people who have recently moved — within roughly three months, before new routines harden. Fresh starts (a new city, a new job, even a new year) briefly return your behavior to conscious control. That's when old defaults are up for renegotiation.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Nothing Is Ever Deleted",
+            "body": "Ann Graybiel's lab trained rats out of a maze habit until it seemed gone — then reintroduced the old cue, and the full neural firing pattern snapped back at once. Habit circuits go dormant, not blank. This is why 'just stop' fails under stress, and why relapse waits in old kitchens and old bars. You don't erase a habit. You out-compete it.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "With enough repetition of a new behavior, the old habit is eventually deleted from your brain.",
+            "answer": false,
+            "explain": "Graybiel's extinguished rats relapsed instantly when the old cue returned — circuits sleep, they don't die. Plan for the cue's ambush instead of trusting the delete key."
+          },
+          {
+            "type": "concept",
+            "title": "Swap the Middle of the Loop",
+            "body": "Since you can't erase the loop, edit it: keep the cue and the reward, replace the routine. The 3pm slump (cue) can still end in a break and a lift (reward) — via a walk instead of the vending machine. It's why nicotine gum, fidget rings, and sparkling water in a wine glass work at all: the loop keeps running while you change what runs inside it.",
+            "art": "puzzle"
+          },
+          {
+            "type": "example",
+            "title": "The Hunger Games Gym Trick",
+            "body": "Katherine Milkman locked gripping audiobooks — The Hunger Games among them — inside gym-only iPods: hear the next chapter only while working out. Gym visits ran 51% higher than control at first, though the effect faded after Thanksgiving break scattered routines. Afterward, 61% said they'd pay for the restriction. She calls it temptation bundling.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Every workday at 3pm you drift to the vending machine. What's the replacement play?",
+            "answer": "Keep the cue and the reward, swap the routine: at 3pm (cue), take a ten-minute walk or make tea (new routine) and still collect the break and the lift (reward). Write it as an if-then so the decision is pre-made."
+          },
+          {
+            "type": "concept",
+            "title": "Becoming the Kind of Person Who",
+            "body": "In 2011, Christopher Bryan found 'be a voter' beat 'vote' at boosting turnout — but a much larger 2016 replication found no effect, so hold noun magic loosely. The sturdier version is private: let each repetition count as evidence about who you are. Someone who 'doesn't smoke' has nothing to resist; someone 'trying to quit' renegotiates at every cue.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+            "by": "Will Durant"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What happened to Milkman's audiobook-and-gym effect over the semester?",
+            "choices": [
+              "It kept growing as the habit compounded",
+              "It held steady through the school year",
+              "It faded, collapsing after Thanksgiving break disrupted routines",
+              "It reversed — students began avoiding the gym"
+            ],
+            "answer": 2,
+            "explain": "Even clever incentives obey habit law: the break scattered the cues, and the loop starved. Bundles and plans need stable contexts — protect the cue, and restart fast after disruptions."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Habits weaken when contexts change: transferring students kept routines only where the new setting resembled the old (Wood).",
+              "Life disruptions open a roughly three-month window when behavior is renegotiable — use fresh starts on purpose.",
+              "Old habit circuits go dormant, not blank (Graybiel) — so replace the routine while keeping the cue and reward.",
+              "Temptation bundling (Milkman): chain a want to a should — gym visits ran 51% higher while the routine context held.",
+              "Use identity framing carefully: each rep is evidence of who you're becoming, even though the 'voter vs. vote' wording effect didn't replicate."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do habits weaken when you move or your routine is disrupted?",
+            "back": "Habits are cued by context; Wood's transferring students kept habits only when new settings resembled the old ones."
+          },
+          {
+            "front": "When is the best window for changing a habit, and why?",
+            "back": "Within about 3 months of a disruption (move, new job): old cues are gone and behavior briefly returns to conscious control (Verplanken)."
+          },
+          {
+            "front": "Why replace a bad habit's routine instead of just stopping?",
+            "back": "Habit circuits go dormant, not erased (Graybiel). Keep the cue and reward, swap the routine — the loop runs with new contents."
+          },
+          {
+            "front": "What is temptation bundling?",
+            "back": "Milkman's method: tie a temptation (gripping audiobook) to a chore (the gym). Visits ran 51% higher at first; the effect needs stable cues."
+          }
+        ]
+      }
+    ]
   }
 ];
