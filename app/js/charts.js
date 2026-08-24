@@ -243,15 +243,23 @@ export function scatterChart(pairs, opts = {}) {
   const sx = (v) => pad.l + (xMax === xMin ? iw / 2 : ((v - xMin) / (xMax - xMin)) * iw);
   const sy = (v) => pad.t + ih - (yMax === yMin ? ih / 2 : ((v - yMin) / (yMax - yMin)) * ih);
 
-  // Jitter overlapping integer points so density is visible on 1-5 scales.
+  // Jitter overlapping points so density is visible on coarse 1-5 scales.
+  // Laid out on a widening spiral rather than a fixed 5x5 lattice: a lattice
+  // with a small step packs coincident points into a solid square that reads as
+  // one large marker instead of many.
   const seen = new Map();
   const dots = pairs.map(([px, py]) => {
     const key = `${px}|${py}`;
     const k = seen.get(key) || 0;
     seen.set(key, k + 1);
-    const jx = k === 0 ? 0 : ((k % 5) - 2) * 1.7;
-    const jy = k === 0 ? 0 : (Math.floor(k / 5) % 5 - 2) * 1.7;
-    return `<circle cx="${n(sx(px) + jx)}" cy="${n(sy(py) + jy)}" r="3" class="scatter-dot"/>`;
+    let jx = 0, jy = 0;
+    if (k > 0) {
+      const ring = Math.ceil(Math.sqrt(k));
+      const angle = k * 2.39996;              // golden angle, so rings don't align
+      jx = Math.cos(angle) * ring * 3.1;
+      jy = Math.sin(angle) * ring * 3.1;
+    }
+    return `<circle cx="${n(sx(px) + jx)}" cy="${n(sy(py) + jy)}" r="2.7" class="scatter-dot"/>`;
   }).join('');
 
   let trendLine = '';

@@ -205,7 +205,7 @@ const actions = {
   },
 
   'manage-billing': async () => {
-    const r = await openBillingPortal();
+    const r = await openBillingPortal(state.entitlementRaw?.customerId);
     if (!r.redirected) toast(r.message || 'Billing portal unavailable.');
   },
 

@@ -169,7 +169,7 @@ a  { color: var(--accent); }
 .card-head h2, .card-head h3 { margin: 0; }
 .card-head .spacer { flex: 1; }
 
-.grid { display: grid; gap: 16px; }
+.grid { display: grid; gap: 16px; align-items: start; }
 .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .grid-3 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 .grid-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
@@ -315,7 +315,12 @@ textarea { min-height: 76px; resize: vertical; }
 
 /* ---------------- paywall ---------------- */
 
-.locked { position: relative; }
+/* A blurred short chart can be shorter than the overlay that sits on top of
+   it, and an absolutely-positioned overlay would then spill outside the card.
+   The min-height guarantees the container is always at least as tall as the
+   lock message it has to hold. */
+.locked { position: relative; min-height: 230px; display: flex; flex-direction: column; justify-content: center; }
+.locked .locked-content { flex: 0 0 auto; }
 .locked .locked-content { filter: blur(5px); opacity: .35; pointer-events: none; user-select: none; }
 .lock-overlay {
   position: absolute; inset: 0; display: grid; place-items: center; padding: 20px;

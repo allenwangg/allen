@@ -123,16 +123,27 @@ export async function restoreFromReceipt() {
   }
 }
 
-export async function openBillingPortal() {
+/**
+ * Open Stripe's billing portal for an existing subscriber.
+ *
+ * `customerId` comes from the entitlement record written by restoreFromReceipt
+ * (which got it from our own server, not from the client). The portal endpoint
+ * requires it — an earlier version of this function omitted it and every
+ * "Manage billing" click would have failed with a 400.
+ */
+export async function openBillingPortal(customerId) {
   const cfg = await loadConfig();
   if (isDemoMode(cfg)) {
     return { redirected: false, message: 'Demo mode — no billing portal is configured.' };
+  }
+  if (!customerId) {
+    return { redirected: false, message: 'No subscription found on this device. If you subscribed elsewhere, reopen the link from your receipt email.' };
   }
   try {
     const res = await fetch(`${cfg.apiBase}/create-portal-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ returnUrl: location.href }),
+      body: JSON.stringify({ customerId, returnUrl: location.href }),
     });
     if (!res.ok) return { redirected: false, message: 'Could not open the billing portal.' };
     const { url } = await res.json();

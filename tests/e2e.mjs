@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
-const OUT='/tmp/claude-0/-home-user-allen/65cc1a6e-b395-540f-aeeb-309683e1ba57/scratchpad';
+const OUT = process.env.SHOT_DIR || '.';
+const BASE = process.env.BASE_URL || 'http://localhost:8080';
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, deviceScaleFactor: 2 });
 const page = await ctx.newPage();
@@ -8,7 +9,7 @@ page.on('console', m => { if (m.type()==='error') errors.push('CONSOLE: '+m.text
 page.on('pageerror', e => errors.push('PAGEERROR: '+e.message));
 page.on('requestfailed', r => errors.push('REQFAIL: '+r.url()+' '+r.failure()?.errorText));
 
-await page.goto('http://localhost:8791/app/index.html', { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(700);
 
 console.log('--- initial load ---');
@@ -84,7 +85,16 @@ await page.waitForTimeout(400);
 await page.screenshot({ path: OUT+'/02-upgrade.png', fullPage: true });
 await page.click('[data-action="start-trial"]');
 await page.waitForTimeout(900);
-console.log('after trial, tier banner:', await page.$eval('.banner', e=>e.textContent.replace(/\s+/g,' ').trim()).catch(()=>'none'));
+// Verify the trial actually took effect, rather than checking for a banner on
+// a view that never renders one (an earlier version of this test did exactly
+// that and reported a false negative).
+const tierAfterTrial = await page.evaluate(async () => {
+  const { store } = await import('./js/store.js');
+  const { resolveEntitlement } = await import('./js/entitlements.js');
+  return resolveEntitlement(await store.getMeta('entitlement'));
+});
+console.log('entitlement after trial:', JSON.stringify(tierAfterTrial));
+if (tierAfterTrial.tier !== 'pro') throw new Error('trial did not activate');
 
 console.log('\n--- INSIGHTS (pro) ---');
 await page.click('[data-action="goto"][data-view="insights"]');
@@ -97,6 +107,15 @@ const insights = await page.$$eval('.insight', els => els.map(e => ({
 console.log('findings:', insights.length);
 insights.forEach((i,n)=>console.log(`  ${n+1}. [${i.verdict}] ${i.text}\n      ${i.stats}`));
 console.log('scatter charts rendered:', await page.$$eval('.chart-scatter', e=>e.length));
+const stillLocked = await page.$$eval('.lock-overlay', e => e.length);
+console.log('lock overlays on insights (expect 0):', stillLocked);
+if (stillLocked > 0) throw new Error('insights still gated after starting the trial');
+// The seed contains one genuine planted effect (yesterday's alcohol suppresses
+// today's energy) buried in habits that all trend together. Detrending should
+// leave that one and discard the trend-driven rest.
+const hasPlanted = insights.some(i => /alcohol/i.test(i.text) && /energy/i.test(i.text));
+console.log('planted alcohol -> energy effect recovered:', hasPlanted);
+if (!hasPlanted) throw new Error('planted effect was not surfaced in the UI');
 await page.screenshot({ path: OUT+'/03-insights.png', fullPage: true });
 
 console.log('\n--- SIMULATOR ---');
@@ -126,7 +145,7 @@ await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });
 const dp = await dark.newPage();
 dp.on('pageerror', e => errors.push('DARK PAGEERROR: '+e.message));
-await dp.goto('http://localhost:8791/app/index.html', { waitUntil:'networkidle' });
+await dp.goto(`${BASE}/app/index.html`, { waitUntil:'networkidle' });
 await dp.waitForTimeout(800);
 await dp.screenshot({ path: OUT+'/07-dark.png', fullPage: true });
 

@@ -62,9 +62,13 @@ export function todayView(state) {
   const trend = report.trendPerWeek;
   const smooth = state.smoothed || null;
 
+  // Name the window that was actually used. On Free this is 14 days, not 28,
+  // and claiming otherwise is a small lie that undermines everything else on
+  // the page.
+  const trendWindow = Math.min(28, report.scored.length);
   const trendLine = trend == null
     ? '<span class="delta-flat">Not enough data yet</span>'
-    : `${fmtDelta(trend)} points per week over 28 days`;
+    : `${fmtDelta(trend)} points per week over ${trendWindow} days`;
 
   const pillarRadar = radarChart(
     Object.fromEntries(Object.entries(PILLAR_LABELS).map(([k, label]) => [k, { label, value: report.pillarAverages[k] }])),
@@ -107,7 +111,7 @@ export function todayView(state) {
     <div class="card">
       <div class="card-head"><h2>Score history</h2><div class="spacer"></div>
         <span class="subtle">${state.entitlement.tier === 'free' ? 'Last 14 days (Free)' : `All ${entries.length} days`}</span></div>
-      ${lineChart(scorePoints, { smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time' })}
+      ${lineChart(scorePoints, { smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time', height: 300 })}
       <p class="subtle" style="margin-top:8px">Solid line is your daily score. Dashed line is a 7-day smoothed average — that is the one to watch.</p>
     </div>
     <div class="card">
@@ -297,7 +301,7 @@ export function insightsView(state) {
     <div class="card-head"><h2>Your week</h2></div>
     ${barChart(wp.stats.filter((s) => s.mean != null).map((s) => ({
       label: s.day, value: Math.round((s.mean - wp.overall) * 10) / 10,
-      display: `${s.mean} (${s.mean >= wp.overall ? '+' : ''}${Math.round((s.mean - wp.overall) * 10) / 10})`,
+      display: `${s.mean.toFixed(1)} (${s.mean >= wp.overall ? '+' : ''}${(s.mean - wp.overall).toFixed(1)})`,
     })), { signed: true, label: 'Score by weekday, relative to your average' })}
     <p class="muted" style="margin-top:10px">Your best day is <strong>${esc(wp.best.day)}</strong> (${wp.best.mean}) and your worst is
     <strong>${esc(wp.worst.day)}</strong> (${wp.worst.mean}) — a spread of ${wp.spread} points.
@@ -326,7 +330,7 @@ export function insightsView(state) {
     <div class="card-head"><h1 style="margin:0">Personal insights</h1><span class="pill pill-pro">Pro</span></div>
     <p class="muted">These are correlations found in <strong>your</strong> data — not population averages, and not advice
     copied from an article. Every one shown here survived a permutation test and a false-discovery-rate correction across
-    ${res?.tested ? esc(String(res.tested)) : 'every'} relationship we tested.</p>
+    ${res?.tested ? `${esc(String(res.tested))} relationship${res.tested === 1 ? '' : 's'}` : 'every relationship'} we tested.</p>
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
   </div>

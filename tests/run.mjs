@@ -5,7 +5,7 @@
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, studentTTwoSided, betai } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -411,6 +411,76 @@ t('weekdayPattern finds a planted bad Friday', () => {
   const scoreFn = (e) => (new Date(...e.date.split('-').map((v, i) => (i === 1 ? +v - 1 : +v))).getDay() === 5 ? 60 : 78);
   const wp = weekdayPattern(es, scoreFn);
   eq(wp.worst.day, 'Friday');
+});
+
+t('conditionalDetrend leaves an untrended series alone', () => {
+  const times = Array.from({ length: 60 }, (_, i) => i);
+  // Mostly zeros with occasional spikes — the sparse shape that broke naive
+  // detrending by turning tied zeros into a time-ordered ramp.
+  const vals = times.map((t) => (t % 7 === 5 || t % 7 === 6 ? 3 : 0));
+  const out = conditionalDetrend(vals, times);
+  eq(out.detrended, false, 'a series with no time trend must not be detrended');
+  eq(out.values.filter((v) => v === 0).length, vals.filter((v) => v === 0).length, 'ties must survive intact');
+});
+t('conditionalDetrend still removes a genuine trend', () => {
+  const times = Array.from({ length: 60 }, (_, i) => i);
+  const vals = times.map((t) => 10 + 0.6 * t);
+  const out = conditionalDetrend(vals, times);
+  eq(out.detrended, true);
+  for (const v of out.values) near(v, 0, 1e-6);
+});
+t('linearFit reports explained variance', () => {
+  const times = Array.from({ length: 40 }, (_, i) => i);
+  near(linearFit(times.map((t) => 2 * t), times).r2, 1, 1e-9);
+  ok(linearFit(times.map((t) => (t % 2 ? 1 : -1)), times).r2 < 0.05);
+});
+t('permutationP is deterministic across calls', () => {
+  const rnd = mulberry32(1234);
+  const xs = Array.from({ length: 60 }, () => gauss(rnd));
+  const ys = xs.map((x) => x * 1.5 + gauss(rnd));
+  const a = permutationP(xs, ys, spearman(xs, ys));
+  const b = permutationP(xs, ys, spearman(xs, ys));
+  eq(a, b, 'the same data must always give the same p-value');
+});
+
+t('RECOVERS an effect in weekly-clustered data', () => {
+  // The realistic shape: drinking clusters at weekends, so the driver is zero
+  // on most days and strongly periodic. Two separate mechanisms previously
+  // destroyed this — naive detrending broke the tied zeros, and a null
+  // estimated from only n-1 circular shifts was too unstable to clear
+  // correction. Recall on this scenario went 47% -> 100%.
+  let found = 0;
+  const trials = 15;
+  for (let s = 0; s < trials; s++) {
+    const es = synth(120, 6000 + s, (e, i, r) => {
+      const parts = e.date.split('-');
+      const dow = new Date(+parts[0], +parts[1] - 1, +parts[2]).getDay();
+      const weekend = dow === 0 || dow === 6;
+      e.sleepHours = 6.2 + r() * 0.9;
+      e.steps = Math.round(4200 + r() * 4000);
+      e.exerciseMinutes = Math.round(r() * 60);
+      e.proteinGrams = Math.round(78 + r() * 30);
+      e.produceServings = Math.round(1.5 + r() * 2);
+      e.ultraProcessed = Math.max(0, Math.round(4.5 + r() * 2));
+      e.fiberGrams = Math.round(16 + r() * 10);
+      e.sunlightMinutes = Math.round(12 + r() * 30);
+      e.bedtimeMinutes = 1320 + Math.round(r() * 90);
+      e.alcoholUnits = weekend ? Math.round(r() * 5) : (r() < 0.25 ? Math.round(r() * 2) : 0);
+      e.stress = Math.max(1, Math.min(5, Math.round(3.6 + r() * 1.4)));
+      e.mood = Math.max(1, Math.min(5, Math.round(2.9 + r() * 1.2)));
+      e.sleepQuality = Math.max(1, Math.min(5, Math.round(2.4 + r() * 1.2)));
+      e.restingHR = Math.round(66 + r() * 5);
+      e.hrv = Math.round(36 + r() * 10);
+      e.energy = 3;
+    });
+    const rn = mulberry32(s * 13 + 1);
+    for (let i = 1; i < es.length; i++) {
+      es[i].energy = Math.max(1, Math.min(5, Math.round(4.5 - es[i - 1].alcoholUnits * 0.55 + (rn() - 0.5) * 1.8)));
+    }
+    if (discover(es).findings.some((f) => f.driver === 'alcoholUnits' && f.outcome === 'energy')) found++;
+  }
+  console.log(`\n  [weekly] planted effect recovered in ${found}/${trials} weekend-clustered datasets`);
+  ok(found / trials >= 0.85, `recall too low on weekly-clustered data: ${found}/${trials}`);
 });
 
 /* ================= report + simulator ================= */

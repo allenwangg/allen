@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VitalArc — find out which habits actually work, for you</title>
+<meta name="description" content="A healthspan tracker that runs proper statistics on your own daily log, so you learn which of your habits genuinely move your numbers — and which ones don't.">
+<meta name="theme-color" content="#1f6f5c" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1014" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="VitalArc — find out which habits actually work, for you">
+<meta property="og:description" content="Most trackers tell you what your watch already told you. VitalArc tells you what's actually driving your numbers.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231f6f5c'/><path d='M13 44c7-19 13-25 19-25s12 6 19 25' stroke='%23fff' stroke-width='6.5' fill='none' stroke-linecap='round'/></svg>">
+<link rel="stylesheet" href="./app/css/app.css">
+<style>
+  .lp { max-width: 940px; margin: 0 auto; padding: 0 20px 80px; }
+  .lp-nav { display:flex; align-items:center; gap:12px; padding:20px 0; }
+  .lp-hero { text-align:center; padding: 44px 0 30px; }
+  .lp-hero h1 { font-size: clamp(2rem, 5.2vw, 3.1rem); letter-spacing:-.03em; max-width:16ch; margin:0 auto .5em; }
+  .lp-sub { font-size: clamp(1.02rem, 2.1vw, 1.22rem); color: var(--text-2); max-width: 60ch; margin: 0 auto 26px; }
+  .lp-cta { display:flex; gap:11px; justify-content:center; flex-wrap:wrap; }
+  .lp-section { padding: 34px 0; }
+  .lp-section > h2 { text-align:center; font-size: clamp(1.4rem, 3.2vw, 1.95rem); margin-bottom:.35em; }
+  .lp-section > .lead { text-align:center; color:var(--text-2); max-width:62ch; margin:0 auto 26px; }
+  .feat { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .feat .card { margin:0; }
+  .feat h3 { display:flex; align-items:center; gap:8px; }
+  .glyph { width:30px;height:30px;border-radius:9px;background:var(--accent-soft);display:grid;place-items:center;flex:none;color:var(--accent);font-weight:800;font-size:.85rem;}
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  @media (max-width:620px){ .compare{grid-template-columns:1fr;} }
+  .compare > div { padding:20px; }
+  .compare > div:first-child { background:var(--surface-2); border-right:1px solid var(--border); }
+  .compare h4 { margin:0 0 10px; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-3); }
+  .compare ul { margin:0; padding-left:19px; color:var(--text-2); }
+  .compare li { margin-bottom:7px; }
+  .proof { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
+  .proof-num { font-size:2rem; font-weight:750; letter-spacing:-.03em; color:var(--accent); line-height:1.1; }
+  .lp-foot { border-top:1px solid var(--border); margin-top:40px; padding-top:22px; color:var(--text-3); font-size:.86rem; }
+  .lp-foot a { color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="lp">
+
+  <nav class="lp-nav">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">V</span> VitalArc</div>
+    <div class="spacer" style="flex:1"></div>
+    <a class="btn btn-sm" href="#how">How it works</a>
+    <a class="btn btn-primary btn-sm" href="./app/">Open the app</a>
+  </nav>
+
+  <header class="lp-hero">
+    <h1>Find out which habits actually work — for you</h1>
+    <p class="lp-sub">
+      Your tracker already knows you slept six hours. It has never once told you what that
+      <em>cost</em> you. VitalArc runs real statistics on your own daily log and reports only
+      what survives them.
+    </p>
+    <div class="lp-cta">
+      <a class="btn btn-primary" href="./app/">Start logging — free</a>
+      <a class="btn" href="#how">See how it works</a>
+    </div>
+    <p class="subtle" style="margin-top:14px">No account. No upload. Works offline. Your data stays on your device.</p>
+  </header>
+
+  <section class="lp-section">
+    <div class="compare">
+      <div>
+        <h4>Every other tracker</h4>
+        <ul>
+          <li>"You slept 6h 12m." You knew that.</li>
+          <li>A score with no explanation of how it was built.</li>
+          <li>Generic advice copied from an article.</li>
+          <li>Correlations with no significance testing — so it confidently reports noise.</li>
+          <li>Your history held hostage behind a subscription.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>VitalArc</h4>
+        <ul>
+          <li>"On your higher-alcohol days, your energy runs 0.9 points lower the <em>next</em> day."</li>
+          <li>Every point traceable to a pillar and a published dose-response curve.</li>
+          <li>Suggestions ranked by simulating them against <em>your</em> average day.</li>
+          <li>Permutation tests and false-discovery-rate correction. On noise it reports nothing.</li>
+          <li>Your data is on your device and exportable at any time, on any plan.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-section" id="how">
+    <h2>How it works</h2>
+    <p class="lead">Three things, done properly.</p>
+    <div class="feat">
+      <div class="card">
+        <h3><span class="glyph" aria-hidden="true">1</span> Log in forty seconds</h3>
+        <p class="muted">Twenty habit fields across sleep, movement, nutrition, recovery and substances.
+        Sliders with sensible defaults, so a normal day is a few taps.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph" aria-hidden="true">2</span> Get a score you can argue with</h3>
+        <p class="muted">Six pillars, each built from published dose-response curves rather than
+        made-up point values. Eleven hours of sleep scores worse than eight, because that is what
+        the evidence says. Every point is traceable.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph" aria-hidden="true">3</span> Learn what's actually driving it</h3>
+        <p class="muted">We test every habit against every outcome at several time lags, then apply
+        a permutation test and a false-discovery-rate correction. What's left is worth acting on.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-section">
+    <h2>The part nobody else does</h2>
+    <p class="lead">
+      Finding real signal in one person's noisy daily log is genuinely hard, and getting it
+      wrong is worse than saying nothing. Here is what we measured while building it.
+    </p>
+    <div class="grid grid-3">
+      <div class="proof">
+        <div class="proof-num">0 of 40</div>
+        <p class="muted" style="margin:6px 0 0">Pure-noise datasets that produced <em>any</em> finding.
+        A tracker that invents patterns is worse than useless.</p>
+      </div>
+      <div class="proof">
+        <div class="proof-num">98%</div>
+        <p class="muted" style="margin:6px 0 0">Recall on a genuine moderate effect buried in
+        realistic noise. Being careful shouldn't mean being blind.</p>
+      </div>
+      <div class="proof">
+        <div class="proof-num">12 → 1</div>
+        <p class="muted" style="margin:6px 0 0">Findings on data where every habit improved together.
+        Eleven were the calendar, not a real effect. We detrend so they don't reach you.</p>
+      </div>
+    </div>
+    <p class="subtle center" style="margin-top:16px">
+      Methodology and the full test suite are in the repository. You should be able to check our work.
+    </p>
+  </section>
+
+  <section class="lp-section">
+    <h2>Free forever, genuinely</h2>
+    <p class="lead">
+      Logging, your score, your pillar breakdown and your streak never expire and never cost anything.
+      What Pro adds is the analysis — the part that was expensive to build.
+    </p>
+    <div class="lp-cta">
+      <a class="btn btn-primary" href="./app/">Open the app</a>
+      <a class="btn btn-pro" href="./app/#upgrade">See Pro plans</a>
+    </div>
+  </section>
+
+  <footer class="lp-foot">
+    <p><strong>VitalArc is a wellness and habit-tracking tool, not a medical device.</strong>
+    It does not diagnose, treat, cure or prevent any disease. The Healthspan Age figure is an
+    illustrative estimate derived from self-reported habits using published population-level
+    relationships — it is not a clinical measurement of biological age, and it is shown with a
+    confidence level reflecting how much of your data supports it. Correlations found in your log
+    show what moves together; they cannot prove causation. Always consult a qualified clinician
+    about your health.</p>
+    <p>Your data is stored locally in your browser. We do not upload it, and we do not run
+    analytics on it.</p>
+  </footer>
+</div>
+</body>
+</html>

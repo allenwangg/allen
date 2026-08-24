@@ -176,32 +176,114 @@ const fisherZ = (r) => {
  * empirical value is used unchanged. The parametric tail only takes over deep
  * in the tail, exactly where the empirical estimate has no resolution.
  */
-export function permutationP(xs, ys, observed, shifts = PERMUTATIONS) {
+/**
+ * Deterministic PRNG. Seeded from the data so a given series always yields the
+ * same p-value — a health app that reports a different significance on every
+ * page load is not trustworthy, and it would make the tests meaningless.
+ */
+function seededRandom(seed) {
+  let s = seed >>> 0;
+  return function () {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Block length for the bootstrap. Seven keeps weekly rhythm intact. */
+export const BLOCK_LENGTH = 7;
+
+/**
+ * Moving-block bootstrap surrogate: rebuild a series of the same length by
+ * concatenating randomly chosen contiguous blocks (with wraparound).
+ *
+ * Blocks preserve short-range autocorrelation — and at length 7, the weekly
+ * rhythm that dominates real habit data — while destroying alignment with the
+ * other series. Unlike circular shifts, this can generate an unlimited number
+ * of surrogates, which is the whole reason it is here.
+ */
+function blockBootstrap(values, blockLen, rnd) {
+  const n = values.length;
+  const out = new Array(n);
+  let i = 0;
+  while (i < n) {
+    const startIdx = Math.floor(rnd() * n);
+    for (let k = 0; k < blockLen && i < n; k++, i++) {
+      out[i] = values[(startIdx + k) % n];
+    }
+  }
+  return out;
+}
+
+/**
+ * Permutation test with a calibrated tail.
+ *
+ * WHY THIS IS NOT JUST A COUNT. A circular shift of a length-n series has only
+ * n-1 non-trivial rotations, so an empirical p-value cannot go below 1/n. With
+ * ~100 hypotheses under Benjamini-Hochberg, the top-ranked test must clear
+ * roughly q/m (about 0.001), which a 120-day series (floor 0.0083) can never
+ * reach. A pure count therefore discards overwhelming effects: in testing, a
+ * Spearman of -0.91 was rejected purely by arithmetic.
+ *
+ * So we use the surrogates to ESTIMATE the null distribution rather than merely
+ * to count exceedances: Fisher-z transform the null correlations, fit a
+ * location-scale family, and read the tail.
+ *
+ * WHY TWO KINDS OF SURROGATE. Circular shifts are the exact null for a
+ * stationary series, but there are only n-1 of them, and estimating a tail from
+ * ~119 samples is badly unstable — two datasets with the same true effect
+ * (r = -0.745 and r = -0.734) came back with p-values two orders of magnitude
+ * apart, and the second failed correction while the first sailed through. That
+ * is not a threshold problem, it is an estimator-variance problem.
+ *
+ * Adding moving-block bootstrap surrogates fixes it: they preserve
+ * autocorrelation like a shift does, but there is no limit on how many we can
+ * draw, so the null's spread is estimated from a sample large enough to be
+ * stable.
+ *
+ * WHY STUDENT-T. A null estimated from a finite sample has genuinely heavy
+ * tails. Reading a Gaussian six sigma out claims p = 2e-9 from a few hundred
+ * samples, which is indefensible and produced findings on pure noise in 20% of
+ * datasets. Under t(df=14) the same observation reads about 1e-3: still
+ * significant, no longer fantasy.
+ */
+export function permutationP(xs, ys, observed, samples = PERMUTATIONS) {
   const n = xs.length;
   if (n < MIN_PAIRS || observed == null || !Number.isFinite(observed)) return 1;
   const absObs = Math.abs(observed);
 
   // Ranks of a circularly shifted series are the circularly shifted ranks, so
-  // rank once and rotate — O(n) per permutation instead of O(n log n).
+  // rank once and rotate: O(n) per surrogate instead of O(n log n).
   const rx = rank(xs);
   const ry = rank(ys);
 
   const nulls = [];
-  const step = Math.max(1, Math.floor((n - 1) / Math.min(shifts, n - 1)));
-  for (let s = 1; s < n; s += step) {
-    const rotated = ry.slice(s).concat(ry.slice(0, s));
-    const r = pearson(rx, rotated);
+
+  // 1. Every circular shift — the exact stationary null.
+  for (let s = 1; s < n; s++) {
+    const r = pearson(rx, ry.slice(s).concat(ry.slice(0, s)));
     if (r != null && Number.isFinite(r)) nulls.push(r);
   }
-  if (nulls.length < 8) return 1;
+
+  // 2. Block-bootstrap surrogates to make the tail estimate stable. Seeded from
+  //    the data so results are reproducible.
+  const seed = (n * 2654435761) ^ Math.round(absObs * 1e6);
+  const rnd = seededRandom(seed);
+  const want = Math.max(0, samples - nulls.length);
+  for (let i = 0; i < want; i++) {
+    const r = pearson(rx, blockBootstrap(ry, BLOCK_LENGTH, rnd));
+    if (r != null && Number.isFinite(r)) nulls.push(r);
+  }
+
+  if (nulls.length < 30) return 1;
 
   const exceed = nulls.reduce((acc, r) => acc + (Math.abs(r) >= absObs ? 1 : 0), 0);
   const empirical = (exceed + 1) / (nulls.length + 1);
 
   // Enough mass in the tail to trust the count directly.
-  if (exceed >= 8) return empirical;
+  if (exceed >= 10) return empirical;
 
-  // Otherwise calibrate: fit a Gaussian to the Fisher-z null and read the tail.
   const zs = nulls.map(fisherZ);
   const mean = zs.reduce((a, b) => a + b, 0) / zs.length;
   const variance = zs.reduce((a, b) => a + (b - mean) ** 2, 0) / (zs.length - 1);
@@ -211,8 +293,8 @@ export function permutationP(xs, ys, observed, shifts = PERMUTATIONS) {
   const zObs = fisherZ(observed);
   const parametric = studentTTwoSided((zObs - mean) / sd, NULL_TAIL_DF);
 
-  // Never claim more certainty than the smaller of the two estimates warrants,
-  // and never return a literal zero.
+  // Never claim more certainty than the smaller estimate warrants, and never
+  // return a literal zero.
   return Math.max(1e-12, Math.min(empirical, Number.isFinite(parametric) ? parametric : empirical));
 }
 
@@ -308,14 +390,61 @@ export function alignedPairs(entriesByDate, driver, outcome, lag) {
 export function detrend(values, times) {
   const n = values.length;
   if (n < 4) return values.slice();
+  const fit = linearFit(values, times);
+  if (!fit) return values.slice();
+  return values.map((v, i) => v - (fit.slope * times[i] + fit.intercept));
+}
+
+/** Least-squares fit of value against time, with the variance it explains. */
+export function linearFit(values, times) {
+  const n = values.length;
+  if (n < 3) return null;
   const mt = times.reduce((a, b) => a + b, 0) / n;
   const mv = values.reduce((a, b) => a + b, 0) / n;
-  let num = 0, den = 0;
-  for (let i = 0; i < n; i++) { num += (times[i] - mt) * (values[i] - mv); den += (times[i] - mt) ** 2; }
-  if (den === 0) return values.slice();
+  let num = 0, den = 0, totalVar = 0;
+  for (let i = 0; i < n; i++) {
+    num += (times[i] - mt) * (values[i] - mv);
+    den += (times[i] - mt) ** 2;
+    totalVar += (values[i] - mv) ** 2;
+  }
+  if (den === 0 || totalVar === 0) return null;
   const slope = num / den;
   const intercept = mv - slope * mt;
-  return values.map((v, i) => v - (slope * times[i] + intercept));
+  let residVar = 0;
+  for (let i = 0; i < n; i++) residVar += (values[i] - (slope * times[i] + intercept)) ** 2;
+  return { slope, intercept, r2: Math.max(0, 1 - residVar / totalVar) };
+}
+
+/** Minimum share of variance a time trend must explain before we remove it. */
+export const DETREND_MIN_R2 = 0.05;
+
+/**
+ * Detrend only when there is a trend worth removing.
+ *
+ * This guard is not a micro-optimisation — without it, detrending actively
+ * destroys signal in sparse variables. Alcohol is the clearest case: in a
+ * realistic log it is zero on most days. Those zeros are TIES, and Spearman
+ * depends on them being tied. Subtracting a fitted line gives every one of them
+ * a slightly different residual ordered by date, so a variable with no time
+ * structure at all acquires a full monotone ranking derived from the calendar.
+ *
+ * Measured on a 120-day log where drinking clusters at weekends: the true
+ * alcohol -> next-day-energy correlation fell from -0.75 to -0.46 and stopped
+ * clearing correction. The correction meant to prevent false positives was
+ * causing false negatives instead.
+ *
+ * Detrending is a correction for a confound. Applying it where no confound
+ * exists can only add noise, so we require the time trend to explain at least
+ * DETREND_MIN_R2 of the series' variance before touching it.
+ */
+export function conditionalDetrend(values, times, minR2 = DETREND_MIN_R2) {
+  const fit = linearFit(values, times);
+  if (!fit || fit.r2 < minR2) return { values: values.slice(), detrended: false, r2: fit ? fit.r2 : 0 };
+  return {
+    values: values.map((v, i) => v - (fit.slope * times[i] + fit.intercept)),
+    detrended: true,
+    r2: fit.r2,
+  };
 }
 
 /** Guard against a "correlation" driven by three outlier days on a flat series. */
@@ -382,21 +511,22 @@ export function discover(entries, opts = {}) {
         const rRaw = spearman(xs, ys);
         if (rRaw == null || !Number.isFinite(rRaw)) continue;
 
-        // Correlate the detrended series. Both are kept: `r` is what we report
-        // and test, `rRaw` is retained so the UI can tell a user when a
-        // relationship is mostly a long-term trend rather than a daily effect.
-        const dx = detrend(xs, times);
-        const dy = detrend(ys, times);
-        const r = detrend_enabled ? spearman(dx, dy) : rRaw;
+        // Correlate after conditionally removing a time trend from each series.
+        // Both correlations are kept: `r` is what we report and test, `rRaw` is
+        // retained so the UI can tell a user when a relationship is mostly a
+        // long-term drift rather than a day-to-day effect.
+        const cx = detrend_enabled ? conditionalDetrend(xs, times) : { values: xs, detrended: false };
+        const cy = detrend_enabled ? conditionalDetrend(ys, times) : { values: ys, detrended: false };
+        const r = spearman(cx.values, cy.values);
         if (r == null || !Number.isFinite(r)) continue;
 
         raw.push({
           driver, outcome, lag,
           r: round2(r), rRaw: round2(rRaw),
-          trendDriven: Math.abs(rRaw) - Math.abs(r) > 0.25,
+          detrended: cx.detrended || cy.detrended,
+          trendDriven: (cx.detrended || cy.detrended) && Math.abs(rRaw) - Math.abs(r) > 0.25,
           n: xs.length,
-          xs: detrend_enabled ? dx : xs,
-          ys: detrend_enabled ? dy : ys,
+          xs: cx.values, ys: cy.values,
           rawXs: xs, rawYs: ys,
         });
       }
@@ -418,6 +548,7 @@ export function discover(entries, opts = {}) {
       r: c.r,
       rRaw: c.rRaw,
       trendDriven: c.trendDriven,
+      detrended: c.detrended,
       n: c.n,
       p: round4(pValues[i]),
       pAdjusted: round4(adjusted[i]),
