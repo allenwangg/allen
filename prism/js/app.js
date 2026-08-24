@@ -61,7 +61,8 @@
   /* Distinct cover glyph per course (fallback: first lesson's intro art). */
   var COVER_ART = {
     'cognitive-biases': 'lens', 'stoicism': 'shield', 'psychology-of-money': 'coin',
-    'learning-how-to-learn': 'brain', 'persuasion': 'dialog', 'logical-fallacies': 'balance'
+    'learning-how-to-learn': 'brain', 'persuasion': 'dialog', 'logical-fallacies': 'balance',
+    'science-of-habits': 'seed', 'big-ideas-physics': 'orbit'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
@@ -323,7 +324,7 @@
     wrap.className = 'modal-wrap';
     wrap.innerHTML = '<div class="modal tour">' +
       '<h2>Welcome to Prism</h2>' +
-      '<div class="tour-row"><span class="tour-art">' + Art.svg('book') + '</span><p><b>Learn in cards.</b> Six courses of short visual lessons — psychology, philosophy, money and more — with quizzes woven in.</p></div>' +
+      '<div class="tour-row"><span class="tour-art">' + Art.svg('book') + '</span><p><b>Learn in cards.</b> ' + COURSES.length + ' courses of short visual lessons — psychology, philosophy, physics and more — with quizzes woven in.</p></div>' +
       '<div class="tour-row"><span class="tour-art">' + Art.svg('orbit') + '</span><p><b>Remember with review.</b> Finished lessons become flashcards, scheduled just before you’d forget them.</p></div>' +
       '<div class="tour-row"><span class="tour-art">' + Art.svg('flame') + '</span><p><b>Make it a habit.</b> Hit your daily XP goal to grow a streak, level up, and earn achievements.</p></div>' +
       '<div class="modal-row"><button class="btn primary" id="tour-go">Start learning</button></div>' +
