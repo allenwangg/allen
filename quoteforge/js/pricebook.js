@@ -293,7 +293,7 @@ export function expandAssembly(assembly, driverQty) {
       unitCost: book.unitCost,
       markup: book.category === 'other' ? 0 : null,
       sku: book.sku,
-      note: book.note || '',
+      trade: book.trade,
     };
   }).filter(Boolean);
 }

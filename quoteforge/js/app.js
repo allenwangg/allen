@@ -1,0 +1,1179 @@
+/**
+ * app.js — UI wiring.
+ *
+ * Rendering strategy: full re-render of each region from state on every
+ * change. The documents involved are small (a big estimate is ~60 lines), so
+ * a virtual DOM would cost more than it saves. The one exception is the item
+ * grid, where re-rendering under an active cursor would eat keystrokes — so
+ * focus and selection are preserved explicitly across renders.
+ */
+
+import {
+  CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
+  marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
+  solveUniformMarkup, isPassThrough,
+  buildSchedule, toCents,
+} from './pricing.js';
+import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
+import { PRICE_BOOK, ASSEMBLIES, UNITS, UNIT_LABELS, searchPriceBook, trades, expandAssembly } from './pricebook.js';
+import { renderProposal, proposalAsText, esc } from './proposal.js';
+
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+const storage = safeStorage();
+const store = new Store({ storage });
+
+const ui = {
+  tab: 'estimate',
+  groupByTrade: true,
+  showLinePrices: false,
+};
+
+/* ============================================================== bootstrap = */
+
+function boot() {
+  if (!store.state.estimates.length) seedFirstRun();
+  applyStoredTheme();
+  wireChrome();
+  wireEstimateForm();
+  wireAdjustments();
+  wireSettings();
+  wirePriceBook();
+  wireAssemblies();
+  wireProposal();
+  wireJobs();
+  wireShortcuts();
+
+  store.subscribe((_s, detail) => {
+    if (detail.type === 'storage-error') {
+      toast('Could not save — browser storage may be full. Export a backup now.', { bad: true });
+    }
+    render();
+  });
+
+  // A debounced save can still be pending when the tab goes away.
+  window.addEventListener('pagehide', () => store.save({ immediate: true }));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') store.save({ immediate: true });
+  });
+
+  render();
+}
+
+/**
+ * First run gets a real, populated example rather than an empty grid. An empty
+ * estimating tool teaches nothing; a priced bathroom shows the margin gap
+ * immediately, which is the whole point of the product.
+ */
+function seedFirstRun() {
+  const est = store.createEstimate({
+    title: 'Hall bath remodel — sample',
+    scopeSummary:
+      'Full demolition of the existing hall bath down to studs and subfloor. New tiled shower with '
+      + 'waterproofing membrane and glass door, relocated vanity and lighting, new tile floor, and '
+      + 'paint throughout.\n\nAll debris removed and the space left broom-clean at completion.',
+    exclusions:
+      'Vanity, toilet, shower valve trim, and light fixtures are supplied by the client. '
+      + 'Structural repairs and any asbestos or mold abatement, if discovered, are excluded.',
+  });
+  store.patchEstimate({
+    jobAddress: '112 Alder Street, Springfield',
+    client: { name: 'Sample Client', email: '', phone: '', address: '' },
+  });
+  const asm = ASSEMBLIES[0];
+  store.addItems(expandAssembly(asm, asm.defaultDriver));
+  store.addItems([{
+    description: 'Heated floor mat, installed',
+    category: 'subcontractor', unit: 'sf', qty: 32, unitCost: 18.5,
+    markup: null, optional: true,
+  }]);
+  store.undoStack.length = 0;
+  return est;
+}
+
+/* ================================================================= render = */
+
+function render() {
+  const est = store.active();
+  const priced = est ? priceEstimate(est, store.state.settings) : null;
+
+  renderEstimateSelect();
+  renderTabs();
+
+  if (ui.tab === 'estimate') {
+    renderEstimateForm(est);
+    renderItems(est, priced);
+    renderAdjustments(est, priced);
+    renderProfit(est, priced);
+    renderCategories(priced);
+  } else if (ui.tab === 'proposal') {
+    renderProposalPane(est, priced);
+  } else if (ui.tab === 'jobs') {
+    renderJobs();
+  } else if (ui.tab === 'settings') {
+    renderSettings();
+  }
+
+  $('#btnUndo').disabled = !store.canUndo();
+  $('#btnRedo').disabled = !store.canRedo();
+}
+
+function renderTabs() {
+  for (const tab of $$('.tab')) {
+    const on = tab.dataset.tab === ui.tab;
+    tab.setAttribute('aria-selected', String(on));
+  }
+  for (const name of ['estimate', 'proposal', 'jobs', 'settings']) {
+    $(`#pane-${name}`).hidden = name !== ui.tab;
+  }
+}
+
+function renderEstimateSelect() {
+  const sel = $('#estSelect');
+  const cur = store.state.activeId;
+  sel.innerHTML = store.state.estimates.map((e) => `
+    <option value="${esc(e.id)}"${e.id === cur ? ' selected' : ''}>
+      ${esc(e.number)} — ${esc(e.title || 'Untitled')}
+    </option>`).join('') || '<option>No estimates</option>';
+}
+
+/* ----------------------------------------------------------- job details -- */
+
+function renderEstimateForm(est) {
+  if (!est) return;
+  for (const input of $$('[data-est]')) {
+    if (document.activeElement === input) continue;
+    input.value = est[input.dataset.est] ?? '';
+  }
+  for (const input of $$('[data-client]')) {
+    if (document.activeElement === input) continue;
+    input.value = est.client?.[input.dataset.client] ?? '';
+  }
+  $('#estMeta').textContent = `${est.number} · updated ${est.updatedAt}`;
+}
+
+function wireEstimateForm() {
+  for (const input of $$('[data-est]')) {
+    input.addEventListener('input', () => {
+      store.patchEstimate({ [input.dataset.est]: input.value }, { coalesce: true, label: `est-${input.dataset.est}` });
+    });
+  }
+  for (const input of $$('[data-client]')) {
+    input.addEventListener('input', () => {
+      const est = store.active();
+      if (!est) return;
+      store.patchEstimate(
+        { client: { ...est.client, [input.dataset.client]: input.value } },
+        { coalesce: true, label: `client-${input.dataset.client}` },
+      );
+    });
+  }
+}
+
+/* ------------------------------------------------------------ item grid -- */
+
+function renderItems(est, priced) {
+  const wrap = $('#itemsWrap');
+  if (!est) { wrap.innerHTML = ''; return; }
+
+  if (!est.items.length) {
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <h3>No line items yet</h3>
+        <p>Start from an assembly to lay in a whole scope at once, pull individual
+           items from the price book, or add a blank line and type.</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn primary" data-act="assembly">⚡ Start from an assembly</button>
+          <button class="btn" data-act="pricebook">Browse price book</button>
+          <button class="btn" data-act="blank">Add blank line</button>
+        </div>
+      </div>`;
+    wrap.onclick = (e) => {
+      const act = e.target.closest('[data-act]')?.dataset.act;
+      if (act === 'assembly') $('#dlgAssembly').showModal();
+      if (act === 'pricebook') openPriceBook();
+      if (act === 'blank') focusNewLine(store.addItem());
+    };
+    return;
+  }
+
+  const focus = captureFocus();
+
+  const rows = est.items.map((item) => {
+    const l = priced.lines.find((x) => x.id === item.id);
+    const marginClass = l.margin < 0 ? 'bad' : l.margin < 0.1 ? 'warn' : 'good';
+    return `
+<tr data-id="${esc(item.id)}"${item.optional ? ' class="optional"' : ''}>
+  <td><input data-f="description" value="${esc(item.description)}" placeholder="Description"></td>
+  <td style="width:132px">
+    <select data-f="category">
+      ${CATEGORIES.map((c) => `<option value="${c}"${c === item.category ? ' selected' : ''}>${CATEGORY_LABELS[c]}</option>`).join('')}
+    </select>
+  </td>
+  <td style="width:86px"><input data-f="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}"></td>
+  <td style="width:72px">
+    <select data-f="unit">
+      ${UNITS.map((u) => `<option value="${u}"${u === item.unit ? ' selected' : ''}>${u}</option>`).join('')}
+    </select>
+  </td>
+  <td style="width:92px"><input data-f="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}"></td>
+  <td style="width:74px">
+    <input data-f="markup" class="num" type="number" step="1"
+           value="${item.markup === null || item.markup === undefined ? '' : (item.markup * 100).toFixed(0)}"
+           placeholder="${((store.state.settings.categoryMarkup[item.category] ?? store.state.settings.defaultMarkup) * 100).toFixed(0)}"
+           title="Markup %. Blank uses your category default.">
+  </td>
+  <td class="computed">
+    ${formatMoney(l.priceCents)}
+    <div class="line-margin ${marginClass}" style="color:var(--${marginClass === 'good' ? 'good' : marginClass === 'warn' ? 'warn' : 'bad'})">
+      ${formatPercent(l.margin, 0)} margin
+    </div>
+  </td>
+  <td class="col-actions">
+    <div class="row-tools">
+      <button class="btn sm icon ghost" data-row="up"   title="Move up">↑</button>
+      <button class="btn sm icon ghost" data-row="down" title="Move down">↓</button>
+      <button class="btn sm icon ghost" data-row="opt"  title="Toggle optional upgrade" aria-pressed="${!!item.optional}">◇</button>
+      <button class="btn sm icon ghost" data-row="del"  title="Delete line">✕</button>
+    </div>
+  </td>
+</tr>`;
+  }).join('');
+
+  const totalLabel = priced.optionalLines.length
+    ? `${priced.lines.length - priced.optionalLines.length} included · ${priced.optionalLines.length} optional`
+    : `${priced.lines.length} lines`;
+
+  wrap.innerHTML = `
+<table class="items">
+  <thead>
+    <tr>
+      <th>Description</th><th>Category</th><th class="right">Qty</th><th>Unit</th>
+      <th class="right">Unit cost</th><th class="right">Markup %</th>
+      <th class="right">Price</th><th></th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>
+<div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">
+  <span class="tiny faint">${totalLabel}</span>
+  <span style="flex:1"></span>
+  <span class="tiny faint">Cost ${formatMoney(priced.baseCostCents)} · Price ${formatMoney(priced.subtotalCents)}</span>
+</div>`;
+
+  wireItemGrid(wrap);
+  restoreFocus(focus);
+}
+
+function wireItemGrid(wrap) {
+  wrap.oninput = (e) => {
+    const tr = e.target.closest('tr[data-id]');
+    const field = e.target.dataset.f;
+    if (!tr || !field) return;
+    const id = tr.dataset.id;
+    let value = e.target.value;
+
+    if (field === 'qty' || field === 'unitCost') {
+      value = value === '' ? 0 : Number(value);
+      if (!Number.isFinite(value)) return;
+    } else if (field === 'markup') {
+      value = value.trim() === '' ? null : Number(value) / 100;
+      if (value !== null && !Number.isFinite(value)) return;
+    }
+    store.patchItem(id, { [field]: value }, { label: `item-${id}-${field}`, coalesce: true });
+  };
+
+  wrap.onclick = (e) => {
+    const btn = e.target.closest('[data-row]');
+    if (!btn) return;
+    const id = btn.closest('tr[data-id]').dataset.id;
+    const est = store.active();
+    const item = est.items.find((i) => i.id === id);
+    switch (btn.dataset.row) {
+      case 'up':   store.moveItem(id, -1); break;
+      case 'down': store.moveItem(id, +1); break;
+      case 'opt':  store.patchItem(id, { optional: !item.optional }, { coalesce: false }); break;
+      case 'del': {
+        const label = item.description || 'this line';
+        store.removeItem(id);
+        toast(`Removed ${label}.`, { undo: true });
+        break;
+      }
+    }
+  };
+
+  // Enter adds a line below; Cmd/Ctrl+Backspace deletes the current one.
+  wrap.onkeydown = (e) => {
+    const tr = e.target.closest('tr[data-id]');
+    if (!tr) return;
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      focusNewLine(store.addItem({}, { after: tr.dataset.id }));
+    } else if (e.key === 'Backspace' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      store.removeItem(tr.dataset.id);
+      toast('Line removed.', { undo: true });
+    }
+  };
+}
+
+/**
+ * Focus survives a full re-render of the grid: without this, typing in a
+ * quantity field would lose the caret on every keystroke.
+ */
+function captureFocus() {
+  const el = document.activeElement;
+  const tr = el?.closest?.('tr[data-id]');
+  if (!tr || !el.dataset.f) return null;
+  return {
+    id: tr.dataset.id,
+    field: el.dataset.f,
+    start: el.selectionStart,
+    end: el.selectionEnd,
+  };
+}
+
+function restoreFocus(focus) {
+  if (!focus) return;
+  const el = $(`tr[data-id="${CSS.escape(focus.id)}"] [data-f="${focus.field}"]`);
+  if (!el) return;
+  el.focus();
+  if (focus.start !== null && el.setSelectionRange && el.type !== 'number') {
+    try { el.setSelectionRange(focus.start, focus.end); } catch { /* not selectable */ }
+  }
+}
+
+function focusNewLine(item) {
+  requestAnimationFrame(() => {
+    $(`tr[data-id="${CSS.escape(item.id)}"] [data-f="description"]`)?.focus();
+  });
+}
+
+/* ---------------------------------------------------------- adjustments -- */
+
+function renderAdjustments(est, priced) {
+  if (!est) return;
+  const d = est.discount;
+  const type = $('#fDiscType');
+  const val = $('#fDiscVal');
+  if (document.activeElement !== type) type.value = d?.type || '';
+  if (document.activeElement !== val) {
+    val.value = d ? (d.type === 'percent' ? (Number(d.value) * 100).toFixed(2).replace(/\.?0+$/, '') : d.value) : '';
+  }
+  val.disabled = !d?.type && !type.value;
+  val.placeholder = type.value === 'percent' ? '10' : '500.00';
+
+  if (priced && priced.discountCents > 0) {
+    $('#discHint').textContent =
+      `${formatMoney(priced.discountCents)} off — margin drops to ${formatPercent(priced.margin)}.`;
+  } else {
+    $('#discHint').textContent = 'Comes straight out of your profit.';
+  }
+  if (document.activeElement !== $('#fOverride')) $('#fOverride').value = '';
+}
+
+function wireAdjustments() {
+  const type = $('#fDiscType');
+  const val = $('#fDiscVal');
+
+  type.addEventListener('change', () => {
+    if (!type.value) store.patchEstimate({ discount: null }, { coalesce: false });
+    else store.patchEstimate({ discount: { type: type.value, value: 0 } }, { coalesce: false });
+  });
+
+  val.addEventListener('input', () => {
+    const raw = Number(val.value) || 0;
+    const value = type.value === 'percent' ? raw / 100 : raw;
+    store.patchEstimate({ discount: { type: type.value || 'fixed', value } },
+      { coalesce: true, label: 'discount' });
+  });
+
+  // Back-solve: "I want this job to come out at $18,000."
+  $('#fOverride').addEventListener('change', () => {
+    const target = toCents($('#fOverride').value);
+    if (!target) return;
+    const est = store.active();
+    const priced = priceEstimate(est, store.state.settings);
+    const current = priced.totalCents + priced.discountCents; // undiscounted total
+    const needed = current - target;
+    if (needed <= 0) {
+      toast('That is above the current total — raise a line price instead.', { bad: true });
+      $('#fOverride').value = '';
+      return;
+    }
+    store.patchEstimate({ discount: { type: 'fixed', value: needed / 100 } }, { coalesce: false });
+    const after = priceEstimate(store.active(), store.state.settings);
+    toast(`Discounted ${formatMoney(needed)} to land at ${formatMoney(after.totalCents)} — margin now ${formatPercent(after.margin)}.`);
+    $('#fOverride').value = '';
+  });
+}
+
+/* --------------------------------------------------------- profit panel -- */
+
+function renderProfit(est, priced) {
+  const el = $('#profitPanel');
+  if (!est || !priced) { el.innerHTML = ''; return; }
+
+  const s = store.state.settings;
+  const target = Number(s.targetMargin) || 0;
+  const floor = Number(s.floorMargin) || 0;
+  const margin = priced.margin;
+
+  const state = margin < floor ? (margin < 0 ? 'loss' : 'thin') : 'good';
+  const gaugeMax = Math.max(target * 1.6, margin * 1.15, 0.4);
+  const pct = (v) => `${Math.max(0, Math.min(100, (v / gaugeMax) * 100))}%`;
+
+  const head = discountHeadroom(priced, floor);
+
+  el.innerHTML = `
+<div class="gauge">
+  <div class="gauge-track">
+    <div class="gauge-fill ${state === 'good' ? '' : state}" style="width:${pct(Math.max(0, margin))}"></div>
+    <div class="gauge-target" style="left:${pct(target)}" title="Target ${formatPercent(target)}"></div>
+  </div>
+  <div class="gauge-legend">
+    <span>Margin <strong class="num">${formatPercent(margin)}</strong></span>
+    <span>Target ${formatPercent(target)}</span>
+  </div>
+</div>
+
+<div class="figure"><span class="label">Job cost</span><span class="value">${formatMoney(priced.baseCostCents)}</span></div>
+<div class="figure"><span class="label">Overhead ${formatPercent(s.overhead, 0)}</span><span class="value">${formatMoney(priced.overheadCents)}</span></div>
+${priced.contingencyCents ? `<div class="figure"><span class="label">Contingency ${formatPercent(s.contingency, 0)}</span><span class="value">${formatMoney(priced.contingencyCents)}</span></div>` : ''}
+${priced.discountCents ? `<div class="figure"><span class="label">Discount</span><span class="value">−${formatMoney(priced.discountCents)}</span></div>` : ''}
+${priced.taxCents ? `<div class="figure"><span class="label">Sales tax</span><span class="value">${formatMoney(priced.taxCents)}</span></div>` : ''}
+<div class="figure profit ${state}">
+  <span class="label">Your profit</span>
+  <span class="value">${formatMoney(priced.grossProfitCents)}</span>
+</div>
+<div class="figure total"><span class="label">Client pays</span><span class="value">${formatMoney(priced.totalCents)}</span></div>
+
+<div class="figure" style="margin-top:8px">
+  <span class="label tiny">Break-even</span>
+  <span class="value tiny">${formatMoney(priced.breakEvenCents)}</span>
+</div>
+<div class="figure">
+  <span class="label tiny">Room to negotiate</span>
+  <span class="value tiny">${head.underwater ? '—' : formatMoney(head.headroomCents)}</span>
+</div>
+
+${coachFor(priced, s, head)}`;
+
+  el.onclick = (e) => {
+    const act = e.target.closest('[data-fix]')?.dataset.fix;
+    if (act === 'lift') liftToTarget();
+    if (act === 'settings') { ui.tab = 'settings'; render(); }
+  };
+}
+
+/**
+ * The coach. This is the feature people would pay for on its own: a plain
+ * sentence naming what is wrong with the number and what to do about it.
+ */
+function coachFor(priced, s, head) {
+  const target = Number(s.targetMargin) || 0;
+  const floor = Number(s.floorMargin) || 0;
+  const margin = priced.margin;
+
+  if (!priced.lines.length) {
+    return `<div class="coach"><strong>Nothing priced yet.</strong>
+      Add a line or start from an assembly to see where this job lands.</div>`;
+  }
+
+  if (margin < 0) {
+    return `<div class="coach bad">
+      <strong>This job loses money.</strong>
+      You would pay ${formatMoney(-priced.grossProfitCents)} for the privilege of doing it.
+      Costs total ${formatMoney(priced.burdenedCostCents)} against a price of ${formatMoney(priced.afterDiscountCents)}.
+      <div class="fix"><button class="btn sm primary" data-fix="lift">Reprice to ${formatPercent(target)}</button></div>
+    </div>`;
+  }
+
+  if (margin < floor) {
+    const needed = priceForTargetMargin(priced.burdenedCostCents, target);
+    return `<div class="coach bad">
+      <strong>Below your walk-away margin.</strong>
+      ${formatPercent(margin)} is under the ${formatPercent(floor)} floor you set.
+      Hitting your ${formatPercent(target)} target needs ${formatMoney(needed)} —
+      ${formatMoney(needed - priced.afterDiscountCents)} more than this quote.
+      <div class="fix"><button class="btn sm primary" data-fix="lift">Reprice to ${formatPercent(target)}</button></div>
+    </div>`;
+  }
+
+  if (margin < target - 0.005) {
+    const needed = priceForTargetMargin(priced.burdenedCostCents, target);
+    const gap = needed - priced.afterDiscountCents;
+    return `<div class="coach warn">
+      <strong>Under target by ${formatPercent(target - margin)}.</strong>
+      You are marking up ${formatPercent(priced.markup, 0)}, which only keeps ${formatPercent(margin)} —
+      markup and margin are not the same number. Add ${formatMoney(gap)} to hit ${formatPercent(target)}.
+      <div class="fix"><button class="btn sm primary" data-fix="lift">Reprice to ${formatPercent(target)}</button></div>
+    </div>`;
+  }
+
+  return `<div class="coach good">
+    <strong>On target.</strong>
+    ${formatPercent(margin)} margin clears your ${formatPercent(target)} goal.
+    You can come down ${formatMoney(head.headroomCents)} and still hold the ${formatPercent(floor)} floor.
+  </div>`;
+}
+
+/**
+ * Reprice every non-optional line to the uniform markup that lands the whole
+ * job on the target margin. Lines explicitly set to zero markup (permits,
+ * pass-through fees) are left alone — marking those up is how you end up
+ * explaining a $1,200 "permit" to an annoyed client.
+ */
+function liftToTarget() {
+  const est = store.active();
+  const target = Number(store.state.settings.targetMargin) || 0;
+
+  // Solved against the real pricing pipeline rather than marginToMarkup(target),
+  // which is only correct when there is no contingency and no pass-through
+  // line. With either present it undershoots, and the user would trust a
+  // number that quietly leaves money on the table.
+  const markup = solveUniformMarkup(est, store.state.settings, target);
+  if (markup === null) {
+    toast(`Cannot reach ${formatPercent(target)} — every line is a pass-through, so there is nothing to mark up.`, { bad: true });
+    return;
+  }
+
+  let touched = 0;
+  store.update((state) => {
+    const e = state.estimates.find((x) => x.id === state.activeId);
+    for (const item of e.items) {
+      if (isPassThrough(item)) continue;
+      item.markup = markup;
+      touched++;
+    }
+  }, { label: 'reprice to target' });
+
+  const after = priceEstimate(store.active(), store.state.settings);
+  const skipped = est.items.length - touched;
+  toast(
+    `Repriced ${touched} line${touched === 1 ? '' : 's'} to ${formatPercent(markup, 0)} markup — margin now ${formatPercent(after.margin)}.`
+    + (skipped ? ` ${skipped} pass-through line${skipped === 1 ? '' : 's'} left at cost.` : ''),
+    { undo: true },
+  );
+}
+
+/* ------------------------------------------------------ category rollup -- */
+
+function renderCategories(priced) {
+  const el = $('#catPanel');
+  if (!priced || !priced.lines.length) {
+    el.innerHTML = '<p class="tiny faint" style="margin:0">Add lines to see the cost mix.</p>';
+    return;
+  }
+  const entries = Object.entries(priced.byCategory);
+  if (!entries.length) { el.innerHTML = '<p class="tiny faint" style="margin:0">No included lines.</p>'; return; }
+
+  const maxCost = Math.max(...entries.map(([, v]) => v.costCents));
+  const colors = {
+    labor: 'var(--accent)', material: '#0891b2', subcontractor: '#7c3aed',
+    equipment: '#65a30d', other: 'var(--text-3)',
+  };
+
+  el.innerHTML = `<div class="cat-bars">${entries.map(([cat, v]) => `
+    <div class="cat-bar">
+      <div class="cat-bar-head">
+        <span>${CATEGORY_LABELS[cat]} <span class="faint tiny">${v.count}</span></span>
+        <span class="num">${formatMoney(v.costCents)}</span>
+      </div>
+      <div class="cat-bar-track">
+        <div class="cat-bar-fill" style="width:${(v.costCents / maxCost) * 100}%;background:${colors[cat]}"></div>
+      </div>
+      <div class="tiny faint" style="margin-top:2px">
+        sells for ${formatMoney(v.priceCents)} · ${formatPercent(v.margin, 0)} margin
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+/* ------------------------------------------------------------ price book -- */
+
+function openPriceBook() {
+  $('#dlgPriceBook').showModal();
+  const q = $('#pbQuery');
+  q.value = '';
+  renderPriceBookList();
+  requestAnimationFrame(() => q.focus());
+}
+
+function wirePriceBook() {
+  $('#btnPriceBook').onclick = openPriceBook;
+  $('#pbTrade').innerHTML = '<option value="">All trades</option>'
+    + trades().map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('#pbQuery').addEventListener('input', renderPriceBookList);
+  $('#pbTrade').addEventListener('change', renderPriceBookList);
+
+  // Enter on the search box takes the top hit — keeps two hands on the keyboard.
+  $('#pbQuery').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      $('#pbList .pb-row')?.click();
+    }
+  });
+}
+
+function renderPriceBookList() {
+  const rows = searchPriceBook($('#pbQuery').value, { trade: $('#pbTrade').value || null });
+  const list = $('#pbList');
+  if (!rows.length) {
+    list.innerHTML = '<p class="muted tiny">No matches. Add a blank line and type it in — it will price the same.</p>';
+    return;
+  }
+  list.innerHTML = rows.map((i) => `
+    <button class="pb-row" data-sku="${esc(i.sku)}">
+      <span>
+        <span class="desc">${esc(i.description)}</span>
+        <span class="meta"> · ${esc(i.trade)}${i.note ? ` · ${esc(i.note)}` : ''}</span>
+      </span>
+      <span class="cat-chip">${CATEGORY_LABELS[i.category]}</span>
+      <span class="num">${formatMoney(Math.round(i.unitCost * 100))}<span class="faint">/${esc(i.unit)}</span></span>
+    </button>`).join('');
+
+  list.onclick = (e) => {
+    const sku = e.target.closest('[data-sku]')?.dataset.sku;
+    if (!sku) return;
+    const book = PRICE_BOOK.find((i) => i.sku === sku);
+    const item = store.addItem({
+      description: book.description,
+      category: book.category,
+      unit: book.unit,
+      qty: 1,
+      unitCost: book.unitCost,
+      markup: book.category === 'other' ? 0 : null,
+      sku: book.sku,
+      trade: book.trade,
+    });
+    toast(`Added ${book.description}.`, { undo: true });
+    $('#dlgPriceBook').close();
+    requestAnimationFrame(() => {
+      $(`tr[data-id="${CSS.escape(item.id)}"] [data-f="qty"]`)?.select();
+    });
+  };
+}
+
+/* ------------------------------------------------------------ assemblies -- */
+
+function wireAssemblies() {
+  $('#btnAssembly').onclick = () => {
+    renderAssemblies();
+    $('#dlgAssembly').showModal();
+  };
+}
+
+function renderAssemblies() {
+  $('#asmGrid').innerHTML = ASSEMBLIES.map((a) => `
+    <div class="assembly-card">
+      <h4>${esc(a.name)}</h4>
+      <p>${esc(a.note)}</p>
+      <div class="field" style="margin-bottom:8px">
+        <label for="asm-${esc(a.id)}">${esc(a.driver)} (${esc(a.driverUnit)})</label>
+        <input id="asm-${esc(a.id)}" class="num" type="number" min="1" step="1" value="${a.defaultDriver}">
+      </div>
+      <button class="btn sm primary" data-asm="${esc(a.id)}" style="width:100%">Add ${a.items.length} lines</button>
+    </div>`).join('');
+
+  $('#asmGrid').onclick = (e) => {
+    const id = e.target.closest('[data-asm]')?.dataset.asm;
+    if (!id) return;
+    const asm = ASSEMBLIES.find((a) => a.id === id);
+    const qty = Number($(`#asm-${CSS.escape(asm.id)}`).value) || asm.defaultDriver;
+    const items = expandAssembly(asm, qty);
+    store.addItems(items);
+    $('#dlgAssembly').close();
+    const after = priceEstimate(store.active(), store.state.settings);
+    toast(`Added ${items.length} lines — job now ${formatMoney(after.totalCents)} at ${formatPercent(after.margin)} margin.`, { undo: true });
+  };
+}
+
+/* -------------------------------------------------------------- proposal -- */
+
+function renderProposalPane(est, priced) {
+  if (!est) { $('#proposal').innerHTML = ''; return; }
+  $('#proposal').innerHTML = renderProposal({
+    estimate: est,
+    priced,
+    company: store.state.company,
+    groupByTrade: ui.groupByTrade,
+    showLinePrices: ui.showLinePrices,
+  });
+}
+
+function wireProposal() {
+  $('#optGroup').onchange = (e) => { ui.groupByTrade = e.target.checked; render(); };
+  $('#optPrices').onchange = (e) => { ui.showLinePrices = e.target.checked; render(); };
+  $('#btnPrint').onclick = () => { ui.tab = 'proposal'; render(); requestAnimationFrame(() => window.print()); };
+  $('#btnPrint2').onclick = () => window.print();
+
+  $('#btnCopyText').onclick = async () => {
+    const est = store.active();
+    const text = proposalAsText({
+      estimate: est,
+      priced: priceEstimate(est, store.state.settings),
+      company: store.state.company,
+    });
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Proposal copied — paste into an email or text.');
+    } catch {
+      // Clipboard access is blocked in some contexts; fall back to a download.
+      download(`${est.number}-proposal.txt`, text, 'text/plain');
+    }
+  };
+
+  $('#btnExportCsv').onclick = () => {
+    const est = store.active();
+    const csv = store.exportCSV(priceEstimate(est, store.state.settings));
+    download(`${est.number}-lines.csv`, csv, 'text/csv');
+  };
+
+  wireSignature();
+}
+
+/* ------------------------------------------------------------- signature -- */
+
+function wireSignature() {
+  const dlg = $('#dlgSign');
+  const canvas = $('#sigPad');
+  let ctx = null;
+  let drawing = false;
+  let dirty = false;
+
+  function setup() {
+    // Size the backing store to the device pixel ratio, or the signature comes
+    // out blurry on every phone.
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#1c1917';
+    dirty = false;
+  }
+
+  const pos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+
+  canvas.addEventListener('pointerdown', (e) => {
+    drawing = true; dirty = true;
+    canvas.setPointerCapture(e.pointerId);
+    const p = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drawing) return;
+    const p = pos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  });
+  const stop = () => { drawing = false; };
+  canvas.addEventListener('pointerup', stop);
+  canvas.addEventListener('pointercancel', stop);
+  canvas.addEventListener('pointerleave', stop);
+
+  $('#btnSign').onclick = () => {
+    dlg.showModal();
+    requestAnimationFrame(setup);
+    $('#sigName').value = store.active()?.client?.name || '';
+  };
+  $('#btnSigClear').onclick = () => setup();
+
+  $('#btnSigSave').onclick = () => {
+    if (!dirty) { toast('Nothing signed yet.', { bad: true }); return; }
+    store.patchEstimate({
+      signature: {
+        dataUrl: canvas.toDataURL('image/png'),
+        name: $('#sigName').value.trim(),
+        signedAt: new Date().toISOString().slice(0, 10),
+      },
+      status: 'accepted',
+    }, { coalesce: false });
+    dlg.close();
+    toast('Signed and marked accepted.');
+  };
+}
+
+/* ------------------------------------------------------------------ jobs -- */
+
+function renderJobs() {
+  const all = store.state.estimates.map((e) => ({ est: e, priced: priceEstimate(e, store.state.settings) }));
+  const open = all.filter((r) => r.est.status !== 'declined');
+  const won = all.filter((r) => r.est.status === 'accepted');
+
+  const pipeline = open.reduce((a, r) => a + r.priced.totalCents, 0);
+  const wonValue = won.reduce((a, r) => a + r.priced.totalCents, 0);
+  const wonProfit = won.reduce((a, r) => a + r.priced.grossProfitCents, 0);
+  const avgMargin = all.length ? all.reduce((a, r) => a + r.priced.margin, 0) / all.length : 0;
+  const belowTarget = all.filter((r) => r.priced.margin < store.state.settings.targetMargin).length;
+
+  $('#jobStats').innerHTML = `
+    <div class="stat"><div class="k">Open pipeline</div><div class="v">${formatMoney(pipeline, { cents: false })}</div><div class="s">${open.length} estimate${open.length === 1 ? '' : 's'}</div></div>
+    <div class="stat"><div class="k">Accepted</div><div class="v">${formatMoney(wonValue, { cents: false })}</div><div class="s">${formatMoney(wonProfit, { cents: false })} profit</div></div>
+    <div class="stat"><div class="k">Average margin</div><div class="v">${formatPercent(avgMargin)}</div><div class="s">target ${formatPercent(store.state.settings.targetMargin)}</div></div>
+    <div class="stat"><div class="k">Under target</div><div class="v">${belowTarget}</div><div class="s">of ${all.length} estimate${all.length === 1 ? '' : 's'}</div></div>`;
+
+  $('#estList').innerHTML = all.map(({ est, priced }) => `
+    <div class="est-row${est.id === store.state.activeId ? ' active' : ''}" data-open="${esc(est.id)}">
+      <span>
+        <div class="t">${esc(est.title || 'Untitled')}</div>
+        <div class="sub">${esc(est.number)} · ${esc(est.client?.name || 'no client')} · updated ${esc(est.updatedAt)}</div>
+      </span>
+      <select class="status-select" data-status="${esc(est.id)}" onclick="event.stopPropagation()">
+        ${['draft', 'sent', 'accepted', 'declined'].map((s) =>
+          `<option value="${s}"${est.status === s ? ' selected' : ''}>${s[0].toUpperCase() + s.slice(1)}</option>`).join('')}
+      </select>
+      <span class="num right">
+        ${formatMoney(priced.totalCents, { cents: false })}
+        <div class="tiny" style="color:var(--${priced.margin < store.state.settings.floorMargin ? 'bad' : priced.margin < store.state.settings.targetMargin ? 'warn' : 'good'})">
+          ${formatPercent(priced.margin)} margin
+        </div>
+      </span>
+      <span style="display:flex;gap:4px">
+        <button class="btn sm ghost" data-dup="${esc(est.id)}" title="Duplicate">⧉</button>
+        <button class="btn sm ghost danger" data-del="${esc(est.id)}" title="Delete">✕</button>
+      </span>
+    </div>`).join('') || '<p class="muted">No estimates yet.</p>';
+}
+
+function wireJobs() {
+  $('#estList').addEventListener('click', (e) => {
+    const dup = e.target.closest('[data-dup]')?.dataset.dup;
+    if (dup) { store.duplicateEstimate(dup); toast('Duplicated.'); return; }
+
+    const del = e.target.closest('[data-del]')?.dataset.del;
+    if (del) {
+      const est = store.state.estimates.find((x) => x.id === del);
+      store.deleteEstimate(del);
+      toast(`Deleted ${est?.title || 'estimate'}.`, { undo: true });
+      return;
+    }
+
+    const open = e.target.closest('[data-open]')?.dataset.open;
+    if (open) { store.setActive(open); ui.tab = 'estimate'; render(); }
+  });
+
+  $('#estList').addEventListener('change', (e) => {
+    const id = e.target.dataset.status;
+    if (!id) return;
+    store.update((s) => {
+      const est = s.estimates.find((x) => x.id === id);
+      if (est) est.status = e.target.value;
+    }, { label: 'status' });
+  });
+
+  $('#btnExportAll').onclick = $('#btnExportAll2').onclick = () => {
+    download(`quoteforge-backup-${new Date().toISOString().slice(0, 10)}.json`,
+      store.exportAll(), 'application/json');
+    toast('Backup downloaded.');
+  };
+
+  const picker = $('#fileImport');
+  $('#btnImport').onclick = $('#btnImport2').onclick = () => picker.click();
+  picker.onchange = async () => {
+    const file = picker.files?.[0];
+    if (!file) return;
+    try {
+      const res = store.importJSON(await file.text());
+      toast(`Imported ${res.imported} estimate${res.imported === 1 ? '' : 's'}.`);
+      ui.tab = 'jobs';
+      render();
+    } catch (err) {
+      toast(err.message, { bad: true });
+    }
+    picker.value = '';
+  };
+}
+
+/* -------------------------------------------------------------- settings -- */
+
+function renderSettings() {
+  const s = store.state.settings;
+  const co = store.state.company;
+
+  for (const input of $$('[data-pct]')) {
+    if (document.activeElement === input) continue;
+    input.value = ((Number(s[input.dataset.pct]) || 0) * 100).toFixed(2).replace(/\.?0+$/, '');
+  }
+  for (const input of $$('[data-set]')) {
+    if (document.activeElement === input) continue;
+    input.value = s[input.dataset.set] ?? '';
+  }
+  for (const input of $$('[data-co]')) {
+    if (document.activeElement === input) continue;
+    input.value = co[input.dataset.co] ?? '';
+  }
+
+  const target = Number(s.targetMargin) || 0;
+  $('#targetHint').textContent =
+    `Needs ${formatPercent(marginToMarkup(target), 0)} markup on cost.`;
+
+  $('#catMarkups').innerHTML = CATEGORIES.map((c) => {
+    const v = s.categoryMarkup[c] ?? s.defaultMarkup;
+    return `
+      <div class="field">
+        <label for="cm-${c}">${CATEGORY_LABELS[c]}</label>
+        <input id="cm-${c}" class="num" type="number" step="1" min="0" data-catmk="${c}"
+               value="${(v * 100).toFixed(0)}">
+        <span class="hint">= ${formatPercent(markupToMargin(v), 0)} margin</span>
+      </div>`;
+  }).join('');
+
+  renderMilestoneEditor();
+  renderTermsEditor();
+
+  $('#storageNote').textContent = storage.__ephemeral
+    ? 'Heads up: this browser is blocking storage, so nothing will persist after you close the tab.'
+    : '';
+  $('#logoHint').textContent = co.logoDataUrl
+    ? 'Logo set. Stored in this browser only.'
+    : 'Stored in this browser only.';
+}
+
+function wireSettings() {
+  document.addEventListener('input', (e) => {
+    const pct = e.target.dataset?.pct;
+    if (pct) {
+      store.patchSettings({ [pct]: (Number(e.target.value) || 0) / 100 });
+      return;
+    }
+    const cat = e.target.dataset?.catmk;
+    if (cat) {
+      const next = { ...store.state.settings.categoryMarkup, [cat]: (Number(e.target.value) || 0) / 100 };
+      store.patchSettings({ categoryMarkup: next });
+      return;
+    }
+    const co = e.target.dataset?.co;
+    if (co) store.patchCompany({ [co]: e.target.value });
+  });
+
+  document.addEventListener('change', (e) => {
+    const set = e.target.dataset?.set;
+    if (set) store.patchSettings({ [set]: e.target.value });
+  });
+
+  $('#cLogo').onchange = async () => {
+    const file = $('#cLogo').files?.[0];
+    if (!file) return;
+    if (file.size > 400 * 1024) {
+      toast('That logo is over 400 KB — browser storage is limited, so use a smaller one.', { bad: true });
+      $('#cLogo').value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => { store.patchCompany({ logoDataUrl: reader.result }); toast('Logo saved.'); };
+    reader.readAsDataURL(file);
+  };
+
+  $('#btnAddTerm').onclick = () => {
+    const est = store.active();
+    store.patchEstimate({ terms: [...(est.terms || []), ''] }, { coalesce: false });
+    requestAnimationFrame(() => $$('#termsEditor textarea').at(-1)?.focus());
+  };
+}
+
+function renderMilestoneEditor() {
+  const est = store.active();
+  if (!est) return;
+  const priced = priceEstimate(est, store.state.settings);
+  const schedule = buildSchedule(priced.totalCents, est.milestones);
+  const totalPct = est.milestones.reduce((a, m) => a + (Number(m.percent) || 0), 0);
+
+  $('#milestoneEditor').innerHTML = `
+    ${est.milestones.map((m, i) => `
+      <div style="display:grid;grid-template-columns:1fr 62px 28px;gap:6px;align-items:center;margin-bottom:6px">
+        <input value="${esc(m.label)}" data-ms="${i}" data-msf="label" placeholder="Milestone">
+        <input class="num" type="number" step="1" min="0" max="100" data-ms="${i}" data-msf="percent"
+               value="${((Number(m.percent) || 0) * 100).toFixed(0)}">
+        <button class="btn sm ghost" data-msdel="${i}" title="Remove">✕</button>
+      </div>
+      <div class="tiny faint" style="margin:-3px 0 8px 2px">${formatMoney(schedule[i]?.amountCents || 0)}</div>
+    `).join('')}
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <button class="btn sm" data-msadd>+ Milestone</button>
+      <span class="tiny ${Math.abs(totalPct - 1) > 0.005 ? '' : 'faint'}"
+            style="${Math.abs(totalPct - 1) > 0.005 ? 'color:var(--warn)' : ''}">
+        ${(totalPct * 100).toFixed(0)}% allocated${Math.abs(totalPct - 1) > 0.005 ? ' — the last milestone absorbs the difference' : ''}
+      </span>
+    </div>`;
+
+  const el = $('#milestoneEditor');
+  el.oninput = (e) => {
+    const i = e.target.dataset.ms;
+    if (i === undefined) return;
+    const field = e.target.dataset.msf;
+    const value = field === 'percent' ? (Number(e.target.value) || 0) / 100 : e.target.value;
+    const next = est.milestones.map((m, idx) => (String(idx) === i ? { ...m, [field]: value } : m));
+    store.patchEstimate({ milestones: next }, { coalesce: true, label: `ms-${i}-${field}` });
+  };
+  el.onclick = (e) => {
+    if (e.target.closest('[data-msadd]')) {
+      store.patchEstimate({ milestones: [...est.milestones, { label: 'Payment', percent: 0 }] }, { coalesce: false });
+    }
+    const del = e.target.closest('[data-msdel]')?.dataset.msdel;
+    if (del !== undefined) {
+      store.patchEstimate({ milestones: est.milestones.filter((_, i) => String(i) !== del) }, { coalesce: false });
+    }
+  };
+}
+
+function renderTermsEditor() {
+  const est = store.active();
+  if (!est) return;
+  $('#termsEditor').innerHTML = `
+    ${(est.terms || []).map((t, i) => `
+      <div style="display:grid;grid-template-columns:1fr 28px;gap:6px;margin-bottom:6px">
+        <textarea data-term="${i}" rows="2" style="font-size:12px">${esc(t)}</textarea>
+        <button class="btn sm ghost" data-termdel="${i}" title="Remove">✕</button>
+      </div>`).join('')}
+    <button class="btn sm" data-termreset style="margin-top:4px">Restore default terms</button>`;
+
+  const el = $('#termsEditor');
+  el.oninput = (e) => {
+    const i = e.target.dataset.term;
+    if (i === undefined) return;
+    const next = est.terms.map((t, idx) => (String(idx) === i ? e.target.value : t));
+    store.patchEstimate({ terms: next }, { coalesce: true, label: `term-${i}` });
+  };
+  el.onclick = (e) => {
+    const del = e.target.closest('[data-termdel]')?.dataset.termdel;
+    if (del !== undefined) {
+      store.patchEstimate({ terms: est.terms.filter((_, i) => String(i) !== del) }, { coalesce: false });
+    }
+    if (e.target.closest('[data-termreset]')) {
+      store.patchEstimate({ terms: [...DEFAULT_TERMS] }, { coalesce: false });
+      toast('Default terms restored.', { undo: true });
+    }
+  };
+}
+
+/* ---------------------------------------------------------------- chrome -- */
+
+function wireChrome() {
+  $('#estSelect').onchange = (e) => store.setActive(e.target.value);
+  $('#btnNew').onclick = () => {
+    store.createEstimate();
+    ui.tab = 'estimate';
+    render();
+    $('#fTitle').focus();
+  };
+  $('#btnUndo').onclick = () => store.undo();
+  $('#btnRedo').onclick = () => store.redo();
+  $('#btnAddLine').onclick = () => focusNewLine(store.addItem());
+
+  for (const tab of $$('.tab')) {
+    tab.onclick = () => { ui.tab = tab.dataset.tab; render(); };
+  }
+  for (const btn of $$('dialog [data-close]')) {
+    btn.onclick = () => btn.closest('dialog').close();
+  }
+
+  $('#btnTheme').onclick = () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : cur === 'light' ? '' : 'dark';
+    if (next) document.documentElement.setAttribute('data-theme', next);
+    else document.documentElement.removeAttribute('data-theme');
+    try { storage.setItem('quoteforge.theme', next); } catch { /* ignore */ }
+  };
+
+  $('#btnHelp').onclick = () => {
+    $('#helpRows').innerHTML = SHORTCUTS.map(([k, d]) =>
+      `<tr><td style="width:120px"><kbd>${esc(k)}</kbd></td><td>${esc(d)}</td></tr>`).join('');
+    $('#dlgHelp').showModal();
+  };
+}
+
+function applyStoredTheme() {
+  try {
+    const t = storage.getItem('quoteforge.theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch { /* ignore */ }
+}
+
+/* ------------------------------------------------------------- shortcuts -- */
+
+const SHORTCUTS = [
+  ['A', 'Add a blank line item'],
+  ['K', 'Open the price book'],
+  ['N', 'New estimate'],
+  ['Enter', 'In the grid: add a line below'],
+  ['⌘/Ctrl+⌫', 'In the grid: delete the line'],
+  ['⌘/Ctrl+Z', 'Undo'],
+  ['⌘/Ctrl+⇧+Z', 'Redo'],
+  ['⌘/Ctrl+P', 'Print / save as PDF'],
+  ['1 – 4', 'Switch tabs'],
+  ['?', 'This list'],
+];
+
+function wireShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    const mod = e.metaKey || e.ctrlKey;
+
+    if (mod && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      e.shiftKey ? store.redo() : store.undo();
+      return;
+    }
+    if (mod && e.key.toLowerCase() === 'p') {
+      e.preventDefault();
+      ui.tab = 'proposal'; render();
+      requestAnimationFrame(() => window.print());
+      return;
+    }
+    if (typing || mod) return;
+
+    switch (e.key) {
+      case 'a': e.preventDefault(); focusNewLine(store.addItem()); break;
+      case 'k': e.preventDefault(); openPriceBook(); break;
+      case 'n': e.preventDefault(); store.createEstimate(); ui.tab = 'estimate'; render(); break;
+      case '?': e.preventDefault(); $('#btnHelp').click(); break;
+      case '1': ui.tab = 'estimate'; render(); break;
+      case '2': ui.tab = 'proposal'; render(); break;
+      case '3': ui.tab = 'jobs'; render(); break;
+      case '4': ui.tab = 'settings'; render(); break;
+    }
+  });
+}
+
+/* ---------------------------------------------------------------- toasts -- */
+
+let toastTimer = null;
+
+function toast(message, { bad = false, undo = false, ms = 4200 } = {}) {
+  const host = $('#toasts');
+  const el = document.createElement('div');
+  el.className = `toast${bad ? ' bad' : ''}`;
+  el.innerHTML = `<span>${esc(message)}</span>`;
+  if (undo) {
+    const btn = document.createElement('button');
+    btn.textContent = 'Undo';
+    btn.onclick = () => { store.undo(); el.remove(); };
+    el.append(btn);
+  }
+  host.append(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.remove(), ms);
+  // Never let toasts stack past a readable few.
+  while (host.children.length > 3) host.firstChild.remove();
+}
+
+function download(filename, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+boot();

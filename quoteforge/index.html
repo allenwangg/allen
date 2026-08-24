@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuoteForge — contractor estimating &amp; proposals</title>
+<meta name="description" content="Estimate jobs, see your real margin before you send, and print a signed-ready proposal. Works offline, no signup.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><text x='16' y='23' font-size='19' font-family='system-ui' font-weight='800' fill='white' text-anchor='middle'>Q</text></svg>">
+</head>
+<body>
+<div class="app">
+
+  <!-- ------------------------------------------------------------ topbar -->
+  <header class="topbar no-print">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">Q</span>
+      <span>QuoteForge <small>estimating</small></span>
+    </div>
+
+    <div class="estimate-picker">
+      <select id="estSelect" aria-label="Active estimate"></select>
+      <button class="btn sm" id="btnNew" title="New estimate (N)">+ New</button>
+    </div>
+
+    <span class="spacer"></span>
+
+    <button class="btn icon ghost" id="btnUndo" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
+    <button class="btn icon ghost" id="btnRedo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷</button>
+    <button class="btn sm" id="btnTheme" title="Toggle light/dark">◐</button>
+    <button class="btn sm" id="btnHelp" title="Keyboard shortcuts (?)">?</button>
+    <button class="btn primary sm" id="btnPrint">Print / PDF</button>
+  </header>
+
+  <!-- -------------------------------------------------------------- tabs -->
+  <nav class="tabs no-print" role="tablist">
+    <button class="tab" role="tab" data-tab="estimate" aria-selected="true">Estimate</button>
+    <button class="tab" role="tab" data-tab="proposal" aria-selected="false">Proposal</button>
+    <button class="tab" role="tab" data-tab="jobs"     aria-selected="false">Jobs</button>
+    <button class="tab" role="tab" data-tab="settings" aria-selected="false">Settings</button>
+  </nav>
+
+  <!-- ==================================================== ESTIMATE PANE == -->
+  <main class="pane" id="pane-estimate">
+    <div class="workspace">
+      <div>
+        <!-- job details -->
+        <section class="card">
+          <header>
+            <h2>Job</h2>
+            <span class="spacer"></span>
+            <span class="tiny faint" id="estMeta"></span>
+          </header>
+          <div class="body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="fTitle">Job title</label>
+                <input id="fTitle" data-est="title" placeholder="Master bath remodel">
+              </div>
+              <div class="field">
+                <label for="fClient">Client name</label>
+                <input id="fClient" data-client="name" placeholder="Dana Whitmore">
+              </div>
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label for="fEmail">Client email</label>
+                <input id="fEmail" type="email" data-client="email" placeholder="dana@example.com">
+              </div>
+              <div class="field">
+                <label for="fPhone">Client phone</label>
+                <input id="fPhone" data-client="phone" placeholder="(555) 010-4477">
+              </div>
+              <div class="field">
+                <label for="fValid">Valid until</label>
+                <input id="fValid" type="date" data-est="validUntil">
+              </div>
+            </div>
+            <div class="field">
+              <label for="fJobAddr">Job address</label>
+              <input id="fJobAddr" data-est="jobAddress" placeholder="112 Alder Street, Springfield">
+            </div>
+            <div class="field">
+              <label for="fScope">Scope summary <span class="hint">— shown at the top of the proposal</span></label>
+              <textarea id="fScope" data-est="scopeSummary" placeholder="Full gut of the existing hall bath, new tiled shower with glass door, relocated vanity, and new subfloor."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- line items -->
+        <section class="card">
+          <header>
+            <h2>Line items</h2>
+            <span class="spacer"></span>
+            <button class="btn sm" id="btnAssembly">⚡ Assembly</button>
+            <button class="btn sm" id="btnPriceBook">Price book <kbd>K</kbd></button>
+            <button class="btn sm primary" id="btnAddLine">+ Line <kbd>A</kbd></button>
+          </header>
+          <div id="itemsWrap"></div>
+        </section>
+
+        <!-- adjustments -->
+        <section class="card">
+          <header><h2>Adjustments</h2></header>
+          <div class="body">
+            <div class="grid-3">
+              <div class="field">
+                <label for="fDiscType">Discount</label>
+                <select id="fDiscType">
+                  <option value="">None</option>
+                  <option value="percent">Percent of job</option>
+                  <option value="fixed">Fixed amount</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fDiscVal">Discount value</label>
+                <input id="fDiscVal" class="num" type="number" step="0.01" min="0" placeholder="0">
+                <span class="hint" id="discHint">Comes straight out of your profit.</span>
+              </div>
+              <div class="field">
+                <label for="fOverride">Override total</label>
+                <input id="fOverride" class="num" type="number" step="0.01" min="0" placeholder="Optional">
+                <span class="hint">Back-solves the discount to hit a round number.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ------------------------------------------------------ profit rail -->
+      <aside class="profit-rail">
+        <section class="card">
+          <header><h2>Money</h2></header>
+          <div class="body" id="profitPanel"></div>
+        </section>
+        <section class="card">
+          <header><h2>Where the cost sits</h2></header>
+          <div class="body" id="catPanel"></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ==================================================== PROPOSAL PANE == -->
+  <main class="pane" id="pane-proposal" hidden>
+    <div class="no-print" style="max-width:8.5in;margin:0 auto 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn primary" id="btnPrint2">Print / Save as PDF</button>
+      <button class="btn" id="btnSign">Capture signature</button>
+      <button class="btn" id="btnCopyText">Copy as text</button>
+      <button class="btn" id="btnExportCsv">Export CSV</button>
+      <span class="spacer" style="flex:1"></span>
+      <label class="inline-toggle"><input type="checkbox" id="optGroup" checked> Group by trade</label>
+      <label class="inline-toggle"><input type="checkbox" id="optPrices"> Show line prices</label>
+    </div>
+    <div class="proposal-shell"><div class="proposal" id="proposal"></div></div>
+  </main>
+
+  <!-- ======================================================== JOBS PANE == -->
+  <main class="pane" id="pane-jobs" hidden>
+    <div class="stat-row" id="jobStats" style="margin-bottom:16px"></div>
+    <section class="card">
+      <header>
+        <h2>All estimates</h2>
+        <span class="spacer"></span>
+        <button class="btn sm" id="btnExportAll">Export backup</button>
+        <button class="btn sm" id="btnImport">Import…</button>
+        <input type="file" id="fileImport" accept="application/json,.json" class="hidden">
+      </header>
+      <div class="body"><div class="est-list" id="estList"></div></div>
+    </section>
+  </main>
+
+  <!-- ==================================================== SETTINGS PANE == -->
+  <main class="pane" id="pane-settings" hidden>
+    <div class="workspace">
+      <div>
+        <section class="card">
+          <header><h2>Your pricing rules</h2></header>
+          <div class="body">
+            <p class="muted tiny" style="margin-top:0">
+              These drive every estimate. Markup is what you add to cost; margin is what you keep of the
+              sale. They are not the same number, and the difference is where most contractors lose money.
+            </p>
+            <div class="grid-3">
+              <div class="field">
+                <label for="sTarget">Target margin</label>
+                <input id="sTarget" class="num" type="number" step="0.5" min="0" max="90" data-pct="targetMargin">
+                <span class="hint" id="targetHint"></span>
+              </div>
+              <div class="field">
+                <label for="sFloor">Floor margin</label>
+                <input id="sFloor" class="num" type="number" step="0.5" min="0" max="90" data-pct="floorMargin">
+                <span class="hint">Walk away below this.</span>
+              </div>
+              <div class="field">
+                <label for="sOverhead">Overhead</label>
+                <input id="sOverhead" class="num" type="number" step="0.5" min="0" max="100" data-pct="overhead">
+                <span class="hint">Trucks, insurance, office — as % of job cost.</span>
+              </div>
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label for="sContingency">Contingency</label>
+                <input id="sContingency" class="num" type="number" step="0.5" min="0" max="50" data-pct="contingency">
+                <span class="hint">Reserve for surprises. Not counted as profit.</span>
+              </div>
+              <div class="field">
+                <label for="sTaxRate">Sales tax rate</label>
+                <input id="sTaxRate" class="num" type="number" step="0.01" min="0" max="25" data-pct="taxRate">
+              </div>
+              <div class="field">
+                <label for="sTaxMode">Tax applies to</label>
+                <select id="sTaxMode" data-set="taxMode">
+                  <option value="none">Nothing</option>
+                  <option value="materials">Materials only</option>
+                  <option value="materials_equipment">Materials &amp; equipment</option>
+                  <option value="all">Everything</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <header><h2>Default markup by category</h2></header>
+          <div class="body">
+            <p class="muted tiny" style="margin-top:0">
+              Applied when a line has no markup of its own. Subs and pass-through fees usually carry
+              less than your own labor, because your crew's time carries the risk.
+            </p>
+            <div class="grid-3" id="catMarkups"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <header><h2>Your company</h2><span class="spacer"></span><span class="tiny faint">Appears on every proposal</span></header>
+          <div class="body">
+            <div class="grid-2">
+              <div class="field"><label for="cName">Company name</label><input id="cName" data-co="name"></div>
+              <div class="field"><label for="cTag">Tagline</label><input id="cTag" data-co="tagline"></div>
+            </div>
+            <div class="grid-3">
+              <div class="field"><label for="cPhone">Phone</label><input id="cPhone" data-co="phone"></div>
+              <div class="field"><label for="cEmail">Email</label><input id="cEmail" data-co="email"></div>
+              <div class="field"><label for="cLicense">License #</label><input id="cLicense" data-co="license"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label for="cAddr">Address</label><input id="cAddr" data-co="address"></div>
+              <div class="field"><label for="cWeb">Website</label><input id="cWeb" data-co="website"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="cAccent">Proposal accent color</label>
+                <input id="cAccent" type="color" data-co="accent" style="height:38px;padding:3px">
+              </div>
+              <div class="field">
+                <label for="cLogo">Logo</label>
+                <input id="cLogo" type="file" accept="image/*">
+                <span class="hint" id="logoHint">Stored in this browser only.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="card">
+          <header><h2>Payment schedule</h2></header>
+          <div class="body"><div id="milestoneEditor"></div></div>
+        </section>
+        <section class="card">
+          <header><h2>Terms</h2><span class="spacer"></span><button class="btn sm" id="btnAddTerm">+ Add</button></header>
+          <div class="body"><div id="termsEditor"></div></div>
+        </section>
+        <section class="card">
+          <header><h2>Your data</h2></header>
+          <div class="body">
+            <p class="tiny muted" style="margin-top:0">
+              Everything is stored in this browser and never sent anywhere. That also means clearing
+              site data erases it — export a backup regularly.
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn sm" id="btnExportAll2">Export backup</button>
+              <button class="btn sm" id="btnImport2">Import…</button>
+            </div>
+            <p class="tiny faint" id="storageNote" style="margin-bottom:0"></p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- ===================================================== price book modal -->
+<dialog id="dlgPriceBook">
+  <header>
+    <h2>Price book</h2>
+    <span class="spacer"></span>
+    <span class="tiny faint">Costs are yours to edit — markup is applied automatically</span>
+    <button class="btn sm ghost" data-close>✕</button>
+  </header>
+  <div class="body">
+    <div class="pb-search">
+      <input id="pbQuery" placeholder="Search: tile, electrician, dumpster…" autocomplete="off">
+      <select id="pbTrade"><option value="">All trades</option></select>
+    </div>
+    <div class="pb-list" id="pbList"></div>
+  </div>
+</dialog>
+
+<!-- ====================================================== assembly modal -->
+<dialog id="dlgAssembly">
+  <header>
+    <h2>Add an assembly</h2>
+    <span class="spacer"></span>
+    <button class="btn sm ghost" data-close>✕</button>
+  </header>
+  <div class="body">
+    <p class="muted tiny" style="margin-top:0">
+      One quantity expands into a full coordinated scope. Every line stays editable afterward.
+    </p>
+    <div class="assembly-grid" id="asmGrid"></div>
+  </div>
+</dialog>
+
+<!-- ===================================================== signature modal -->
+<dialog id="dlgSign">
+  <header><h2>Client signature</h2><span class="spacer"></span><button class="btn sm ghost" data-close>✕</button></header>
+  <div class="body">
+    <p class="muted tiny" style="margin-top:0">
+      Sign with a finger, stylus, or mouse. This records acceptance on this device; for a legally
+      robust e-signature with an audit trail, use a dedicated e-sign service.
+    </p>
+    <canvas id="sigPad"></canvas>
+    <div class="field" style="margin-top:12px">
+      <label for="sigName">Signed by</label>
+      <input id="sigName" placeholder="Printed name">
+    </div>
+  </div>
+  <footer>
+    <button class="btn" id="btnSigClear">Clear</button>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="btnSigSave">Accept &amp; save</button>
+  </footer>
+</dialog>
+
+<!-- ========================================================== help modal -->
+<dialog id="dlgHelp">
+  <header><h2>Keyboard shortcuts</h2><span class="spacer"></span><button class="btn sm ghost" data-close>✕</button></header>
+  <div class="body">
+    <table class="items" style="font-size:13px">
+      <tbody id="helpRows"></tbody>
+    </table>
+  </div>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

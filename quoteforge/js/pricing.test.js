@@ -8,7 +8,7 @@
 import {
   toCents, toDollars, formatMoney, markupToMargin, marginToMarkup,
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
-  buildSchedule, defaultSettings, defaultMilestones,
+  buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -321,6 +321,100 @@ t('property: totals reconcile across 500 random estimates', () => {
     const sched = buildSchedule(p.totalCents, defaultMilestones());
     eq(sched.reduce((a, r) => a + r.amountCents, 0), p.totalCents, `iter ${i} schedule:`);
   }
+});
+
+
+/* --------------------------------------------- uniform markup solver ----- */
+
+t('solveUniformMarkup hits the target with contingency in play', () => {
+  const est = {
+    items: [
+      { id: '1', qty: 20, unitCost: 60, category: 'labor', markup: null },
+      { id: '2', qty: 1, unitCost: 3000, category: 'material', markup: null },
+    ],
+  };
+  const settings = { ...S, contingency: 0.05, overhead: 0.1 };
+  const m = solveUniformMarkup(est, settings, 0.25);
+  const applied = priceEstimate(
+    { items: est.items.map((i) => ({ ...i, markup: m })) }, settings,
+  );
+  near(applied.margin, 0.25, 1e-4, 'solver missed the target with contingency:');
+});
+
+t('solveUniformMarkup compensates for zero-markup pass-throughs', () => {
+  const est = {
+    items: [
+      { id: '1', qty: 20, unitCost: 60, category: 'labor', markup: null },
+      { id: '2', qty: 1, unitCost: 850, category: 'other', markup: 0 },   // permit
+      { id: '3', qty: 1, unitCost: 1400, category: 'other', markup: 0 },  // engineer
+    ],
+  };
+  const settings = { ...S, contingency: 0.05, overhead: 0.1 };
+  const m = solveUniformMarkup(est, settings, 0.25);
+  ok(m !== null, 'solver should find a markup');
+
+  const applied = priceEstimate({
+    items: est.items.map((i) => (isPassThrough(i) ? i : { ...i, markup: m })),
+  }, settings);
+  near(applied.margin, 0.25, 1e-4, 'solver did not compensate for pass-throughs:');
+
+  // The pass-throughs must still carry no profit of their own.
+  const permit = applied.lines.find((l) => l.costCents === 85000);
+  eq(permit.profitCents, 0, 'a pass-through was marked up:');
+  // And the markup must exceed the naive answer, since fewer lines carry the load.
+  ok(m > marginToMarkup(0.25),
+    `solver returned ${m}, which is not above the naive ${marginToMarkup(0.25)}`);
+});
+
+t('solveUniformMarkup handles a discounted estimate', () => {
+  const est = {
+    items: [{ id: '1', qty: 10, unitCost: 200, category: 'labor', markup: null }],
+    discount: { type: 'percent', value: 0.1 },
+  };
+  const m = solveUniformMarkup(est, S, 0.3);
+  const applied = priceEstimate({ ...est, items: [{ ...est.items[0], markup: m }] }, S);
+  near(applied.margin, 0.3, 1e-4, 'solver ignored the discount:');
+});
+
+t('solveUniformMarkup reports an impossible target instead of guessing', () => {
+  // Every line is a pass-through, so no markup can move the margin.
+  const est = { items: [{ id: '1', qty: 1, unitCost: 500, category: 'other', markup: 0 }] };
+  eq(solveUniformMarkup(est, S, 0.25), null);
+  // A margin of 100% is unreachable at any finite markup.
+  const ok1 = { items: [{ id: '1', qty: 1, unitCost: 500, category: 'labor', markup: null }] };
+  eq(solveUniformMarkup(ok1, S, 1), null);
+});
+
+t('solveUniformMarkup returns 0 when cost alone already beats the target', () => {
+  const est = { items: [{ id: '1', qty: 1, unitCost: 100, category: 'labor', markup: null }] };
+  eq(solveUniformMarkup(est, { ...S, overhead: 0, contingency: 0 }, -1), 0,
+    'a negative target should need no markup at all');
+});
+
+t('solver stays accurate across many random shapes', () => {
+  let checked = 0;
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = 0; i < 60; i++) {
+    const items = Array.from({ length: 1 + Math.floor(rnd() * 5) }, (_, j) => ({
+      id: String(j),
+      qty: 1 + Math.round(rnd() * 40),
+      unitCost: 10 + Math.round(rnd() * 900),
+      category: ['labor', 'material', 'subcontractor'][Math.floor(rnd() * 3)],
+      markup: rnd() < 0.25 ? 0 : null,
+    }));
+    if (items.every(isPassThrough)) continue;
+    const settings = { ...S, overhead: rnd() * 0.2, contingency: rnd() * 0.1 };
+    const target = 0.1 + rnd() * 0.4;
+    const m = solveUniformMarkup({ items }, settings, target);
+    ok(m !== null, `iter ${i}: solver gave up on a reachable target`);
+    const applied = priceEstimate({
+      items: items.map((it) => (isPassThrough(it) ? it : { ...it, markup: m })),
+    }, settings);
+    near(applied.margin, target, 1e-3, `iter ${i}:`);
+    checked++;
+  }
+  ok(checked > 40, `property test was vacuous — only ${checked} cases actually ran`);
 });
 
 /* -------------------------------------------------------------- report ---- */

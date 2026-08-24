@@ -281,6 +281,7 @@ export class Store {
       markup: null,
       optional: false,
       note: '',
+      trade: '',
       ...partial,
     };
     this.update((s) => {
@@ -299,7 +300,7 @@ export class Store {
   addItems(list) {
     const made = list.map((p) => ({
       id: uid('li'), description: '', category: 'material', unit: 'ea',
-      qty: 1, unitCost: 0, markup: null, optional: false, note: '', ...p,
+      qty: 1, unitCost: 0, markup: null, optional: false, note: '', trade: '', ...p,
     }));
     this.update((s) => {
       const est = s.estimates.find((e) => e.id === s.activeId);
@@ -499,6 +500,7 @@ function migrateEstimate(raw) {
       optional: !!i.optional,
       note: i.note || '',
       sku: i.sku || '',
+      trade: i.trade || '',
     })),
     milestones: raw.milestones?.length ? raw.milestones : base.milestones,
     terms: raw.terms?.length ? raw.terms : base.terms,

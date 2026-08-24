@@ -109,6 +109,8 @@ export function priceItem(item, settings) {
     id: item.id,
     description: item.description,
     category: item.category,
+    trade: item.trade || '',
+    note: item.note || '',
     qty,
     unit: item.unit,
     unitCostCents,
@@ -360,4 +362,61 @@ export function defaultSettings() {
     floorMargin: 0.12,
     currency: '$',
   };
+}
+
+/**
+ * Solve for the uniform markup that lands a whole estimate on a target margin.
+ *
+ * A closed form exists, but only for the simple case. Once pass-through lines
+ * (markup locked at 0), contingency in the denominator, discounts, and
+ * overhead's own weighted markup are all in play, the algebra is both ugly and
+ * fragile — it would silently go wrong the next time the pricing pipeline
+ * changes. So this bisects against the real priceEstimate instead: margin is
+ * monotonically increasing in markup, the search space is tiny, and the answer
+ * stays correct by construction no matter how the pipeline evolves.
+ *
+ * Lines whose markup is explicitly 0 are treated as pass-throughs and left
+ * alone, because marking up a permit fee is how you end up defending a $1,200
+ * "permit" line to an irritated client.
+ *
+ * @returns {number|null} the markup ratio, or null if the target is unreachable
+ */
+export function solveUniformMarkup(estimate, settings, targetMargin) {
+  const target = Number(targetMargin);
+  if (!Number.isFinite(target) || target >= 1) return null;
+
+  const markable = (estimate.items || []).filter((i) => !i.optional && !isPassThrough(i));
+  if (!markable.length) return null;
+
+  const marginAt = (m) => priceEstimate(
+    { ...estimate, items: (estimate.items || []).map((i) => (isPassThrough(i) ? i : { ...i, markup: m })) },
+    settings,
+  ).margin;
+
+  let lo = 0;
+  let hi = 1;
+  // Expand the upper bound until it brackets the target (or we give up).
+  for (let i = 0; i < 40 && marginAt(hi) < target; i++) hi *= 2;
+  if (marginAt(hi) < target) return null;
+  if (marginAt(lo) > target) return 0;
+
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    if (marginAt(mid) < target) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+/**
+ * A line the user has EXPLICITLY pinned to zero profit.
+ *
+ * The explicitness matters: `markup: null` means "use my category default",
+ * and Number(null) is 0, so a naive equality check silently reclassifies every
+ * default-markup line as a pass-through and under-prices the entire job.
+ */
+export function isPassThrough(item) {
+  const m = item.markup;
+  if (m === null || m === undefined || m === '') return false;
+  return Number(m) === 0;
 }
