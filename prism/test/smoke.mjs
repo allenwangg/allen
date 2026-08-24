@@ -114,6 +114,18 @@ await page.waitForSelector('.actions');
 const contText = await page.locator('.continue-card h3').textContent().catch(() => '');
 ok(/Resume/.test(contText || ''), `home offers resume (${(contText || '').trim()})`);
 
+// --- resume must not re-award XP (exit/reopen farm loop) ---
+const xpFarm0 = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
+for (let i = 0; i < 3; i++) {
+  await page.locator('.continue-card').click();
+  await page.waitForSelector('.card');
+  await page.waitForTimeout(120);
+  await page.goto(url + '#/');
+  await page.waitForSelector('.actions');
+}
+const xpFarm1 = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
+ok(xpFarm1 === xpFarm0, `resume reopen loop banks no XP (${xpFarm0} -> ${xpFarm1})`);
+
 // --- practice mode ---
 await page.goto(url + '#/practice');
 await page.waitForSelector('.card, .empty');

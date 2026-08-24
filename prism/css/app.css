@@ -646,3 +646,5 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 .tour-art svg { width: 100%; height: auto; }
 .tour-row p { font-size: 13.5px; line-height: 1.5; color: var(--mut); font-weight: 500; }
 .tour-row b { color: var(--ink); }
+
+.version { margin-top: 16px; text-align: center; color: var(--mut); font-size: 11.5px; }

@@ -67,16 +67,21 @@
 
   /* ---------------- toasts ---------------- */
 
-  var toastTimer = null;
-  function toast(html) {
-    var old = document.querySelector('.toast');
-    if (old) old.remove();
+  /* Toasts queue instead of clobbering, so a goal/level celebration is never
+     destroyed by a toast that arrives in the same tick. */
+  var toastQ = [], toastBusy = false;
+  function toast(html) { toastQ.push(html); pumpToast(); }
+  function pumpToast() {
+    if (toastBusy || !toastQ.length) return;
+    toastBusy = true;
     var el = document.createElement('div');
     el.className = 'toast';
-    el.innerHTML = html;
+    el.innerHTML = toastQ.shift();
     document.body.appendChild(el);
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.add('bye'); setTimeout(function () { el.remove(); }, 350); }, 3400);
+    setTimeout(function () {
+      el.classList.add('bye');
+      setTimeout(function () { el.remove(); toastBusy = false; pumpToast(); }, 350);
+    }, 2800);
   }
 
   /* ---------------- XP + achievements ---------------- */
@@ -100,13 +105,9 @@
 
   function checkBadges() {
     var fresh = Achieve.check(badgeCtx());
+    if (fresh.length) SFX.badge();
     for (var i = 0; i < fresh.length; i++) {
-      (function (b, delay) {
-        setTimeout(function () {
-          SFX.badge();
-          toast('<span class="toast-art">' + Art.svg(b.art) + '</span><span><b>' + esc(b.title) + '</b><br>' + esc(b.desc) + '</span>');
-        }, delay);
-      })(fresh[i], i * 1800);
+      toast('<span class="toast-art">' + Art.svg(fresh[i].art) + '</span><span><b>' + esc(fresh[i].title) + '</b><br>' + esc(fresh[i].desc) + '</span>');
     }
   }
 
@@ -385,7 +386,7 @@
     if (!f) return nav('#/course/' + cid);
     session = {
       course: c, lesson: f.lesson, lessonIndex: f.index,
-      idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], finished: false
+      idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], awarded: {}, finished: false
     };
     var snap = Store.getProgress(cid, lid);
     if (snap && snap.idx > 0 && snap.idx < f.lesson.cards.length) {
@@ -394,6 +395,7 @@
       session.attempted = snap.attempted || 0;
       session.correct = snap.correct || 0;
       session.misses = snap.misses || [];
+      session.awarded = snap.awarded || {};
       toast('<span class="toast-emoji">▶️</span><span><b>Picked up where you left off</b><br>Card ' + (snap.idx + 1) + ' of ' + f.lesson.cards.length + '</span>');
     }
     Store.setLastLesson(cid, lid);
@@ -479,6 +481,23 @@
 
   function award(n, anchor) { session.xp += n; gainXP(n, anchor); var el = document.querySelector('.player-xp'); if (el) el.textContent = '+' + session.xp; }
 
+  function persistSession() {
+    if (session.idx >= session.lesson.cards.length) return;
+    Store.saveProgress(session.course.id, session.lesson.id, {
+      idx: session.idx, xp: session.xp, attempted: session.attempted,
+      correct: session.correct, misses: session.misses, awarded: session.awarded, savedAt: Date.now()
+    });
+  }
+
+  /* Card XP is banked once per card index and the fact is persisted, so
+     resuming (or exit-reopen loops) can never re-earn the same card. */
+  function awardOnce(n, anchor) {
+    if (session.awarded[session.idx]) return;
+    session.awarded[session.idx] = 1;
+    award(n, anchor);
+    persistSession();
+  }
+
   function bindCard(card) {
     var exit = document.getElementById('btn-exit');
     if (exit) exit.onclick = function () { nav('#/course/' + session.course.id); };
@@ -493,7 +512,7 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advance(); }
         if (e.key === 'Escape') nav('#/course/' + session.course.id);
       };
-      if (card.type !== 'recap' && card.type !== 'quote') award(2, null);
+      if (card.type !== 'recap' && card.type !== 'quote') awardOnce(2, null);
       return;
     }
 
@@ -503,7 +522,6 @@
       function pick(btn) {
         if (answered) return;
         answered = true;
-        session.attempted += 1;
         var ok;
         if (card.type === 'mcq') ok = Number(btn.getAttribute('data-i')) === card.answer;
         else ok = (btn.getAttribute('data-tf') === 'true') === card.answer;
@@ -515,15 +533,20 @@
           if (isRight) choices[i].classList.add('right');
         }
         btn.classList.add(ok ? 'right' : 'wrong');
-        if (ok) { session.correct += 1; SFX.correct(); award(10, btn); }
-        else {
-          SFX.wrong();
-          session.misses.push({
-            prompt: card.type === 'mcq' ? card.prompt : card.statement,
-            answer: card.type === 'mcq' ? card.choices[card.answer] : (card.answer ? 'True' : 'False'),
-            explain: card.explain || ''
-          });
-          award(3, btn);
+        if (ok) SFX.correct(); else SFX.wrong();
+        if (!session.awarded[session.idx]) {   // first answer for this card only — resume-safe
+          session.awarded[session.idx] = 1;
+          session.attempted += 1;
+          if (ok) { session.correct += 1; award(10, btn); }
+          else {
+            session.misses.push({
+              prompt: card.type === 'mcq' ? card.prompt : card.statement,
+              answer: card.type === 'mcq' ? card.choices[card.answer] : (card.answer ? 'True' : 'False'),
+              explain: card.explain || ''
+            });
+            award(3, btn);
+          }
+          persistSession();
         }
         var ex = document.getElementById('explain');
         ex.innerHTML = '<b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + esc(card.explain || '');
@@ -555,7 +578,7 @@
         var slot = document.getElementById('reveal-slot');
         slot.innerHTML = '<div class="reveal-answer">' + esc(card.answer) + '</div>';
         SFX.flip();
-        award(5, slot);
+        awardOnce(5, slot);
         document.getElementById('foot').innerHTML = continueBtn();
         document.getElementById('btn-next').onclick = advance;
         document.getElementById('btn-next').focus();
@@ -571,12 +594,7 @@
 
   function advance() {
     session.idx += 1;
-    if (session.idx > 0 && session.idx < session.lesson.cards.length) {
-      Store.saveProgress(session.course.id, session.lesson.id, {
-        idx: session.idx, xp: session.xp, attempted: session.attempted,
-        correct: session.correct, misses: session.misses, savedAt: Date.now()
-      });
-    }
+    persistSession();
     renderCard();
   }
 
@@ -1184,6 +1202,7 @@
         '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
       '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
+      '<p class="version">Prism 1.0 — six courses, three hundred cards, one memory that keeps them.</p>' +
     '</div>';
     document.body.appendChild(wrap);
     function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
@@ -1250,6 +1269,7 @@
     if (e.ctrlKey || e.metaKey || e.altKey) return;               // browser shortcuts stay browser shortcuts
     var t = e.target, tag = t && t.tagName;
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (document.querySelector('.modal-wrap')) return;   // an open modal owns the keyboard
     // let a focused button/link activate itself instead of triggering the shortcut too
     if ((e.key === 'Enter' || e.key === ' ') && (tag === 'BUTTON' || tag === 'A')) return;
     if (e.key === '/' && !onkey) { e.preventDefault(); return nav('#/search'); }
@@ -1265,6 +1285,8 @@
     window.scrollTo(0, 0);
     var floats = document.querySelectorAll('.xp-float');
     for (var fi = 0; fi < floats.length; fi++) floats[fi].remove();
+    var modals = document.querySelectorAll('.modal-wrap');
+    for (var mi = 0; mi < modals.length; mi++) modals[mi].remove();
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
