@@ -27,6 +27,11 @@ To publish it, see [DEPLOY.md](../DEPLOY.md) — GitHub Pages takes about two mi
   offers a one-click fix.
 - **Client proposals** grouped by trade, with optional upgrades priced separately, a
   payment schedule that reconciles to the penny, your terms, and signature capture.
+- **A contract statement** — the one-page document that settles the last argument on a
+  job. The client remembers a number from months ago and the final bill is larger; this
+  lays the original contract beside every approved change, each with the date they
+  authorized it. It is explicitly not an invoice, and unsigned changes are quarantined
+  in their own section so it can never bill for unauthorized work.
 - **Change orders**, because the second-biggest profit leak after mispricing is work
   performed and never billed. Each one carries its own scope, price, reason, and
   approval state, and prints as a one-page authorization. Unapproved work is reported
@@ -86,7 +91,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-106 unit assertions with no test framework and no install step, plus 110 browser
+106 unit assertions with no test framework and no install step, plus 119 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, and `test/security.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.

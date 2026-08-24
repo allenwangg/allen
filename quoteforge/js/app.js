@@ -19,7 +19,9 @@ import {
   ASSEMBLIES, UNITS, searchEffective, effectiveItem,
   effectiveTrades, expandAssemblyWith,
 } from './pricebook.js';
-import { renderProposal, proposalAsText, renderChangeOrder, esc } from './proposal.js';
+import {
+  renderProposal, proposalAsText, renderChangeOrder, renderContractStatement, esc,
+} from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1381,6 +1383,10 @@ function renderChanges(est) {
   renderContractPanel(c);
   renderCOEditor(est, c);
 
+  $('#stmtPrint').innerHTML = renderContractStatement({
+    estimate: est, contract: c, company: store.state.company,
+  });
+
   const order = store.activeChangeOrder();
   $('#coPrint').innerHTML = order
     ? renderChangeOrder({
@@ -1672,6 +1678,14 @@ function newChangeOrder() {
 
 function wireChangeOrders() {
   $('#btnAddCO').onclick = newChangeOrder;
+
+  $('#btnStatement').onclick = () => {
+    document.body.dataset.print = 'stmt';
+    requestAnimationFrame(() => {
+      window.print();
+      delete document.body.dataset.print;
+    });
+  };
 
   $('#btnCOPrint').onclick = () => {
     if (!store.activeChangeOrder()) return;

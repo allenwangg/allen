@@ -575,8 +575,11 @@ table.pr-table tr.group-head td {
   background: #faf9f8; border-bottom: 1px solid #d6d3d1;
 }
 
-.pr-totals { margin-left: auto; width: 300px; margin-top: 12px; }
-.pr-totals .row { display: flex; justify-content: space-between; padding: 4px 0; }
+/* Wide enough for a long label beside a six-figure number, with a gap so the
+   two can never collide on a document a client reads. */
+.pr-totals { margin-left: auto; width: 340px; max-width: 100%; margin-top: 12px; }
+.pr-totals .row { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; }
+.pr-totals .row .v { white-space: nowrap; }
 .pr-totals .row.grand {
   border-top: 2px solid #1c1917; margin-top: 6px; padding-top: 8px;
   font-size: 16px; font-weight: 700;
@@ -695,6 +698,11 @@ table.pr-table tr.group-head td {
   body[data-print="co"] #pane-changes { display: block !important; }
   body[data-print="co"] #pane-changes > .workspace { display: none !important; }
   body[data-print="co"] #coPrintShell { display: block !important; }
+
+  body[data-print="stmt"] .pane { display: none !important; }
+  body[data-print="stmt"] #pane-changes { display: block !important; }
+  body[data-print="stmt"] #pane-changes > .workspace { display: none !important; }
+  body[data-print="stmt"] #stmtPrintShell { display: block !important; }
   body { background: #fff; }
   .pane { padding: 0; }
   .proposal-shell { max-width: none; }

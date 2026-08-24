@@ -228,7 +228,45 @@ check('the price book adds into the change order, not the estimate',
   (await page.locator('[data-coitem]').count()) === linesBefore + 1,
   `(had ${linesBefore})`);
 
-// Print target.
+// The contract statement: the document that settles the final-bill argument.
+const stmt = await page.locator('#stmtPrint').textContent();
+check('contract statement renders', stmt.includes('Contract statement'));
+check('it shows the original contract as its own line',
+  stmt.includes('Original contract'), `(${stmt.slice(0,80)})`);
+check('it lists each approved change with its authorization date',
+  /CO-01[\s\S]*Rotten subfloor/.test(stmt));
+check('it arrives at the current contract total',
+  stmt.includes('Current contract total'));
+check('it restates the payment schedule at the new total',
+  stmt.includes('Payment schedule at the current total'));
+check('it says plainly that it is not an invoice',
+  /not an invoice/i.test(stmt));
+
+// Unapproved work must be listed separately and excluded from the total.
+await page.locator('#btnAddCO').click();
+await page.waitForTimeout(300);
+await page.locator('[data-cof="title"]').fill('Not yet agreed');
+await page.locator('[data-coadd]').click();
+await page.waitForTimeout(200);
+await page.locator('[data-cif="qty"]').first().fill('3');
+await page.locator('[data-cif="unitCost"]').first().fill('400');
+await page.waitForTimeout(350);
+const stmt2 = await page.locator('#stmtPrint').textContent();
+check('unauthorized work is quarantined, not billed',
+  /Awaiting your approval/i.test(stmt2) && /Not yet agreed/.test(stmt2));
+// Read the contract panel FRESH here — it has moved since it was last read.
+const liveTotal = await page.locator('#contractPanel .figure.total .value').textContent();
+const stmtTotal = (stmt2.match(/Current contract total\s*\$([\d,]+)/) || [])[1]?.replace(/,/g, '');
+check('the statement total excludes unapproved work',
+  stmtTotal === dollars(liveTotal),
+  `(statement ${stmtTotal} vs contract ${dollars(liveTotal)})`);
+await page.locator('.co-row').last().locator('[data-codel]').click();
+await page.waitForTimeout(300);
+
+// Print targets.
+await page.evaluate(() => { document.body.dataset.print = 'stmt'; });
+const stmtPdf = await page.pdf({format:'Letter',printBackground:true,margin:{top:'0.5in',bottom:'0.5in',left:'0.5in',right:'0.5in'}});
+check('contract statement prints to PDF', stmtPdf.length > 15000, `(${stmtPdf.length} bytes)`);
 await page.evaluate(() => { document.body.dataset.print = 'co'; });
 const pdf = await page.pdf({format:'Letter',printBackground:true,margin:{top:'0.5in',bottom:'0.5in',left:'0.5in',right:'0.5in'}});
 check('change order prints to PDF', pdf.length > 15000, `(${pdf.length} bytes)`);

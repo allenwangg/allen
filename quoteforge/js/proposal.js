@@ -479,3 +479,143 @@ function revisedTotal(contract, order, priced) {
   const alreadyIn = order.status === 'approved';
   return contract.contractTotalCents + (alreadyIn ? 0 : priced.totalCents);
 }
+
+/* =================================================== contract statement === */
+
+/**
+ * A contract statement.
+ *
+ * This is the document that settles the last argument on a job: the client
+ * remembers a number from months ago and the final bill is larger. It lays the
+ * original contract next to every approved change, each with the date the
+ * client authorized it, and arrives at the current total by addition the client
+ * can follow.
+ *
+ * It is deliberately NOT an invoice. It records nothing about what has been
+ * paid, because this tool does not track payments and a document that implies
+ * a balance it cannot actually compute would be worse than no document.
+ * Change orders still awaiting a signature are listed separately and excluded
+ * from the total, so the statement never quietly bills for unauthorized work.
+ */
+export function renderContractStatement({ estimate, contract, company }) {
+  const accent = company.accent || '#c2410c';
+  const schedule = buildSchedule(contract.contractTotalCents, estimate.milestones || []);
+
+  const changeRows = contract.approved.length
+    ? contract.approved.map(({ order, priced }) => `
+        <tr>
+          <td>
+            ${esc(order.number)} — ${esc(order.title || 'Change')}
+            ${order.reason ? `<div style="font-size:10px;color:#78716c">${esc(firstLine(order.reason))}</div>` : ''}
+          </td>
+          <td class="r">${order.decidedAt ? fmtDate(order.decidedAt) : '—'}</td>
+          <td class="r">${priced.totalCents < 0 ? '−' : '+'}${formatMoney(Math.abs(priced.totalCents))}</td>
+        </tr>`).join('')
+    : '<tr><td colspan="3" style="color:#a8a29e">No changes were made to this contract.</td></tr>';
+
+  const pending = contract.unapproved;
+
+  return `
+<div style="--pr-accent:${esc(accent)}">
+  <div class="pr-head">
+    <div>
+      ${company.logoDataUrl
+        ? `<img class="logo" src="${esc(company.logoDataUrl)}" alt="${esc(company.name)}">`
+        : `<div class="co-name">${esc(company.name || 'Your Company')}</div>`}
+      <div class="co-meta">
+        ${[company.phone, company.email].filter(Boolean).map(esc).join(' · ')}
+        ${company.license ? `<br>License ${esc(company.license)}` : ''}
+      </div>
+    </div>
+    <div class="pr-doc">
+      <div class="doc-kind">Contract statement</div>
+      <div class="doc-no">${esc(estimate.number || '')}</div>
+      <div class="co-meta" style="margin-top:6px">${fmtDate(todayISO())}</div>
+    </div>
+  </div>
+
+  <div class="pr-parties">
+    <div><h3>Client</h3><div>${esc(estimate.client?.name || '—')}</div></div>
+    <div>
+      <h3>Job site</h3><div>${esc(estimate.jobAddress || '—')}</div>
+      ${estimate.title ? `<div style="margin-top:8px"><h3>Project</h3>${esc(estimate.title)}</div>` : ''}
+    </div>
+  </div>
+
+  <div class="pr-section">
+    <h3>How the contract reached its current total</h3>
+    <table class="pr-table">
+      <thead><tr><th>Item</th><th class="r">Authorized</th><th class="r">Amount</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Original contract — proposal ${esc(estimate.number || '')}</td>
+          <td class="r">${estimate.signature?.signedAt ? fmtDate(estimate.signature.signedAt) : fmtDate(estimate.createdAt)}</td>
+          <td class="r">${formatMoney(contract.originalTotalCents)}</td>
+        </tr>
+        ${changeRows}
+      </tbody>
+    </table>
+    <div class="pr-totals">
+      <div class="row grand"><span>Current contract total</span><span class="v">${formatMoney(contract.contractTotalCents)}</span></div>
+    </div>
+  </div>
+
+  ${pending.length ? `
+  <div class="pr-section">
+    <h3>Awaiting your approval — not included above</h3>
+    <div class="pr-optional">
+      <p style="margin-top:0;font-size:11px;color:#57534e">
+        These changes have been prepared but not yet authorized. They are not part of the total
+        above and no work on them will be billed unless they are signed.
+      </p>
+      <table class="pr-table">
+        <thead><tr><th>Description</th><th class="r">Amount</th></tr></thead>
+        <tbody>
+          ${pending.map(({ order, priced }) => `
+            <tr>
+              <td>${esc(order.number)} — ${esc(order.title || 'Change')}</td>
+              <td class="r">${priced.totalCents < 0 ? '−' : '+'}${formatMoney(Math.abs(priced.totalCents))}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>` : ''}
+
+  ${schedule.length ? `
+  <div class="pr-section">
+    <h3>Payment schedule at the current total</h3>
+    <table class="pr-table">
+      <thead><tr><th>Milestone</th><th class="r">Share</th><th class="r">Amount</th></tr></thead>
+      <tbody>
+        ${schedule.map((m) => `
+          <tr><td>${esc(m.label)}</td><td class="r">${(m.percent * 100).toFixed(0)}%</td>
+              <td class="r">${formatMoney(m.amountCents)}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div>` : ''}
+
+  <div class="pr-section pr-terms">
+    <p style="margin:0">
+      This statement summarizes the contract and every change authorized to date. It is a
+      summary of the agreement, not an invoice, and does not reflect payments received.
+    </p>
+  </div>
+</div>`;
+}
+
+/**
+ * First line of a multi-line reason, for a one-line summary in a table.
+ * Truncates on a word boundary — an ellipsis landing mid-word reads as a bug
+ * on a document the client is scrutinizing.
+ */
+function firstLine(text, limit = 120) {
+  const line = String(text || '').split('\n').find((l) => l.trim()) || '';
+  if (line.length <= limit) return line;
+  const cut = line.slice(0, limit);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > limit * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[,;:.\s]+$/, '')}…`;
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
