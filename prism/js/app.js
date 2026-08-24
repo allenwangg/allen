@@ -77,6 +77,18 @@
     return 'other';
   }
 
+  /* Total cards across the library, computed once so counts never go stale. */
+  var cardTotal = null;
+  function libraryCardCount() {
+    if (cardTotal === null) {
+      cardTotal = 0;
+      for (var i = 0; i < COURSES.length; i++) {
+        for (var j = 0; j < COURSES[i].lessons.length; j++) cardTotal += COURSES[i].lessons[j].cards.length;
+      }
+    }
+    return cardTotal;
+  }
+
   function themeCount(id) {
     var n = 0;
     for (var i = 0; i < COURSES.length; i++) if (id === 'all' || themeOf(COURSES[i]) === id) n += 1;
@@ -1254,7 +1266,7 @@
         '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
       '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
-      '<p class="version">Prism — 30 courses, 1,507 cards, one memory that keeps them.</p>' +
+      '<p class="version">Prism — ' + COURSES.length + ' courses, ' + libraryCardCount().toLocaleString() + ' cards, one memory that keeps them.</p>' +
     '</div>';
     document.body.appendChild(wrap);
     function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
