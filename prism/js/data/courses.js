@@ -18975,5 +18975,2375 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "design",
+    "title": "Why Things Look Good",
+    "tagline": "The rules behind clean layouts and things that work.",
+    "category": "Design",
+    "description": "Gestalt grouping, contrast that survives real screens, and Don Norman's doors. These are the principles that decide whether a layout reads and whether an object can be used, with accessibility treated as a floor rather than a finishing touch.",
+    "lessons": [
+      {
+        "id": "seeing",
+        "title": "Seeing",
+        "summary": "How the eye groups, ranks, and skips — Gestalt principles, visual hierarchy, whitespace, and the single alignment line that beats any decoration.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Your Eyes Group Before You Think",
+            "body": "Before you read a word, your visual system has already sorted the page into clumps. In the 1910s and 20s, the Gestalt psychologists — Wertheimer, Koffka, Köhler — showed that this grouping follows rules. Learn the rules and you stop guessing why a layout feels clean or cluttered.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Proximity Does the Most Work",
+            "body": "Things placed close together read as one unit. That single cue — distance — outranks colour, shape and size in practice, and it is the one you control with one number in every tool. Put a label 4px from its field and 24px from the next, and a form explains itself with no lines or boxes at all.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A form label sits exactly halfway between the field above it and the field below. What is the reader's problem?",
+            "choices": [
+              "Nothing — even spacing is neutral and safe",
+              "Proximity gives no answer, so they have to guess which field the label belongs to",
+              "The label needs a heavier font weight",
+              "The label should be a different colour from the field text"
+            ],
+            "answer": 1,
+            "explain": "Equal spacing makes equal groups, so the label belongs to both fields and therefore to neither. The fix costs nothing: move it closer to the field it names and open space before the next one. Weight and colour cannot repair a spacing mistake."
+          },
+          {
+            "type": "concept",
+            "title": "The Rest of the Gestalt Set",
+            "body": "Similarity groups things that share colour, shape or size. Closure lets three cropped corners read as a rectangle. Continuity makes the eye follow a line straight through an interruption. Figure-ground decides what is object and what is backdrop. All useful — and all of them lose to proximity when the cues disagree.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If you colour two items alike but place them far apart, similarity will still make people read them as a pair.",
+            "answer": false,
+            "explain": "Proximity usually wins. Distance separates the two faster than a shared colour can join them, which is why linking a caption to its photo by colour never works as well as simply moving it closer."
+          },
+          {
+            "type": "concept",
+            "title": "Hierarchy: What Lands First",
+            "body": "The eye does not scan evenly. It goes to whatever is biggest, highest in contrast, and nearest to where reading starts — top and left in English. Those three levers are your hierarchy. Decide the one thing a viewer should get in half a second, then make it win on at least two of them.",
+            "art": "pyramid"
+          },
+          {
+            "type": "example",
+            "title": "The Poster With No Loudest Thing",
+            "body": "A gig poster sets the band name, the venue, the date, the ticket price and the sponsor logos at roughly the same size in bold caps. Everything shouts, so the eye finds no entry point and bounces off. Drop four of them to half the size and the fifth becomes the headline — without changing a single word.",
+            "art": "target"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You have been asked to make the important part stand out, and everything on the page is already bold. What actually has to happen?",
+            "answer": "Something has to get quieter. Emphasis is a ratio, not a property: bold only reads as bold against not-bold. The cheapest way to promote one element is to demote its neighbours — smaller, lighter, greyer — until one thing is clearly first."
+          },
+          {
+            "type": "concept",
+            "title": "Whitespace Is an Ingredient",
+            "body": "Empty space is not leftover; it is what does the grouping, the separating and the emphasising. Space around a headline makes it important. Space between blocks makes them countable. When a layout feels cramped the problem is rarely the elements — it is that nothing has been given room.",
+            "art": "balance"
+          },
+          {
+            "type": "quote",
+            "text": "Perfection is finally attained not when there is no longer anything to add, but when there is no longer anything to take away.",
+            "by": "Antoine de Saint-Exupéry"
+          },
+          {
+            "type": "concept",
+            "title": "One Invisible Line",
+            "body": "Pick one left edge and put everything on it. A shared alignment line reads as order even though the reader never sees it, and it beats any border, gradient or shadow. You need no mystical proportion to place it: the golden ratio's supposed role in the Parthenon and the Mona Lisa was fitted after the fact, never used as a method.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A page looks messy and you have time for exactly one change. Which does the most?",
+            "choices": [
+              "Align every element to one shared edge",
+              "Rebuild the proportions around the golden ratio",
+              "Add borders to separate the sections",
+              "Introduce a second typeface for variety"
+            ],
+            "answer": 0,
+            "explain": "Alignment is the cheapest order there is. Borders are usually a patch over spacing you never fixed, a second typeface adds noise before it adds structure, and the golden ratio is a decorative story rather than a layout tool."
+          },
+          {
+            "type": "recap",
+            "title": "Seeing",
+            "points": [
+              "Grouping is automatic: proximity, similarity, closure, continuity and figure-ground decide what the eye bundles together.",
+              "Reach for proximity first — spacing beats colour and shape when the cues conflict, and it costs nothing.",
+              "Hierarchy runs on size, contrast and position; emphasis is a ratio, so promote one thing by demoting the rest.",
+              "Whitespace and a single alignment line carry more structure than borders, shadows or any supposed magic proportion."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Which Gestalt principle should you reach for first, and why?",
+            "back": "Proximity. Spacing is the strongest and cheapest grouping cue, and it overrides shared colour or shape when the two disagree."
+          },
+          {
+            "front": "What three levers create visual hierarchy?",
+            "back": "Size, contrast and position (top and left in English). Make the one key element win on at least two of them."
+          },
+          {
+            "front": "Why does making everything bold fail?",
+            "back": "Emphasis is a ratio. Bold only reads as bold against not-bold, so promoting one element means demoting its neighbours."
+          },
+          {
+            "front": "What does a single alignment line do?",
+            "back": "It creates visible order with no visible decoration. One shared edge does more for a layout than borders, shadows or the golden ratio."
+          }
+        ]
+      },
+      {
+        "id": "colour-and-type",
+        "title": "Colour and Type",
+        "summary": "Why contrast rather than hue carries legibility, the WCAG minimums worth memorising, and the typographic numbers that actually change how people read.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Grey-on-Grey Years",
+            "body": "For a stretch of the 2010s, fashionable websites set their body text in light grey on white. It looked calm on a designer's bright new monitor and vanished on everyone else's — in sunlight, on cheap screens, in older eyes. It was a colour choice that failed at contrast, and contrast is what legibility runs on.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "Hue, Saturation, Lightness",
+            "body": "Any colour splits into three dials. Hue is the name: red, teal, violet. Saturation is how pure it is, from grey to vivid. Lightness is how much light it throws, from black to white. Designers argue about hue. Readers are affected almost entirely by lightness, because that is the difference the eye uses to find edges.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Navy on pale yellow is easy to read. Mid-grey on light grey is not — even though grey and grey are the same colour family. Why?",
+            "answer": "Because legibility comes from the gap in lightness, not from the hue. Navy and pale yellow sit far apart on the light-to-dark dial; the two greys sit close together. Convert a design to greyscale and any text that disappears was never relying on contrast."
+          },
+          {
+            "type": "concept",
+            "title": "The Numbers Worth Memorising",
+            "body": "WCAG 2.1 gives thresholds, not opinions. At Level AA, body text needs a contrast ratio of at least 4.5:1 against its background, and large text — 18pt, or 14pt bold — needs 3:1. Level AAA raises those to 7:1 and 4.5:1. Interface parts you must see to use, like input borders and icons, need 3:1.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your body copy measures 3.2:1 against its background. Under WCAG 2.1 at Level AA, what is true?",
+            "choices": [
+              "It passes — 3:1 is the standard minimum",
+              "It fails: body text needs 4.5:1, though 3:1 would pass for large text",
+              "It passes as long as the hue is dark enough",
+              "It only matters for users who have declared a disability"
+            ],
+            "answer": 1,
+            "explain": "3:1 is the large-text and non-text threshold; normal body copy needs 4.5:1. And nobody declares anything — the same page has to work in sunlight, on a dim laptop, and for a reader whose eyes are forty years older than yours."
+          },
+          {
+            "type": "concept",
+            "title": "Colour That Means Something",
+            "body": "Colour is either carrying information or decorating, and both are fine as long as you know which you are doing. Trouble starts when a colour is the only thing carrying a meaning — a red field, a green dot, a blue line on a chart — because a real share of your readers cannot separate those hues at all.",
+            "art": "eye"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Colour vision deficiency is rare enough that a red-versus-green status light is a safe design choice.",
+            "answer": false,
+            "explain": "Red-green deficiency affects roughly 1 in 12 men and about 1 in 200 women. On any real audience that is a large group — and they are not the only ones affected, because the same dot also fails in greyscale printing, in bright sun, and on a badly calibrated screen."
+          },
+          {
+            "type": "example",
+            "title": "Never Colour Alone",
+            "body": "A form that flags bad fields by turning them red tells some users nothing at all. Add a second channel and it works for everyone: an icon, a short message under the field, a bold label. Colour may reinforce a meaning but never be the sole carrier of it. Charts follow the same rule with direct labels instead of a colour key.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Serif or Sans Is Convention",
+            "body": "Serifs are the small finishing strokes on letters. The claim that they guide the eye and make text more readable has not held up: studies comparing serif and sans find no dependable difference. What is real is convention — serif reads as book and broadsheet, sans as screen and signage. Choose the association, not the myth.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "Typography exists to honour content.",
+            "by": "Robert Bringhurst"
+          },
+          {
+            "type": "concept",
+            "title": "Measure, Leading and 16 Pixels",
+            "body": "Measure is the line length: keep it near 45 to 75 characters, because longer lines cost the eye its return trip to the next one. Leading is the space between lines, roughly 1.4 to 1.6 times the font size for body copy. And 16px became the web's body size because it is the browser default, tuned for reading at arm's length.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A full-width article on a wide monitor runs about 140 characters per line. What is the fix?",
+            "choices": [
+              "Cap the text column near 45 to 75 characters",
+              "Shrink the font so more text fits comfortably",
+              "Reduce the leading to tighten the block",
+              "Justify the text so both edges line up"
+            ],
+            "answer": 0,
+            "explain": "Long lines break the return sweep: the eye loses its place jumping back to the left edge. Shrinking the type makes the line even longer in characters, and tighter leading makes the wrong line easier to land on. Constrain the column instead."
+          },
+          {
+            "type": "recap",
+            "title": "Colour and Type",
+            "points": [
+              "Hue, saturation and lightness are separate dials, and legibility rides almost entirely on the lightness gap.",
+              "WCAG 2.1 Level AA: 4.5:1 for body text, 3:1 for large text and interface parts; AAA raises those to 7:1 and 4.5:1.",
+              "Colour may reinforce meaning but never carry it alone — red-green deficiency affects about 1 in 12 men.",
+              "Serif versus sans is convention, not a readability law; the measurable wins are measure, leading and size.",
+              "Aim for 45 to 75 characters a line, leading around 1.4 to 1.6, and 16px-equivalent body text."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What makes text legible — hue or contrast?",
+            "back": "Contrast, and specifically the gap in lightness. Greyscale the design: any text that disappears was never relying on contrast."
+          },
+          {
+            "front": "What are the WCAG 2.1 Level AA contrast minimums?",
+            "back": "4.5:1 for normal body text and 3:1 for large text (18pt, or 14pt bold). Non-text parts like input borders also need 3:1."
+          },
+          {
+            "front": "Why can colour never be the only carrier of information?",
+            "back": "Red-green colour vision deficiency affects roughly 1 in 12 men. Pair colour with an icon, label or shape so meaning survives without it."
+          },
+          {
+            "front": "What is measure, and what is a good range?",
+            "back": "Measure is line length: aim for 45 to 75 characters. Past that the eye loses its place returning to the start of the next line."
+          }
+        ]
+      },
+      {
+        "id": "things-people-use",
+        "title": "Designing Things People Use",
+        "summary": "Affordances, signifiers, feedback, mapping, constraints and Fitts's law — why some objects explain themselves and others quietly fight you.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Door That Fights You",
+            "body": "You reach for a door with a tall vertical handle, pull, and nothing moves. A small sign says PUSH. You have just met a Norman door, named for Don Norman, whose 1988 book The Design of Everyday Things argued that this confusion is not your failing. The handle made a promise the door could not keep.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Affordances and Signifiers",
+            "body": "An affordance is what an object makes possible for you: a door can be pushed whether or not you notice. A signifier is the visible cue telling you which action to take. Norman separates the two because most everyday failures are signifier failures — the action was available, the design just pointed the wrong way.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A glass door opens only by pushing, but carries a graspable vertical handle on both sides. What fixes it?",
+            "choices": [
+              "A larger, clearer PUSH sticker at eye level",
+              "Replace the handle on the push side with a flat plate",
+              "Train the staff to tell visitors which way it opens",
+              "Nothing — people should read the signs"
+            ],
+            "answer": 1,
+            "explain": "A sign is an apology for a bad signifier. A flat plate affords nothing but pushing, so the hand does the right thing before the brain reads anything. If a design needs a label to undo its own shape, change the shape."
+          },
+          {
+            "type": "concept",
+            "title": "Feedback: Say Something Back",
+            "body": "Every action needs a visible, immediate response: a button that depresses, a spinner, a receipt, a click. Without one, people repeat themselves — the double-pressed lift button, the form submitted three times. Feedback must also be proportionate. A blocking alert for a saved draft teaches people to dismiss alerts unread.",
+            "art": "bell"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If a control does its job correctly, feedback is a nicety you can drop when screen space is tight.",
+            "answer": false,
+            "explain": "Nobody can see inside the system. With no response, a correct action is indistinguishable from a dead control, so people press again — which is how one order becomes three. Feedback is part of the function, not decoration on top of it."
+          },
+          {
+            "type": "example",
+            "title": "Which Knob Is Which Burner",
+            "body": "A stove with four burners in a square and four knobs in a straight row makes you decode a diagram every time you cook. Arrange those knobs in a matching square, or offset the burners so each knob sits nearest its own, and the guessing stops. Norman calls this natural mapping: the controls mirror the thing they control.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A lecture hall has three light switches in a row for three zones of the room. What single change would end the trial and error?",
+            "answer": "Lay the switches out like the room. Put them in a shape that matches where the zones actually are, so the spatial relationship does the explaining. Labels help, but a mapping that matches the layout needs no reading at all."
+          },
+          {
+            "type": "concept",
+            "title": "Constraints Prevent Errors",
+            "body": "The best error message is the error you cannot make. A SIM tray has a cut corner. A USB-C plug fits either way up. A car will not shift out of park without a foot on the brake. These are constraints — physical, logical or cultural limits that quietly remove the wrong options instead of scolding you afterwards.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Fitts's Law, in Plain Words",
+            "body": "Paul Fitts showed in 1954 that the time to hit a target depends on how far away it is and how big it is. Bigger and nearer means faster and less error-prone. That is why a primary button should be large, why a menu pinned to a screen edge is easy to hit, and why a tiny close button beside a destructive one is a trap.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Two adjacent 16px icons sit in a toolbar: one saves, one deletes permanently. Reading this through Fitts's law, what is the problem?",
+            "choices": [
+              "Nothing — the icons are clearly different shapes",
+              "Small, adjacent targets make a slip likely, and one of the slips is unrecoverable",
+              "The two icons should be different colours",
+              "The toolbar should be moved to the bottom of the screen"
+            ],
+            "answer": 1,
+            "explain": "Small targets raise the miss rate and adjacency means a miss lands on the neighbour. Enlarge the hit areas, separate the destructive action, and add a constraint or a confirmation. Colour alone does not slow down a hand already in motion."
+          },
+          {
+            "type": "example",
+            "title": "Beautiful Cash Machines",
+            "body": "In 1995 Masaaki Kurosu and Kaori Kashimura at Hitachi tested 26 layouts of an ATM interface. How attractive people found a layout predicted how easy they judged it to be — far better than how easy it actually was. Beauty buys patience and forgiveness. It also hides real defects, so it is a warning as much as a licence.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "Good design is actually a lot harder to notice than poor design, in part because good designs fit our needs so well that the design is invisible.",
+            "by": "Don Norman"
+          },
+          {
+            "type": "recap",
+            "title": "Designing Things People Use",
+            "points": [
+              "Affordances are what an object makes possible; signifiers are the cues showing which action to take. Most failures are signifier failures.",
+              "The Norman door — a pull handle on a push door — is the canonical case: change the shape rather than adding a sign.",
+              "Feedback must be immediate and proportionate, or people repeat actions whose results they cannot see.",
+              "Natural mapping (knobs laid out like burners) and constraints (a SIM tray's cut corner) stop errors before they happen.",
+              "Fitts's law: bigger and closer targets are faster. Attractive designs are judged easier to use, which is no substitute for testing them."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the difference between an affordance and a signifier?",
+            "back": "An affordance is an action an object makes possible; a signifier is the cue that shows you to take it. A flat plate signifies push, a handle signifies pull."
+          },
+          {
+            "front": "What is a Norman door?",
+            "back": "A door whose signifier contradicts its operation — a pull handle on a push door. The fix is changing the shape, not adding a PUSH sign."
+          },
+          {
+            "front": "What is natural mapping?",
+            "back": "Laying controls out like the things they control — stove knobs in a square matching a square of burners — so the relationship needs no label."
+          },
+          {
+            "front": "What is the aesthetic-usability effect?",
+            "back": "Kurosu and Kashimura (1995): people judged prettier ATM layouts easier to use regardless of actual ease. Beauty buys forgiveness and hides defects."
+          }
+        ]
+      },
+      {
+        "id": "taste-and-process",
+        "title": "Taste and Process",
+        "summary": "The taste gap, imitation as apprenticeship, testing instead of arguing, and how to build an eye without designing for the portfolio.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Why Your Own Work Disappoints You",
+            "body": "Beginners are usually told they lack talent. More often they have the opposite problem: their taste is already good — good enough to see exactly how far the thing they just made falls short of the thing they admire. Ira Glass named this gap, and named the only way through it.",
+            "art": "ladder"
+          },
+          {
+            "type": "quote",
+            "text": "All of us who do creative work, we get into it because we have good taste. But there is this gap. For the first couple years you make stuff, it's just not that good. It's trying to be good, it has potential, but it's not. But your taste, the thing that got you into the game, is still killer. And your taste is why your work disappoints you.",
+            "by": "Ira Glass"
+          },
+          {
+            "type": "concept",
+            "title": "Volume Closes the Gap",
+            "body": "Glass's prescription is not inspiration but quantity: do a large volume of work on a deadline, because only finished pieces teach. Each one narrows the distance between what you can see and what your hands can do. The gap is normal and temporary — the people who quit are those who mistake it for a verdict on their talent.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You can see that your work is not as good as the work you admire. On Glass's account, what closes that gap?",
+            "choices": [
+              "Waiting until your skills catch up before publishing anything",
+              "Finishing a large volume of work, on deadlines",
+              "Lowering your standards so the work stops disappointing you",
+              "Finding the one technique the people you admire are hiding"
+            ],
+            "answer": 1,
+            "explain": "Taste is already ahead; the hands have to catch up, and they only do that on finished work. Waiting produces nothing to learn from, lowering your standards throws away the compass, and there is no hidden trick — just volume."
+          },
+          {
+            "type": "concept",
+            "title": "Imitation Is Apprenticeship",
+            "body": "Rebuild a layout you admire, pixel for pixel, and you find decisions you would never have seen from outside: how much space sits under the headline, how few weights are in play, what was left out. Copying is how you read a design closely. Copy to learn the moves, then build your own thing with them.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Studying and reproducing other people's work will flatten your style into a copy of theirs.",
+            "answer": false,
+            "explain": "Copying is a reading exercise, not a destination. Painters trained by reproducing masters and typographers by redrawing old faces. What lasts is not the borrowed layout but the eye you built taking it apart. The risk is shipping the copy, not making it."
+          },
+          {
+            "type": "example",
+            "title": "Five Users Beat One Meeting",
+            "body": "A team can argue for an hour about whether a label is confusing. Watching five people try to use the thing settles it in twenty minutes: Jakob Nielsen and Tom Landauer's 1993 model showed that a handful of testers surfaces the bulk of usability problems. Opinions in a room scale with seniority. Observation does not.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two designers disagree about whether a checkout step is confusing, and neither will budge. What is the cheapest way to end it?",
+            "answer": "Stop arguing and watch someone use it. A few people attempting the real task will show whether they hesitate, backtrack or fail — evidence nobody in the room can outrank. Meetings settle disputes by seniority; a usability test settles them by what happened."
+          },
+          {
+            "type": "concept",
+            "title": "The Portfolio Trap",
+            "body": "There is a kind of design made to be screenshotted: dramatic, weightless, untroubled by real content, long names, error states or slow connections. It photographs beautifully and collapses in use. Ask who the work is for. If the honest answer is people scrolling a feed of designs, it is not finished.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which is the clearest sign that a redesign was made for the portfolio rather than for users?",
+            "choices": [
+              "It uses a restrained palette and a lot of whitespace",
+              "It shows only ideal content: short names, no errors, perfect photos",
+              "It looks very different from the current version",
+              "It was put together quickly"
+            ],
+            "answer": 1,
+            "explain": "Real products are mostly edge cases: 34-character names, missing images, failed payments, empty states. A design that never shows them has not been tested against the job. Restraint and novelty are not the tell; unbroken ideal content is."
+          },
+          {
+            "type": "concept",
+            "title": "Break a Rule Only by Name",
+            "body": "Most rules here are defaults, not laws: measure, alignment, type pairing. Break any of them once you can name the rule, say what it protects and say what you gain instead. Two are not defaults. Contrast minimums and never-colour-alone are floors, because when those break, someone other than you pays for it.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "How to Build an Eye",
+            "body": "Collect: save things that work and things that fail, and keep both. Copy: rebuild a few and find the decisions inside them. Critique: write one sentence on why each one works, since vague admiration teaches nothing. Repeat until you can predict what a change will do before you make it. That prediction is what taste is.",
+            "art": "hourglass"
+          },
+          {
+            "type": "recap",
+            "title": "Taste and Process",
+            "points": [
+              "The taste gap is normal: your judgment outruns your hands, and only a volume of finished work closes it.",
+              "Imitation is apprenticeship — rebuild good work to find the decisions inside it, then stop shipping the copy.",
+              "Five users beat an hour of arguing; observation settles what seniority would otherwise decide.",
+              "Designing for the portfolio shows up in the content: ideal names, no errors, no empty states.",
+              "Break a rule only when you can name it and what it protects — and treat contrast and colour-independence as floors, not defaults."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the taste gap?",
+            "back": "Ira Glass's idea: beginners have taste good enough to see their own work fall short. The gap closes by producing volume, not by waiting."
+          },
+          {
+            "front": "Why is copying good work useful?",
+            "back": "Reproducing a design forces you to notice the decisions inside it — spacing, weight, restraint. Copy to learn the moves, then stop shipping the copy."
+          },
+          {
+            "front": "How many users find most usability problems?",
+            "back": "Around five, per Nielsen and Landauer's 1993 model — enough to expose the bulk of the issues, and cheaper than a meeting spent arguing."
+          },
+          {
+            "front": "When may you break a design rule?",
+            "back": "When you can name the rule, say what it protects and say what you gain instead. If you cannot state it, you are not breaking it — you are missing it."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "emotional-intelligence",
+    "title": "Emotional Intelligence",
+    "tagline": "Read yourself and others — evidence first, hype second.",
+    "category": "Psychology",
+    "description": "The skill of reading yourself and other people accurately: what four decades of research actually supports, and where the popular EQ industry ran far ahead of it. Four lessons on self-awareness, reading faces, empathy that lasts, and the conversation you keep avoiding.",
+    "lessons": [
+      {
+        "id": "what-ei-is",
+        "title": "What EI Is and Isn't",
+        "summary": "The four-branch model, the bestseller that oversold it, and what emotional intelligence actually predicts once IQ and personality are held constant.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Papers, Two Fates",
+            "body": "In 1990 Peter Salovey and John Mayer published a quiet academic paper naming something new: emotional intelligence. Five years later a science journalist, Daniel Goleman, turned the idea into a global bestseller — and into a promise the original paper had never made.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Four Branches",
+            "body": "Salovey and Mayer defined EI as four linked abilities. Perceiving emotion, in faces, voices and yourself. Using emotion to aid thinking. Understanding how feelings blend, escalate and shift. And managing emotion, in yourself and in others. Abilities — things you can be measurably better or worse at.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A colleague snaps at you, and you work out that under the anger sits fear about the deadline. Which branch is that?",
+            "choices": [
+              "Perceiving emotion",
+              "Using emotion to aid thinking",
+              "Understanding emotion",
+              "Managing emotion"
+            ],
+            "answer": 2,
+            "explain": "Understanding is the branch that handles causes, blends and trajectories — knowing that anger often sits on top of fear, and that irritation can escalate into rage. Perceiving would stop at 'he is angry.'"
+          },
+          {
+            "type": "concept",
+            "title": "The Bestseller Effect",
+            "body": "Goleman's 1995 book sold millions and taught a generation the word EQ. It also carried one sentence that escaped and grew in the retelling: that IQ explains at most about a fifth of life success, leaving the rest to what he carefully called other forces.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "At best, IQ contributes about 20 percent to the factors that determine life success, which leaves 80 percent to other forces.",
+            "by": "Daniel Goleman, Emotional Intelligence, 1995"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Research shows that emotional intelligence accounts for roughly 80% of career success.",
+            "answer": false,
+            "explain": "That 80% is subtraction, not evidence: it is whatever IQ does not explain. Goleman attributed the remainder to other forces — luck, class, opportunity, health, personality. A training industry quietly relabelled the leftover as EQ."
+          },
+          {
+            "type": "concept",
+            "title": "Two Very Different Rulers",
+            "body": "There are two ways to measure EI and they barely agree. Ability tests like the MSCEIT pose problems with scored answers, the way an IQ test does. Self-report questionnaires ask you to rate statements such as 'I am good at reading people.' The two kinds of score typically correlate below .30.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Self-reported EI predicts wellbeing and job satisfaction impressively well. What is the catch?",
+            "answer": "It overlaps heavily with the Big Five, especially low neuroticism and high extraversion. Ask people to rate their own emotional skill and you have largely measured their personality and self-esteem — then discovered it predicts what personality already predicted."
+          },
+          {
+            "type": "example",
+            "title": "The Number on the Cover",
+            "body": "Meta-analyses do find EI related to job performance, usually somewhere around r = .20 to .30. But hold IQ and the Big Five constant and the unique contribution collapses to a few per cent of extra variance explained. Real, replicated, and nothing like the cover promises.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which finding would most undermine the claim that a self-report EQ questionnaire measures a distinct ability?",
+            "choices": [
+              "Scores stay stable across several years",
+              "Scores are largely predicted by Big Five personality traits",
+              "Scores correlate with self-reported wellbeing",
+              "Women score slightly higher than men on average"
+            ],
+            "answer": 1,
+            "explain": "If personality already accounts for most of the variance, the questionnaire is a personality test in a new jacket. Stability, wellbeing links and small sex differences are all things a personality measure produces anyway."
+          },
+          {
+            "type": "concept",
+            "title": "Where It Does Pull Weight",
+            "body": "The effect is not zero, and it is not evenly spread. EI predicts performance best in work built on emotional labour — nursing, teaching, sales, management, anything where handling feelings is the job. In roles dealing mainly with things rather than people, it barely registers.",
+            "art": "target"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Salovey and Mayer (1990) defined EI as four abilities: perceiving, using, understanding and managing emotion.",
+              "Goleman's 1995 bestseller popularised the idea — and an 80% figure that was leftover variance, never a measured finding.",
+              "Ability tests and self-report questionnaires measure different things and correlate weakly, usually below .30.",
+              "Self-reported EI is largely personality in disguise; controlling IQ and the Big Five leaves EI a few per cent of extra variance.",
+              "The signal is modest but real, and strongest in emotional-labour jobs."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What are the four branches of Salovey and Mayer's model?",
+            "back": "Perceiving emotion, using emotion to aid thinking, understanding emotion, and managing emotion — in yourself and in others."
+          },
+          {
+            "front": "Where did the claim that EQ drives 80% of success come from?",
+            "back": "Subtraction, not data: it is the variance left after IQ. Goleman called it 'other forces'; the training industry relabelled it EQ."
+          },
+          {
+            "front": "Why is self-reported EI a weak measure of ability?",
+            "back": "It overlaps heavily with the Big Five — low neuroticism, high extraversion — so it largely re-measures personality and self-esteem."
+          },
+          {
+            "front": "How much does EI add once IQ and personality are controlled?",
+            "back": "Only a few per cent of extra variance in job performance — larger in emotional-labour work like nursing, sales and management."
+          }
+        ]
+      },
+      {
+        "id": "self-awareness",
+        "title": "The Self You Can't See",
+        "summary": "Why nearly everyone believes they are self-aware, why 'why' is the wrong question to ask yourself, and the two cheap habits that sharpen inner accuracy.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Nearly Everyone Is Sure",
+            "body": "Tasha Eurich's team spent four years studying self-awareness across thousands of people. Around 95% rated themselves as self-aware. Measured against both internal and external criteria, only about 10 to 15 per cent actually qualified. The skill is rare; the confidence is universal.",
+            "art": "mirror"
+          },
+          {
+            "type": "concept",
+            "title": "Two Kinds of Self-Awareness",
+            "body": "Eurich splits the skill in two. Internal self-awareness is seeing your own values, reactions and patterns clearly. External self-awareness is knowing how other people actually experience you. In her data the two were essentially unrelated — being strong at one told you nothing about the other.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "People who are deeply in touch with their own feelings are usually also good at knowing how they come across.",
+            "answer": false,
+            "explain": "Eurich found internal and external self-awareness essentially uncorrelated. Rich inner monitoring cannot tell you what your face did in the meeting. Only feedback can — which is why the second half is the half most people skip."
+          },
+          {
+            "type": "concept",
+            "title": "The Introspection Illusion",
+            "body": "In 1977 Richard Nisbett and Timothy Wilson showed that people confidently explain choices they demonstrably did not make for those reasons, inventing plausible causes on the spot. You have access to the output of your mind, not to its machinery. Introspection often returns a story, not a readout.",
+            "art": "brain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You feel flat after a meeting and ask yourself: why do I feel this way? What is the risk?",
+            "answer": "Your mind answers anyway. It grabs whatever cause is nearby and believable — his tone, your sleep, your whole career — and you trust the answer because you produced it. 'Why' rewards confabulation, and it quietly opens the door to rumination."
+          },
+          {
+            "type": "concept",
+            "title": "Ask What, Not Why",
+            "body": "Eurich's highly self-aware interviewees shared a verbal habit: they asked what, not why. What am I feeling? What situations pull this out of me? What do I want to do next? 'What' points at observable things you can check. Treat it as a strong heuristic, not a lab-proven law.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which question follows the 'what, not why' habit?",
+            "choices": [
+              "Why do I always get defensive with him?",
+              "What is it about me that makes me like this?",
+              "What did he say just before I got defensive?",
+              "Why can't I just stay calm for once?"
+            ],
+            "answer": 2,
+            "explain": "Only the third names something observable and checkable. The second starts with 'what' but is a 'why' in costume — it still demands a story about your character, exactly the story the introspection illusion is happy to invent."
+          },
+          {
+            "type": "concept",
+            "title": "Emotional Granularity",
+            "body": "Lisa Feldman Barrett's work separates people who feel 'bad' from people who feel let down, or restless, or ashamed. Finer-grained labels track better regulation: more strategies used, less drinking to cope, less aggression after provocation. The evidence is largely correlational, but it is consistent.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Naming a feeling more precisely tends to make it feel bigger and harder to handle.",
+            "answer": false,
+            "explain": "The pattern runs the other way. Putting feelings into words reduces amygdala response and recruits prefrontal regions (Lieberman et al., 2007), and finer-grained labellers regulate better. Precision gives a feeling edges, and edges make it handleable."
+          },
+          {
+            "type": "example",
+            "title": "Twenty Words for Bad",
+            "body": "Try it tonight. Instead of 'stressed', reach for: overloaded, resentful, under-prepared, embarrassed, lonely. Each one implies a different move. Overloaded asks you to cut scope. Resentful asks you to say something out loud. 'Stressed' asks nothing of you — which is why it never leaves.",
+            "art": "key"
+          },
+          {
+            "type": "example",
+            "title": "Fifteen Minutes on Paper",
+            "body": "James Pennebaker's expressive writing task is unglamorous: fifteen minutes a day for three or four days, writing your deepest thoughts about something unresolved. Across 146 studies the average effect is real but small, around 0.08. Useful and nearly free — not transformative.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "When people attempt to report on their cognitive processes, they do not do so on the basis of any true introspection.",
+            "by": "Richard Nisbett and Timothy Wilson, 1977"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "About 95% of people believe they are self-aware; on internal-plus-external criteria, roughly 10-15% are.",
+              "Internal and external self-awareness are separate skills — the second needs feedback, not more reflection.",
+              "Introspection often manufactures a plausible cause rather than reporting one (Nisbett & Wilson, 1977).",
+              "Ask 'what' instead of 'why': observable, checkable, and far less prone to rumination.",
+              "Finer emotion labels track better regulation; expressive writing helps a little, cheaply and reliably."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How many people are genuinely self-aware?",
+            "back": "Eurich found about 95% believe they are, while only 10-15% met both the internal and the external criteria."
+          },
+          {
+            "front": "What is the introspection illusion?",
+            "back": "We see our thoughts' output but not their machinery, so introspection often invents a plausible cause (Nisbett & Wilson, 1977)."
+          },
+          {
+            "front": "Why ask 'what' instead of 'why'?",
+            "back": "'Why' invites confabulation and rumination; 'what' points at observable, checkable things — what I felt, what triggered it, what next."
+          },
+          {
+            "front": "What is emotional granularity?",
+            "back": "How finely you label feelings. Finer labels track better regulation: more strategies, less coping-drinking, less aggression after provocation."
+          }
+        ]
+      },
+      {
+        "id": "reading-others",
+        "title": "Reading Other People",
+        "summary": "What a face does and doesn't tell you, why your own feelings show less than you think, and the difference between empathy that burns you out and compassion that doesn't.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Face You Think You Can Read",
+            "body": "In the 1960s Paul Ekman travelled to Papua New Guinea and found that people with almost no exposure to the West matched certain facial expressions to stories about anger, fear and disgust. For decades this hardened into a settled fact: a handful of basic emotions, universally written on the face.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Reconsideration",
+            "body": "In 2019 Lisa Feldman Barrett and four colleagues reviewed more than a thousand studies. Their verdict: people scowl when angry roughly 30 per cent of the time — and scowl plenty when they are not angry at all. Facial movements are loose, context-dependent signals, not readouts of an inner state.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to that 2019 review, how often do angry people actually scowl?",
+            "choices": [
+              "Almost always — it is close to automatic",
+              "About 70% of the time",
+              "About 30% of the time",
+              "Only when they want to be seen being angry"
+            ],
+            "answer": 2,
+            "explain": "Around 30 per cent — and the same scowl shows up in concentration, confusion and hard physical effort. A face narrows the possibilities. It does not name the emotion for you."
+          },
+          {
+            "type": "example",
+            "title": "The Tennis Faces",
+            "body": "Hillel Aviezer and colleagues showed people close-ups of professional players at the instant of winning or losing a crucial point. From the face alone, viewers performed at chance. Add the body and accuracy jumped. At peak intensity, triumph and agony look the same; the context tells you which.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Studying facial expressions is the most reliable route to knowing what someone feels.",
+            "answer": false,
+            "explain": "Faces are ambiguous and context carries most of the signal. The reliable method is duller: read the situation, notice what just happened, then say your guess out loud and let them correct it."
+          },
+          {
+            "type": "concept",
+            "title": "The Illusion of Transparency",
+            "body": "Thomas Gilovich's studies found the mirror-image error. People told to lie believed about half their audience would catch them; roughly a quarter did. Speakers certain their nerves were obvious were rated far calmer than they felt. Your inner weather is mostly invisible — and so is everyone else's.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You are quietly furious in a meeting and certain it is written all over you. What does the research predict?",
+            "answer": "Most people cannot tell. You are reading your own racing pulse and assuming it leaks; they see someone with a slightly flat voice. It cuts both ways — if you want a person to know how you feel, hinting will not carry it. You have to say the words."
+          },
+          {
+            "type": "concept",
+            "title": "Reflection Beats Interrogation",
+            "body": "Carl Rogers built a therapy on one move: say back what you heard, in your own words, and let them correct you. 'So the deadline isn't the problem — being blindsided is.' Reflection tests your read out loud, and people who receive it report feeling more understood than those handed advice.",
+            "art": "dialog"
+          },
+          {
+            "type": "quote",
+            "text": "The major barrier to mutual interpersonal communication is our very natural tendency to judge, to evaluate, to approve or disapprove, the statement of the other person, or the other group.",
+            "by": "Carl Rogers, 1951"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A friend describes a fight with her sister and looks miserable. What does the evidence favour as your first move?",
+            "choices": [
+              "Offer the solution you would use in her place",
+              "Say back what you heard and ask whether you have it right",
+              "Tell her about a similar fight of your own",
+              "Point out where she might have been in the wrong"
+            ],
+            "answer": 1,
+            "explain": "Reflection checks your read and makes people feel understood. Unsolicited advice, however good, tends to land as evaluation — and studies of social support find that help experienced as intrusive can raise distress rather than lower it."
+          },
+          {
+            "type": "concept",
+            "title": "Empathy Burns, Compassion Doesn't",
+            "body": "Tania Singer and Olga Klimecki trained people two ways. Empathy training — feeling with the sufferer — raised negative affect and distress. Compassion training — warmth plus the wish to help — raised positive affect and helping behaviour, and engaged different brain networks. Feeling their pain is not the goal.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The best carers are the ones who feel their patients' pain most intensely.",
+            "answer": false,
+            "explain": "That is empathic distress, and it predicts burnout and withdrawal. Singer and Klimecki's compassion condition kept the warmth while dropping the drowning, and produced more helping rather than less. Care survives on compassion, not on shared suffering."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Ekman's universal-face claim has been sharply narrowed: angry people scowl roughly 30% of the time.",
+              "Context — body, situation, what just happened — carries more signal than the face does.",
+              "Illusion of transparency: your feelings show far less than you assume, and so do theirs. Say it out loud.",
+              "Reflect back before advising; being understood is what people are actually after.",
+              "Compassion sustains, empathic distress burns out. Aim for warmth plus action, not shared drowning."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How often do angry people actually scowl?",
+            "back": "Roughly 30% of the time (Barrett et al., 2019, reviewing over a thousand studies) — and scowls appear plenty when nobody is angry."
+          },
+          {
+            "front": "What is the illusion of transparency?",
+            "back": "Overestimating how visible your inner states are. Gilovich's liars thought about half their audience would catch them; a quarter did."
+          },
+          {
+            "front": "Why reflect back what you heard before giving advice?",
+            "back": "It tests your read out loud and makes people feel understood. Unsolicited advice often lands as evaluation and can raise distress."
+          },
+          {
+            "front": "Empathy or compassion — which one burns out?",
+            "back": "Empathic distress. Singer and Klimecki found compassion training raised positive affect and helping; empathy training raised distress."
+          }
+        ]
+      },
+      {
+        "id": "hard-conversations",
+        "title": "The Conversation You're Avoiding",
+        "summary": "Observation versus evaluation, the three conversations hiding inside every hard one, what actually predicts a relationship ending, and how to apologise so it lands.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Sentence That Starts the Fight",
+            "body": "'You've been unreliable lately.' Notice what just happened: you delivered a verdict, not an event. The other person now has to defend their character before they can even hear the complaint. Most hard conversations go wrong in their first sentence, and this is how.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Observation, Not Evaluation",
+            "body": "Marshall Rosenberg's opening move in nonviolent communication is to strip out the judgement and leave the footage. Not 'unreliable' but 'the last two Fridays the report arrived after five.' Evaluations start an argument about who you are. Observations can only be confirmed or corrected.",
+            "art": "eye"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is an observation rather than an evaluation?",
+            "choices": [
+              "You never listen to me",
+              "You are being dismissive",
+              "You checked your phone three times while I was talking",
+              "You don't respect my time"
+            ],
+            "answer": 2,
+            "explain": "Only the third is footage: countable, and correctable if you got it wrong. The other three are verdicts about character, which force the other person to defend themselves before they have heard what you want."
+          },
+          {
+            "type": "concept",
+            "title": "Three Conversations at Once",
+            "body": "Stone, Patton and Heen found that every difficult conversation contains three. The What Happened conversation argues over facts and blame. The Feelings conversation runs underneath it, usually unspoken. And the Identity conversation asks the quiet question: does this make me a bad person?",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do arguments about facts so rarely end once the facts are settled?",
+            "answer": "Because the fight was never really about the facts. Underneath sit unspoken feelings and a threat to identity — am I competent, am I kind, am I still worth keeping. Win the facts and the identity question is still open, so the argument simply relocates."
+          },
+          {
+            "type": "concept",
+            "title": "Contribution, Not Blame",
+            "body": "Difficult Conversations swaps 'whose fault was this?' for 'what did each of us contribute?' Blame is a judgement and looks backwards; contribution describes a system and looks forwards. The first makes people hide evidence. The second makes the next version of the problem fixable.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Naming your own contribution first usually makes the other person more defensive.",
+            "answer": false,
+            "explain": "It generally does the opposite. Going first signals that this is not a trial, which lowers the identity threat — and identity threat is precisely what turns a conversation into a fight."
+          },
+          {
+            "type": "concept",
+            "title": "The Four Horsemen",
+            "body": "John Gottman filmed couples arguing and tracked who lasted. Four behaviours flagged trouble: criticism, defensiveness, stonewalling, and contempt — sneering, mockery, eye-rolling. Contempt was the strongest single predictor of a relationship ending, and the rarest thing in the couples who stayed together.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Gottman's coding, which behaviour is the strongest single warning sign?",
+            "choices": [
+              "Raising your voice",
+              "Contempt — sneering, mockery, eye-rolling",
+              "Disagreeing frequently",
+              "Going quiet for a while"
+            ],
+            "answer": 1,
+            "explain": "Contempt. It says your partner is beneath you, and it outpredicted criticism, defensiveness and stonewalling. Treat the famous 90%-accuracy headline carefully, though: Heyman and Slep showed such figures shrink badly under proper cross-validation. The horsemen replicate; the fortune-telling does not."
+          },
+          {
+            "type": "concept",
+            "title": "Repair Attempts",
+            "body": "Gottman's stable couples argued just as much as the others. What differed was repair: a joke mid-row, a hand on the arm, 'wait, let me start that again.' The move is small and usually clumsy, and it only works if the other person takes it. Accepting a bad repair may matter more than making a smooth one.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "How to Apologise",
+            "body": "Roy Lewicki's team tested apology components against each other. The heaviest hitters were acknowledging responsibility and offering repair; asking for forgiveness mattered least. So: name the specific harm, own it without 'if' or 'but', say what changes. 'I'm sorry if you were upset' is a hedge, not an apology.",
+            "art": "key"
+          },
+          {
+            "type": "example",
+            "title": "One Boundary, One Repair",
+            "body": "A boundary states what you will do, not what they must be: 'I'm not available for calls after nine.' No argument needed about whether they were unreasonable — just repetition without escalation. This week, pick one: hold a boundary line once, make one repair attempt mid-argument, or apologise naming the exact harm.",
+            "art": "anchor"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Lead with an observation, not an evaluation: footage can be corrected, verdicts must be defended.",
+              "Every hard conversation runs three at once — What Happened, Feelings, and Identity. The third is why facts don't settle it.",
+              "Swap blame for contribution, and name yours first to lower the identity threat.",
+              "Contempt is Gottman's strongest single predictor of dissolution — though the 90%-accuracy headline does not survive cross-validation.",
+              "A real apology names the harm, drops the 'if', and offers repair. Practise one this week."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Observation or evaluation — what's the difference?",
+            "back": "An observation is footage: 'the report came in after five, twice.' An evaluation is a verdict: 'you're unreliable' — and verdicts must be defended."
+          },
+          {
+            "front": "What are the three conversations inside every difficult one?",
+            "back": "What Happened (facts and blame), Feelings (usually unspoken), and Identity (does this make me a bad person?)."
+          },
+          {
+            "front": "Which of Gottman's Four Horsemen predicts dissolution most strongly?",
+            "back": "Contempt — sneering, mockery, eye-rolling. It signals superiority and outpredicts criticism, defensiveness and stonewalling."
+          },
+          {
+            "front": "What makes an apology actually land?",
+            "back": "Naming the specific harm, taking responsibility, and offering repair. No 'if', no 'but' — 'sorry if you were upset' is a hedge."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "leadership",
+    "title": "What Makes a Leader",
+    "tagline": "What the research says, minus the airport-bookstore myths.",
+    "category": "Business",
+    "description": "Four evidence-first lessons on leading people: why the hunt for the leader personality failed, why the safest teams report the most errors, what rewards really do to motivation, and how good groups talk themselves into bad decisions. Names, dates and effect sizes, no hero worship.",
+    "lessons": [
+      {
+        "id": "trait-myth",
+        "title": "The Trait Myth and What Replaced It",
+        "summary": "Why the search for the leader personality failed, what behaviour and context explain instead, and how much of the evidence survives an honest reading.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The History of Great Men",
+            "body": "In 1840 Thomas Carlyle told a London audience that 'the history of the world is but the biography of great men.' For most of the century that followed, leadership research took him at his word and went hunting for the traits that separate the great from the rest. It looked for a very long time.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Then Somebody Counted",
+            "body": "In 1948 Ralph Stogdill pooled 124 trait studies for the Journal of Psychology. Height, intelligence, confidence and dominance all showed up somewhere — and then failed to travel. A trait that marked out leaders in one setting predicted nothing in the next. The demands of the situation kept changing the answer.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Stogdill pooled 124 studies of leaders' traits. What was his central finding?",
+            "choices": [
+              "A stable core of traits — confidence, dominance, intelligence — marked leaders out in every setting",
+              "Traits that predicted leadership in one situation routinely failed to predict it in another",
+              "Personality is irrelevant to leadership; only training and experience matter",
+              "Only physical traits such as height and vocal tone survived the analysis"
+            ],
+            "answer": 1,
+            "explain": "The traits would not travel, because what a situation demanded kept changing. Later evidence is kinder to traits than the folklore suggests: Judge, Bono, Ilies and Gerhardt's 2002 meta-analysis put the Big Five's combined correlation with leadership near .48 — but it predicts who emerges as leader far better than who turns out to be any good at it.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "Watch What Leaders Do",
+            "body": "Frustrated by traits, researchers at Ohio State and Michigan in the 1950s measured behaviour instead. Two dimensions kept surfacing: consideration — warmth, trust, attention to people — and initiating structure — goals, roles, deadlines. They vary independently. You can be high on both, or on neither.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The behaviour research settled the question: high warmth plus high structure is the best combination in every setting.",
+            "answer": false,
+            "explain": "The two dimensions were a real advance — measurable, teachable, unlike charisma — but the 'high-high' prescription did not hold up. What worked depended on the task, the team's experience and the pressure, which is precisely the wall Stogdill's traits had hit."
+          },
+          {
+            "type": "concept",
+            "title": "It Depends, Said Precisely",
+            "body": "Contingency theories tried to say when. Fred Fiedler's 1967 model matched a leader's style to how favourable the situation was; Robert House's path-goal theory asked what followers were missing — direction, support, or a reason to care. The popular Hersey-Blanchard model outsold both and has the thinnest evidence behind it.",
+            "art": "compass"
+          },
+          {
+            "type": "quote",
+            "text": "A person does not become a leader by virtue of the possession of some combination of traits.",
+            "by": "Ralph Stogdill, 1948"
+          },
+          {
+            "type": "concept",
+            "title": "Transactional and Transformational",
+            "body": "James MacGregor Burns split leadership in two in 1978, and Bernard Bass made it measurable in 1985. Transactional leaders trade: clear expectations, rewards delivered, exceptions managed. Transformational leaders raise sights — vision, intellectual challenge, and individual attention to each follower.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Transformational leadership gets the book deals. When Timothy Judge and Ronald Piccolo meta-analysed both styles in 2004, how far behind did plain transactional contingent reward finish?",
+            "answer": "Barely behind. Transformational leadership correlated about .44 with leadership outcomes; contingent reward — set the deal, then honour it — came in near .39 and matched it on several criteria. Keeping ordinary promises is unglamorous and nearly as powerful."
+          },
+          {
+            "type": "example",
+            "title": "The Halo Effect",
+            "body": "Phil Rosenzweig made the point plainly in 2007: we infer a leader's qualities from results we already know. While a firm is winning, the boss's stubbornness is visionary persistence; once it loses, the identical behaviour becomes arrogance. The rating follows the scoreboard, not the other way round.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A bestseller picks eleven companies that beat the market for fifteen years and extracts the habits their leaders shared. What is the deepest flaw?",
+            "choices": [
+              "Eleven companies is too small a sample to reach statistical significance",
+              "Companies whose leaders had the same habits and failed were never in the sample, so the habits cannot be shown to have caused anything",
+              "Financial return is the wrong way to measure a leader",
+              "Fifteen years is too short a window to judge a company"
+            ],
+            "answer": 1,
+            "explain": "Survivorship bias: select on the outcome and you are guaranteed to find shared habits, whether or not they mattered. The halo effect then colours every detail as evidence. It is not hypothetical — several celebrated exemplars later cratered, from Circuit City's 2009 liquidation to Wells Fargo's fake-accounts scandal."
+          },
+          {
+            "type": "concept",
+            "title": "How Much Does a Leader Move It?",
+            "body": "In 1985 James Meindl called it the romance of leadership: we credit the person at the top for outcomes that industry, timing and luck largely decided. Studies that try to partition company performance typically leave the chief executive a slice in the low tens of percent — real, worth having, and far smaller than the covers imply.",
+            "art": "lens"
+          },
+          {
+            "type": "recap",
+            "title": "The Trait Myth and What Replaced It",
+            "points": [
+              "Carlyle's great-man story failed the data: Stogdill's 1948 review of 124 studies found traits that predicted leadership in one setting and nothing in the next.",
+              "Traits are not zero — Judge and colleagues (2002) put the Big Five near .48 — but they predict who emerges as leader better than who succeeds as one.",
+              "Behaviour research gave us consideration and initiating structure; contingency models added the situation. No single best style survived contact with evidence.",
+              "Bass's transformational leadership works, but Judge and Piccolo (2004) found plain contingent reward almost as strong — and far easier to actually do.",
+              "Leadership books sample winners only. Survivorship bias plus the halo effect makes any list of shared habits look causal."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Stogdill's 1948 trait review conclude?",
+            "back": "Traits that marked out leaders in one situation failed in the next; the demands of the situation kept changing which qualities mattered."
+          },
+          {
+            "front": "What two behaviour dimensions came out of the Ohio State studies?",
+            "back": "Consideration (warmth, trust, attention to people) and initiating structure (goals, roles, deadlines). They vary independently."
+          },
+          {
+            "front": "Transformational vs transactional: what did Judge and Piccolo (2004) find?",
+            "back": "Transformational leadership correlated about .44 with leadership outcomes; transactional contingent reward was close behind, near .39."
+          },
+          {
+            "front": "Why is survivorship bias fatal to most leadership bestsellers?",
+            "back": "They sample only winners, so shared habits look causal; the halo effect then reads every behaviour as good because the results were good."
+          }
+        ]
+      },
+      {
+        "id": "psychological-safety",
+        "title": "Psychological Safety",
+        "summary": "The hospital study where the best teams reported the most errors — what safety actually is, what it is not, and the leader behaviours that build it.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Best Teams Made More Errors",
+            "body": "In the mid-1990s Amy Edmondson went looking for a link between good teamwork and low error rates across hospital nursing units. She found a link, and it pointed the wrong way: the units with the best-rated leaders and relationships reported more medication errors, not fewer. Detected rates differed roughly tenfold.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Better teams, more reported errors. Before reading on: what could explain that result without meaning that good teamwork is dangerous?",
+            "answer": "They were not making more errors — they were admitting them. Edmondson sent in a researcher who did not know her hypothesis to observe the units, and the open, well-led teams were exactly the ones where saying 'I got that wrong' was survivable. Their mistakes reached the record."
+          },
+          {
+            "type": "concept",
+            "title": "A Definition Worth Being Precise About",
+            "body": "Edmondson's 1999 definition: a shared belief that the team is safe for interpersonal risk-taking. Not that you feel comfortable — that you can ask an obvious question, admit a gap, or disagree with someone senior without it being held against you. It is a property of the group, not of your nerve.",
+            "art": "shield"
+          },
+          {
+            "type": "example",
+            "title": "Project Aristotle",
+            "body": "Google spent two years studying 180 of its own teams, expecting to find the winning mix of stars. Composition explained surprisingly little; how members treated one another explained a lot. Of the five dynamics that mattered, psychological safety came first by a distance.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Project Aristotle set out to identify the ingredients of Google's best teams. What did it conclude mattered most?",
+            "choices": [
+              "Assembling the strongest individual performers available",
+              "How team members treated one another, with psychological safety above all",
+              "Keeping teams small, ideally under five people",
+              "Giving teams complete freedom over what to work on"
+            ],
+            "answer": 1,
+            "explain": "Who was on the team mattered less than how the team behaved. Keep the caveat in view: Aristotle was Google's own observational study, not a controlled trial. Its real weight comes from agreeing with outside work — Frazier and colleagues' 2017 meta-analysis, pooling over a hundred samples, found the same link: consistent, and moderate in size."
+          },
+          {
+            "type": "concept",
+            "title": "Not Niceness, Not Low Standards",
+            "body": "Edmondson pairs safety with a second axis: accountability. High safety with low standards is a comfort zone where nothing ships. High standards with low safety is an anxiety zone where people hide problems until they detonate. Only both together produce a team that can learn at speed.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Building psychological safety means going easier on people and softening hard feedback.",
+            "answer": false,
+            "explain": "Safety concerns interpersonal risk, not standards. Edmondson's own framing pairs it with high accountability: the point of making dissent survivable is to hear bad news while it is still cheap, not to stop demanding excellent work."
+          },
+          {
+            "type": "concept",
+            "title": "Three Moves That Build It",
+            "body": "Edmondson's field work points to three leader behaviours. Frame the work as a learning problem rather than an execution problem. Say out loud that you will miss things and need to be told. Then ask real questions, and keep asking — a quiet team stays quiet until the invitation has been repeated.",
+            "art": "key"
+          },
+          {
+            "type": "example",
+            "title": "The Flight Engineer Who Hinted",
+            "body": "United 173, December 1978, circling Portland with a landing-gear problem. The flight engineer raised the fuel state — softly, more than once. The captain, absorbed in the gear, did not register it. The aircraft ran its tanks dry and crashed short of the runway, killing ten. Crew resource management grew out of accidents like this.",
+            "art": "clock"
+          },
+          {
+            "type": "reveal",
+            "prompt": "An engineer tells you, in front of the whole team, that the launch date you have just announced is impossible. What happens in the next ten seconds decides whether anyone speaks up again this year.",
+            "answer": "Whatever you do becomes the published price of dissent. Thank them by name, ask for specifics, and let the room watch you change something. Defend the date instead and everyone learns that silence is cheaper — you will lose the warnings, not the problems."
+          },
+          {
+            "type": "example",
+            "title": "The First Red Box",
+            "body": "Alan Mulally arrived at Ford in 2006 and asked his executives to colour-code every project red, yellow or green. For weeks a company losing billions of dollars reported all green. When Mark Fields finally showed a red, Mulally applauded him in the room. The next week the charts filled with colour.",
+            "art": "dialog"
+          },
+          {
+            "type": "quote",
+            "text": "Psychological safety is not about being nice.",
+            "by": "Amy Edmondson"
+          },
+          {
+            "type": "recap",
+            "title": "Psychological Safety",
+            "points": [
+              "Edmondson's hospital units: the best-led teams reported the most medication errors, because reporting was survivable there — a blind observer confirmed it.",
+              "The definition is narrow: a shared belief that the team is safe for interpersonal risk-taking — questions, admissions, disagreement.",
+              "Google's Project Aristotle ranked it first of five team dynamics; independent meta-analysis finds the same link, moderate in size.",
+              "It is not niceness. Pair it with high standards or you get comfort instead of learning.",
+              "Leaders build it by framing work as learning, admitting their own fallibility, asking real questions, and responding well the first time bad news arrives."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Amy Edmondson find in hospital nursing units?",
+            "back": "Better-led units reported more medication errors — not because they made more, but because admitting a mistake was survivable there."
+          },
+          {
+            "front": "Define psychological safety.",
+            "back": "A shared belief that the team is safe for interpersonal risk-taking: asking, admitting and disagreeing without it being held against you."
+          },
+          {
+            "front": "What did Google's Project Aristotle rank first?",
+            "back": "Psychological safety, ahead of dependability, structure and clarity, meaning and impact. How members treated each other beat who they were."
+          },
+          {
+            "front": "How do leaders actually build psychological safety?",
+            "back": "Frame the work as a learning problem, admit their own fallibility, ask real questions, and respond well when someone brings bad news."
+          }
+        ]
+      },
+      {
+        "id": "motivation",
+        "title": "What Actually Motivates People",
+        "summary": "Self-determination theory, the prize that killed the play, and why the bonus that lifts output on simple work wrecks judgement on hard work.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Prize That Killed the Play",
+            "body": "In 1973 Mark Lepper, David Greene and Richard Nisbett found preschoolers who loved drawing with marker pens. Some were promised a Good Player certificate for drawing. Others got nothing, or a surprise award afterwards. Then the researchers waited, and watched who picked the pens up again in free play.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "The Overjustification Effect",
+            "body": "The children promised a prize drew less in later free play than either other group. The reward had rewritten the activity: no longer something you do for fun, now something you do to get a certificate. Deci, Koestner and Ryan's 1999 review of 128 studies found the pattern holds for expected tangible rewards — though not for verbal praise.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the marker-pen study, which group drew least during the later free-play period?",
+            "choices": [
+              "The children promised a certificate before they drew",
+              "The children given a surprise certificate afterwards",
+              "The children who received nothing at all",
+              "All three groups dropped off by about the same amount"
+            ],
+            "answer": 0,
+            "explain": "Only the expected, contingent reward did damage. That distinction survives in the meta-analytic record: the problem is not appreciation, it is converting play into paid work. Unexpected recognition after the fact behaves quite differently.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Three Needs, Not One Lever",
+            "body": "Edward Deci and Richard Ryan's self-determination theory names what motivation from the inside runs on: autonomy, a real say in how the work goes; competence, the feeling of getting better at something hard; and relatedness, mattering to people who matter to you. Clumsy incentives can crowd out all three.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Because rewards can undermine motivation, telling someone their work was excellent is risky too.",
+            "answer": false,
+            "explain": "Deci, Koestner and Ryan's 1999 meta-analysis separates the two cleanly: expected tangible rewards undermined intrinsic motivation, while positive verbal feedback generally increased it. Specific, sincere praise feeds the need for competence rather than replacing it."
+          },
+          {
+            "type": "concept",
+            "title": "When Money Does Work",
+            "body": "Incentives are not a myth; they are a specialist tool. Jenkins and colleagues' 1998 meta-analysis found financial incentives raised the quantity of performance but not its quality. Pay for output when output is countable, the task is largely mechanical, and quality is guaranteed by something other than the payment.",
+            "art": "graph"
+          },
+          {
+            "type": "example",
+            "title": "Large Stakes, Big Mistakes",
+            "body": "Dan Ariely, Uri Gneezy, George Loewenstein and Nina Mazar offered participants in rural India bonuses worth up to five months' spending. On mechanical key-pressing, big money helped. On tasks demanding memory, concentration or creativity, the largest-bonus group performed worst of the three.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You want a step change on work that hinges on careful judgement under uncertainty. On this evidence, what will a very large individual bonus most likely do?",
+            "choices": [
+              "Reliably raise performance, because high stakes focus attention",
+              "Nothing either way — money is motivationally neutral for professionals",
+              "Narrow attention and add pressure, often making judgement-heavy performance worse",
+              "Work well, but only if the bonus is paid out immediately"
+            ],
+            "answer": 2,
+            "explain": "Ariely and colleagues found the largest bonuses hurt on cognitively demanding tasks while helping on mechanical ones, and Jenkins' meta-analysis found incentives move quantity rather than quality. For judgement work: pay people well and fairly, then get money out of the way of the thinking."
+          },
+          {
+            "type": "concept",
+            "title": "Goals, Done Properly",
+            "body": "Edwin Locke and Gary Latham spent four decades establishing something specific: hard, specific goals beat 'do your best' — but only given commitment, feedback on progress, and the ability to do the task at all. On genuinely novel work the advantage shrinks, because you cannot yet name the right number.",
+            "art": "target"
+          },
+          {
+            "type": "quote",
+            "text": "The proper question is not, 'how can people motivate others?' but rather, 'how can people create the conditions within which others will motivate themselves?'",
+            "by": "Edward L. Deci"
+          },
+          {
+            "type": "example",
+            "title": "Eight Is Great",
+            "body": "Wells Fargo told branch staff to sell eight products per household. The goal was specific, hard and relentlessly measured — textbook Locke and Latham. Staff opened roughly 3.5 million accounts that customers had never asked for. Regulators fined the bank $185 million in 2016; thousands of employees had already been sacked.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The quota was specific, measurable and stretching — everything the goal-setting literature recommends. So what actually went wrong at Wells Fargo?",
+            "answer": "The number becomes the whole job. Ordonez and colleagues called it goals gone wild in 2009: a narrow target crowds out everything unmeasured — honesty, the customer's interest, long-run trust — especially when missing it is punished. Sears' 1992 repair quotas produced the same fraud."
+          },
+          {
+            "type": "recap",
+            "title": "What Actually Motivates People",
+            "points": [
+              "Lepper, Greene and Nisbett (1973): children promised a prize for drawing drew less afterwards. Expected rewards can turn play into work.",
+              "Deci and Ryan: motivation from the inside runs on autonomy, competence and relatedness — the three things blunt incentives crowd out.",
+              "Expected tangible rewards undermine intrinsic interest; positive verbal feedback generally strengthens it (Deci, Koestner and Ryan, 1999).",
+              "Incentives lift quantity on mechanical work and can wreck judgement-heavy work (Ariely and colleagues, 2009; Jenkins and colleagues, 1998).",
+              "Locke and Latham's specific hard goals work — until the number becomes the job, as Wells Fargo's eight-product quota showed."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the overjustification effect?",
+            "back": "Paying for what people already enjoy reframes it as work: promised rewards cut later free-choice engagement (Lepper, Greene and Nisbett, 1973)."
+          },
+          {
+            "front": "Which three needs does self-determination theory name?",
+            "back": "Autonomy (a real say), competence (getting better at something hard) and relatedness (mattering to people who matter to you)."
+          },
+          {
+            "front": "When do financial incentives help, and when do they hurt?",
+            "back": "They lift quantity on simple mechanical work; on complex judgement work, large bonuses can narrow attention and make performance worse."
+          },
+          {
+            "front": "What went wrong with Wells Fargo's cross-selling goal?",
+            "back": "A specific hard target crowded out everything unmeasured: about 3.5 million unauthorised accounts and a $185 million fine in 2016."
+          }
+        ]
+      },
+      {
+        "id": "decisions-and-feedback",
+        "title": "Decisions and Feedback",
+        "summary": "How groups talk themselves into decisions nobody wanted, the structural fixes that beat exhortation, and why a third of feedback makes performance worse.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Road to Abilene",
+            "body": "One July afternoon in 1974, Jerry Harvey's family drove 53 miles across Texas in 104-degree heat, in a car with no air conditioning, to eat bad food in Abilene. Back home, exhausted, they discovered the truth: not one of them had wanted to go. Each had agreed to please the others.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Failure to Manage Agreement",
+            "body": "Harvey's point was not that the group disagreed badly — it is that the agreement was never real. Irving Janis named the sibling failure groupthink in 1972, drawing on the Bay of Pigs. An honest caveat: the full groupthink model has fared poorly in laboratory tests, though its ingredients — insulation, a leader who signals a preference early — hold up well.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your team unanimously approves a plan. Afterwards, several people privately admit they had doubts all along. What most likely happened?",
+            "choices": [
+              "Groupthink: conformity pressure made the group genuinely believe the plan was good",
+              "The Abilene paradox: everyone agreed to a plan nobody wanted, each assuming the others did",
+              "Nothing — private second thoughts after a decision are normal and harmless",
+              "Poor delegation: the decision should have been made by a single person"
+            ],
+            "answer": 1,
+            "explain": "Both failures manufacture false consensus, but Abilene is a failure to manage agreement: each person mispredicts what the others want and stays quiet. The tell is the private doubt — they never changed their mind, they only never said it."
+          },
+          {
+            "type": "concept",
+            "title": "The Highest-Paid Opinion",
+            "body": "State your view first and you will hear it echoed back in other people's voices. Worse, groups mostly rehearse what everyone already knows: Garold Stasser and William Titus showed in 1985 that shared information dominates discussion, while the unique fact one person holds — often the decisive one — never surfaces.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Getting everyone in a room to talk it through is a reliable way to surface information that only one person has.",
+            "answer": false,
+            "explain": "Stasser and Titus called these hidden profiles: discussion gravitates towards common knowledge, so a group can reach confident agreement that any single member's private information would have overturned. Unique information has to be collected deliberately, not waited for."
+          },
+          {
+            "type": "example",
+            "title": "The Pre-Mortem",
+            "body": "Gary Klein's 2007 recipe takes two minutes. Before committing, tell the team: it is a year from now and this project has failed completely — write down why. Mitchell, Russo and Pennington found in 1989 that treating an outcome as already certain raised people's ability to generate reasons for it by around 30 percent.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Fixes That Do Not Need Courage",
+            "body": "Collect written input before the meeting rather than during it. Have the decider speak last: after the Bay of Pigs, Kennedy left the room so his committee could argue without reading his face. Assign a red team whose job is to attack the plan, so dissent becomes a role rather than a personal risk.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Who Decides, and Who Advises",
+            "body": "Most delegation failures are unstated decision rights. Before the discussion starts, say which kind this is: your call, your call after consulting me, or my call after hearing you. Vroom and Yetton built an entire model on that choice in 1973. Ambiguity buys you duplicated work or a decision nobody owns.",
+            "art": "key"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You tell your team they own a hiring decision. They pick someone you would not have picked, and you overrule them. What did that actually cost?",
+            "answer": "Every future delegation. 'You own this' now means 'you own this unless I disagree', so the rational move is to stop deciding and start guessing what you want. If you need the veto, say so up front — advisory input honestly labelled beats ownership quietly withdrawn."
+          },
+          {
+            "type": "concept",
+            "title": "A Third of Feedback Makes It Worse",
+            "body": "Avraham Kluger and Angelo DeNisi reviewed 607 effect sizes in 1996. Feedback helped on average — and in over a third of cases performance fell. The pattern: feedback aimed at the task improves the task, while feedback aimed at the self triggers defence, and the effort goes into protecting the ego.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A team member keeps talking over people in meetings. Which feedback is most likely to change the behaviour?",
+            "choices": [
+              "Sandwich it: praise, then the criticism, then more praise, so it lands gently",
+              "Name the behaviour and its effect, soon after it happened: in standup you cut Priya off twice, and she stopped contributing",
+              "Save it for the annual review, where it can be weighed against everything else",
+              "Address the underlying attitude — tell them they come across as arrogant"
+            ],
+            "answer": 1,
+            "explain": "Specific, behavioural, timely, and aimed at the task rather than the person — the Kluger and DeNisi pattern. The sandwich buries the message, and recipients reliably remember it as mostly praise. 'Arrogant' is a verdict on character, exactly the self-directed feedback that backfires. And notice whose problem the annual review solves: yours. Ratings are inflated for the same reason — Scullen and colleagues (2000) found more of the variance in a performance rating reflects who is doing the rating than who is being rated."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your one-on-one opens with 'so, where are we on the roadmap?' What have you already decided about the next thirty minutes?",
+            "answer": "That it is a status report. The first question decides whose agenda the meeting runs on, and nobody follows a progress interrogation with 'actually, I am stuck.' Open with their agenda instead — what is hardest right now — and let the status live in a written update nobody has to perform."
+          },
+          {
+            "type": "recap",
+            "title": "Decisions and Feedback",
+            "points": [
+              "The Abilene paradox is a failure to manage agreement: unanimity with nobody behind it. Treat easy consensus as a warning, not proof.",
+              "Discussion favours what everyone already knows (Stasser and Titus, 1985), so unique information has to be collected deliberately.",
+              "Structure beats exhortation: written input first, decider speaks last, red teams, and Klein's two-minute pre-mortem.",
+              "Name who owns each decision before the discussion. An overruled delegation is a delegation you cannot make again.",
+              "Kluger and DeNisi (1996): over a third of feedback interventions hurt performance. Aim it at behaviour and effect, never at the person."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the Abilene paradox?",
+            "back": "A group agrees on something nobody wants, each person staying quiet because they assume everyone else is in favour (Harvey, 1974)."
+          },
+          {
+            "front": "What is a hidden profile?",
+            "back": "Information only one member holds. Groups rehearse shared knowledge, so the decisive private fact often never surfaces (Stasser and Titus, 1985)."
+          },
+          {
+            "front": "What is a pre-mortem?",
+            "back": "Before committing, imagine the project has already failed and list why. Klein (2007); prospective hindsight lifts reasons generated by about 30%."
+          },
+          {
+            "front": "What did Kluger and DeNisi's 1996 review find about feedback?",
+            "back": "Across 607 effect sizes feedback helped on average, but over a third of interventions made performance worse — self-directed feedback especially."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mythology",
+    "title": "World Mythology",
+    "tagline": "The stories humanity keeps telling — and why they recur.",
+    "category": "Humanities",
+    "description": "Greek succession myths, Ragnarök on a schedule, Anansi crossing an ocean, and a Dreaming that is not in the past tense. Four lessons on what these stories meant to the people who told them, and what genuinely recurs across cultures once the wishful comparisons are subtracted.",
+    "lessons": [
+      {
+        "id": "greek-roman",
+        "title": "Olympus and Its Ancestors",
+        "summary": "A dynasty that keeps overthrowing itself, the price of stolen fire, the shape of the journey home, and what Rome changed when it renamed the gods.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Family That Kept Overthrowing Itself",
+            "body": "Hesiod's Theogony, composed around 700 BCE, opens with a family that cannot stop overthrowing itself. Ouranos, the sky, pins his children inside the earth. His son Kronos cuts him down with a sickle — then swallows his own children so none can do the same to him. It does not work.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "The Succession Myth",
+            "body": "Zeus, hidden in Crete, forces Kronos to disgorge his siblings and wins a ten-year war for the sky. Greeks did not invent this plot: Hittite tablets from around 1300 BCE tell of Anu, Kumarbi and the storm god Teshub in almost the same sequence. Divine power changes hands by violence, and the newest order calls itself final.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Put the Greek succession in order: who rules, and who overthrows whom?",
+            "choices": [
+              "Ouranos, then Kronos, then Zeus",
+              "Kronos, then Zeus, then Ouranos",
+              "Zeus, then Ouranos, then Kronos"
+            ],
+            "answer": 0,
+            "explain": "Ouranos the sky is cut down by his son Kronos, who is in turn forced to give up the children he swallowed by his son Zeus. Hittite and Babylonian texts run the same three-generation pattern, which is why scholars call this a succession myth rather than a Greek original."
+          },
+          {
+            "type": "concept",
+            "title": "Prometheus and the Price of Fire",
+            "body": "Prometheus tricks Zeus over the share of a sacrifice, and Zeus withholds fire from mortals. The Titan steals it back inside a fennel stalk. Zeus chains him to a rock where an eagle eats his liver daily, and sends humanity a punishment of its own: Pandora, and the jar she opens.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In Hesiod's telling, Zeus punishes humanity as well as Prometheus for the theft of fire.",
+            "answer": true,
+            "explain": "Pandora is the counter-gift. She arrives with a jar — a pithos; the famous 'box' is a sixteenth-century mistranslation by Erasmus — and releases toil, sickness and grief, leaving only hope inside. Fire means civilisation, and Hesiod insists it was never free."
+          },
+          {
+            "type": "concept",
+            "title": "Not Primitive Science",
+            "body": "It is tempting to read myths as bad physics — thunder explained by a thunder god. But Greeks had physics too, and argued about it fiercely. Myth did other work: it licensed festivals, justified who ruled which city, and staged moral problems too large for ordinary argument. Explanation was a side effect, not the point.",
+            "art": "bridge"
+          },
+          {
+            "type": "quote",
+            "text": "These things never happened, but always are.",
+            "by": "Sallustius, On the Gods and the Cosmos (4th century CE)"
+          },
+          {
+            "type": "example",
+            "title": "Ten Years of War, Ten Years Home",
+            "body": "The Odyssey is not about reaching a destination but getting back to one. Odysseus refuses immortality with Calypso, survives monsters and shipwreck, and returns disguised as a beggar to a house full of suitors. The Greek word is nostos, homecoming, and it costs him every companion he had.",
+            "art": "compass"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The Odyssey does not start at the beginning. Where does it start, and why does that matter?",
+            "answer": "It opens in the tenth year, with Odysseus already trapped on Calypso's island. The famous adventures come later, as a flashback he narrates himself at a Phaeacian banquet. Beginning in the middle and looping back is the shape countless later journey stories borrow."
+          },
+          {
+            "type": "concept",
+            "title": "Rome Renamed Them, and Changed Them",
+            "body": "Romans matched their gods to Greek ones — Zeus to Jupiter, Ares to Mars — but the emphasis shifted. Ares is barely liked in Greek myth; Mars is Rome's honoured father of Romulus, second only to Jupiter. Roman religion cared less about telling stories than about performing rites exactly right, to keep the gods on side.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What best describes what Rome did with Greek mythology?",
+            "choices": [
+              "Copied the stories unchanged, only swapping the names",
+              "Matched gods to its own and reweighted them to fit Roman priorities",
+              "Rejected the Greek gods and kept a wholly separate pantheon",
+              "Invented its gods first and exported them to Greece"
+            ],
+            "answer": 1,
+            "explain": "Identification ran alongside real change. Mars gained a dignity Ares never had, Rome told its own foundation legends as history, and the state cult put correct ritual and civic duty at the centre. Renaming was only the visible part of a re-emphasis."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Ouranos, Kronos and Zeus form a three-generation succession myth Greece shares with Hittite and Babylonian texts.",
+              "Prometheus's fire is paid for twice: his liver, and Pandora's jar.",
+              "The Odyssey begins in the middle and turns on nostos, the costly return home.",
+              "Rome identified its gods with Greek ones but reweighted them, and prized exact ritual over narrative.",
+              "Myth was civic and moral work, not a first draft of science."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is a succession myth?",
+            "back": "A story of divine power seized across generations — Ouranos to Kronos to Zeus — with close parallels in Hittite and Babylonian texts."
+          },
+          {
+            "front": "What does Prometheus's theft cost?",
+            "back": "His liver, eaten daily by an eagle; and humanity's share, Pandora's jar, which releases toil and sickness and leaves hope inside."
+          },
+          {
+            "front": "What is nostos?",
+            "back": "Homecoming — the Odyssey's organising idea. Odysseus refuses immortality to return to Ithaca, and loses every companion doing it."
+          },
+          {
+            "front": "How did Roman religion treat the Greek gods?",
+            "back": "It matched them to its own and reweighted them — Mars far grander than Ares — while prizing exact ritual over storytelling."
+          }
+        ]
+      },
+      {
+        "id": "norse-egyptian",
+        "title": "The Tree and the Scales",
+        "summary": "Yggdrasil's nine worlds, a mythology with its ending already written, and Egypt's cycle of murder, flood and judgement.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Tree Holding Nine Worlds",
+            "body": "At the centre of the Norse cosmos stands Yggdrasil, an ash whose three roots reach wells of fate, wisdom and cold. Nine worlds hang in its branches: gods, giants, elves, the dead. A dragon gnaws the roots, an eagle watches from the crown, and a squirrel runs insults between them.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "Nobody Wrote This Down at the Time",
+            "body": "Norse religion was oral. Our fullest accounts come from Christian Iceland: the Prose Edda, written around 1220 by the chieftain and poet Snorri Sturluson, and a manuscript of older poems copied around 1270. Snorri preserved a tradition he no longer practised, and tidied it — even the neat list of nine worlds is partly modern.",
+            "art": "book"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Our most detailed account of Norse myth was written by a Christian Icelander about two centuries after Iceland converted.",
+            "answer": true,
+            "explain": "Iceland converted around the year 1000; Snorri wrote about 1220, partly as a handbook so poets could still read the old imagery. It is a genuine record of a living oral tradition and a filtered one at the same time. Good scholarship reads it as both."
+          },
+          {
+            "type": "concept",
+            "title": "Ragnarök: An Ending on the Calendar",
+            "body": "Most mythologies leave the future open; Norse myth does not. A three-year winter comes, the wolf Fenrir breaks loose, Thor kills the world serpent and walks nine steps before its venom drops him, and fire takes the rest. Then a green earth rises from the sea and survivors return. The gods know all of it in advance, and fight anyway.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is a nineteenth-century invention rather than something in the medieval sources?",
+            "choices": [
+              "Horned helmets on Viking warriors",
+              "Odin trading an eye for wisdom",
+              "A world tree with nine worlds in it",
+              "A foretold last battle the gods lose"
+            ],
+            "answer": 0,
+            "explain": "No horned helmet has ever been excavated from a Viking Age grave. The look was popularised by Carl Emil Doepler's costumes for Wagner's Ring cycle in 1876, borrowing from Bronze Age ceremonial helmets more than a thousand years older than the Vikings."
+          },
+          {
+            "type": "quote",
+            "text": "Cattle die, kinsmen die, and you yourself will die; but the fair fame of one who has earned it never dies.",
+            "by": "Hávamál, stanza 76 (Poetic Edda), in translation"
+          },
+          {
+            "type": "concept",
+            "title": "Loki Is Not the Devil, or Thor's Brother",
+            "body": "In the sources Loki is a jötunn by birth and Odin's sworn blood-brother, with no family tie to Thor. He wins the gods their greatest treasures, including Thor's hammer, and he engineers Baldr's death. A trickster is not a villain: he is the figure who breaks the rules the story needs broken.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If Loki is not Thor's brother, where does that idea come from?",
+            "answer": "From Marvel Comics, which made him Odin's adopted son in 1962 and built a family drama the medieval texts never had. The Norse Loki sits closer to Anansi or Coyote: charming, useful, dangerous, and finally bound underground until the world ends."
+          },
+          {
+            "type": "concept",
+            "title": "Osiris, Isis and Horus",
+            "body": "Set murders his brother Osiris and scatters the body. Isis gathers it, revives him long enough to conceive Horus, and hides the child until he can challenge Set. Horus takes the throne of the living; Osiris rules the dead. Egypt read its own kingship straight off this story.",
+            "art": "seed"
+          },
+          {
+            "type": "example",
+            "title": "A God Who Rose With the River",
+            "body": "Every summer, before the Aswan High Dam, the Nile flooded and left black silt behind; Egyptians called their country Kemet, the black land. Osiris was bound to that return. Tombs held wooden trays shaped like him, packed with soil and barley and watered so grain sprouted from the god's own body.",
+            "art": "wave"
+          },
+          {
+            "type": "example",
+            "title": "Weighing the Heart",
+            "body": "In the Book of the Dead, the heart of the dead person is set on a scale against a single ostrich feather: Maat, meaning truth and the order that holds the world together. Anubis steadies the balance, Thoth records the result, and a waiting creature eats the hearts that fail.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the Egyptian judgement scene, what is the heart weighed against?",
+            "choices": [
+              "A feather, standing for Maat — truth and cosmic order",
+              "A gold weight matching the person's wealth",
+              "The heart of the reigning pharaoh",
+              "A scarab carved with the person's name"
+            ],
+            "answer": 0,
+            "explain": "The point is exactness: a life had to balance against truth itself, neither heavier nor lighter. Maat was also the king's job description — pharaohs claimed to uphold Maat against chaos — which made the trial of the dead and the political order one idea."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Yggdrasil holds nine worlds, though the tidy modern list of them is partly a reconstruction.",
+              "Norse myth survives mainly through Snorri Sturluson's Prose Edda, written around 1220 in Christian Iceland.",
+              "Ragnarök is a rare scheduled ending: foretold, fought anyway, and followed by a green world rising again.",
+              "Loki is a trickster rather than a devil, and not Thor's brother — that tie comes from Marvel.",
+              "Osiris's murder and return tracked the Nile flood, and the heart weighed against Maat's feather set one standard for the dead and the king alike."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do historians handle the Prose Edda carefully?",
+            "back": "Snorri Sturluson wrote it around 1220 in Christian Iceland, two centuries after conversion — a real record of oral tradition, and a tidied one."
+          },
+          {
+            "front": "What is Ragnarök?",
+            "back": "A foretold ending: winter, Fenrir loose, Thor and the world serpent killing each other, fire — then a green earth rising and survivors returning."
+          },
+          {
+            "front": "How do the medieval sources describe Loki?",
+            "back": "A jötunn by birth and Odin's blood-brother, not Thor's brother. Helper and saboteur both; the Marvel family tree is a 1962 invention."
+          },
+          {
+            "front": "What happens in the weighing of the heart?",
+            "back": "The heart is balanced against Maat's feather, truth and cosmic order. Thoth records; failing hearts are devoured. Pharaohs upheld the same Maat."
+          }
+        ]
+      },
+      {
+        "id": "asia-africa-americas",
+        "title": "Stories Still Being Told",
+        "summary": "Epics that keep being rewritten, a spider who crossed an ocean, twins in the Maya underworld, and a Dreaming that is not in the past tense.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Epic Nobody Finished",
+            "body": "Every autumn across northern India, towns stage the Ramlila: nights of the Ramayana performed in the open air, ending with the burning of Ravana's effigy. There is no single authorised text behind it. Rama's story lives in Sanskrit, Tamil, Awadhi, Thai and Balinese versions, and dozens more, all in use.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Retold Is Not Corrupted",
+            "body": "Valmiki's Sanskrit Ramayana is the oldest we have, but Kamban's Tamil version and Tulsidas's Awadhi Ramcharitmanas of 1574 are scripture in their own right to millions. The folklorist A. K. Ramanujan counted hundreds of Ramayanas, differing on motive, on ending, even on who is heroic.",
+            "art": "layers"
+          },
+          {
+            "type": "quote",
+            "text": "What is found here may be found elsewhere; what is not here is nowhere.",
+            "by": "The Mahabharata, Adi Parva, in translation"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does the existence of many Ramayanas tell us?",
+            "choices": [
+              "Later versions are corruptions of a lost original",
+              "The tradition is alive, and retelling is how it works",
+              "Only the Sanskrit version counts as the real story",
+              "The epic was invented separately in each language"
+            ],
+            "answer": 1,
+            "explain": "Scholars can trace relationships between versions, but 'authentic versus corrupt' is the wrong frame. These epics are performed, sung, televised and worshipped now, and the Ramcharitmanas is recited daily. A tradition's health shows in how many forms it can sustain."
+          },
+          {
+            "type": "concept",
+            "title": "Pangu Splits the Sky, Nuwa Repairs It",
+            "body": "In one Chinese account, first written down in the third century CE, Pangu forces earth and sky apart for eighteen thousand years, and at his death his breath becomes wind, his eyes sun and moon, his limbs mountains. In another, the goddess Nuwa shapes people from yellow earth and patches a broken sky with coloured stone.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "China has a single official creation story, agreed across its traditions.",
+            "answer": false,
+            "explain": "Several accounts circulate side by side: Pangu's body becoming the landscape, Nuwa moulding humans and mending the sky, and older cosmologies with no maker at all. Pangu is attested comparatively late, around the third century CE, which is one reason no version became the canon."
+          },
+          {
+            "type": "concept",
+            "title": "Anansi Crossed the Ocean",
+            "body": "Anansi is a spider, and sometimes a man, in Akan storytelling from Ghana: small, greedy, brilliant, and usually winning by talk rather than strength. Enslaved West Africans carried him across the Atlantic. He is Anancy in Jamaica and Aunt Nancy in the American South, and his tales are still told in both.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In the best-known tale, Anansi buys all the world's stories. What was the price?",
+            "answer": "The sky god Nyame named four impossible captures: a python, a leopard, a swarm of hornets and a forest spirit. Anansi took each by flattery and trick rather than force. The stories became his — which is why in Ghana they are called anansesem, spider tales."
+          },
+          {
+            "type": "example",
+            "title": "The Hero Twins in Xibalba",
+            "body": "In the K'iche' Maya Popol Vuh, Hunahpu and Xbalanque are summoned to the underworld by the lords of Xibalba, who killed their father. The twins survive houses of knives, cold and bats, beat the lords at their own ballgame, and rise as sun and moon. Humanity is then made from maize.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How has the Popol Vuh reached us?",
+            "choices": [
+              "As an intact pre-Columbian Maya codex",
+              "As a K'iche' text in the Latin alphabet, written after the Spanish invasion and later copied by a friar",
+              "As an oral tradition first recorded in the twentieth century",
+              "As a Spanish poem with no Maya source behind it"
+            ],
+            "answer": 1,
+            "explain": "K'iche' writers set the account down in their own language using Spanish letters in the 1550s, and the Dominican Francisco Ximénez copied and translated it around 1701. Carved and painted Maya images of the twins, made centuries earlier, show the story is far older than the manuscript."
+          },
+          {
+            "type": "concept",
+            "title": "The Dreaming Is Not Long Ago",
+            "body": "For many Aboriginal Australian peoples, ancestral beings travelled the country, made its features and its law, and remain present in it. The English word Dreaming translates terms such as Tjukurpa and Jukurrpa awkwardly. The anthropologist W. E. H. Stanner reached instead for a coined word: the everywhen.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The Dreaming describes events that finished in the distant past.",
+            "answer": false,
+            "explain": "It is ongoing. The ancestral beings are in the land now, and the obligations that follow — to sing, care for and speak for particular country — are current law for the people who hold them. Reading it as a creation story in the past tense misses what is being said."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The Ramayana and Mahabharata are living traditions: performed, televised, worshipped, and retold in hundreds of versions.",
+              "Chinese tradition keeps several creation accounts side by side, including Pangu's body becoming the world and Nuwa's repair of the sky.",
+              "Anansi, an Akan trickster from Ghana, crossed the Atlantic with enslaved people and is still told as Anancy and Aunt Nancy.",
+              "The Popol Vuh survives as a K'iche' text in Latin script from the 1550s, though its Hero Twins appear in much older Maya art.",
+              "The Dreaming is present tense: an ongoing relationship to country and law, not a creation story that ended."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why speak of Ramayanas, plural?",
+            "back": "Valmiki's Sanskrit version, Kamban's Tamil, Tulsidas's Awadhi and hundreds more are all in use — retelling is how the tradition lives."
+          },
+          {
+            "front": "Who is Anansi?",
+            "back": "An Akan spider trickster from Ghana who wins by wit. Carried across the Atlantic, he became Anancy in Jamaica and Aunt Nancy in the US South."
+          },
+          {
+            "front": "What is the Popol Vuh?",
+            "back": "The K'iche' Maya account of the Hero Twins defeating Xibalba, written in Latin script in the 1550s and copied by Ximénez around 1701."
+          },
+          {
+            "front": "What does the Dreaming mean?",
+            "back": "Ancestral beings shaped country and remain in it — an ongoing law and relationship, present tense. Stanner called it the everywhen."
+          }
+        ]
+      },
+      {
+        "id": "patterns",
+        "title": "The Patterns Underneath",
+        "summary": "Floods, tricksters and world trees turn up everywhere. What that does and does not prove — and why these stories are still load-bearing.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Flood Before the Flood",
+            "body": "In 1872 George Smith, a former banknote engraver working on broken tablets in the British Museum, read a Babylonian account of a man told by a god to build a boat, load his family and animals aboard, and release birds to find land. In written form it was centuries older than the version in Genesis.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Three Reasons Stories Match",
+            "body": "Similar myths can share a source, arise separately, or merely look alike. The Mesopotamian and biblical floods are demonstrably related: same region, same motifs, one older text. A flood story from the Andes is a different case, since rivers and coasts flood everywhere and loose comparison flattens real differences.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does the Gilgamesh flood account best support?",
+            "choices": [
+              "All the world's flood stories descend from one original",
+              "The Genesis account belongs to an older Mesopotamian tradition",
+              "Flood myths prove a single global deluge occurred",
+              "Ancient writers had no interest in borrowing from each other"
+            ],
+            "answer": 1,
+            "explain": "Shared details — a warned survivor, a built boat, birds sent out to find land — plus a shared region and older tablets make a connection between these particular traditions hard to deny. It says nothing about unrelated flood stories elsewhere, which need their own explanation."
+          },
+          {
+            "type": "concept",
+            "title": "Motifs That Keep Turning Up",
+            "body": "Comparativists catalogue recurring figures: the trickster who breaks rules the community secretly needs broken; the god who dies and returns; the tree, mountain or pillar joining sky, earth and underworld. Yggdrasil, the Maya world tree and Mount Meru all do that last job, in traditions with no contact.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The category 'dying and rising god' is accepted by scholars as a clean, well-defined group.",
+            "answer": false,
+            "explain": "James Frazer's grouping has been heavily criticised, notably by Jonathan Z. Smith, for flattening very different figures. Osiris does not come back to ordinary life; he rules the dead instead. The label can hide exactly what makes each story what it is."
+          },
+          {
+            "type": "concept",
+            "title": "Campbell's Monomyth, and Its Critics",
+            "body": "In 1949 Joseph Campbell argued that hero stories worldwide share one shape: departure, ordeal, return. Screenwriters loved it, and it visibly shaped Star Wars. Folklorists were harsher: the pattern is broad enough to fit almost anything, was built mostly from male heroes, and smooths away the specifics that make each tradition itself.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How is Campbell's hero's journey best described?",
+            "choices": [
+              "A proven law of narrative, confirmed by folklorists",
+              "An influential storytelling framework that scholars criticise for flattening differences",
+              "A method for dating myths against each other",
+              "A theory rejected by everyone, with no lasting influence"
+            ],
+            "answer": 1,
+            "explain": "Both halves matter. Its influence on modern screenwriting is real and traceable. Its scholarly standing is weak, because a template that fits every story explains none of them in particular — and the differences it removes are usually the interesting part."
+          },
+          {
+            "type": "concept",
+            "title": "Myths as Thinking Machines",
+            "body": "Claude Lévi-Strauss argued that myths are not clumsy explanations but tools for handling contradictions a society cannot resolve: life and death, nature and culture, insider and outsider. A story can hold two incompatible truths together in a way an argument cannot, which is why it gets retold rather than settled.",
+            "art": "balance"
+          },
+          {
+            "type": "quote",
+            "text": "The purpose of myth is to provide a logical model capable of overcoming a contradiction.",
+            "by": "Claude Lévi-Strauss, The Structural Study of Myth (1955)"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do so many traditions put a tree, mountain or pillar at the centre of the world?",
+            "answer": "Because a vertical axis is the obvious way to connect a sky above, ground underfoot and a world below, and every human society has all three. Yggdrasil, Mount Meru and the Maya world tree solve one problem the same way without ever having met."
+          },
+          {
+            "type": "concept",
+            "title": "Why We Still Tell Them",
+            "body": "These stories are load-bearing. Ramlila fills streets each autumn, Anansi tales are still told across the Caribbean, and Ragnarök keeps returning in games and films. Myths carry who a people take themselves to be, argue about what is owed to whom, and give shape to death, weather and power.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Calling a story a myth, in the scholarly sense, means calling it untrue.",
+            "answer": false,
+            "explain": "In folklore and religious studies a myth is a narrative a community holds as sacred and defining, about origins, gods and order. Many are held as true right now by the people who tell them. Truth or falsehood is a separate question the word was never meant to settle."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Written flood accounts run from Mesopotamia into Genesis; flood stories elsewhere need their own explanations.",
+              "Diffusion, independent invention and loose comparison all produce resemblance — say which one you mean.",
+              "Tricksters, returning gods and world trees recur, but categories like 'dying and rising god' can hide real differences.",
+              "Campbell's monomyth is influential in storytelling and criticised in scholarship for flattening what differs.",
+              "For Lévi-Strauss, myths work on contradictions a society cannot resolve, which is why they are retold rather than settled."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did George Smith read in 1872?",
+            "back": "A Babylonian flood account on museum tablets — a warned survivor, a boat, birds sent out — older in written form than the Genesis version."
+          },
+          {
+            "front": "Three reasons two myths can resemble each other?",
+            "back": "A shared source (diffusion), independent invention from shared human experience, and comparison loose enough to make different stories look alike."
+          },
+          {
+            "front": "What is the monomyth, and what is wrong with it?",
+            "back": "Campbell's single hero pattern of departure, ordeal, return. Hugely influential on screenwriting; criticised for fitting anything and erasing difference."
+          },
+          {
+            "front": "What did Lévi-Strauss say myths do?",
+            "back": "Give a logical model for overcoming contradictions a society cannot resolve — life and death, nature and culture — so they are retold, not settled."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "personal-finance",
+    "title": "Personal Finance Basics",
+    "tagline": "The arithmetic behind every money decision you make.",
+    "category": "Finance",
+    "description": "The working mechanics of your own money: the budget equation and the savings rate, compound interest aimed at you instead of for you, what fees and time horizons do to an investment, and how to price insurance and the rent-versus-buy question. Every rule of thumb here comes with the arithmetic behind it.",
+    "lessons": [
+      {
+        "id": "budget-machinery",
+        "title": "The Machinery of a Budget",
+        "summary": "Where the money actually goes, why the savings rate beats the salary, and what an emergency fund is really for.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Money Autopsy",
+            "body": "At the end of the month the money is gone and you can name maybe half of where it went. That gap — between what you spent and what you remember spending — is where budgets live. This is a course about the mechanics, not advice about your money. Amounts are in whatever currency you are paid in; the ratios are what travel.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Only Equation",
+            "body": "Income minus fixed costs minus variable costs equals what is left. Fixed costs arrive whether you notice or not: rent, transport, insurance, subscriptions. Variable costs are decided daily: food, taxis, the second coffee. Only one of those two categories moves when you simply try harder.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Fixed costs are the part of a budget that daily willpower controls.",
+            "answer": false,
+            "explain": "Fixed costs arrive on a schedule whether you are paying attention or not. They change when you change a contract — a cheaper flat, a dropped subscription, a renegotiated policy — not when you are disciplined on a Tuesday. That is why one hour with your contracts usually beats a month of restraint."
+          },
+          {
+            "type": "concept",
+            "title": "Pay Yourself First",
+            "body": "Most people save whatever is left at the end of the month. Almost nothing is ever left at the end of the month. Flip the order: on the day you are paid, an automatic transfer moves a set amount out before you can see it. Saving stops being a monthly decision and becomes a standing instruction.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your pay lands on the 28th and you want to save 15% of it. What does paying yourself first look like in practice?",
+            "choices": [
+              "An automatic transfer on the 28th, before anything is spent",
+              "Waiting until the 27th of next month and saving whatever survived",
+              "Cutting back hard for a week whenever you notice the balance dropping",
+              "Putting all spending on a credit card so the cash stays put"
+            ],
+            "answer": 0,
+            "explain": "Whatever is left at month end is a residue, not a plan, and it is usually close to zero. A standing transfer on payday turns saving into a fixed cost — one that arrives whether you notice or not."
+          },
+          {
+            "type": "concept",
+            "title": "The Savings Rate Is the Whole Game",
+            "body": "Your savings rate is the share of take-home pay you keep. It matters more than your income or your returns, because it sets two things at once: how fast the pile grows and how cheap the life it must fund is. Save 10% and, ignoring investment returns, nine working years fund one year off. Save 50% and one year funds one.",
+            "art": "graph"
+          },
+          {
+            "type": "example",
+            "title": "Same Payslip, Different Outcome",
+            "body": "Two colleagues. One takes home 4,000 a month and saves 5% — that is 200. The other takes home 3,000 and saves 20% — that is 600. The lower earner banks three times as much on 25% less income, and needs a smaller pile in the end, because the life it has to fund costs less. Income is a lever; the rate is the machine.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You save 30% of your take-home pay and spend the other 70%. Ignoring investment returns entirely, how long must you work to fund one year of not working?",
+            "answer": "About two years and four months. You bank 30 a year while a year of your life costs 70, so 70 divided by 30 is roughly 2.33 working years per year funded. Double the rate to 60% and it falls to two-thirds of a year."
+          },
+          {
+            "type": "concept",
+            "title": "Tracking Beats Willpower",
+            "body": "Nobody estimates their own spending well. Ask people what they spend on food and the guess usually comes in low. Tracking works not because a spreadsheet has power over you, but because it converts a vague unease into a number you cannot argue with. A leak of 12 a week is 624 a year — invisible until it is written down.",
+            "art": "lens"
+          },
+          {
+            "type": "quote",
+            "text": "Annual income twenty pounds, annual expenditure nineteen nineteen six, result happiness. Annual income twenty pounds, annual expenditure twenty pounds ought and six, result misery.",
+            "by": "Wilkins Micawber, in Charles Dickens's David Copperfield (1850)"
+          },
+          {
+            "type": "concept",
+            "title": "The Emergency Fund",
+            "body": "An emergency fund is not savings for something. It is the money standing between a bad month and a credit card. Aim at three to six months of essential costs — if your fixed costs run 1,650 a month, that is 4,950 to 9,900 — held in cash you can reach within a day. It exists for a lost job, not for a sale.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is the emergency fund actually for?",
+            "choices": [
+              "The holiday you take at the same time every year",
+              "A flash sale on something you have wanted for months",
+              "Three months without income after a layoff",
+              "The deposit on a bigger flat next spring"
+            ],
+            "answer": 2,
+            "explain": "Anything with a date on it is a savings goal and can live in its own pot. The emergency fund is for the thing you did not schedule: lost income, a medical bill, a car that will not start on the morning you need it most."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Income minus fixed costs minus variable costs is the whole budget. Fixed costs change by contract; variable costs change by decision.",
+              "Pay yourself first: an automatic transfer on payday turns saving from a monthly decision into a standing instruction.",
+              "The savings rate decides outcomes more than income does — at 10% saved, nine working years fund one year off; at 50%, one year does.",
+              "Tracking beats willpower because it replaces a guess with a number, and nobody guesses their own spending accurately.",
+              "An emergency fund is three to six months of essential costs in reachable cash, for unscheduled income shocks rather than opportunities."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the budget equation?",
+            "back": "Income minus fixed costs minus variable costs. Fixed costs change only when you change a contract; variable costs change with daily decisions."
+          },
+          {
+            "front": "What does paying yourself first mean?",
+            "back": "Automating a transfer to savings on payday, before spending. Saving becomes a fixed cost instead of whatever happens to survive the month."
+          },
+          {
+            "front": "Why does the savings rate matter more than income?",
+            "back": "It sets how fast the pile grows and how cheap the life it funds is. At 10% saved, nine working years fund one year off; at 50%, one year does."
+          },
+          {
+            "front": "What is an emergency fund for?",
+            "back": "Three to six months of essential costs in reachable cash, for unscheduled shocks like lost income. Dated goals are saved for separately."
+          }
+        ]
+      },
+      {
+        "id": "debt-and-interest",
+        "title": "Debt, and How Interest Really Works",
+        "summary": "Compounding aimed at you: APR versus APY, why minimum payments never end, and the two payoff orders worth arguing about.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Interest Runs While You Sleep",
+            "body": "Compounding is usually sold as a friend: money that earns money. Turn it around and it is the same machine pointed at you. A balance you do not clear does not sit still — it earns, on a schedule, for somebody else. Debt is the only household expense that grows while you ignore it.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "APR Is Not What You Pay",
+            "body": "APR is the annual rate before compounding. APY, sometimes called the effective rate, is what you actually pay once the interest starts earning interest. A card at 24% APR charges 2% a month, and 1.02 multiplied twelve times comes to 1.268 — about 26.8% for the year. Lenders quote the smaller number.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A card advertises 24% APR and charges interest monthly. You carry a balance untouched for a year. Roughly how much of that balance do you owe in interest?",
+            "choices": [
+              "About 12%",
+              "Exactly 24%",
+              "About 26.8%",
+              "About 2%"
+            ],
+            "answer": 2,
+            "explain": "24% APR is 2% a month, and each month's interest joins the balance before the next charge. Twelve rounds of 2% compound to roughly 26.8%. Whenever interest is charged more often than once a year, the effective rate is higher than the advertised APR."
+          },
+          {
+            "type": "concept",
+            "title": "The Minimum Payment Trap",
+            "body": "Minimum payments are engineered to be survivable, not to end. On a 3,000 balance at 20% APR, a month costs 50 in interest. A typical minimum of 2% of the balance is 60 — so 10 of your payment touches what you owe. The minimum then shrinks as the balance does, and you can still be paying in your third decade.",
+            "art": "anchor"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Same 3,000 balance at 20% APR. You stop using the card and pay a flat 100 a month instead of the shrinking minimum. How long until it is gone?",
+            "answer": "About 42 months — three and a half years — and roughly 1,190 in interest. Fixing the payment instead of letting it fall with the balance is what ends the loop: the first 100 splits 50 to interest and 50 to principal, and that split improves every single month."
+          },
+          {
+            "type": "concept",
+            "title": "Avalanche: Highest Rate First",
+            "body": "List every debt by interest rate, pay the minimum on all of them, and send everything spare to the highest rate. No other order costs less — this one is mathematically optimal. A unit paid against a 22% card saves you 22% a year; the same unit against an 8% loan saves 8%. Balance size is irrelevant to that comparison.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Snowball: Smallest Balance First",
+            "body": "The snowball pays the smallest balance first regardless of rate, so an account closes early and the list gets visibly shorter. It costs a little more in interest. But in Gal and McShane's 2012 study of real consumer debt, closing accounts predicted getting out. The best method is the one you actually finish.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You owe 500 at 8%, 1,500 at 11%, and 3,000 at 22%. You have spare money this month. Where does the avalanche method send it?",
+            "choices": [
+              "The 500 at 8%, to close an account and free up its minimum",
+              "The 3,000 at 22%",
+              "Split evenly across all three",
+              "The 1,500 at 11%, as a compromise"
+            ],
+            "answer": 1,
+            "explain": "Avalanche ignores balance size and attacks the highest rate, while the others get minimums only. The snowball would start with the 500 and cost slightly more in interest — but both are far better than paying minimums everywhere and hoping."
+          },
+          {
+            "type": "concept",
+            "title": "Good Debt and Bad Debt: A Rough Rule",
+            "body": "The heuristic says debt that buys an asset or an income — a home, a qualification, a tool of the trade — is good, and debt that buys consumption is bad. It is a rule of thumb, not a law. What decides is the rate, the term, and whether what you bought earns more than the loan costs. A 12% loan for a degree that pays nothing is not good debt.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A mortgage is always good debt and a credit-card balance is always bad debt.",
+            "answer": false,
+            "explain": "Good and bad are a rough sorting, not a property of the product. A cheap mortgage on a house you cannot afford to keep is bad debt; a card balance cleared in full every statement costs nothing at all. The rate, the term, and what the money bought are what decide."
+          },
+          {
+            "type": "concept",
+            "title": "What a Credit Score Measures",
+            "body": "Scoring models broadly weigh how reliably you have paid (the biggest factor), how much of your available credit you are using, how long your accounts have existed, how much new credit you have just applied for, and the mix of types. The United States has FICO; the United Kingdom has three agencies with three different scales; some countries have no consumer score at all.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your card has a 2,000 limit and an 1,800 balance, and you are about to apply for a loan. Which number can you move fastest?",
+            "answer": "Utilization. At 1,800 against a 2,000 limit you are using 90% of your available credit; pay it down to 400 and you are at 20%. Payment history weighs more but takes years to build, while utilization is recalculated every time your statement is reported."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "APR ignores compounding and APY includes it: 24% APR charged monthly is about 26.8% over a year.",
+              "Minimums are built to be survivable, not finite — on 3,000 at 20%, a 60 minimum is 50 interest and 10 principal. A fixed payment is what ends it.",
+              "Avalanche (highest rate first) always costs the least interest; snowball (smallest balance first) closes accounts and helped people finish in Gal and McShane's 2012 data.",
+              "Good debt versus bad debt is a rough sort. The rate, the term, and what the borrowing bought are the real test.",
+              "Credit scores mostly reflect payment history and utilization — and utilization is the one you can move in a single month."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the difference between APR and APY?",
+            "back": "APR is the quoted annual rate before compounding; APY is the effective rate after it. 24% APR charged monthly compounds to about 26.8% a year."
+          },
+          {
+            "front": "Why do minimum payments stretch a balance for years?",
+            "back": "They are mostly interest and they shrink as the balance shrinks. On 3,000 at 20% APR, a 2% minimum of 60 puts only 10 against the balance."
+          },
+          {
+            "front": "Avalanche versus snowball?",
+            "back": "Avalanche pays the highest rate first and costs the least interest. Snowball pays the smallest balance first and aided follow-through (Gal and McShane, 2012)."
+          },
+          {
+            "front": "Which credit-score input moves fastest?",
+            "back": "Utilization, the share of your limits in use: 1,800 of a 2,000 limit is 90%; paying to 400 is 20%. Payment history weighs more but takes years."
+          }
+        ]
+      },
+      {
+        "id": "saving-and-investing",
+        "title": "Saving and Investing",
+        "summary": "Two different jobs: what risk buys you, why time horizon picks the tool, and what a 1% fee costs over a lifetime.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Saving and Investing Are Different Jobs",
+            "body": "Saving protects money you are going to need: the amount is known, the value does not move, and you can reach it. Investing rents your money to the economy in exchange for an uncertain return. One is a safe box; the other is a machine that pays you for tolerating drops. Confusing them is where most of the damage happens.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Risk Is the Price of the Return",
+            "body": "Nobody pays you extra for a sure thing. The higher long-run return on shares exists to compensate the people who hold them through falls of a third or a half — which have happened several times in the last century and taken years to recover. If you cannot sit through the fall, you do not collect the return.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Investing is simply saving with a better interest rate.",
+            "answer": false,
+            "explain": "Saving keeps a known amount available on demand. Investing buys an uncertain outcome, and the higher expected payoff is precisely the fee the market charges you for enduring the falls along the way. Same word, completely different guarantee."
+          },
+          {
+            "type": "concept",
+            "title": "Your Time Horizon Picks the Tool",
+            "body": "Ask one question of every pot of money: when do I need it? A deposit needed in ten months has no time to recover from a 30% drop, so it belongs in cash. Money you will not touch for twenty years has time on its side, and there cash is the risky choice — inflation erodes it quietly and with near certainty.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You are buying a flat in about ten months and the deposit is already saved. Where does that money belong?",
+            "choices": [
+              "A stock index fund, since stocks average higher returns",
+              "A savings or short-term deposit account",
+              "Split between stocks and cash, to hedge",
+              "Whatever fell hardest last year, since it is due a rebound"
+            ],
+            "answer": 1,
+            "explain": "Average returns are earned over decades, not over ten months. A 30% fall three weeks before completion has no time to recover, and the loss is not theoretical because you have to sell. Money with a date on it goes in cash."
+          },
+          {
+            "type": "concept",
+            "title": "Diversification: Do Not Own One Story",
+            "body": "A single company can go to zero for reasons no amount of research would have caught: a fire, a fraud, a patent ruling, a regulator. Several hundred companies across countries and industries cannot all go to zero at once. Diversification does not raise your expected return — it strips out the risks you were never paid to take.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two people each invest 10,000 for 30 years and both earn 7% a year. One of them pays a 1% annual fee. How much less does that one end up with?",
+            "answer": "About 57,400 against 76,100 — the fee took nearly a quarter of the final pot. One percent looks like a rounding error beside a 7% return, but it is charged on the whole balance every year, including on the growth that earlier fees already cost you."
+          },
+          {
+            "type": "concept",
+            "title": "Fees Are the One Certainty",
+            "body": "Future returns are unknown; the fee is contractual. That asymmetry is why cost is the most reliable lever you have. An index fund holds everything in a market in proportion and charges very little for the trouble, which is why cost comparisons usually start there. Read the annual ongoing charge, not the headline performance.",
+            "art": "graph"
+          },
+          {
+            "type": "quote",
+            "text": "In investing, you get what you don't pay for.",
+            "by": "John C. Bogle"
+          },
+          {
+            "type": "concept",
+            "title": "Tax Shelters, Wherever You Live",
+            "body": "Most countries let you shelter investment growth from tax inside a named account, in one of two shapes: deduct now and pay tax on withdrawal, or pay tax now and withdraw free. The United States has 401(k)s and IRAs, the United Kingdom the ISA, Canada the RRSP and TFSA. Many US employers also match part of what you put in.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the United States, an employer adds 50 cents for every dollar you put into your 401(k), up to 6% of your salary. What is that match closest to?",
+            "choices": [
+              "A tax deduction worth 6% of your salary",
+              "An immediate 50% return on the money you contribute, up to that limit",
+              "A 6% pay rise, paid to you in cash",
+              "Nothing real until you retire"
+            ],
+            "answer": 1,
+            "explain": "Fifty cents on the dollar is a 50% return the moment it lands, before any market return at all. Contributing less than the match leaves that slice of your pay uncollected. It is separate from the tax shelter itself, which is about growth going untaxed."
+          },
+          {
+            "type": "example",
+            "title": "Buying on a Schedule",
+            "body": "Dollar-cost averaging means buying a fixed amount at fixed intervals whatever the price. Put in 300 a month while a fund trades at 10, then 6, then 12: you buy 30 units, then 50, then 25. That is 105 units for 900, an average cost of 8.57 against an average price of 9.33. The cheap month bought the most.",
+            "art": "clock"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Saving keeps a known amount available; investing buys an uncertain return, and that extra return is payment for enduring falls.",
+              "Time horizon picks the tool: money needed within a year or two belongs in cash, because a 30% drop has no time to recover.",
+              "Diversification removes the risks you are not paid for — one company can go to zero, a whole market cannot.",
+              "Fees are the only certainty in the equation: 1% a year for 30 years took nearly a quarter of the final pot.",
+              "Shelter growth in whatever account your country offers and automate the buying. If you already hold a lump sum, spreading it out has historically lagged investing it at once (Vanguard, 2012)."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How is investing different from saving?",
+            "back": "Saving keeps a known amount available for a known need. Investing accepts an uncertain value in exchange for a higher expected return."
+          },
+          {
+            "front": "Why does a 1% annual fee matter so much?",
+            "back": "It is charged on the whole balance every year. Over 30 years at 7%, 10,000 becomes about 76,100 — or 57,400 after a 1% fee, nearly a quarter less."
+          },
+          {
+            "front": "Where does money you need next year belong?",
+            "back": "In cash or a short-term deposit. A 30% fall has no time to recover before you must sell, so the long-run average return is irrelevant to it."
+          },
+          {
+            "front": "What is dollar-cost averaging?",
+            "back": "Buying a fixed amount at fixed intervals, so cheap months buy more units: 300 a month at 10, 6 and 12 buys 105 units at an average cost of 8.57."
+          }
+        ]
+      },
+      {
+        "id": "protection-and-big-decisions",
+        "title": "Protection and the Big Decisions",
+        "summary": "Insurance as a trade against catastrophic tails, rent versus buy as arithmetic, and the short list worth automating.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Losses You Cannot Absorb",
+            "body": "Some losses are annoying: a cracked screen, a stolen bike. Some end the plan: a house fire, a decade out of work, a liability claim. Almost everything in personal finance that looks like caution is really about the second list — moving the rare, unsurvivable outcomes off your own balance sheet.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Insurance Is a Tail Trade",
+            "body": "Insurers pay claims, staff and shareholders out of your premiums, so on average you get back less than you hand over. That is not a scandal, it is the price of the trade. You are buying certainty against outcomes that would break you — which means insuring the catastrophe and carrying the inconvenience yourself.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Given that insurance pays out less than it collects on average, which of these is worth insuring?",
+            "choices": [
+              "A phone screen, replaceable for a week's grocery money",
+              "An extended warranty on a kettle",
+              "Losing your income for two years through illness",
+              "A delayed flight"
+            ],
+            "answer": 2,
+            "explain": "Every policy is a losing bet on average, so the reason to buy one is that the loss would break you — not that it would irritate you. A phone, a kettle and a flight are budget lines. Two years without income is a different category entirely."
+          },
+          {
+            "type": "concept",
+            "title": "Deductibles: The Dial You Control",
+            "body": "The deductible, or excess, is what you pay before the insurer pays anything, and raising it lowers the premium. Compare 1,200 a year with a 250 deductible against 900 a year with a 1,000 deductible: you save 300 every year and carry 750 more per claim. Trading up pays unless you claim more often than once every two and a half years.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The lower the deductible, the better value the policy.",
+            "answer": false,
+            "explain": "A low deductible makes the insurer cover small, likely losses, and it charges you for that — usually more than those losses would cost you. In the example, paying 300 extra a year only wins if you claim every two and a half years or more often. Small losses are the ones you can absorb."
+          },
+          {
+            "type": "concept",
+            "title": "Rent Versus Buy Is a Calculation",
+            "body": "Renting is not throwing money away, and owning is not automatically wealth. Both are ways of buying shelter, and the comparison has three moving parts: the round-trip cost of the transaction, how long you will stay, and what the deposit would have earned elsewhere. Run those and the answer is a number, not a virtue.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In the United States, buying and later selling a 300,000 home runs roughly 3% to buy and 6% to sell. What does that round trip cost per month if you move after two years?",
+            "answer": "About 1,125. The 27,000 of costs does not care how long you stay, so two years spreads it across 24 months. Stay ten years and the same 27,000 spreads across 120 months, falling to 225 a month. Time horizon is the single biggest input in rent versus buy."
+          },
+          {
+            "type": "example",
+            "title": "The Deposit Has a Job Too",
+            "body": "The 60,000 deposit on that 300,000 home is not free either. Earning 5% elsewhere it would make 3,000 a year — 250 a month you no longer receive. Add that to the amortized transaction costs, the maintenance and the property tax, then compare the total against the rent, not against the mortgage payment alone.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which fact most strongly favors buying over renting in the arithmetic you just ran?",
+            "choices": [
+              "You expect to stay in the home for a long time",
+              "Rent payments build no equity",
+              "Prices in your city have risen for a decade",
+              "The monthly mortgage payment is lower than the rent"
+            ],
+            "answer": 0,
+            "explain": "Transaction costs are fixed and large, and only years spread them thin: 27,000 is 1,125 a month over two years and 225 over ten. The others are the classic traps — equity ignores what the deposit could have earned, past prices are not future prices, and the mortgage payment is not the full cost of owning."
+          },
+          {
+            "type": "concept",
+            "title": "Lifestyle Inflation",
+            "body": "Spending expands to fill the income available, and the quiet version costs you the entire raise. On 3,000 a month you were saving 15%, or 450. The raise takes you to 3,500, spending absorbs all of it, and that same 450 is now 12.9% of your pay. You earn more, you save the same, and your savings rate has fallen.",
+            "art": "ladder"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A pay rise automatically improves your savings rate.",
+            "answer": false,
+            "explain": "Only if the extra is routed somewhere before it reaches your spending. Saving the same 450 out of 3,500 rather than 3,000 drops the rate from 15% to 12.9%. The fix is mechanical, not moral: raise the standing transfer on the day the raise lands."
+          },
+          {
+            "type": "concept",
+            "title": "What to Actually Automate",
+            "body": "Automate the four things that decide outcomes: the transfer to savings on payday, the contributions to your sheltered account, the bills that carry late fees, and the full card balance by direct debit. Then keep one manual job — twenty minutes a month looking at the numbers, and an hour a year on fees, insurance and rates.",
+            "art": "path"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Insurance is a losing bet on average and worth it anyway for the tails: insure what would break you, absorb what would only annoy you.",
+              "A low deductible buys cover for small, likely losses. Saving 300 a year against 750 more exposure only loses if you claim more often than every 2.5 years.",
+              "Rent versus buy is arithmetic: round-trip costs near 9% of the price in the US, the years you stay to spread them, and what the deposit could earn elsewhere.",
+              "Lifestyle inflation makes a raise invisible: the same 450 saved on 3,500 instead of 3,000 drops your savings rate from 15% to 12.9%.",
+              "Automate the transfer, the contributions and the bills; keep one monthly review and one annual check of fees, insurance and rates."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What should you insure?",
+            "back": "Losses you could not absorb: lost income, liability, a home. Policies pay out less than they collect, so small risks are cheaper to carry yourself."
+          },
+          {
+            "front": "Why is a low deductible usually expensive?",
+            "back": "It makes the insurer cover small, likely losses and prices that in. Saving 300 a year for 750 more exposure only loses if you claim every 2.5 years."
+          },
+          {
+            "front": "What decides rent versus buy?",
+            "back": "Round-trip transaction costs (near 9% of price in the US), how many years you stay to spread them, and what the deposit would earn invested."
+          },
+          {
+            "front": "What is lifestyle inflation?",
+            "back": "Spending rising to meet income. Saving 450 on 3,000 is a 15% rate; the same 450 on 3,500 is 12.9%. Raise the transfer when the raise lands."
+          }
+        ]
+      }
+    ]
   }
 ];
