@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuoteForge — stop underbidding your own jobs</title>
+<meta name="description" content="A 20% markup is only a 16.7% margin. QuoteForge shows contractors their real profit before the quote goes out. Free, works offline, no signup.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="QuoteForge — stop underbidding your own jobs">
+<meta property="og:description" content="A 20% markup is only a 16.7% margin. See your real profit before you send the quote.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><text x='16' y='23' font-size='19' font-family='system-ui' font-weight='800' fill='white' text-anchor='middle'>Q</text></svg>">
+<style>
+:root{
+  --bg:#faf9f7; --surface:#fff; --surface-2:#f4f2ef; --border:#e5e1da; --border-2:#cfc9c0;
+  --text:#1c1917; --text-2:#57534e; --text-3:#8a8378;
+  --accent:#c2410c; --accent-2:#ea580c; --accent-soft:#fff2ea;
+  --good:#15803d; --good-soft:#eefaf1; --bad:#b91c1c; --bad-soft:#fdf0ef; --warn:#b45309;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --radius:12px; --shadow:0 1px 2px rgba(28,25,23,.05),0 10px 30px rgba(28,25,23,.07);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141312; --surface:#1e1c1a; --surface-2:#272421; --border:#35312d; --border-2:#4a453f;
+  --text:#f3f0ec; --text-2:#b4aba1; --text-3:#8a8279;
+  --accent:#fb923c; --accent-2:#f97316; --accent-soft:#2a1c11;
+  --good:#4ade80; --good-soft:#142a1c; --bad:#f87171; --bad-soft:#2e1717; --warn:#fbbf24;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+a{color:var(--accent)}
+h1,h2,h3{letter-spacing:-.022em;line-height:1.15;margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.01em}
+.mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(140deg,var(--accent),#9a3412);
+      display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px}
+nav .spacer{flex:1}
+nav a.navlink{color:var(--text-2);text-decoration:none;font-size:14.5px}
+nav a.navlink:hover{color:var(--text)}
+@media(max-width:720px){nav a.navlink{display:none}}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:9px;
+     border:1px solid var(--border-2);background:var(--surface);color:var(--text);
+     text-decoration:none;font-weight:600;cursor:pointer;transition:.14s}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{padding:7px 14px;font-size:14px}
+.btn.lg{padding:14px 26px;font-size:17px}
+
+/* hero */
+header.hero{padding:74px 0 20px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 13px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);
+  font-size:13px;font-weight:650;margin-bottom:20px}
+h1{font-size:clamp(34px,5.6vw,58px);font-weight:800;max-width:16ch}
+.sub{font-size:clamp(17px,2vw,20px);color:var(--text-2);max-width:56ch;margin:20px 0 28px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cta-note{font-size:13.5px;color:var(--text-3)}
+
+/* the trap */
+.trap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:44px 0 0}
+@media(max-width:760px){.trap{grid-template-columns:1fr}}
+.trap-card{padding:22px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+.trap-card.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 28%,transparent)}
+.trap-card.good{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 28%,transparent)}
+.trap-card .k{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3)}
+.trap-card .big{font-size:38px;font-weight:800;margin:6px 0 2px;font-family:var(--mono)}
+.trap-card.bad .big{color:var(--bad)} .trap-card.good .big{color:var(--good)}
+.trap-card p{margin:8px 0 0;font-size:14.5px;color:var(--text-2)}
+
+/* calculator */
+section{padding:60px 0}
+section h2{font-size:clamp(25px,3.4vw,36px);font-weight:750}
+section .lede{color:var(--text-2);max-width:60ch;margin:14px 0 0;font-size:17px}
+
+.calc{margin-top:32px;border:1px solid var(--border);border-radius:16px;background:var(--surface);
+      box-shadow:var(--shadow);overflow:hidden}
+.calc-grid{display:grid;grid-template-columns:1fr 1.05fr}
+@media(max-width:820px){.calc-grid{grid-template-columns:1fr}}
+.calc-in{padding:26px;border-right:1px solid var(--border)}
+@media(max-width:820px){.calc-in{border-right:none;border-bottom:1px solid var(--border)}}
+.calc-out{padding:26px;background:var(--surface-2)}
+.f{margin-bottom:18px}
+.f label{display:block;font-size:12.5px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.f .row{display:flex;align-items:center;gap:12px}
+.f input[type=range]{flex:1;accent-color:var(--accent)}
+.f .val{font-family:var(--mono);font-weight:700;font-size:19px;min-width:88px;text-align:right}
+.f input[type=number]{width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:8px;
+  background:var(--surface);color:var(--text);font:inherit;font-family:var(--mono)}
+.f .hint{font-size:12.5px;color:var(--text-3);margin-top:5px}
+
+.res{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0}
+.res+.res{border-top:1px dashed var(--border)}
+.res .l{color:var(--text-2);font-size:14.5px}
+.res .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:650}
+.res.hero-res{border-top:2px solid var(--border-2);margin-top:10px;padding-top:14px}
+.res.hero-res .l{font-weight:700;color:var(--text);font-size:16px}
+.res.hero-res .v{font-size:26px;font-weight:800}
+.verdict{margin-top:18px;padding:15px 17px;border-radius:10px;font-size:14.5px;line-height:1.55}
+.verdict.bad{background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 28%,transparent)}
+.verdict.warn{background:#fdf5e7;border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.verdict.good{background:var(--good-soft);border:1px solid color-mix(in srgb,var(--good) 28%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .verdict.warn{background:#2c2312}}
+.verdict strong{display:block;margin-bottom:4px;font-size:15.5px}
+
+/* features */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+@media(max-width:880px){.feat{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.feat{grid-template-columns:1fr}}
+.fcard{padding:22px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.fcard .ic{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);
+  display:grid;place-items:center;font-size:17px;margin-bottom:13px}
+.fcard h3{font-size:16.5px;font-weight:700;margin-bottom:7px}
+.fcard p{margin:0;font-size:14.5px;color:var(--text-2)}
+
+/* steps */
+.steps{counter-reset:s;display:grid;gap:14px;margin-top:30px}
+.step{display:grid;grid-template-columns:38px 1fr;gap:16px;align-items:start;
+  padding:18px 20px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.step::before{counter-increment:s;content:counter(s);width:30px;height:30px;border-radius:8px;
+  background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+.step h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.step p{margin:0;color:var(--text-2);font-size:14.5px}
+
+/* pricing */
+.price{max-width:520px;margin:34px auto 0;padding:32px;border:2px solid var(--accent);
+  border-radius:16px;background:var(--surface);box-shadow:var(--shadow);text-align:center}
+.price .tag{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.price .amt{font-size:52px;font-weight:800;margin:8px 0 2px;letter-spacing:-.03em}
+.price ul{text-align:left;list-style:none;padding:0;margin:22px 0;display:grid;gap:10px}
+.price li{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:15px;color:var(--text-2)}
+.price li::before{content:"✓";color:var(--good);font-weight:800}
+
+/* faq */
+details{border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:10px}
+summary{padding:16px 18px;cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--text-3);font-weight:700;font-size:19px;line-height:1}
+details[open] summary::after{content:"−"}
+details .a{padding:0 18px 17px;color:var(--text-2);font-size:15px}
+
+footer{border-top:1px solid var(--border);padding:36px 0;color:var(--text-3);font-size:14px;margin-top:40px}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.disc{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;font-size:13.5px;color:var(--text-2);margin-top:26px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand"><span class="mark">Q</span>QuoteForge</span>
+  <span class="spacer"></span>
+  <a class="navlink" href="#calculator">The math</a>
+  <a class="navlink" href="#how">How it works</a>
+  <a class="navlink" href="#pricing">Pricing</a>
+  <a class="btn primary sm" href="quoteforge/">Open the app</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">◆ For remodelers, GCs, and trades</span>
+  <h1>A 20% markup is not a 20% profit.</h1>
+  <p class="sub">
+    It is 16.7%. On a $40,000 job that gap is <strong>$1,333</strong> you already
+    promised away — before a single surprise, change order, or rain day.
+    QuoteForge prices the job the way the math actually works, and tells you where
+    you stand <em>before</em> the quote leaves your truck.
+  </p>
+  <div class="cta-row">
+    <a class="btn primary lg" href="quoteforge/">Open the app — it's free</a>
+    <a class="btn lg" href="#calculator">Show me the math</a>
+  </div>
+  <p class="cta-note" style="margin-top:14px">No signup. No card. Works offline. Your numbers never leave your device.</p>
+
+  <div class="trap">
+    <div class="trap-card bad">
+      <div class="k">What most estimates do</div>
+      <div class="big">Cost × 1.20</div>
+      <p>Add 20% to a $32,000 cost and quote $38,400. Feels like a 20% job.
+         The profit is $6,400 on a $38,400 sale — <strong>16.7%</strong>.</p>
+    </div>
+    <div class="trap-card good">
+      <div class="k">What actually keeps 20%</div>
+      <div class="big">Cost ÷ 0.80</div>
+      <p>The same $32,000 cost has to be quoted at $40,000 to keep a real 20%.
+         That is <strong>$1,600 more</strong> on one job — and every job.</p>
+    </div>
+  </div>
+</div></header>
+
+<!-- ============================================ calculator -->
+<section id="calculator"><div class="wrap">
+  <h2>Put your own numbers in.</h2>
+  <p class="lede">
+    Set the markup you use today and the margin you actually need. This is the same engine
+    that runs inside the app — nothing is sent anywhere.
+  </p>
+
+  <div class="calc"><div class="calc-grid">
+    <div class="calc-in">
+      <div class="f">
+        <label for="cCost">Your cost on a typical job</label>
+        <input type="number" id="cCost" value="32000" min="0" step="500">
+        <div class="hint">Materials, labor, subs — everything you actually pay out.</div>
+      </div>
+      <div class="f">
+        <label for="cMarkup">The markup you add today</label>
+        <div class="row">
+          <input type="range" id="cMarkup" min="0" max="100" step="1" value="20">
+          <span class="val num" id="vMarkup">20%</span>
+        </div>
+      </div>
+      <div class="f">
+        <label for="cTarget">The margin you need to keep</label>
+        <div class="row">
+          <input type="range" id="cTarget" min="0" max="60" step="1" value="25">
+          <span class="val num" id="vTarget">25%</span>
+        </div>
+        <div class="hint">Most remodelers need 25–35% to cover overhead and still earn.</div>
+      </div>
+      <div class="f" style="margin-bottom:0">
+        <label for="cJobs">Jobs like this per year</label>
+        <div class="row">
+          <input type="range" id="cJobs" min="1" max="60" step="1" value="12">
+          <span class="val num" id="vJobs">12</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-out">
+      <div class="res"><span class="l">You quote</span><span class="v num" id="rQuote">—</span></div>
+      <div class="res"><span class="l">Your cost</span><span class="v num" id="rCost">—</span></div>
+      <div class="res"><span class="l">You keep</span><span class="v num" id="rProfit">—</span></div>
+      <div class="res"><span class="l">Which is a margin of</span><span class="v num" id="rMargin">—</span></div>
+      <div class="res"><span class="l">To keep <span id="rTargetLbl">25%</span> you must quote</span><span class="v num" id="rNeeded">—</span></div>
+      <div class="res hero-res"><span class="l">Left on the table, per year</span><span class="v num" id="rGap">—</span></div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </div></div>
+
+  <div class="disc">
+    <strong>To be straight with you:</strong> this is arithmetic, not a promise. It assumes you win the
+    same work at the higher price, and raising prices can cost you bids. What the number really shows is
+    the size of the decision you are making every time you quote — not free money sitting on a table.
+  </div>
+</div></section>
+
+<!-- ============================================ how -->
+<section id="how" style="background:var(--surface-2);border-block:1px solid var(--border)"><div class="wrap">
+  <h2>From measurement to signed proposal.</h2>
+  <p class="lede">Most quotes die in the gap between the site visit and the paperwork. This closes it.</p>
+  <div class="steps">
+    <div class="step"><div>
+      <h3>Start from an assembly, not a blank page</h3>
+      <p>Type one number — 45 square feet of bathroom — and the whole scope lays itself in:
+         demo, dumpster, rough-in, waterproofing, tile, trim, paint, permit. Sixteen lines, priced,
+         with waste factors already applied.</p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Watch the margin while you build the number</h3>
+      <p>The profit panel updates on every keystroke: real profit, margin against your target,
+         break-even, and exactly how far you can come down before the job stops being worth doing.</p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Let it tell you what is wrong</h3>
+      <p>"You are marking up 24%, which only keeps 18.5%." One click reprices every line to hit your
+         target — and leaves permits and pass-through fees alone, because marking those up is how you
+         end up defending a $1,200 permit line.</p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Send a proposal that looks like a contract</h3>
+      <p>Scope grouped by trade, optional upgrades priced separately, payment schedule that sums to the
+         penny, your terms, and a signature block. Print to PDF or capture the signature on your phone
+         at the kitchen table.</p>
+    </div></div>
+  </div>
+</div></section>
+
+<!-- ============================================ features -->
+<section><div class="wrap">
+  <h2>Built around the parts that cost you money.</h2>
+  <div class="feat">
+    <div class="fcard"><div class="ic">◑</div><h3>Markup and margin, always both</h3>
+      <p>Every figure shows what you add and what you keep, side by side. They can never quietly drift apart.</p></div>
+    <div class="fcard"><div class="ic">▣</div><h3>Overhead that gets marked up</h3>
+      <p>Your trucks and insurance are a cost like any other. Fold them in at cost and they eat your profit instead.</p></div>
+    <div class="fcard"><div class="ic">◈</div><h3>Contingency that isn't fake profit</h3>
+      <p>Money reserved for surprises is priced into the job but never reported as margin you earned.</p></div>
+    <div class="fcard"><div class="ic">◧</div><h3>Optional upgrades that sell</h3>
+      <p>Price the heated floor separately. It stays out of the total and sits on the proposal as a yes-or-no.</p></div>
+    <div class="fcard"><div class="ic">⊙</div><h3>Know your walk-away number</h3>
+      <p>Before you discount, see the exact dollar figure where the job stops clearing your floor margin.</p></div>
+    <div class="fcard"><div class="ic">⚑</div><h3>Yours, on your device</h3>
+      <p>No account, no cloud, no subscription to lose access to. Export a JSON backup any time.</p></div>
+  </div>
+</div></section>
+
+<!-- ============================================ pricing -->
+<section id="pricing" style="background:var(--surface-2);border-block:1px solid var(--border)"><div class="wrap">
+  <h2 style="text-align:center">Pricing</h2>
+  <p class="lede" style="margin:14px auto 0;text-align:center">
+    The estimator is free and stays free. There is nothing to cancel.
+  </p>
+  <div class="price">
+    <div class="tag">Estimator</div>
+    <div class="amt">$0</div>
+    <div style="color:var(--text-2);font-size:15px">Everything on this page. Forever.</div>
+    <ul>
+      <li>Unlimited estimates and clients</li>
+      <li>60-item price book and 5 job assemblies</li>
+      <li>Live margin, break-even, and discount headroom</li>
+      <li>Branded proposals, print to PDF, signature capture</li>
+      <li>Works with no internet on a job site</li>
+      <li>JSON and CSV export — your data leaves whenever you want</li>
+    </ul>
+    <a class="btn primary lg" href="quoteforge/" style="width:100%;justify-content:center">Open the app</a>
+    <p style="font-size:13px;color:var(--text-3);margin:14px 0 0">No signup. No card. No trial clock.</p>
+  </div>
+</div></section>
+
+<!-- ============================================ faq -->
+<section><div class="wrap" style="max-width:800px">
+  <h2>Straight answers.</h2>
+  <div style="margin-top:26px">
+    <details open><summary>Where is my data?</summary><div class="a">
+      In your browser, on your device, and nowhere else. There is no server and no account, so there is
+      no copy of your client list anywhere. The real trade-off: clearing your browser data erases it, and
+      it does not sync between your phone and your laptop. Export a backup regularly — the button is on
+      the Settings tab.
+    </div></details>
+    <details><summary>Are the price book numbers right for my market?</summary><div class="a">
+      Probably not exactly, and you should change them. They are representative US ranges meant to get
+      you to a first quote in a minute instead of an hour. Every cost is editable, and the app treats
+      them as <em>your</em> cost, never a sell price.
+    </div></details>
+    <details><summary>Is the signature legally binding?</summary><div class="a">
+      It records acceptance on the device in front of you, which is genuinely useful and what most small
+      jobs run on. It is not a full e-signature service — there is no identity verification, tamper seal,
+      or audit trail. For large contracts or anything you might have to defend, use a dedicated e-sign
+      provider.
+    </div></details>
+    <details><summary>Why is it free? What's the catch?</summary><div class="a">
+      There is no server, so it costs essentially nothing to run — that is a genuine consequence of the
+      architecture, not a loss leader. If a paid tier ever exists it would be for things that actually
+      require a server, like syncing across devices or sending a proposal from a hosted link. What is
+      here today stays free and keeps working offline either way.
+    </div></details>
+    <details><summary>Will this replace my accounting or job costing software?</summary><div class="a">
+      No. This prices work and produces proposals. It does not track actual costs against the estimate,
+      run payroll, invoice, or talk to QuickBooks. Export CSV and hand it to whatever you already use.
+    </div></details>
+    <details><summary>Does raising my prices lose me jobs?</summary><div class="a">
+      Sometimes, yes. Anyone who tells you otherwise is selling something. The honest case for pricing
+      correctly is that a job won at 12% margin can be worse than a job you did not win at all, because
+      it consumes the crew weeks that a properly priced job needed. The app shows you which one you are
+      looking at; the call is still yours.
+    </div></details>
+  </div>
+</div></section>
+
+<section style="text-align:center;padding-bottom:70px"><div class="wrap">
+  <h2>See where your next quote actually lands.</h2>
+  <p class="lede" style="margin:14px auto 26px">A sample bathroom is already loaded. Change one quantity and watch the margin move.</p>
+  <a class="btn primary lg" href="quoteforge/">Open QuoteForge</a>
+</div></section>
+
+<footer><div class="wrap">
+  <span class="brand" style="font-size:15px"><span class="mark" style="width:22px;height:22px;font-size:12px">Q</span>QuoteForge</span>
+  <span style="flex:1"></span>
+  <span>Runs entirely in your browser. No account, no tracking, no server.</span>
+</div></footer>
+
+<script>
+/**
+ * Live markup-vs-margin calculator.
+ *
+ * Intentionally the same arithmetic the app's pricing engine uses, kept inline
+ * so the landing page has no dependencies and renders instantly:
+ *   margin = profit / price      markup = profit / cost
+ *   price needed for a target margin = cost / (1 - target)
+ */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => '$' + Math.round(n).toLocaleString('en-US');
+  const pct = (r) => (r * 100).toFixed(1) + '%';
+
+  const inputs = ['cCost', 'cMarkup', 'cTarget', 'cJobs'].map($);
+
+  function update() {
+    const cost = Math.max(0, Number($('cCost').value) || 0);
+    const markup = Number($('cMarkup').value) / 100;
+    const target = Number($('cTarget').value) / 100;
+    const jobs = Number($('cJobs').value);
+
+    $('vMarkup').textContent = (markup * 100).toFixed(0) + '%';
+    $('vTarget').textContent = (target * 100).toFixed(0) + '%';
+    $('vJobs').textContent = jobs;
+    $('rTargetLbl').textContent = (target * 100).toFixed(0) + '%';
+
+    const quote = cost * (1 + markup);
+    const profit = quote - cost;
+    const margin = quote === 0 ? 0 : profit / quote;
+    // A 100% margin is unreachable at any finite price, so guard the divide.
+    const needed = target >= 1 ? Infinity : cost / (1 - target);
+    const gap = Math.max(0, needed - quote);
+
+    $('rQuote').textContent = money(quote);
+    $('rCost').textContent = money(cost);
+    $('rProfit').textContent = money(profit);
+    $('rMargin').textContent = pct(margin);
+    $('rNeeded').textContent = Number.isFinite(needed) ? money(needed) : '—';
+    $('rGap').textContent = money(gap * jobs);
+
+    const v = $('verdict');
+    if (!cost) {
+      v.className = 'verdict';
+      v.innerHTML = '<strong>Put a cost in.</strong> Use what a typical job actually costs you to deliver.';
+    } else if (margin >= target - 0.001) {
+      v.className = 'verdict good';
+      v.innerHTML = '<strong>Your markup is doing its job.</strong> '
+        + pct(markup) + ' markup keeps ' + pct(margin) + ', which clears your '
+        + pct(target) + ' target. Worth checking that your cost figure really includes overhead.';
+    } else {
+      const per = gap;
+      v.className = margin < target * 0.6 ? 'verdict bad' : 'verdict warn';
+      v.innerHTML = '<strong>' + pct(markup) + ' markup only keeps ' + pct(margin) + '.</strong> '
+        + 'To actually hold ' + pct(target) + ' you would need to quote ' + money(needed)
+        // The sentence-ending period lives inside the <strong> so it can never
+        // wrap onto a line of its own after the bold run.
+        + ' — <strong>' + money(per) + ' more per job.</strong> '
+        + 'Across ' + jobs + ' job' + (jobs === 1 ? '' : 's') + ' a year that is ' + money(per * jobs)
+        + ' of margin you are pricing away.';
+    }
+  }
+
+  inputs.forEach((el) => { el.addEventListener('input', update); });
+  update();
+})();
+</script>
+</body>
+</html>
