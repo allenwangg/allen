@@ -167,6 +167,11 @@
     var lvlBefore = Store.level().n;
     Store.addXP(n);
     if (anchor !== undefined) xpFloat(n, anchor);
+    Store.noteActive();
+    var gotFreeze = Store.grantFreezeIfEarned();
+    if (gotFreeze) {
+      toast('<span class="toast-emoji">🧊</span><span><b>Streak freeze earned</b><br>It covers one missed day automatically.</span>');
+    }
     if (before < goal && Store.todayXP() >= goal) {
       toast('<span class="toast-emoji">🔥</span><span><b>Daily goal hit</b><br>Streak secured: ' + Store.streak() + ' day' + (Store.streak() === 1 ? '' : 's') + '</span>');
     } else {
@@ -224,6 +229,7 @@
   function headerHTML() {
     var lvl = Store.level();
     var flameOn = Store.streakIncludesToday();
+    var frz = Store.state.freezes || 0;
     return '' +
       '<header class="topbar">' +
         '<a class="brand" href="#/">' +
@@ -231,12 +237,15 @@
           '<span>Prism</span>' +
         '</a>' +
         '<div class="topbar-right">' +
-          '<span class="chip streak' + (flameOn ? ' lit' : '') + '" title="Daily streak — hit your goal to keep it alive">' +
+          '<span class="chip streak' + (flameOn ? ' lit' : '') + '" title="Daily streak' + (frz ? ' · ' + frz + ' freeze' + (frz === 1 ? '' : 's') + ' banked' : ' — hit your goal to keep it alive') + '">' +
             '<svg viewBox="0 0 24 24"><path d="M12 2c1 4.5 6 6.5 6 12a6 6 0 0 1-12 0c0-3 1.6-4.9 3.2-6.7.3 1.9 1 3 2.1 3.6C10.9 8.5 11 5.2 12 2z" fill="currentColor"/></svg>' +
-            Store.streak() + '</span>' +
+            Store.streak() + (frz ? '<i class="frz">' + frz + '</i>' : '') + '</span>' +
           '<a class="chip xp" href="#/stats" title="Level ' + lvl.n + ' · ' + esc(lvl.title) + '">' +
             '<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.9L22 9.5l-5.4 4.6L18.3 22 12 17.8 5.7 22l1.7-7.9L2 9.5l7.4-.6z" fill="currentColor"/></svg>' +
             Store.state.xp + ' XP</a>' +
+          '<a class="iconbtn" href="#/saved" aria-label="Saved cards" title="Saved cards">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6 4h12v16l-6-4.5L6 20z"/></svg>' +
+          '</a>' +
           '<a class="iconbtn" href="#/search" aria-label="Search" title="Search ( / )">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>' +
           '</a>' +
@@ -318,6 +327,17 @@
     '</section>';
 
     // action row: review + continue
+    // Today: the single decision that starts a session
+    var planN = buildPlan().length;
+    h += '<a class="today-card" href="#/today">' +
+      '<div class="today-card-art">' + Art.svg('compass') + '</div>' +
+      '<div class="today-card-body"><span class="kicker">Start here</span>' +
+      '<h3>Today’s session</h3>' +
+      '<p>' + (planN
+        ? 'A ' + planN + '-step mix of reviews, a new lesson and practice — built for right now.'
+        : 'Everything is done for today. Explore anything below.') + '</p></div>' +
+      '<span class="go">›</span></a>';
+
     h += '<section class="actions">';
     h += '<a class="action-card review-card' + (due.length ? '' : ' calm') + '" href="#/review">' +
       '<div class="action-art">' + Art.svg('orbit') + '</div>' +
@@ -339,6 +359,19 @@
         '<div class="action-body"><h3>' + (resume ? 'Resume' : 'Continue') + ': ' + esc(cont.lesson.title) + '</h3>' +
         '<p>' + esc(cont.course.title) + ' · Lesson ' + (cont.index + 1) + (resume ? ' · card ' + resume.at + '/' + resume.of : '') + '</p></div>' +
         '<span class="go">›</span></a>';
+    }
+    h += '</section>';
+
+    // paths strip
+    h += '<div class="lib-head"><h2 class="section-title">Paths</h2>' +
+      '<a class="lib-count link" href="#/paths">See all ' + Paths.list.length + ' ›</a></div>' +
+      '<section class="path-strip">';
+    for (var pi = 0; pi < Math.min(4, Paths.list.length); pi++) {
+      var pth = Paths.list[pi], ppr = pathProgress(pth);
+      h += '<a class="path-chip" style="--ah:' + HUES[pi % HUES.length] + '" href="#/path/' + esc(pth.id) + '">' +
+        '<span class="path-chip-art">' + Art.svg(pth.art) + '</span>' +
+        '<b>' + esc(pth.title) + '</b>' +
+        '<small>' + ppr.done + '/' + ppr.total + ' courses</small></a>';
     }
     h += '</section>';
 
@@ -396,6 +429,239 @@
     function done() { Store.markToured(); wrap.remove(); }
     wrap.addEventListener('click', function (e) { if (e.target === wrap) done(); });
     document.getElementById('tour-go').onclick = done;
+  }
+
+  /* ---------------- Today: one smart session ----------------
+     Assembles the highest-value mix for right now — cards that are due,
+     the next lesson in your current path, and a practice round — then runs
+     them back to back so learning is a single decision, not five. */
+
+  var flow = null;   // {steps:[{kind,label,...}], i:0, xp0:0}
+
+  function nextLessonTarget() {
+    // 1) an unfinished lesson already in progress
+    var np = Store.newestProgress();
+    if (np) {
+      var c0 = findCourse(np.courseId), f0 = c0 && findLesson(c0, np.lessonId);
+      if (f0 && !Store.lessonRecord(np.courseId, np.lessonId)) {
+        return { course: c0, lesson: f0.lesson, index: f0.index, resumed: true };
+      }
+    }
+    // 2) the next lesson of the course last studied
+    var last = Store.state.lastLesson;
+    if (last) {
+      var c1 = findCourse(last.courseId);
+      if (c1) {
+        for (var i = 0; i < c1.lessons.length; i++) {
+          if (!Store.lessonRecord(c1.id, c1.lessons[i].id)) return { course: c1, lesson: c1.lessons[i], index: i };
+        }
+      }
+    }
+    // 3) continue any started course, else start the first course of the first path
+    for (var k = 0; k < COURSES.length; k++) {
+      var p = Store.courseProgress(COURSES[k]);
+      if (p.done > 0 && p.done < p.total) {
+        for (var j = 0; j < COURSES[k].lessons.length; j++) {
+          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id)) {
+            return { course: COURSES[k], lesson: COURSES[k].lessons[j], index: j };
+          }
+        }
+      }
+    }
+    for (var m = 0; m < COURSES.length; m++) {
+      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id)) {
+        return { course: COURSES[m], lesson: COURSES[m].lessons[0], index: 0 };
+      }
+    }
+    return null;
+  }
+
+  function buildPlan() {
+    var steps = [];
+    var due = SRS.dueItems(Store.state.srs, Date.now());
+    if (due.length) {
+      steps.push({ kind: 'review', n: Math.min(due.length, 20), art: 'orbit',
+        label: 'Review ' + Math.min(due.length, 20) + ' card' + (Math.min(due.length, 20) === 1 ? '' : 's'),
+        sub: 'Cards your memory is about to drop', mins: Math.max(1, Math.round(Math.min(due.length, 20) * 0.15)) });
+    }
+    var t = nextLessonTarget();
+    if (t) {
+      steps.push({ kind: 'lesson', courseId: t.course.id, lessonId: t.lesson.id, art: coverArt(t.course),
+        label: (t.resumed ? 'Finish: ' : '') + t.lesson.title,
+        sub: t.course.title + ' · Lesson ' + (t.index + 1), mins: 4 });
+    }
+    if (practicePool(null).length >= 6) {
+      steps.push({ kind: 'practice', art: 'target', label: 'Practice round',
+        sub: 'Quick-fire questions from what you have learned', mins: 2 });
+    }
+    return steps;
+  }
+
+  function renderToday() {
+    var steps = buildPlan();
+    var goal = Store.state.settings.dailyGoal, today = Store.todayXP();
+    var mins = 0;
+    for (var i = 0; i < steps.length; i++) mins += steps[i].mins;
+
+    var h = headerHTML() + '<main class="page">';
+    h += '<a class="back" href="#/">‹ Library</a>';
+    h += '<section class="today-head">' +
+      '<div><h1 class="page-title">' + (today >= goal ? 'Goal met — keep going?' : 'Today’s session') + '</h1>' +
+      '<p class="today-sub">' + (steps.length
+        ? 'About ' + mins + ' minute' + (mins === 1 ? '' : 's') + ' · built from what you know and when you last saw it.'
+        : 'Nothing is due and every lesson is done. Come back tomorrow, or explore the library.') + '</p></div>' +
+      '<div class="hero-ring">' + ringHTML(Math.min(1, today / goal), 92, today + '<tspan class="ring-sub"> / ' + goal + '</tspan>') + '</div>' +
+    '</section>';
+
+    if (steps.length) {
+      h += '<ol class="plan">';
+      for (var j = 0; j < steps.length; j++) {
+        h += '<li class="plan-step"><span class="plan-n">' + (j + 1) + '</span>' +
+          '<span class="plan-art">' + Art.svg(steps[j].art) + '</span>' +
+          '<span class="plan-txt"><b>' + esc(steps[j].label) + '</b><small>' + esc(steps[j].sub) + '</small></span>' +
+          '<span class="plan-mins">' + steps[j].mins + ' min</span></li>';
+      }
+      h += '</ol><div class="today-cta"><button class="btn primary" id="today-go">Start session</button></div>';
+    } else {
+      h += '<div class="today-cta"><a class="btn primary" href="#/">Browse the library</a></div>';
+    }
+    h += '</main>';
+    $app.innerHTML = h;
+    bindChrome();
+    var go = document.getElementById('today-go');
+    if (go) go.onclick = function () { flow = { steps: steps, i: 0, xp0: Store.state.xp }; runFlow(); };
+  }
+
+  /* Advance the session to its next step, or finish. */
+  function runFlow() {
+    if (!flow) return nav('#/');
+    if (flow.i >= flow.steps.length) return renderFlowDone();
+    var s = flow.steps[flow.i];
+    if (s.kind === 'review') { nav('#/review'); }
+    else if (s.kind === 'lesson') { nav('#/lesson/' + s.courseId + '/' + s.lessonId); }
+    else { nav('#/practice'); }
+  }
+
+  function flowAdvance() { if (flow) { flow.i += 1; runFlow(); } }
+
+  function flowFooter(fallbackHTML) {
+    if (!flow) return fallbackHTML;
+    var left = flow.steps.length - flow.i - 1;
+    return '<button class="btn primary" id="flow-next">' +
+      (left > 0 ? 'Next: ' + esc(flow.steps[flow.i + 1].label) : 'Finish session') + '</button>';
+  }
+
+  function bindFlowFooter() {
+    var b = document.getElementById('flow-next');
+    if (b) b.onclick = flowAdvance;
+    return !!b;
+  }
+
+  function renderFlowDone() {
+    var gained = Store.state.xp - flow.xp0;
+    var n = flow.steps.length;
+    var goalNow = Store.todayXP() >= Store.state.settings.dailyGoal;
+    flow = null;
+    $app.innerHTML = '<main class="player complete">' +
+      '<div class="card-stage"><div class="card done-card">' +
+      '<div class="card-art">' + Art.svg('mountain') + '</div>' +
+      '<span class="kicker">Session complete</span><h2>That’s today handled</h2>' +
+      '<div class="done-stats">' +
+        '<div class="stat"><b>' + n + '</b><span>step' + (n === 1 ? '' : 's') + '</span></div>' +
+        '<div class="stat"><b>+' + gained + '</b><span>XP</span></div>' +
+        '<div class="stat"><b>' + Store.streak() + '</b><span>day streak</span></div>' +
+      '</div>' +
+      (goalNow ? '<p class="goal-note">Daily goal met 🔥</p>' : '') +
+      '</div></div>' +
+      '<div class="player-foot"><a class="btn primary" href="#/">Done</a></div></main>';
+    SFX.complete();
+    checkBadges();
+    confetti();
+    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
+  }
+
+  /* ---------------- learning paths ---------------- */
+
+  function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
+
+  function renderPaths() {
+    var h = headerHTML() + '<main class="page">' +
+      '<a class="back" href="#/">‹ Library</a>' +
+      '<h1 class="page-title">Learning paths</h1>' +
+      '<p class="today-sub">Curated journeys through the library — each course builds on the one before it.</p>' +
+      '<section class="paths">';
+    for (var i = 0; i < Paths.list.length; i++) {
+      var p = Paths.list[i], pr = pathProgress(p);
+      h += '<a class="path-card" style="--ah:' + HUES[i % HUES.length] + '" href="#/path/' + esc(p.id) + '">' +
+        '<div class="path-art">' + Art.svg(p.art) + '</div>' +
+        '<div class="path-body"><h3>' + esc(p.title) + '</h3><p>' + esc(p.blurb) + '</p>' +
+        '<div class="cover-meta"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
+        '<span>' + pr.done + '/' + pr.total + ' courses</span></div></div></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
+  }
+
+  function renderPath(id) {
+    var p = Paths.byId(id);
+    if (!p) return nav('#/paths');
+    var pr = pathProgress(p);
+    var hue = HUES[Paths.list.indexOf(p) % HUES.length];
+    var h = headerHTML() + '<main class="page" style="--ah:' + hue + '">' +
+      '<a class="back" href="#/paths">‹ Paths</a>' +
+      '<section class="course-hero">' +
+        '<div class="course-hero-art">' + Art.svg(p.art) + '</div>' +
+        '<div class="course-hero-text"><span class="cat">Path</span><h1>' + esc(p.title) + '</h1>' +
+        '<p class="desc">' + esc(p.blurb) + '</p>' +
+        '<div class="cover-meta wide"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
+        '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div></div>' +
+      '</section><section class="lessons">';
+    for (var i = 0; i < p.courses.length; i++) {
+      var c = findCourse(p.courses[i]);
+      if (!c) continue;
+      var cp = Store.courseProgress(c);
+      var done = cp.total && cp.done === cp.total;
+      var isNext = c.id === pr.next;
+      h += '<a class="lesson-row' + (done ? ' done' : '') + (isNext ? ' next-up' : '') + '" href="#/course/' + esc(c.id) + '">' +
+        '<span class="lesson-n">' + (done ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : (i + 1)) + '</span>' +
+        '<span class="lesson-txt"><b>' + esc(c.title) + (isNext ? ' <em class="up-tag">next up</em>' : '') + '</b><small>' + esc(c.tagline) + '</small></span>' +
+        '<span class="lesson-side"><em class="mut">' + cp.done + '/' + cp.total + '</em><span class="go">›</span></span></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
+  }
+
+  /* ---------------- saved cards ---------------- */
+
+  function renderSaved() {
+    var saved = Store.state.saved.slice().sort(function (a, b) { return b.savedAt - a.savedAt; });
+    var h = headerHTML() + '<main class="page">' +
+      '<a class="back" href="#/">‹ Library</a><h1 class="page-title">Saved cards</h1>';
+    if (!saved.length) {
+      h += '<div class="empty wide-empty">' + Art.svg('book') +
+        '<h2>Nothing saved yet</h2><p>Tap the bookmark on any card during a lesson to keep it here.</p>' +
+        '<a class="btn primary" href="#/">Browse courses</a></div></main>';
+      $app.innerHTML = h; bindChrome(); return;
+    }
+    h += '<p class="today-sub">' + saved.length + ' card' + (saved.length === 1 ? '' : 's') + ' you kept.</p><section class="saved-list">';
+    for (var i = 0; i < saved.length; i++) {
+      var sv = saved[i];
+      var c = findCourse(sv.courseId);
+      var f = c && findLesson(c, sv.lessonId);
+      if (!c || !f) continue;
+      var card = f.lesson.cards[sv.idx];
+      if (!card) continue;
+      var title = card.title || card.prompt || card.statement || (card.type === 'quote' ? card.by : 'Recap');
+      var body = card.body || card.answer || card.explain || card.text || (card.points || []).join(' · ');
+      h += '<a class="saved-card" href="#/lesson/' + esc(c.id) + '/' + esc(f.lesson.id) + '">' +
+        '<span class="hit-course">' + esc(c.title) + ' · ' + esc(f.lesson.title) + '</span>' +
+        '<b>' + esc(String(title)) + '</b><p>' + esc(String(body).slice(0, 220)) + '</p></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
   }
 
   /* ---------------- course view ---------------- */
@@ -476,10 +742,13 @@
   }
 
   function playerShell(inner, footer) {
+    var savedNow = Store.isSaved(session.course.id, session.lesson.id, session.idx);
     return '<main class="player" style="--ah:' + courseHue(session.course.id) + '">' +
       '<div class="player-top">' +
         '<button class="iconbtn" id="btn-exit" aria-label="Exit lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
         segmentsHTML() +
+        (TTS.available() ? '<button class="iconbtn" id="btn-speak" aria-label="Read aloud" title="Read this card aloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg></button>' : '') +
+        '<button class="iconbtn' + (savedNow ? ' on' : '') + '" id="btn-save" aria-label="Save this card" title="Save this card"><svg viewBox="0 0 24 24" fill="' + (savedNow ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6 4h12v16l-6-4.5L6 20z"/></svg></button>' +
         '<span class="player-xp">+' + session.xp + '</span>' +
       '</div>' +
       '<div class="card-stage"><div class="card" id="card">' + inner + '</div></div>' +
@@ -562,9 +831,39 @@
     persistSession();
   }
 
+  /* Plain-text version of a card, for narration. */
+  function cardSpeech(card) {
+    if (card.type === 'quote') return card.text + '. ' + card.by;
+    if (card.type === 'recap') return 'Key takeaways. ' + (card.points || []).join('. ');
+    if (card.type === 'mcq') return card.prompt + '. ' + (card.choices || []).join('. ');
+    if (card.type === 'truefalse') return 'True or false. ' + card.statement;
+    if (card.type === 'reveal') return card.prompt;
+    return (card.title ? card.title + '. ' : '') + (card.body || '');
+  }
+
   function bindCard(card) {
     var exit = document.getElementById('btn-exit');
     if (exit) exit.onclick = function () { nav('#/course/' + session.course.id); };
+
+    var speak = document.getElementById('btn-speak');
+    if (speak) {
+      speak.onclick = function () {
+        var on = TTS.toggle(cardSpeech(card));
+        speak.classList.toggle('on', on);
+      };
+      TTS.onChange = function (on) { var b = document.getElementById('btn-speak'); if (b) b.classList.toggle('on', on); };
+    }
+
+    var savebtn = document.getElementById('btn-save');
+    if (savebtn) {
+      savebtn.onclick = function () {
+        var on = Store.toggleSaved(session.course.id, session.lesson.id, session.idx);
+        savebtn.classList.toggle('on', on);
+        savebtn.querySelector('svg').setAttribute('fill', on ? 'currentColor' : 'none');
+        SFX.flip();
+        toast('<span class="toast-emoji">' + (on ? '🔖' : '↩️') + '</span><span><b>' + (on ? 'Card saved' : 'Removed') + '</b><br>' + (on ? 'Find it under Saved.' : 'No longer in Saved.') + '</span>');
+      };
+    }
 
     var next = document.getElementById('btn-next');
     if (next) next.onclick = advance;
@@ -698,13 +997,15 @@
       missesHTML() +
       '</div></div>' +
       '<div class="player-foot col">' +
-        (nextLesson ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
+        (flow ? flowFooter('') : '') +
+        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
         (session.lesson.review.length >= 3 && !session.matchPlayed ? '<button class="btn ghost" id="btn-match">Bonus round: match the pairs</button>' : '') +
         '<button class="btn ' + (nextLesson ? 'ghost' : 'primary') + '" id="btn-back-course">' + (nextLesson ? 'Back to course' : 'Done') + '</button>' +
       '</div></main>';
     $app.innerHTML = h;
     if (!session.completed.celebrated) { session.completed.celebrated = true; confetti(); }
 
+    bindFlowFooter();
     var nl = document.getElementById('btn-next-lesson');
     if (nl) nl.onclick = function () { nav('#/lesson/' + session.course.id + '/' + nextLesson.id); };
     var mb = document.getElementById('btn-match');
@@ -927,12 +1228,14 @@
         '<div class="stat"><b>+' + prac.xp + '</b><span>XP</span></div>' +
       '</div></div></div>' +
       '<div class="player-foot col">' +
-        '<button class="btn primary" id="prac-again">Another round</button>' +
-        '<a class="btn ghost" href="#/">Done</a>' +
+        (flow ? flowFooter('') : '<button class="btn primary" id="prac-again">Another round</button>') +
+        (flow ? '' : '<a class="btn ghost" href="#/">Done</a>') +
       '</div></main>';
     SFX.complete();
     confetti();
-    document.getElementById('prac-again').onclick = function () { startPractice(prac.courseId); };
+    bindFlowFooter();
+    var again = document.getElementById('prac-again');
+    if (again) again.onclick = function () { startPractice(prac.courseId); };
     onkey = function (e) { if (e.key === 'Escape') nav('#/'); };
   }
 
@@ -948,6 +1251,7 @@
   }
 
   function renderReviewEmpty() {
+    if (flow) return flowAdvance();          // nothing due — move the session along
     var next = SRS.nextDue(Store.state.srs);
     var total = Store.srsCount();
     $app.innerHTML = headerHTML() + '<main class="page center">' +
@@ -1029,12 +1333,13 @@
         '<div class="stat"><b>+' + rev.xp + '</b><span>XP</span></div>' +
         '<div class="stat"><b>' + (rev.graded ? Math.round(100 * (rev.graded - rev.again) / rev.graded) : 100) + '%</b><span>recalled</span></div>' +
       '</div></div></div>' +
-      '<div class="player-foot"><a class="btn primary" href="#/">Done</a></div></main>';
+      '<div class="player-foot">' + (flow ? flowFooter('') : '<a class="btn primary" href="#/">Done</a>') + '</div></main>';
     $app.innerHTML = h;
     SFX.complete();
     checkBadges();
     confetti();
-    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
+    bindFlowFooter();
+    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') { if (flow) flowAdvance(); else nav('#/'); } };
   }
 
   /* ---------------- search ---------------- */
@@ -1351,10 +1656,16 @@
     for (var fi = 0; fi < floats.length; fi++) floats[fi].remove();
     var modals = document.querySelectorAll('.modal-wrap');
     for (var mi = 0; mi < modals.length; mi++) modals[mi].remove();
+    if (typeof TTS !== 'undefined' && TTS.available()) TTS.stop();
+    if (flow && parts[0] !== 'review' && parts[0] !== 'lesson' && parts[0] !== 'practice' && parts[0] !== 'today') flow = null;
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
     else if (parts[0] === 'practice') startPractice(parts[1] || null);
+    else if (parts[0] === 'today') renderToday();
+    else if (parts[0] === 'paths') renderPaths();
+    else if (parts[0] === 'path' && parts[1]) renderPath(parts[1]);
+    else if (parts[0] === 'saved') renderSaved();
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') renderSearch();
     else renderHome();
@@ -1364,6 +1675,10 @@
   window.addEventListener('DOMContentLoaded', function () {
     $app = document.getElementById('app');
     applyTheme();
+    var frozen = Store.applyFreeze();
     route();
+    if (frozen) {
+      toast('<span class="toast-emoji">🧊</span><span><b>Streak freeze used</b><br>You missed ' + esc(frozen) + ', but your streak survived.</span>');
+    }
   });
 })();

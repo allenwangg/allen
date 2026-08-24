@@ -10,6 +10,9 @@ Prism is a visual micro-learning app in the spirit of [Imprint](https://imprinta
 - **Spaced repetition built in** — completing a lesson adds its key ideas to a review deck scheduled with an SM-2-derived algorithm (Again / Hard / Good / Easy, expanding intervals, lapse handling).
 - **Gamification that serves learning** — XP, levels with titles, a daily goal ring, and a streak that survives until midnight, plus a 12-week activity heatmap.
 - **Full-text search** across every card (`/` to open), **13 achievements** with unlock toasts, synthesized **sound effects**, a **7-day review forecast**, a trickiest-cards list, and a missed-questions recap after each lesson.
+- **Today — one-tap smart sessions** that assemble due reviews, the right next lesson and a practice round into a single 5-minute plan, then run them back to back.
+- **8 learning paths** — curated journeys through the library, each marking your next course.
+- **Read-aloud narration** of any card (browser speech, no audio files), **bookmarked cards** kept in a Saved collection, and **streak freezes** that cover a missed day automatically.
 - **Practice mode** — quick-fire quiz remixes drawn from lessons you've completed, per course or across the library; a **match-the-pairs bonus round** after every lesson; **mid-lesson resume** so leaving never loses your place; a 30-day XP history and a first-visit tour.
 - **32 hand-drawn geometric SVG illustrations**, tinted per course; light/dark/system themes; full keyboard controls (1–4 to answer, Enter to continue, Esc to exit).
 - **Mobile-first ergonomics** — safe-area insets, touch-action tuning, and layouts audited at phone widths; **backup & restore** moves progress between devices via the clipboard.

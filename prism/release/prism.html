@@ -688,6 +688,104 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 .filter i { font-style: normal; font-size: 11.5px; font-weight: 700; opacity: .65; font-variant-numeric: tabular-nums; }
 .filter.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
 
+/* ---------------- Today: the one-tap session ---------------- */
+
+.today-card {
+  display: flex; align-items: center; gap: 18px; margin-top: 22px;
+  padding: 20px 22px; border-radius: 22px;
+  background:
+    radial-gradient(600px 220px at 100% -40%, hsl(calc(var(--ah) + 40) 75% 60% / .22), transparent 62%),
+    linear-gradient(120deg, hsl(var(--ah) 70% 55% / .16), var(--surface) 62%);
+  border: 1.4px solid var(--accent-line); box-shadow: var(--shadow-lift);
+  transition: transform .16s, box-shadow .16s;
+}
+.today-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px #14122010, 0 20px 52px #14122024; }
+.today-card-art { width: 92px; flex: 0 0 auto; }
+.today-card-art svg { width: 100%; height: auto; }
+.today-card-body h3 { font-size: 21px; margin: 2px 0 3px; }
+.today-card-body p { color: var(--mut); font-size: 14px; max-width: 46ch; }
+.today-card .go { font-size: 26px; }
+@media (max-width: 560px) { .today-card { gap: 12px; padding: 16px; } .today-card-art { width: 66px; } .today-card-body h3 { font-size: 18px; } }
+
+.today-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 8px; }
+.today-sub { color: var(--mut); font-size: 15px; max-width: 56ch; margin-top: -8px; }
+.plan { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 22px 0; counter-reset: plan; }
+.plan-step {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 12px 18px; box-shadow: var(--shadow);
+}
+.plan-n {
+  flex: 0 0 30px; height: 30px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; font-size: 14px;
+}
+.plan-art { width: 52px; flex: 0 0 auto; }
+.plan-art svg { width: 100%; height: auto; }
+.plan-txt { display: flex; flex-direction: column; min-width: 0; }
+.plan-txt b { font-size: 15.5px; }
+.plan-txt small { color: var(--mut); font-size: 13px; }
+.plan-mins { margin-left: auto; color: var(--mut); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.today-cta { display: flex; justify-content: center; margin-top: 6px; }
+.today-cta .btn { padding: 15px 42px; font-size: 16.5px; }
+@media (max-width: 560px) { .plan-art { display: none; } .today-head { flex-direction: column-reverse; align-items: flex-start; } }
+
+/* ---------------- learning paths ---------------- */
+
+.paths { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (max-width: 720px) { .paths { grid-template-columns: 1fr; } }
+.path-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+  transition: transform .16s, border-color .16s;
+}
+.path-card:hover { transform: translateY(-2px); border-color: var(--accent-line); }
+.path-art { width: 78px; flex: 0 0 auto; }
+.path-art svg { width: 100%; height: auto; }
+.path-body h3 { font-size: 18px; }
+.path-body p { color: var(--mut); font-size: 13.5px; margin: 2px 0 4px; }
+
+.path-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.path-strip::-webkit-scrollbar { display: none; }
+.path-chip {
+  flex: 0 0 auto; width: 150px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 10px;
+  box-shadow: var(--shadow); transition: transform .15s, border-color .15s;
+}
+.path-chip:hover { transform: translateY(-2px); border-color: var(--accent-line); }
+.path-chip-art { width: 62px; }
+.path-chip-art svg { width: 100%; height: auto; }
+.path-chip b { font-size: 13.5px; line-height: 1.25; }
+.path-chip small { color: var(--mut); font-size: 11.5px; font-weight: 600; }
+.lib-count.link { color: var(--accent-strong); }
+.lesson-row.next-up { border-color: var(--accent); }
+.up-tag {
+  font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent-strong); background: var(--accent-soft); padding: 2px 7px; border-radius: 999px; margin-left: 6px;
+}
+
+/* ---------------- saved cards ---------------- */
+
+.saved-list { display: flex; flex-direction: column; gap: 10px; }
+.saved-card {
+  display: flex; flex-direction: column; gap: 3px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 15px;
+  padding: 13px 17px; box-shadow: var(--shadow); transition: transform .14s, border-color .14s;
+}
+.saved-card:hover { transform: translateX(3px); border-color: var(--accent-line); }
+.saved-card b { font-size: 15.5px; }
+.saved-card p { color: var(--mut); font-size: 13.5px; }
+.empty.wide-empty { max-width: 460px; margin: 40px auto; }
+
+/* player icon toggles */
+.iconbtn.on { color: var(--accent-strong); border-color: var(--accent-line); background: var(--accent-soft); }
+.chip.streak .frz {
+  font-style: normal; font-size: 10px; font-weight: 800; margin-left: 3px;
+  background: #4aa8d822; color: #2b7fb0; padding: 1px 5px; border-radius: 999px;
+}
+:root[data-theme="dark"] .chip.streak .frz { background: #7cc6f033; color: #8fd0f5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.streak .frz { background: #7cc6f033; color: #8fd0f5; } }
+
 </style>
 </head>
 <body>
@@ -844,6 +942,124 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 
 </script>
 <script>
+/* Prism — learning paths. Curated multi-course journeys over the library. */
+(function () {
+  'use strict';
+
+  var PATHS = [
+    { id: 'clear-thinking', title: 'Think Clearly', art: 'lens',
+      blurb: 'Find the flaws in your own reasoning, then build the habits that catch them.',
+      courses: ['cognitive-biases', 'logical-fallacies', 'probability-and-luck', 'art-of-strategy', 'world-in-data'] },
+    { id: 'master-mind', title: 'Master Your Mind', art: 'brain',
+      blurb: 'How memory, emotion, attention and habit actually work — and how to steer them.',
+      courses: ['learning-how-to-learn', 'brain-on-emotions', 'attention-age', 'science-of-habits', 'psychology-of-happiness'] },
+    { id: 'money-path', title: 'Money & Markets', art: 'coin',
+      blurb: 'From your own behaviour with money to how whole economies move.',
+      courses: ['psychology-of-money', 'how-economies-work', 'stock-market-explained', 'money-in-history', 'negotiation'] },
+    { id: 'examined-life', title: 'The Examined Life', art: 'compass',
+      blurb: 'Twenty-five centuries of arguments about how to live and what a mind is.',
+      courses: ['stoicism', 'eastern-philosophy', 'ethics-big-three', 'consciousness'] },
+    { id: 'your-body', title: 'Understand Your Body', art: 'shield',
+      blurb: 'Sleep, food, immunity, microbes and aging — the evidence, minus the marketing.',
+      courses: ['science-of-sleep', 'nutrition-without-nonsense', 'immune-system', 'microbiome', 'how-to-live-forever'] },
+    { id: 'how-world-works', title: 'How the World Works', art: 'orbit',
+      blurb: 'The physics, biology and history that produced everything around you.',
+      courses: ['big-ideas-physics', 'story-of-evolution', 'climate-system', 'great-experiments', 'space-exploration', 'turning-points'] },
+    { id: 'modern-tech', title: 'The Modern Frontier', art: 'network',
+      blurb: 'The technologies rewriting this decade, explained without hype.',
+      courses: ['how-internet-works', 'how-ai-works', 'genes-and-editing', 'how-things-spread'] },
+    { id: 'communicate', title: 'Communicate & Persuade', art: 'dialog',
+      blurb: 'Move people with evidence, story and structure — ethically.',
+      courses: ['persuasion', 'art-of-storytelling', 'genius-of-language', 'music-and-brain'] }
+  ];
+
+  function byId(id) {
+    for (var i = 0; i < PATHS.length; i++) if (PATHS[i].id === id) return PATHS[i];
+    return null;
+  }
+
+  /* {done, total, next} — next is the first course id not yet complete. */
+  function progress(path, findCourse, courseProgress) {
+    var done = 0, next = null;
+    for (var i = 0; i < path.courses.length; i++) {
+      var c = findCourse(path.courses[i]);
+      if (!c) continue;
+      var p = courseProgress(c);
+      if (p.total && p.done === p.total) done += 1;
+      else if (!next) next = c.id;
+    }
+    return { done: done, total: path.courses.length, next: next };
+  }
+
+  window.Paths = { list: PATHS, byId: byId, progress: progress };
+})();
+
+</script>
+<script>
+/* Prism — narration. Reads cards aloud with the browser's own speech engine.
+   No audio files, no network: uses the Web Speech API where available. */
+(function () {
+  'use strict';
+
+  var synth = window.speechSynthesis || null;
+  var speaking = false;
+  var onChange = null;
+
+  function available() { return !!(synth && typeof SpeechSynthesisUtterance === 'function'); }
+
+  function pickVoice() {
+    try {
+      var vs = synth.getVoices() || [];
+      var lang = (navigator.language || 'en-US');
+      for (var i = 0; i < vs.length; i++) {
+        if (vs[i].lang === lang && /natural|premium|enhanced/i.test(vs[i].name)) return vs[i];
+      }
+      for (var j = 0; j < vs.length; j++) if (vs[j].lang === lang) return vs[j];
+      for (var k = 0; k < vs.length; k++) if (vs[k].lang && vs[k].lang.indexOf('en') === 0) return vs[k];
+    } catch (e) { /* voice list unavailable */ }
+    return null;
+  }
+
+  function stop() {
+    if (!available()) return;
+    try { synth.cancel(); } catch (e) { /* ignore */ }
+    speaking = false;
+    if (onChange) onChange(false);
+  }
+
+  /* Speak text; returns true if narration started. */
+  function speak(text) {
+    if (!available() || !text) return false;
+    stop();
+    try {
+      var u = new SpeechSynthesisUtterance(String(text));
+      var v = pickVoice();
+      if (v) u.voice = v;
+      u.rate = 1.0;
+      u.pitch = 1.0;
+      u.onend = function () { speaking = false; if (onChange) onChange(false); };
+      u.onerror = function () { speaking = false; if (onChange) onChange(false); };
+      synth.speak(u);
+      speaking = true;
+      if (onChange) onChange(true);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function toggle(text) {
+    if (speaking) { stop(); return false; }
+    return speak(text);
+  }
+
+  window.TTS = {
+    available: available, speak: speak, stop: stop, toggle: toggle,
+    get speaking() { return speaking; },
+    set onChange(fn) { onChange = fn; }
+  };
+})();
+
+</script>
+<script>
 /* Prism — spaced repetition scheduler (SM-2 derived).
    Grades: 0 = Again, 1 = Hard, 2 = Good, 3 = Easy. */
 (function () {
@@ -980,6 +1196,11 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
       lastLesson: null,       // {courseId, lessonId}
       inProgress: {},         // 'courseId/lessonId' -> mid-lesson snapshot
       toured: false,          // first-visit tour dismissed
+      saved: [],              // bookmarked cards: {courseId, lessonId, idx, savedAt}
+      freezes: 0,             // unused streak freezes
+      frozenDays: {},         // 'YYYY-MM-DD' -> true, a missed day covered by a freeze
+      lastActiveDay: null,    // day key of the last day XP was earned
+      certificates: {},       // courseId -> earnedAt
       badges: {},             // badgeId -> earnedAt timestamp
       settings: { theme: 'system', dailyGoal: 50, name: '', sound: true },
       firstSeen: Date.now()
@@ -1028,7 +1249,8 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
   function todayXP() { return state.xpByDay[dayKey()] || 0; }
 
   function goalMet(k) {
-    return state.goalDays[k] === true || (state.xpByDay[k] || 0) >= state.settings.dailyGoal;
+    return state.goalDays[k] === true || state.frozenDays[k] === true ||
+      (state.xpByDay[k] || 0) >= state.settings.dailyGoal;
   }
 
   /* Consecutive days (ending today or yesterday) with the daily goal met.
@@ -1146,6 +1368,71 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 
   function markToured() { state.toured = true; save(); }
 
+  /* ---- streak freezes ----
+     One freeze is earned every 5 goal-days (max 3 held). On the first visit of a
+     new day, any single missed day is covered automatically if a freeze is held. */
+  function grantFreezeIfEarned() {
+    var met = 0;
+    for (var k in state.xpByDay) if (goalMet(k) && !state.frozenDays[k]) met += 1;
+    var earned = Math.floor(met / 5);
+    var already = state.freezesEarned || 0;
+    if (earned > already) {
+      state.freezesEarned = earned;
+      state.freezes = Math.min(3, state.freezes + (earned - already));
+      save();
+      return earned - already;
+    }
+    return 0;
+  }
+
+  /* Called on load: cover a single missed day with a freeze so the streak survives. */
+  function applyFreeze() {
+    var today = dayKey();
+    if (!state.lastActiveDay || state.lastActiveDay === today) return null;
+    var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1);
+    var yest = dayKey(d.getTime());
+    if (state.lastActiveDay === yest) return null;          // no gap
+    if (goalMet(yest)) return null;
+    // only cover a one-day gap: the day before yesterday must have counted
+    d.setDate(d.getDate() - 1);
+    if (!goalMet(dayKey(d.getTime()))) return null;
+    if (state.freezes <= 0) return null;
+    state.freezes -= 1;
+    state.frozenDays[yest] = true;
+    save();
+    return yest;
+  }
+
+  function noteActive() { state.lastActiveDay = dayKey(); save(); }
+
+  /* ---- saved cards ---- */
+  function savedKey(cid, lid, idx) { return cid + '|' + lid + '|' + idx; }
+  function isSaved(cid, lid, idx) {
+    for (var i = 0; i < state.saved.length; i++) {
+      var s2 = state.saved[i];
+      if (s2.courseId === cid && s2.lessonId === lid && s2.idx === idx) return true;
+    }
+    return false;
+  }
+  function toggleSaved(cid, lid, idx) {
+    for (var i = 0; i < state.saved.length; i++) {
+      var s2 = state.saved[i];
+      if (s2.courseId === cid && s2.lessonId === lid && s2.idx === idx) {
+        state.saved.splice(i, 1); save(); return false;
+      }
+    }
+    state.saved.push({ courseId: cid, lessonId: lid, idx: idx, savedAt: Date.now() });
+    save();
+    return true;
+  }
+
+  function grantCertificate(cid) {
+    if (state.certificates[cid]) return false;
+    state.certificates[cid] = Date.now();
+    save();
+    return true;
+  }
+
   function setSetting(k, v) { state.settings[k] = v; save(); }
 
   function resetAll() { state = defaults(); save(); }
@@ -1158,6 +1445,8 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
     addReviewItems: addReviewItems, gradeReview: gradeReview, srsCount: srsCount,
     totalReviews: totalReviews, exportData: exportData, importData: importData,
     saveProgress: saveProgress, getProgress: getProgress, clearProgress: clearProgress,
+    grantFreezeIfEarned: grantFreezeIfEarned, applyFreeze: applyFreeze, noteActive: noteActive,
+    isSaved: isSaved, toggleSaved: toggleSaved, savedKey: savedKey, grantCertificate: grantCertificate,
     newestProgress: newestProgress, markToured: markToured,
     setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
   };
@@ -18923,6 +19212,11 @@ window.COURSES = [
     var lvlBefore = Store.level().n;
     Store.addXP(n);
     if (anchor !== undefined) xpFloat(n, anchor);
+    Store.noteActive();
+    var gotFreeze = Store.grantFreezeIfEarned();
+    if (gotFreeze) {
+      toast('<span class="toast-emoji">🧊</span><span><b>Streak freeze earned</b><br>It covers one missed day automatically.</span>');
+    }
     if (before < goal && Store.todayXP() >= goal) {
       toast('<span class="toast-emoji">🔥</span><span><b>Daily goal hit</b><br>Streak secured: ' + Store.streak() + ' day' + (Store.streak() === 1 ? '' : 's') + '</span>');
     } else {
@@ -18980,6 +19274,7 @@ window.COURSES = [
   function headerHTML() {
     var lvl = Store.level();
     var flameOn = Store.streakIncludesToday();
+    var frz = Store.state.freezes || 0;
     return '' +
       '<header class="topbar">' +
         '<a class="brand" href="#/">' +
@@ -18987,12 +19282,15 @@ window.COURSES = [
           '<span>Prism</span>' +
         '</a>' +
         '<div class="topbar-right">' +
-          '<span class="chip streak' + (flameOn ? ' lit' : '') + '" title="Daily streak — hit your goal to keep it alive">' +
+          '<span class="chip streak' + (flameOn ? ' lit' : '') + '" title="Daily streak' + (frz ? ' · ' + frz + ' freeze' + (frz === 1 ? '' : 's') + ' banked' : ' — hit your goal to keep it alive') + '">' +
             '<svg viewBox="0 0 24 24"><path d="M12 2c1 4.5 6 6.5 6 12a6 6 0 0 1-12 0c0-3 1.6-4.9 3.2-6.7.3 1.9 1 3 2.1 3.6C10.9 8.5 11 5.2 12 2z" fill="currentColor"/></svg>' +
-            Store.streak() + '</span>' +
+            Store.streak() + (frz ? '<i class="frz">' + frz + '</i>' : '') + '</span>' +
           '<a class="chip xp" href="#/stats" title="Level ' + lvl.n + ' · ' + esc(lvl.title) + '">' +
             '<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.9L22 9.5l-5.4 4.6L18.3 22 12 17.8 5.7 22l1.7-7.9L2 9.5l7.4-.6z" fill="currentColor"/></svg>' +
             Store.state.xp + ' XP</a>' +
+          '<a class="iconbtn" href="#/saved" aria-label="Saved cards" title="Saved cards">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6 4h12v16l-6-4.5L6 20z"/></svg>' +
+          '</a>' +
           '<a class="iconbtn" href="#/search" aria-label="Search" title="Search ( / )">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>' +
           '</a>' +
@@ -19074,6 +19372,17 @@ window.COURSES = [
     '</section>';
 
     // action row: review + continue
+    // Today: the single decision that starts a session
+    var planN = buildPlan().length;
+    h += '<a class="today-card" href="#/today">' +
+      '<div class="today-card-art">' + Art.svg('compass') + '</div>' +
+      '<div class="today-card-body"><span class="kicker">Start here</span>' +
+      '<h3>Today’s session</h3>' +
+      '<p>' + (planN
+        ? 'A ' + planN + '-step mix of reviews, a new lesson and practice — built for right now.'
+        : 'Everything is done for today. Explore anything below.') + '</p></div>' +
+      '<span class="go">›</span></a>';
+
     h += '<section class="actions">';
     h += '<a class="action-card review-card' + (due.length ? '' : ' calm') + '" href="#/review">' +
       '<div class="action-art">' + Art.svg('orbit') + '</div>' +
@@ -19095,6 +19404,19 @@ window.COURSES = [
         '<div class="action-body"><h3>' + (resume ? 'Resume' : 'Continue') + ': ' + esc(cont.lesson.title) + '</h3>' +
         '<p>' + esc(cont.course.title) + ' · Lesson ' + (cont.index + 1) + (resume ? ' · card ' + resume.at + '/' + resume.of : '') + '</p></div>' +
         '<span class="go">›</span></a>';
+    }
+    h += '</section>';
+
+    // paths strip
+    h += '<div class="lib-head"><h2 class="section-title">Paths</h2>' +
+      '<a class="lib-count link" href="#/paths">See all ' + Paths.list.length + ' ›</a></div>' +
+      '<section class="path-strip">';
+    for (var pi = 0; pi < Math.min(4, Paths.list.length); pi++) {
+      var pth = Paths.list[pi], ppr = pathProgress(pth);
+      h += '<a class="path-chip" style="--ah:' + HUES[pi % HUES.length] + '" href="#/path/' + esc(pth.id) + '">' +
+        '<span class="path-chip-art">' + Art.svg(pth.art) + '</span>' +
+        '<b>' + esc(pth.title) + '</b>' +
+        '<small>' + ppr.done + '/' + ppr.total + ' courses</small></a>';
     }
     h += '</section>';
 
@@ -19152,6 +19474,239 @@ window.COURSES = [
     function done() { Store.markToured(); wrap.remove(); }
     wrap.addEventListener('click', function (e) { if (e.target === wrap) done(); });
     document.getElementById('tour-go').onclick = done;
+  }
+
+  /* ---------------- Today: one smart session ----------------
+     Assembles the highest-value mix for right now — cards that are due,
+     the next lesson in your current path, and a practice round — then runs
+     them back to back so learning is a single decision, not five. */
+
+  var flow = null;   // {steps:[{kind,label,...}], i:0, xp0:0}
+
+  function nextLessonTarget() {
+    // 1) an unfinished lesson already in progress
+    var np = Store.newestProgress();
+    if (np) {
+      var c0 = findCourse(np.courseId), f0 = c0 && findLesson(c0, np.lessonId);
+      if (f0 && !Store.lessonRecord(np.courseId, np.lessonId)) {
+        return { course: c0, lesson: f0.lesson, index: f0.index, resumed: true };
+      }
+    }
+    // 2) the next lesson of the course last studied
+    var last = Store.state.lastLesson;
+    if (last) {
+      var c1 = findCourse(last.courseId);
+      if (c1) {
+        for (var i = 0; i < c1.lessons.length; i++) {
+          if (!Store.lessonRecord(c1.id, c1.lessons[i].id)) return { course: c1, lesson: c1.lessons[i], index: i };
+        }
+      }
+    }
+    // 3) continue any started course, else start the first course of the first path
+    for (var k = 0; k < COURSES.length; k++) {
+      var p = Store.courseProgress(COURSES[k]);
+      if (p.done > 0 && p.done < p.total) {
+        for (var j = 0; j < COURSES[k].lessons.length; j++) {
+          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id)) {
+            return { course: COURSES[k], lesson: COURSES[k].lessons[j], index: j };
+          }
+        }
+      }
+    }
+    for (var m = 0; m < COURSES.length; m++) {
+      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id)) {
+        return { course: COURSES[m], lesson: COURSES[m].lessons[0], index: 0 };
+      }
+    }
+    return null;
+  }
+
+  function buildPlan() {
+    var steps = [];
+    var due = SRS.dueItems(Store.state.srs, Date.now());
+    if (due.length) {
+      steps.push({ kind: 'review', n: Math.min(due.length, 20), art: 'orbit',
+        label: 'Review ' + Math.min(due.length, 20) + ' card' + (Math.min(due.length, 20) === 1 ? '' : 's'),
+        sub: 'Cards your memory is about to drop', mins: Math.max(1, Math.round(Math.min(due.length, 20) * 0.15)) });
+    }
+    var t = nextLessonTarget();
+    if (t) {
+      steps.push({ kind: 'lesson', courseId: t.course.id, lessonId: t.lesson.id, art: coverArt(t.course),
+        label: (t.resumed ? 'Finish: ' : '') + t.lesson.title,
+        sub: t.course.title + ' · Lesson ' + (t.index + 1), mins: 4 });
+    }
+    if (practicePool(null).length >= 6) {
+      steps.push({ kind: 'practice', art: 'target', label: 'Practice round',
+        sub: 'Quick-fire questions from what you have learned', mins: 2 });
+    }
+    return steps;
+  }
+
+  function renderToday() {
+    var steps = buildPlan();
+    var goal = Store.state.settings.dailyGoal, today = Store.todayXP();
+    var mins = 0;
+    for (var i = 0; i < steps.length; i++) mins += steps[i].mins;
+
+    var h = headerHTML() + '<main class="page">';
+    h += '<a class="back" href="#/">‹ Library</a>';
+    h += '<section class="today-head">' +
+      '<div><h1 class="page-title">' + (today >= goal ? 'Goal met — keep going?' : 'Today’s session') + '</h1>' +
+      '<p class="today-sub">' + (steps.length
+        ? 'About ' + mins + ' minute' + (mins === 1 ? '' : 's') + ' · built from what you know and when you last saw it.'
+        : 'Nothing is due and every lesson is done. Come back tomorrow, or explore the library.') + '</p></div>' +
+      '<div class="hero-ring">' + ringHTML(Math.min(1, today / goal), 92, today + '<tspan class="ring-sub"> / ' + goal + '</tspan>') + '</div>' +
+    '</section>';
+
+    if (steps.length) {
+      h += '<ol class="plan">';
+      for (var j = 0; j < steps.length; j++) {
+        h += '<li class="plan-step"><span class="plan-n">' + (j + 1) + '</span>' +
+          '<span class="plan-art">' + Art.svg(steps[j].art) + '</span>' +
+          '<span class="plan-txt"><b>' + esc(steps[j].label) + '</b><small>' + esc(steps[j].sub) + '</small></span>' +
+          '<span class="plan-mins">' + steps[j].mins + ' min</span></li>';
+      }
+      h += '</ol><div class="today-cta"><button class="btn primary" id="today-go">Start session</button></div>';
+    } else {
+      h += '<div class="today-cta"><a class="btn primary" href="#/">Browse the library</a></div>';
+    }
+    h += '</main>';
+    $app.innerHTML = h;
+    bindChrome();
+    var go = document.getElementById('today-go');
+    if (go) go.onclick = function () { flow = { steps: steps, i: 0, xp0: Store.state.xp }; runFlow(); };
+  }
+
+  /* Advance the session to its next step, or finish. */
+  function runFlow() {
+    if (!flow) return nav('#/');
+    if (flow.i >= flow.steps.length) return renderFlowDone();
+    var s = flow.steps[flow.i];
+    if (s.kind === 'review') { nav('#/review'); }
+    else if (s.kind === 'lesson') { nav('#/lesson/' + s.courseId + '/' + s.lessonId); }
+    else { nav('#/practice'); }
+  }
+
+  function flowAdvance() { if (flow) { flow.i += 1; runFlow(); } }
+
+  function flowFooter(fallbackHTML) {
+    if (!flow) return fallbackHTML;
+    var left = flow.steps.length - flow.i - 1;
+    return '<button class="btn primary" id="flow-next">' +
+      (left > 0 ? 'Next: ' + esc(flow.steps[flow.i + 1].label) : 'Finish session') + '</button>';
+  }
+
+  function bindFlowFooter() {
+    var b = document.getElementById('flow-next');
+    if (b) b.onclick = flowAdvance;
+    return !!b;
+  }
+
+  function renderFlowDone() {
+    var gained = Store.state.xp - flow.xp0;
+    var n = flow.steps.length;
+    var goalNow = Store.todayXP() >= Store.state.settings.dailyGoal;
+    flow = null;
+    $app.innerHTML = '<main class="player complete">' +
+      '<div class="card-stage"><div class="card done-card">' +
+      '<div class="card-art">' + Art.svg('mountain') + '</div>' +
+      '<span class="kicker">Session complete</span><h2>That’s today handled</h2>' +
+      '<div class="done-stats">' +
+        '<div class="stat"><b>' + n + '</b><span>step' + (n === 1 ? '' : 's') + '</span></div>' +
+        '<div class="stat"><b>+' + gained + '</b><span>XP</span></div>' +
+        '<div class="stat"><b>' + Store.streak() + '</b><span>day streak</span></div>' +
+      '</div>' +
+      (goalNow ? '<p class="goal-note">Daily goal met 🔥</p>' : '') +
+      '</div></div>' +
+      '<div class="player-foot"><a class="btn primary" href="#/">Done</a></div></main>';
+    SFX.complete();
+    checkBadges();
+    confetti();
+    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
+  }
+
+  /* ---------------- learning paths ---------------- */
+
+  function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
+
+  function renderPaths() {
+    var h = headerHTML() + '<main class="page">' +
+      '<a class="back" href="#/">‹ Library</a>' +
+      '<h1 class="page-title">Learning paths</h1>' +
+      '<p class="today-sub">Curated journeys through the library — each course builds on the one before it.</p>' +
+      '<section class="paths">';
+    for (var i = 0; i < Paths.list.length; i++) {
+      var p = Paths.list[i], pr = pathProgress(p);
+      h += '<a class="path-card" style="--ah:' + HUES[i % HUES.length] + '" href="#/path/' + esc(p.id) + '">' +
+        '<div class="path-art">' + Art.svg(p.art) + '</div>' +
+        '<div class="path-body"><h3>' + esc(p.title) + '</h3><p>' + esc(p.blurb) + '</p>' +
+        '<div class="cover-meta"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
+        '<span>' + pr.done + '/' + pr.total + ' courses</span></div></div></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
+  }
+
+  function renderPath(id) {
+    var p = Paths.byId(id);
+    if (!p) return nav('#/paths');
+    var pr = pathProgress(p);
+    var hue = HUES[Paths.list.indexOf(p) % HUES.length];
+    var h = headerHTML() + '<main class="page" style="--ah:' + hue + '">' +
+      '<a class="back" href="#/paths">‹ Paths</a>' +
+      '<section class="course-hero">' +
+        '<div class="course-hero-art">' + Art.svg(p.art) + '</div>' +
+        '<div class="course-hero-text"><span class="cat">Path</span><h1>' + esc(p.title) + '</h1>' +
+        '<p class="desc">' + esc(p.blurb) + '</p>' +
+        '<div class="cover-meta wide"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
+        '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div></div>' +
+      '</section><section class="lessons">';
+    for (var i = 0; i < p.courses.length; i++) {
+      var c = findCourse(p.courses[i]);
+      if (!c) continue;
+      var cp = Store.courseProgress(c);
+      var done = cp.total && cp.done === cp.total;
+      var isNext = c.id === pr.next;
+      h += '<a class="lesson-row' + (done ? ' done' : '') + (isNext ? ' next-up' : '') + '" href="#/course/' + esc(c.id) + '">' +
+        '<span class="lesson-n">' + (done ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : (i + 1)) + '</span>' +
+        '<span class="lesson-txt"><b>' + esc(c.title) + (isNext ? ' <em class="up-tag">next up</em>' : '') + '</b><small>' + esc(c.tagline) + '</small></span>' +
+        '<span class="lesson-side"><em class="mut">' + cp.done + '/' + cp.total + '</em><span class="go">›</span></span></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
+  }
+
+  /* ---------------- saved cards ---------------- */
+
+  function renderSaved() {
+    var saved = Store.state.saved.slice().sort(function (a, b) { return b.savedAt - a.savedAt; });
+    var h = headerHTML() + '<main class="page">' +
+      '<a class="back" href="#/">‹ Library</a><h1 class="page-title">Saved cards</h1>';
+    if (!saved.length) {
+      h += '<div class="empty wide-empty">' + Art.svg('book') +
+        '<h2>Nothing saved yet</h2><p>Tap the bookmark on any card during a lesson to keep it here.</p>' +
+        '<a class="btn primary" href="#/">Browse courses</a></div></main>';
+      $app.innerHTML = h; bindChrome(); return;
+    }
+    h += '<p class="today-sub">' + saved.length + ' card' + (saved.length === 1 ? '' : 's') + ' you kept.</p><section class="saved-list">';
+    for (var i = 0; i < saved.length; i++) {
+      var sv = saved[i];
+      var c = findCourse(sv.courseId);
+      var f = c && findLesson(c, sv.lessonId);
+      if (!c || !f) continue;
+      var card = f.lesson.cards[sv.idx];
+      if (!card) continue;
+      var title = card.title || card.prompt || card.statement || (card.type === 'quote' ? card.by : 'Recap');
+      var body = card.body || card.answer || card.explain || card.text || (card.points || []).join(' · ');
+      h += '<a class="saved-card" href="#/lesson/' + esc(c.id) + '/' + esc(f.lesson.id) + '">' +
+        '<span class="hit-course">' + esc(c.title) + ' · ' + esc(f.lesson.title) + '</span>' +
+        '<b>' + esc(String(title)) + '</b><p>' + esc(String(body).slice(0, 220)) + '</p></a>';
+    }
+    h += '</section></main>';
+    $app.innerHTML = h;
+    bindChrome();
   }
 
   /* ---------------- course view ---------------- */
@@ -19232,10 +19787,13 @@ window.COURSES = [
   }
 
   function playerShell(inner, footer) {
+    var savedNow = Store.isSaved(session.course.id, session.lesson.id, session.idx);
     return '<main class="player" style="--ah:' + courseHue(session.course.id) + '">' +
       '<div class="player-top">' +
         '<button class="iconbtn" id="btn-exit" aria-label="Exit lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
         segmentsHTML() +
+        (TTS.available() ? '<button class="iconbtn" id="btn-speak" aria-label="Read aloud" title="Read this card aloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg></button>' : '') +
+        '<button class="iconbtn' + (savedNow ? ' on' : '') + '" id="btn-save" aria-label="Save this card" title="Save this card"><svg viewBox="0 0 24 24" fill="' + (savedNow ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6 4h12v16l-6-4.5L6 20z"/></svg></button>' +
         '<span class="player-xp">+' + session.xp + '</span>' +
       '</div>' +
       '<div class="card-stage"><div class="card" id="card">' + inner + '</div></div>' +
@@ -19318,9 +19876,39 @@ window.COURSES = [
     persistSession();
   }
 
+  /* Plain-text version of a card, for narration. */
+  function cardSpeech(card) {
+    if (card.type === 'quote') return card.text + '. ' + card.by;
+    if (card.type === 'recap') return 'Key takeaways. ' + (card.points || []).join('. ');
+    if (card.type === 'mcq') return card.prompt + '. ' + (card.choices || []).join('. ');
+    if (card.type === 'truefalse') return 'True or false. ' + card.statement;
+    if (card.type === 'reveal') return card.prompt;
+    return (card.title ? card.title + '. ' : '') + (card.body || '');
+  }
+
   function bindCard(card) {
     var exit = document.getElementById('btn-exit');
     if (exit) exit.onclick = function () { nav('#/course/' + session.course.id); };
+
+    var speak = document.getElementById('btn-speak');
+    if (speak) {
+      speak.onclick = function () {
+        var on = TTS.toggle(cardSpeech(card));
+        speak.classList.toggle('on', on);
+      };
+      TTS.onChange = function (on) { var b = document.getElementById('btn-speak'); if (b) b.classList.toggle('on', on); };
+    }
+
+    var savebtn = document.getElementById('btn-save');
+    if (savebtn) {
+      savebtn.onclick = function () {
+        var on = Store.toggleSaved(session.course.id, session.lesson.id, session.idx);
+        savebtn.classList.toggle('on', on);
+        savebtn.querySelector('svg').setAttribute('fill', on ? 'currentColor' : 'none');
+        SFX.flip();
+        toast('<span class="toast-emoji">' + (on ? '🔖' : '↩️') + '</span><span><b>' + (on ? 'Card saved' : 'Removed') + '</b><br>' + (on ? 'Find it under Saved.' : 'No longer in Saved.') + '</span>');
+      };
+    }
 
     var next = document.getElementById('btn-next');
     if (next) next.onclick = advance;
@@ -19454,13 +20042,15 @@ window.COURSES = [
       missesHTML() +
       '</div></div>' +
       '<div class="player-foot col">' +
-        (nextLesson ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
+        (flow ? flowFooter('') : '') +
+        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
         (session.lesson.review.length >= 3 && !session.matchPlayed ? '<button class="btn ghost" id="btn-match">Bonus round: match the pairs</button>' : '') +
         '<button class="btn ' + (nextLesson ? 'ghost' : 'primary') + '" id="btn-back-course">' + (nextLesson ? 'Back to course' : 'Done') + '</button>' +
       '</div></main>';
     $app.innerHTML = h;
     if (!session.completed.celebrated) { session.completed.celebrated = true; confetti(); }
 
+    bindFlowFooter();
     var nl = document.getElementById('btn-next-lesson');
     if (nl) nl.onclick = function () { nav('#/lesson/' + session.course.id + '/' + nextLesson.id); };
     var mb = document.getElementById('btn-match');
@@ -19683,12 +20273,14 @@ window.COURSES = [
         '<div class="stat"><b>+' + prac.xp + '</b><span>XP</span></div>' +
       '</div></div></div>' +
       '<div class="player-foot col">' +
-        '<button class="btn primary" id="prac-again">Another round</button>' +
-        '<a class="btn ghost" href="#/">Done</a>' +
+        (flow ? flowFooter('') : '<button class="btn primary" id="prac-again">Another round</button>') +
+        (flow ? '' : '<a class="btn ghost" href="#/">Done</a>') +
       '</div></main>';
     SFX.complete();
     confetti();
-    document.getElementById('prac-again').onclick = function () { startPractice(prac.courseId); };
+    bindFlowFooter();
+    var again = document.getElementById('prac-again');
+    if (again) again.onclick = function () { startPractice(prac.courseId); };
     onkey = function (e) { if (e.key === 'Escape') nav('#/'); };
   }
 
@@ -19704,6 +20296,7 @@ window.COURSES = [
   }
 
   function renderReviewEmpty() {
+    if (flow) return flowAdvance();          // nothing due — move the session along
     var next = SRS.nextDue(Store.state.srs);
     var total = Store.srsCount();
     $app.innerHTML = headerHTML() + '<main class="page center">' +
@@ -19785,12 +20378,13 @@ window.COURSES = [
         '<div class="stat"><b>+' + rev.xp + '</b><span>XP</span></div>' +
         '<div class="stat"><b>' + (rev.graded ? Math.round(100 * (rev.graded - rev.again) / rev.graded) : 100) + '%</b><span>recalled</span></div>' +
       '</div></div></div>' +
-      '<div class="player-foot"><a class="btn primary" href="#/">Done</a></div></main>';
+      '<div class="player-foot">' + (flow ? flowFooter('') : '<a class="btn primary" href="#/">Done</a>') + '</div></main>';
     $app.innerHTML = h;
     SFX.complete();
     checkBadges();
     confetti();
-    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
+    bindFlowFooter();
+    onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') { if (flow) flowAdvance(); else nav('#/'); } };
   }
 
   /* ---------------- search ---------------- */
@@ -20107,10 +20701,16 @@ window.COURSES = [
     for (var fi = 0; fi < floats.length; fi++) floats[fi].remove();
     var modals = document.querySelectorAll('.modal-wrap');
     for (var mi = 0; mi < modals.length; mi++) modals[mi].remove();
+    if (typeof TTS !== 'undefined' && TTS.available()) TTS.stop();
+    if (flow && parts[0] !== 'review' && parts[0] !== 'lesson' && parts[0] !== 'practice' && parts[0] !== 'today') flow = null;
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
     else if (parts[0] === 'practice') startPractice(parts[1] || null);
+    else if (parts[0] === 'today') renderToday();
+    else if (parts[0] === 'paths') renderPaths();
+    else if (parts[0] === 'path' && parts[1]) renderPath(parts[1]);
+    else if (parts[0] === 'saved') renderSaved();
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') renderSearch();
     else renderHome();
@@ -20120,7 +20720,11 @@ window.COURSES = [
   window.addEventListener('DOMContentLoaded', function () {
     $app = document.getElementById('app');
     applyTheme();
+    var frozen = Store.applyFreeze();
     route();
+    if (frozen) {
+      toast('<span class="toast-emoji">🧊</span><span><b>Streak freeze used</b><br>You missed ' + esc(frozen) + ', but your streak survived.</span>');
+    }
   });
 })();
 

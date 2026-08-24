@@ -16,6 +16,11 @@
       lastLesson: null,       // {courseId, lessonId}
       inProgress: {},         // 'courseId/lessonId' -> mid-lesson snapshot
       toured: false,          // first-visit tour dismissed
+      saved: [],              // bookmarked cards: {courseId, lessonId, idx, savedAt}
+      freezes: 0,             // unused streak freezes
+      frozenDays: {},         // 'YYYY-MM-DD' -> true, a missed day covered by a freeze
+      lastActiveDay: null,    // day key of the last day XP was earned
+      certificates: {},       // courseId -> earnedAt
       badges: {},             // badgeId -> earnedAt timestamp
       settings: { theme: 'system', dailyGoal: 50, name: '', sound: true },
       firstSeen: Date.now()
@@ -64,7 +69,8 @@
   function todayXP() { return state.xpByDay[dayKey()] || 0; }
 
   function goalMet(k) {
-    return state.goalDays[k] === true || (state.xpByDay[k] || 0) >= state.settings.dailyGoal;
+    return state.goalDays[k] === true || state.frozenDays[k] === true ||
+      (state.xpByDay[k] || 0) >= state.settings.dailyGoal;
   }
 
   /* Consecutive days (ending today or yesterday) with the daily goal met.
@@ -182,6 +188,71 @@
 
   function markToured() { state.toured = true; save(); }
 
+  /* ---- streak freezes ----
+     One freeze is earned every 5 goal-days (max 3 held). On the first visit of a
+     new day, any single missed day is covered automatically if a freeze is held. */
+  function grantFreezeIfEarned() {
+    var met = 0;
+    for (var k in state.xpByDay) if (goalMet(k) && !state.frozenDays[k]) met += 1;
+    var earned = Math.floor(met / 5);
+    var already = state.freezesEarned || 0;
+    if (earned > already) {
+      state.freezesEarned = earned;
+      state.freezes = Math.min(3, state.freezes + (earned - already));
+      save();
+      return earned - already;
+    }
+    return 0;
+  }
+
+  /* Called on load: cover a single missed day with a freeze so the streak survives. */
+  function applyFreeze() {
+    var today = dayKey();
+    if (!state.lastActiveDay || state.lastActiveDay === today) return null;
+    var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1);
+    var yest = dayKey(d.getTime());
+    if (state.lastActiveDay === yest) return null;          // no gap
+    if (goalMet(yest)) return null;
+    // only cover a one-day gap: the day before yesterday must have counted
+    d.setDate(d.getDate() - 1);
+    if (!goalMet(dayKey(d.getTime()))) return null;
+    if (state.freezes <= 0) return null;
+    state.freezes -= 1;
+    state.frozenDays[yest] = true;
+    save();
+    return yest;
+  }
+
+  function noteActive() { state.lastActiveDay = dayKey(); save(); }
+
+  /* ---- saved cards ---- */
+  function savedKey(cid, lid, idx) { return cid + '|' + lid + '|' + idx; }
+  function isSaved(cid, lid, idx) {
+    for (var i = 0; i < state.saved.length; i++) {
+      var s2 = state.saved[i];
+      if (s2.courseId === cid && s2.lessonId === lid && s2.idx === idx) return true;
+    }
+    return false;
+  }
+  function toggleSaved(cid, lid, idx) {
+    for (var i = 0; i < state.saved.length; i++) {
+      var s2 = state.saved[i];
+      if (s2.courseId === cid && s2.lessonId === lid && s2.idx === idx) {
+        state.saved.splice(i, 1); save(); return false;
+      }
+    }
+    state.saved.push({ courseId: cid, lessonId: lid, idx: idx, savedAt: Date.now() });
+    save();
+    return true;
+  }
+
+  function grantCertificate(cid) {
+    if (state.certificates[cid]) return false;
+    state.certificates[cid] = Date.now();
+    save();
+    return true;
+  }
+
   function setSetting(k, v) { state.settings[k] = v; save(); }
 
   function resetAll() { state = defaults(); save(); }
@@ -194,6 +265,8 @@
     addReviewItems: addReviewItems, gradeReview: gradeReview, srsCount: srsCount,
     totalReviews: totalReviews, exportData: exportData, importData: importData,
     saveProgress: saveProgress, getProgress: getProgress, clearProgress: clearProgress,
+    grantFreezeIfEarned: grantFreezeIfEarned, applyFreeze: applyFreeze, noteActive: noteActive,
+    isSaved: isSaved, toggleSaved: toggleSaved, savedKey: savedKey, grantCertificate: grantCertificate,
     newestProgress: newestProgress, markToured: markToured,
     setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
   };
