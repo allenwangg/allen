@@ -1,0 +1,30 @@
+name: Daily X post (marketing robot)
+
+# NOTE: GitHub runs scheduled workflows from the DEFAULT branch only.
+# This activates once the branch is merged to master.
+on:
+  schedule:
+    - cron: "5 0 * * *"    # 00:05 UTC — "the board just reset" post
+    - cron: "0 14 * * *"   # 14:00 UTC — morning stats ritual (needs BOARD_FEED_URL)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Post to X
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          BOARD_FEED_URL: ${{ vars.BOARD_FEED_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: node outranked/scripts/daily-post.mjs

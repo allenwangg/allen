@@ -43,6 +43,24 @@ await test("page loads with correct title", async () => {
   assert((await page.title()).includes("OUTRANKED"), "title missing");
 });
 
+await test("Today board is the default landing view (winnable fight first)", async () => {
+  assert((await page.getAttribute("#tabToday", "class")).includes("active"), "Today tab not active on load");
+  const crown = await page.locator(".crown-card").textContent();
+  assert(crown.includes("resets in"), "landing crown is not the Today crown");
+  const cta = await page.locator("#stickyCta button").count();
+  assert(cta === 1, "sticky mobile CTA missing");
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+});
+
+await test("take buttons prefill the exact amount to beat", async () => {
+  await page.click('.row[data-id="e1"] .take');       // ShipFast, $9,750 all-time
+  await page.waitForTimeout(100);
+  const val = await page.inputValue("#fAmt");
+  assert(val === "9751", `expected prefill 9751, got ${val}`);
+  await page.click("[data-close]");
+});
+
 await test("leaderboard renders all 18 seeded entries", async () => {
   const rows = await page.locator(".board .row").count();
   assert(rows === 18, `expected 18 rows, got ${rows}`);
@@ -170,6 +188,8 @@ await test("brag share bar appears after a bid with rank and amount in the tweet
 });
 
 await test("crown card carries a dare-to-dethrone tweet intent", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
   const href = await page.locator("#dareLink").getAttribute("href");
   const text = decodeURIComponent(href.split("text=")[1]);
   assert(text.includes("#1 on OUTRANKED") && text.includes("$"), `bad dare text: ${text}`);
@@ -196,6 +216,8 @@ await test("with a Stripe link configured, bidding opens checkout with client_re
 });
 
 await test("webhook feed merges as VERIFIED bids, idempotently", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
   const rocketBefore = await page.evaluate(() => state.entries.find(e => e.name === "TestRocket").total);
   await page.evaluate(async () => {
     const feed = [

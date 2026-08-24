@@ -161,6 +161,17 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--green);color:var(--text);padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);transition:transform .25s;z-index:60;font-size:14px}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
+/* how-it-works strip */
+.how{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px;text-align:left}
+.step b{display:block;color:var(--gold);font-size:12px;letter-spacing:.05em}
+.step span{color:var(--muted)}
+
+/* sticky mobile CTA */
+.sticky-cta{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:50}
+.sticky-cta button{width:100%;background:var(--gold);color:#181203;font-weight:800;font-size:16px;padding:14px;border-radius:12px;box-shadow:var(--shadow)}
+@media (max-width:640px){.sticky-cta{display:block}body{padding-bottom:70px}}
+
 /* demo ribbon + share bar + confetti */
 .ribbon{display:none;background:color-mix(in srgb,var(--gold) 14%,var(--panel));border:1px solid var(--gold);border-radius:10px;padding:9px 14px;font-size:13px;color:var(--muted);margin:0 0 4px;text-align:center}
 .ribbon.show{display:block}
@@ -204,6 +215,11 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
   <section class="hero">
     <h1>Pay more. Rank higher.<br><em>Stay on top.</em></h1>
     <p>The leaderboard where your rank is exactly what you paid for it — and everyone watches you defend it.</p>
+    <div class="how">
+      <div class="step"><b>1 · Pay</b><span>$5+ puts you on the board</span></div>
+      <div class="step"><b>2 · Rank</b><span>highest total wears the crown</span></div>
+      <div class="step"><b>3 · Midnight</b><span>today's board resets — everyone starts even</span></div>
+    </div>
   </section>
 
   <div class="ribbon" id="demoRibbon"><b>Demo mode</b> — payments aren't connected yet, so bids are free play-money clicks. The operator flips this to real Stripe checkout with one config line.</div>
@@ -222,8 +238,8 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
   <section id="crown" aria-label="Current champion"></section>
 
   <div class="tabs" role="tablist">
-    <button class="tab active" id="tabAll" data-view="all" role="tab" aria-selected="true">👑 All-time</button>
-    <button class="tab" id="tabToday" data-view="today" role="tab" aria-selected="false">🔥 Today — resets at midnight</button>
+    <button class="tab" id="tabAll" data-view="all" role="tab" aria-selected="false">👑 All-time</button>
+    <button class="tab active" id="tabToday" data-view="today" role="tab" aria-selected="true">🔥 Today — resets at midnight</button>
   </div>
 
   <div class="toolbar">
@@ -284,8 +300,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
   </form>
 </dialog>
 
+<div class="sticky-cta" id="stickyCta"></div>
 <div class="sharebar" id="sharebar">
   <a class="brag" id="bragBtn" href="#" target="_blank" rel="noopener">Brag on 𝕏</a>
+  <button class="copy" id="cardBtn">Save brag card</button>
   <button class="copy" id="copyBtn">Copy link</button>
   <button class="x" id="shareClose" aria-label="Dismiss">✕</button>
 </div>
@@ -303,6 +321,7 @@ const CONFIG = {
   SITE_URL: "https://allenwangg.github.io/allen/",
   X_HANDLE: "",                                           // optional, e.g. "yourhandle" — added to brag tweets
   BOARD_FEED_URL: "",                                     // optional: webhook worker /board URL → ✔ VERIFIED bids
+  GOATCOUNTER: "",                                        // optional free analytics, e.g. "https://outranked.goatcounter.com/count"
 };
 
 /* ============ state ============ */
@@ -333,7 +352,7 @@ if (!state || !Array.isArray(state.entries)) {
   };
 }
 let query = "";
-let view = "all";                       // "all" | "today"
+let view = "today";                     // land on the winnable fight, not the $14k wall
 
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function ensureToday(e){
@@ -472,6 +491,13 @@ function render(){
   $("#tickerInner").innerHTML = items + items;
 
   if (!isToday) prevRanks = rankMap();
+
+  /* sticky mobile CTA always sells today's winnable fight */
+  const kToday = sortedToday()[0];
+  $("#stickyCta").innerHTML = kToday
+    ? `<button data-take="${kToday.id}">🔥 Take today's crown — ${fmt(kToday.todayTotal+1)}</button>`
+    : `<button data-open-bid>🔥 Today's crown is free — ${fmt(MIN_NEW)}</button>`;
+
   save();
 }
 
@@ -495,18 +521,23 @@ let bidTarget = null; // entry id being outbid, or null for new listing
 function openBid(targetId){
   bidTarget = targetId || null;
   const err = $("#bidErr"); err.classList.remove("show");
+  /* prefill the returning bidder's name */
+  try { const saved = localStorage.getItem("outranked_name"); if (saved && !$("#fName").value) $("#fName").value = saved; } catch(e){}
   if (bidTarget){
     const t = state.entries.find(e=>e.id===bidTarget);
-    const rank = rankMap()[t.id];
+    const isToday = view === "today";
+    const beat = isToday ? ensureToday(t).todayTotal : t.total;
+    const rank = isToday ? (sortedToday().indexOf(t)+1 || 1) : rankMap()[t.id];
     $("#modalTitle").textContent = rank===1 ? `Dethrone ${t.name}` : `Overtake ${t.name} (#${rank})`;
-    $("#modalSub").textContent = `They sit at ${fmt(t.total)}. Beat it or boost your own spot.`;
-    $("#nameField").style.display = ""; $("#urlField").style.display = "";
+    $("#modalSub").textContent = isToday
+      ? `They've bid ${fmt(beat)} today. ${fmt(beat+1)} takes the spot until midnight.`
+      : `They sit at ${fmt(t.total)}. Beat it or boost your own spot.`;
     $("#fName").placeholder = "Your name (or an existing one to top up)";
-    $("#fAmt").value = ""; $("#amtHint").textContent = `Tip: a new listing needs ${fmt(t.total+MIN_NEW>t.total+1?t.total+1<MIN_NEW?MIN_NEW:t.total+1:MIN_NEW)} total to pass — but any amount stacks.`;
+    $("#fAmt").value = Math.max(MIN_NEW, beat+1);          /* impulse → payment, no math */
+    $("#amtHint").textContent = `Prefilled to beat them by $1 — raise it to build a moat.`;
   } else {
     $("#modalTitle").textContent = "Claim a spot";
     $("#modalSub").textContent = `$5 minimum. Your total is your rank.`;
-    $("#nameField").style.display = ""; $("#urlField").style.display = "";
     $("#fAmt").value = ""; $("#amtHint").textContent = "";
   }
   modal.showModal();
@@ -654,6 +685,7 @@ $("#bidForm").addEventListener("submit", e=>{
   if (!amount || amount<1){ err.textContent="Bid at least $1."; err.classList.add("show"); return; }
   const res = placeBid({name,url,amount,defendBudget});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
+  try { localStorage.setItem("outranked_name", name.trim()); } catch(e){}
   modal.close();
   if (CONFIG.STRIPE_PAYMENT_LINK){
     /* Real money: open Stripe checkout with the bid encoded in
@@ -682,24 +714,58 @@ let toastTimer;
 function toast(html){ const el=$("#toast"); el.innerHTML=html; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3500); }
 
 /* ============ viral loops ============ */
+const SHARE_LINK = CONFIG.SITE_URL + "?r=x";              // tag shares so analytics shows what X drives
 function tweetIntent(text){
   return "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
 }
 function dareIntent(top){
-  return tweetIntent(`Someone paid ${fmt(top.total)} to be #1 on OUTRANKED. It costs exactly ${fmt(top.total+1)} to take it from them. ${CONFIG.SITE_URL}`);
+  return tweetIntent(`Someone paid ${fmt(top.total)} to be #1 on OUTRANKED. It costs exactly ${fmt(top.total+1)} to take it from them. ${SHARE_LINK}`);
 }
 function bragIntent(entry, rank, amount){
   const via = CONFIG.X_HANDLE ? ` (@${CONFIG.X_HANDLE})` : "";
-  return tweetIntent(`I just paid ${fmt(amount)} to make ${entry.name} #${rank} on OUTRANKED 👑 Outbid me if you dare${via}: ${CONFIG.SITE_URL}`);
+  return tweetIntent(`I just paid ${fmt(amount)} to make ${entry.name} #${rank} on OUTRANKED 👑 Outbid me if you dare${via}: ${SHARE_LINK}`);
 }
-let shareTimer;
+let shareTimer, lastBrag = null;
 function showShareBar(entry, rank, amount){
+  lastBrag = { name: entry.name, rank, amount };
   $("#bragBtn").href = bragIntent(entry, rank, amount);
   const bar = $("#sharebar");
   bar.classList.add("show");
   clearTimeout(shareTimer);
   shareTimer = setTimeout(()=>bar.classList.remove("show"), 30000);
 }
+
+/* brag card: a 1080×1080 PNG people can post anywhere — screenshots are the growth engine */
+function bragCard(){
+  if (!lastBrag) return;
+  const cv = document.createElement("canvas");
+  cv.width = 1080; cv.height = 1080;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#0e120f"; c.fillRect(0,0,1080,1080);
+  c.strokeStyle = "#d9a944"; c.lineWidth = 4; c.strokeRect(40,40,1000,1000);
+  c.strokeStyle = "#b58c33"; c.lineWidth = 2; c.strokeRect(56,56,968,968);
+  c.textAlign = "center";
+  c.font = "120px serif"; c.fillText("👑", 540, 250);
+  c.fillStyle = "#ecefe6"; c.font = "900 64px Georgia, serif";
+  c.fillText("OUT", 465, 360);
+  c.fillStyle = "#d9a944"; c.fillText("RANKED", 625, 360);
+  c.fillStyle = "#ecefe6"; c.font = "900 88px Georgia, serif";
+  const nm = lastBrag.name.length > 16 ? lastBrag.name.slice(0,15)+"…" : lastBrag.name;
+  c.fillText(nm, 540, 540);
+  c.fillStyle = "#d9a944"; c.font = "700 110px ui-monospace, monospace";
+  c.fillText("#" + lastBrag.rank, 540, 680);
+  c.fillStyle = "#63c08e"; c.font = "700 64px ui-monospace, monospace";
+  c.fillText(fmt(lastBrag.amount) + " paid", 540, 780);
+  c.fillStyle = "#93a094"; c.font = "40px Georgia, serif";
+  c.fillText("Outbid me if you dare", 540, 890);
+  c.fillStyle = "#5f6b60"; c.font = "32px ui-monospace, monospace";
+  c.fillText(CONFIG.SITE_URL.replace(/^https?:\/\//,"").replace(/\/$/,""), 540, 960);
+  const a = document.createElement("a");
+  a.download = "outranked-" + lastBrag.rank + ".png";
+  a.href = cv.toDataURL("image/png");
+  a.click();
+}
+$("#cardBtn").addEventListener("click", bragCard);
 $("#shareClose").addEventListener("click", ()=>$("#sharebar").classList.remove("show"));
 $("#copyBtn").addEventListener("click", async ()=>{
   try { await navigator.clipboard.writeText(CONFIG.SITE_URL); $("#copyBtn").textContent = "Copied!"; }
@@ -734,6 +800,21 @@ function confetti(){
 /* demo ribbon: visible until a real payment link is configured */
 if (!CONFIG.STRIPE_PAYMENT_LINK) $("#demoRibbon").classList.add("show");
 
+/* Stripe return: thank the bidder the moment they land back */
+if (location.search.includes("paid=1")){
+  toast("🏦 Payment received — your bid is locked in. Screenshot your rank and brag.");
+  confetti();
+  history.replaceState(null, "", location.pathname);
+}
+
+/* optional free analytics (GoatCounter) — only loads when configured */
+if (CONFIG.GOATCOUNTER){
+  window.goatcounter = { endpoint: CONFIG.GOATCOUNTER };
+  const s = document.createElement("script");
+  s.async = true; s.src = "https://gc.zgo.at/count.js";
+  document.head.appendChild(s);
+}
+
 /* ============ verified-bids feed (webhook worker) ============ */
 async function mergeBoardFeed(){
   if (!CONFIG.BOARD_FEED_URL) return;
@@ -752,9 +833,10 @@ async function mergeBoardFeed(){
       if (entry){
         entry.total += amount; entry.bids++; entry.history.push(entry.total);
       } else {
-        entry = {id:"v"+c.id.slice(-10), name, url:"—", total:amount, bids:1, history:[amount], defend:0, mine:false};
+        entry = {id:"v"+c.id.slice(-10), name, url:"—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
         state.entries.push(entry);
       }
+      touchToday(entry, amount);
       entry.verified = true;
       state.applied.push(c.id);
       state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);

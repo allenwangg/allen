@@ -5,6 +5,14 @@
       "pass": true
     },
     {
+      "name": "Today board is the default landing view (winnable fight first)",
+      "pass": true
+    },
+    {
+      "name": "take buttons prefill the exact amount to beat",
+      "pass": true
+    },
+    {
       "name": "leaderboard renders all 18 seeded entries",
       "pass": true
     },
@@ -86,13 +94,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 116,
-    "medianDOMContentLoadedms": 75.7,
-    "medianLoadms": 77.4,
+    "medianFCPms": 112,
+    "medianDOMContentLoadedms": 72.3,
+    "medianLoadms": 73.7,
     "totalRequests": 1
   },
   "weight": {
-    "htmlBytes": 40162,
-    "gzipBytes": 13211
+    "htmlBytes": 44458,
+    "gzipBytes": 14542
   }
 }
