@@ -217,10 +217,19 @@
     var totalItems = Store.srsCount();
     var next = SRS.nextDue(Store.state.srs);
 
-    // continue target: last lesson's course → first incomplete lesson
-    var cont = null;
+    // continue target: newest mid-lesson snapshot → last lesson's course → first incomplete lesson
+    var cont = null, resume = null;
+    var np = Store.newestProgress();
+    if (np) {
+      var npc = findCourse(np.courseId);
+      var npl = npc && findLesson(npc, np.lessonId);
+      if (npl && !Store.lessonRecord(np.courseId, np.lessonId)) {
+        cont = { course: npc, lesson: npl.lesson, index: npl.index };
+        resume = { at: np.snap.idx + 1, of: npl.lesson.cards.length };
+      }
+    }
     var last = Store.state.lastLesson;
-    if (last) {
+    if (!cont && last) {
       var lc = findCourse(last.courseId);
       if (lc) {
         for (var i = 0; i < lc.lessons.length; i++) {
@@ -268,11 +277,18 @@
                due.length ? 'Spaced repetition keeps it in long-term memory.' :
                'All caught up' + (next ? ' — next card ' + fmtDue(next) : '') + '.') + '</p></div>' +
       (due.length ? '<span class="badge">' + due.length + '</span>' : '') + '</a>';
+    if (practicePool(null).length) {
+      h += '<a class="action-card" href="#/practice">' +
+        '<div class="action-art">' + Art.svg('target') + '</div>' +
+        '<div class="action-body"><h3>Practice</h3>' +
+        '<p>Quick-fire quiz remix from everything you’ve learned.</p></div>' +
+        '<span class="go">›</span></a>';
+    }
     if (cont) {
       h += '<a class="action-card continue-card" style="--ah:' + courseHue(cont.course.id) + '" href="#/lesson/' + esc(cont.course.id) + '/' + esc(cont.lesson.id) + '">' +
         '<div class="action-art accent">' + Art.svg(cont.lesson.cards[0].art || 'lightbulb') + '</div>' +
-        '<div class="action-body"><h3>Continue: ' + esc(cont.lesson.title) + '</h3>' +
-        '<p>' + esc(cont.course.title) + ' · Lesson ' + (cont.index + 1) + '</p></div>' +
+        '<div class="action-body"><h3>' + (resume ? 'Resume' : 'Continue') + ': ' + esc(cont.lesson.title) + '</h3>' +
+        '<p>' + esc(cont.course.title) + ' · Lesson ' + (cont.index + 1) + (resume ? ' · card ' + resume.at + '/' + resume.of : '') + '</p></div>' +
         '<span class="go">›</span></a>';
     }
     h += '</section>';
@@ -297,6 +313,25 @@
     h += '</section></main>';
     $app.innerHTML = h;
     bindChrome();
+    maybeShowTour();
+  }
+
+  function maybeShowTour() {
+    if (Store.state.toured || Store.state.xp > 0) return;
+    if (document.querySelector('.modal-wrap')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = '<div class="modal tour">' +
+      '<h2>Welcome to Prism</h2>' +
+      '<div class="tour-row"><span class="tour-art">' + Art.svg('book') + '</span><p><b>Learn in cards.</b> Six courses of short visual lessons — psychology, philosophy, money and more — with quizzes woven in.</p></div>' +
+      '<div class="tour-row"><span class="tour-art">' + Art.svg('orbit') + '</span><p><b>Remember with review.</b> Finished lessons become flashcards, scheduled just before you’d forget them.</p></div>' +
+      '<div class="tour-row"><span class="tour-art">' + Art.svg('flame') + '</span><p><b>Make it a habit.</b> Hit your daily XP goal to grow a streak, level up, and earn achievements.</p></div>' +
+      '<div class="modal-row"><button class="btn primary" id="tour-go">Start learning</button></div>' +
+    '</div>';
+    document.body.appendChild(wrap);
+    function done() { Store.markToured(); wrap.remove(); }
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) done(); });
+    document.getElementById('tour-go').onclick = done;
   }
 
   /* ---------------- course view ---------------- */
@@ -318,6 +353,7 @@
         '<p class="desc">' + esc(c.description) + '</p>' +
         '<div class="cover-meta wide"><div class="bar"><i style="width:' + (pr.total ? Math.round(100 * pr.done / pr.total) : 0) + '%"></i></div>' +
         '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div>' +
+        (pr.done ? '<a class="btn ghost small" href="#/practice/' + esc(c.id) + '">Practice this course</a>' : '') +
       '</div></section>';
 
     h += '<section class="lessons">';
@@ -352,6 +388,15 @@
       course: c, lesson: f.lesson, lessonIndex: f.index,
       idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], finished: false
     };
+    var snap = Store.getProgress(cid, lid);
+    if (snap && snap.idx > 0 && snap.idx < f.lesson.cards.length) {
+      session.idx = snap.idx;
+      session.xp = snap.xp || 0;
+      session.attempted = snap.attempted || 0;
+      session.correct = snap.correct || 0;
+      session.misses = snap.misses || [];
+      toast('<span class="toast-emoji">▶️</span><span><b>Picked up where you left off</b><br>Card ' + (snap.idx + 1) + ' of ' + f.lesson.cards.length + '</span>');
+    }
     Store.setLastLesson(cid, lid);
     renderCard();
   }
@@ -527,18 +572,28 @@
 
   function advance() {
     session.idx += 1;
+    if (session.idx > 0 && session.idx < session.lesson.cards.length) {
+      Store.saveProgress(session.course.id, session.lesson.id, {
+        idx: session.idx, xp: session.xp, attempted: session.attempted,
+        correct: session.correct, misses: session.misses, savedAt: Date.now()
+      });
+    }
     renderCard();
   }
 
   function renderComplete() {
     var acc = session.attempted ? Math.round(100 * session.correct / session.attempted) : 100;
-    var first = !Store.lessonRecord(session.course.id, session.lesson.id);
-    var bonus = first ? 25 : 10;
-    session.xp += bonus;
-    Store.completeLesson(session.course.id, session.lesson.id, acc);
-    var added = Store.addReviewItems(session.course, session.lesson);
-    gainXP(bonus);
-    SFX.complete();
+    if (!session.completed) {          // awarding happens once; the screen can re-render (e.g. after the match round)
+      var first = !Store.lessonRecord(session.course.id, session.lesson.id);
+      var bonus = first ? 25 : 10;
+      session.xp += bonus;
+      Store.completeLesson(session.course.id, session.lesson.id, acc);
+      Store.clearProgress(session.course.id, session.lesson.id);
+      session.completed = { added: Store.addReviewItems(session.course, session.lesson), celebrated: false };
+      gainXP(bonus);
+      SFX.complete();
+    }
+    var added = session.completed.added;
 
     var nextLesson = session.course.lessons[session.lessonIndex + 1] || null;
     var goalNow = Store.todayXP() >= Store.state.settings.dailyGoal;
@@ -563,13 +618,16 @@
       '</div></div>' +
       '<div class="player-foot col">' +
         (nextLesson ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
+        (session.lesson.review.length >= 3 && !session.matchPlayed ? '<button class="btn ghost" id="btn-match">Bonus round: match the pairs</button>' : '') +
         '<button class="btn ' + (nextLesson ? 'ghost' : 'primary') + '" id="btn-back-course">' + (nextLesson ? 'Back to course' : 'Done') + '</button>' +
       '</div></main>';
     $app.innerHTML = h;
-    confetti();
+    if (!session.completed.celebrated) { session.completed.celebrated = true; confetti(); }
 
     var nl = document.getElementById('btn-next-lesson');
     if (nl) nl.onclick = function () { nav('#/lesson/' + session.course.id + '/' + nextLesson.id); };
+    var mb = document.getElementById('btn-match');
+    if (mb) mb.onclick = startMatch;
     document.getElementById('btn-back-course').onclick = function () { nav('#/course/' + session.course.id); };
     onkey = function (e) {
       if (e.key === 'Enter') { (nl || document.getElementById('btn-back-course')).click(); }
@@ -586,6 +644,215 @@
            '<p class="miss-a"><b>' + esc(m.answer) + '</b>' + (m.explain ? ' — ' + esc(m.explain) : '') + '</p></div>';
     }
     return h + '</details>';
+  }
+
+  /* ---------------- match bonus round ---------------- */
+
+  var match = null;
+
+  function startMatch() {
+    var pairs = session.lesson.review;
+    match = {
+      left: shuffle(pairs.map(function (_, i) { return i; })),
+      right: shuffle(pairs.map(function (_, i) { return i; })),
+      pairs: pairs, locked: {}, selLeft: null, mistakes: 0, done: 0
+    };
+    renderMatch();
+  }
+
+  function renderMatch() {
+    var m = match;
+    var h = '<main class="player" style="--ah:' + courseHue(session.course.id) + '">' +
+      '<div class="player-top">' +
+        '<button class="iconbtn" id="btn-exit" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+        '<span class="review-count">Match the pairs</span>' +
+        '<span class="player-xp">' + m.mistakes + ' miss' + (m.mistakes === 1 ? '' : 'es') + '</span>' +
+      '</div>' +
+      '<div class="card-stage"><div class="card match-card"><div class="match-grid">' +
+      '<div class="match-col" id="m-left">';
+    for (var i = 0; i < m.left.length; i++) {
+      var li = m.left[i];
+      h += '<button class="match-tile' + (m.locked[li] ? ' locked' : '') + (m.selLeft === li ? ' sel' : '') + '" data-side="l" data-i="' + li + '"' + (m.locked[li] ? ' disabled' : '') + '>' + esc(m.pairs[li].front) + '</button>';
+    }
+    h += '</div><div class="match-col" id="m-right">';
+    for (var j = 0; j < m.right.length; j++) {
+      var ri = m.right[j];
+      h += '<button class="match-tile back' + (m.locked[ri] ? ' locked' : '') + '" data-side="r" data-i="' + ri + '"' + (m.locked[ri] ? ' disabled' : '') + '>' + esc(m.pairs[ri].back) + '</button>';
+    }
+    h += '</div></div></div></div>' +
+      '<div class="player-foot"><span class="hint">Tap a question, then its answer</span></div></main>';
+    $app.innerHTML = h;
+
+    document.getElementById('btn-exit').onclick = function () { renderComplete2(); };
+    var tiles = document.querySelectorAll('.match-tile:not(:disabled)');
+    for (var t = 0; t < tiles.length; t++) {
+      (function (tile) {
+        tile.onclick = function () {
+          var side = tile.getAttribute('data-side'), idx = Number(tile.getAttribute('data-i'));
+          if (side === 'l') { match.selLeft = match.selLeft === idx ? null : idx; return renderMatch(); }
+          if (match.selLeft === null) return;
+          if (match.selLeft === idx) {
+            match.locked[idx] = true; match.selLeft = null; match.done += 1;
+            SFX.correct();
+            if (match.done >= match.pairs.length) return renderMatchDone();
+          } else {
+            match.mistakes += 1; SFX.wrong();
+            tile.classList.add('wrong');
+            setTimeout(renderMatch, 350);
+            return;
+          }
+          renderMatch();
+        };
+      })(tiles[t]);
+    }
+    onkey = function (e) { if (e.key === 'Escape') renderComplete2(); };
+  }
+
+  function renderMatchDone() {
+    session.matchPlayed = true;
+    var xp = Math.max(5, 15 - 2 * match.mistakes);
+    gainXP(xp);
+    SFX.complete();
+    toast('<span class="toast-emoji">🧩</span><span><b>All pairs matched</b><br>+' + xp + ' XP · ' + match.mistakes + ' miss' + (match.mistakes === 1 ? '' : 'es') + '</span>');
+    renderComplete2();
+  }
+
+  /* Return to the completion screen without re-awarding completion effects. */
+  function renderComplete2() {
+    match = null;
+    session.idx = session.lesson.cards.length;
+    renderComplete();
+  }
+
+  /* ---------------- practice mode ---------------- */
+
+  var prac = null;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function practicePool(cid) {
+    var pool = [];
+    for (var i = 0; i < COURSES.length; i++) {
+      var c = COURSES[i];
+      if (cid && c.id !== cid) continue;
+      for (var j = 0; j < c.lessons.length; j++) {
+        var l = c.lessons[j];
+        if (!Store.lessonRecord(c.id, l.id)) continue;   // only quiz what was learned
+        for (var k = 0; k < l.cards.length; k++) {
+          var cd = l.cards[k];
+          if (cd.type === 'mcq' || cd.type === 'truefalse') pool.push({ card: cd, course: c, ci: i });
+        }
+      }
+    }
+    return pool;
+  }
+
+  function startPractice(cid) {
+    var pool = practicePool(cid);
+    if (!pool.length) {
+      $app.innerHTML = headerHTML() + '<main class="page center">' +
+        '<div class="empty">' + Art.svg('target') +
+        '<h2>Nothing to practice yet</h2>' +
+        '<p>Practice remixes quiz questions from lessons you’ve completed. Finish one lesson and come back.</p>' +
+        '<a class="btn primary" href="#/">Pick a course</a></div></main>';
+      bindChrome();
+      return;
+    }
+    prac = { queue: shuffle(pool.slice()).slice(0, 12), i: 0, correct: 0, xp: 0, courseId: cid || null };
+    renderPracCard();
+  }
+
+  function renderPracCard() {
+    if (prac.i >= prac.queue.length) return renderPracDone();
+    var q = prac.queue[prac.i], card = q.card;
+    var inner = '<span class="kicker quiz">Practice · ' + esc(q.course.title) + '</span>';
+    if (card.type === 'mcq') {
+      inner += '<h2 class="prompt">' + esc(card.prompt) + '</h2><div class="choices">';
+      for (var j = 0; j < card.choices.length; j++) {
+        inner += '<button class="choice" data-i="' + j + '"><span class="key">' + (j + 1) + '</span>' + esc(card.choices[j]) + '</button>';
+      }
+      inner += '</div>';
+    } else {
+      inner += '<h2 class="prompt">' + esc(card.statement) + '</h2>' +
+        '<div class="choices tf">' +
+        '<button class="choice" data-tf="true"><span class="key">1</span>True</button>' +
+        '<button class="choice" data-tf="false"><span class="key">2</span>False</button></div>';
+    }
+    inner += '<div class="explain" id="explain" hidden></div>';
+
+    $app.innerHTML = '<main class="player" style="--ah:' + HUES[q.ci % HUES.length] + '">' +
+      '<div class="player-top">' +
+        '<button class="iconbtn" id="btn-exit" aria-label="Exit practice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+        '<span class="review-count">' + (prac.i + 1) + ' / ' + prac.queue.length + '</span>' +
+        '<span class="player-xp">+' + prac.xp + '</span>' +
+      '</div>' +
+      '<div class="card-stage"><div class="card" id="card">' + inner + '</div></div>' +
+      '<div class="player-foot" id="foot"><span class="hint">Quick-fire — no pressure, no scheduling</span></div></main>';
+
+    document.getElementById('btn-exit').onclick = function () { nav('#/'); };
+    var answered = false;
+    var choices = document.querySelectorAll('.choice');
+    function pick(btn) {
+      if (answered) return;
+      answered = true;
+      var ok = card.type === 'mcq'
+        ? Number(btn.getAttribute('data-i')) === card.answer
+        : (btn.getAttribute('data-tf') === 'true') === card.answer;
+      for (var i = 0; i < choices.length; i++) {
+        choices[i].disabled = true;
+        var isRight = card.type === 'mcq'
+          ? Number(choices[i].getAttribute('data-i')) === card.answer
+          : (choices[i].getAttribute('data-tf') === 'true') === card.answer;
+        if (isRight) choices[i].classList.add('right');
+      }
+      btn.classList.add(ok ? 'right' : 'wrong');
+      if (ok) { prac.correct += 1; SFX.correct(); } else SFX.wrong();
+      var xp = ok ? 5 : 1;
+      prac.xp += xp; gainXP(xp, btn);
+      var pxp = document.querySelector('.player-xp'); if (pxp) pxp.textContent = '+' + prac.xp;
+      var ex = document.getElementById('explain');
+      ex.innerHTML = '<b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + esc(card.explain || '');
+      ex.hidden = false; ex.className = 'explain show ' + (ok ? 'good' : 'bad');
+      document.getElementById('foot').innerHTML = continueBtn();
+      document.getElementById('btn-next').onclick = function () { prac.i += 1; renderPracCard(); };
+      document.getElementById('btn-next').focus();
+    }
+    for (var i = 0; i < choices.length; i++) {
+      (function (b) { b.onclick = function () { pick(b); }; })(choices[i]);
+    }
+    onkey = function (e) {
+      if (e.key === 'Escape') return nav('#/');
+      if (!answered) {
+        var n = Number(e.key);
+        if (n >= 1 && n <= choices.length) pick(choices[n - 1]);
+      } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); prac.i += 1; renderPracCard(); }
+    };
+  }
+
+  function renderPracDone() {
+    var acc = prac.queue.length ? Math.round(100 * prac.correct / prac.queue.length) : 100;
+    $app.innerHTML = '<main class="player complete">' +
+      '<div class="card-stage"><div class="card done-card">' +
+      '<div class="card-art">' + Art.svg('target') + '</div>' +
+      '<span class="kicker">Practice complete</span><h2>Sharp as ever</h2>' +
+      '<div class="done-stats">' +
+        '<div class="stat"><b>' + prac.correct + '/' + prac.queue.length + '</b><span>correct</span></div>' +
+        '<div class="stat"><b>' + acc + '%</b><span>accuracy</span></div>' +
+        '<div class="stat"><b>+' + prac.xp + '</b><span>XP</span></div>' +
+      '</div></div></div>' +
+      '<div class="player-foot col">' +
+        '<button class="btn primary" id="prac-again">Another round</button>' +
+        '<a class="btn ghost" href="#/">Done</a>' +
+      '</div></main>';
+    SFX.complete();
+    confetti();
+    document.getElementById('prac-again').onclick = function () { startPractice(prac.courseId); };
+    onkey = function (e) { if (e.key === 'Escape') nav('#/'); };
   }
 
   /* ---------------- review session ---------------- */
@@ -817,6 +1084,22 @@
 
     h += '<h2 class="section-title">Last 12 weeks</h2><section class="panel">' + heat + '</section>';
 
+    // last 30 days of XP, calendar-stepped; scale to the larger of goal×1.5 or the best day
+    var goal30 = Store.state.settings.dailyGoal;
+    var vals = [], maxV = goal30 * 1.5;
+    for (var dd = 29; dd >= 0; dd--) {
+      var d30 = new Date(today); d30.setDate(d30.getDate() - dd);
+      var v = Store.state.xpByDay[Store.dayKey(d30.getTime())] || 0;
+      vals.push({ v: v, k: Store.dayKey(d30.getTime()), met: Store.goalMet(Store.dayKey(d30.getTime())) });
+      if (v > maxV) maxV = v;
+    }
+    var sp = '<div class="spark" role="img" aria-label="XP earned per day, last 30 days">';
+    for (var sv = 0; sv < vals.length; sv++) {
+      sp += '<i class="' + (vals[sv].met ? 'met' : '') + '" style="height:' + Math.max(vals[sv].v ? 6 : 2, Math.round(100 * vals[sv].v / maxV)) + '%" title="' + vals[sv].k + ': ' + vals[sv].v + ' XP"></i>';
+    }
+    sp += '</div><small class="spark-note">Last 30 days · colored bars hit the daily goal</small>';
+    h += '<h2 class="section-title">XP history</h2><section class="panel">' + sp + '</section>';
+
     // upcoming reviews: due counts for today + next 6 days
     var buckets = [0, 0, 0, 0, 0, 0, 0];
     var endToday = new Date(); endToday.setHours(23, 59, 59, 999);
@@ -986,6 +1269,7 @@
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
+    else if (parts[0] === 'practice') startPractice(parts[1] || null);
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') renderSearch();
     else renderHome();

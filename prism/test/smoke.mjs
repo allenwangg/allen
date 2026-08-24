@@ -34,6 +34,12 @@ page.on('console', (m) => {
 
 await page.goto(url, { waitUntil: 'networkidle' });
 
+// --- first-visit tour ---
+ok(await page.locator('#tour-go').count() === 1, 'first-visit tour shows');
+await page.locator('#tour-go').click();
+await page.reload({ waitUntil: 'networkidle' });
+ok(await page.locator('#tour-go').count() === 0, 'tour stays dismissed');
+
 // --- home ---
 ok(await page.locator('.brand').count() === 1, 'home renders brand');
 const nCourses = await page.locator('.cover').count();
@@ -69,6 +75,58 @@ while (steps++ < 80) {
 ok(await page.locator('.done-card').count() === 1, `lesson completes (${steps} steps, quiz=${sawQuiz}, wrong-path=${sawWrongPath})`);
 const xpText = await page.locator('.done-stats .stat b').first().textContent();
 ok(/\+\d+/.test(xpText || ''), `completion shows XP earned (${(xpText || '').trim()})`);
+
+// --- match bonus round ---
+if (await page.locator('#btn-match').count()) {
+  await page.locator('#btn-match').click();
+  await page.waitForSelector('.match-grid');
+  const nPairs = await page.locator('.match-tile[data-side="l"]').count();
+  for (let i = 0; i < nPairs; i++) {
+    await page.locator(`.match-tile[data-side="l"][data-i="${i}"]`).click();
+    await page.locator(`.match-tile[data-side="r"][data-i="${i}"]`).click();
+    await page.waitForTimeout(60);
+  }
+  await page.waitForSelector('.done-card');
+  ok(true, `match round completes (${nPairs} pairs)`);
+  ok(await page.locator('#btn-match').count() === 0, 'match button hidden after play');
+} else {
+  ok(false, 'match bonus button present on completion');
+}
+
+// --- lesson resume ---
+const l2 = await page.evaluate(() => window.COURSES[0].lessons[1].id);
+await page.goto(url + '#/lesson/' + await page.evaluate(() => window.COURSES[0].id) + '/' + l2);
+await page.waitForSelector('.card');
+for (let i = 0; i < 3; i++) {
+  if (await page.locator('#btn-next').count()) await page.locator('#btn-next').click();
+  else if (await page.locator('.choice:not(:disabled)').count()) {
+    await page.locator('.choice').first().click();
+    await page.waitForSelector('#btn-next');
+    await page.locator('#btn-next').click();
+  } else if (await page.locator('#btn-reveal').count()) {
+    await page.locator('#btn-reveal').click();
+    await page.locator('#btn-next').click();
+  }
+  await page.waitForTimeout(60);
+}
+await page.goto(url + '#/');
+await page.waitForSelector('.actions');
+const contText = await page.locator('.continue-card h3').textContent().catch(() => '');
+ok(/Resume/.test(contText || ''), `home offers resume (${(contText || '').trim()})`);
+
+// --- practice mode ---
+await page.goto(url + '#/practice');
+await page.waitForSelector('.card, .empty');
+let pracSteps = 0;
+while (pracSteps++ < 30 && !(await page.locator('.done-card').count())) {
+  if (await page.locator('.choice:not(:disabled)').count()) {
+    await page.locator('.choice').first().click();
+    await page.waitForSelector('#btn-next');
+    await page.locator('#btn-next').click();
+  }
+  await page.waitForTimeout(50);
+}
+ok(await page.locator('.done-card').count() === 1, `practice session completes (${pracSteps} questions)`);
 
 // --- review session ---
 await page.goto(url + '#/review');
@@ -119,6 +177,7 @@ ok(await page.evaluate(() => document.documentElement.getAttribute('data-theme')
 const blob = await page.evaluate(() => localStorage.getItem('prism.v1'));
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: 'domcontentloaded' });
+if (await page.locator('#tour-go').count()) await page.locator('#tour-go').click();  // fresh state → tour returns
 await page.locator('#btn-settings').click();
 await page.waitForSelector('.modal');
 await page.locator('.backup summary').click();

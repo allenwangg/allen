@@ -14,6 +14,8 @@
       srs: {},                // itemId -> SRS item
       reviewsByDay: {},       // 'YYYY-MM-DD' -> cards reviewed
       lastLesson: null,       // {courseId, lessonId}
+      inProgress: {},         // 'courseId/lessonId' -> mid-lesson snapshot
+      toured: false,          // first-visit tour dismissed
       badges: {},             // badgeId -> earnedAt timestamp
       settings: { theme: 'system', dailyGoal: 50, name: '', sound: true },
       firstSeen: Date.now()
@@ -153,6 +155,33 @@
 
   function setLastLesson(cid, lid) { state.lastLesson = { courseId: cid, lessonId: lid }; save(); }
 
+  function saveProgress(cid, lid, snap) { state.inProgress[cid + '/' + lid] = snap; save(); }
+
+  /* Mid-lesson snapshots expire after a week — stale resumes confuse more than help. */
+  function getProgress(cid, lid) {
+    var p = state.inProgress[cid + '/' + lid];
+    if (!p) return null;
+    if (Date.now() - p.savedAt > 7 * 24 * 60 * 60 * 1000) { clearProgress(cid, lid); return null; }
+    return p;
+  }
+
+  function clearProgress(cid, lid) { delete state.inProgress[cid + '/' + lid]; save(); }
+
+  /* Newest unexpired snapshot, or null. */
+  function newestProgress() {
+    var best = null, bestKey = null;
+    for (var k in state.inProgress) {
+      var p = state.inProgress[k];
+      if (Date.now() - p.savedAt > 7 * 24 * 60 * 60 * 1000) continue;
+      if (!best || p.savedAt > best.savedAt) { best = p; bestKey = k; }
+    }
+    if (!best) return null;
+    var parts = bestKey.split('/');
+    return { courseId: parts[0], lessonId: parts[1], snap: best };
+  }
+
+  function markToured() { state.toured = true; save(); }
+
   function setSetting(k, v) { state.settings[k] = v; save(); }
 
   function resetAll() { state = defaults(); save(); }
@@ -164,6 +193,8 @@
     lessonRecord: lessonRecord, completeLesson: completeLesson, courseProgress: courseProgress,
     addReviewItems: addReviewItems, gradeReview: gradeReview, srsCount: srsCount,
     totalReviews: totalReviews, exportData: exportData, importData: importData,
+    saveProgress: saveProgress, getProgress: getProgress, clearProgress: clearProgress,
+    newestProgress: newestProgress, markToured: markToured,
     setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
   };
 })();
