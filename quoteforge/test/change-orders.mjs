@@ -162,6 +162,51 @@ const marginTxt = await page.locator('#contractPanel').textContent();
 check('contract margin stays sane with a credit',
   !/NaN|Infinity|-?\d{3,}\.\d%/.test(marginTxt));
 
+// The Jobs dashboard must report the CONTRACT, not the day-one estimate.
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(300);
+const rowTotal = await page.locator('.est-row .num').first().textContent();
+await page.locator('.tab[data-tab="changes"]').click();
+await page.waitForTimeout(250);
+const panelTotal = await page.locator('#contractPanel .figure.total .value').textContent();
+// The list rounds to whole dollars, so compare the dollar part of the first
+// money token in each — not every digit in the cell, which also holds a margin.
+const dollars = (t) => (t.match(/\$([\d,]+)/) || [])[1]?.replace(/,/g, '');
+check('the jobs list shows contract value, not the original estimate',
+  dollars(rowTotal) === dollars(panelTotal),
+  `(list ${dollars(rowTotal)} vs contract ${dollars(panelTotal)})`);
+
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(250);
+check('the jobs list notes how many changes are approved',
+  /\d+ changes?/.test(await page.locator('.est-row .sub, .est-row .tiny').first().textContent()
+    .then(() => page.locator('.est-row').first().textContent())));
+
+// An unsigned change order must be visible from the dashboard too.
+await page.locator('.tab[data-tab="changes"]').click();
+await page.waitForTimeout(250);
+await page.locator('#btnAddCO').click();
+await page.waitForTimeout(300);
+await page.locator('[data-cof="title"]').fill('Unsigned extra');
+await page.locator('[data-coadd]').click();
+await page.waitForTimeout(200);
+await page.locator('[data-cif="qty"]').first().fill('4');
+await page.locator('[data-cif="unitCost"]').first().fill('500');
+await page.waitForTimeout(300);
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(300);
+const stats = await page.locator('#jobStats').textContent();
+check('the dashboard surfaces unsigned change orders',
+  /Unsigned changes/i.test(stats), `(${stats.replace(/\s+/g,' ').slice(0,100)})`);
+check('the job row flags its unsigned amount',
+  /unsigned/i.test(await page.locator('.est-row').first().textContent()));
+
+// Clean up so the reload assertions below still describe two orders.
+await page.locator('.tab[data-tab="changes"]').click();
+await page.waitForTimeout(250);
+await page.locator('.co-row').last().locator('[data-codel]').click();
+await page.waitForTimeout(300);
+
 // Persistence.
 await page.reload({waitUntil:'networkidle'});
 await page.waitForTimeout(400);

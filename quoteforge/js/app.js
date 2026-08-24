@@ -956,36 +956,60 @@ function wireSignature() {
 /* ------------------------------------------------------------------ jobs -- */
 
 function renderJobs() {
-  const all = store.state.estimates.map((e) => ({ est: e, priced: priceEstimate(e, store.state.settings) }));
+  // Every figure here is the CONTRACT value, not the original estimate. Once a
+  // change order is approved it is money the client owes; a dashboard that
+  // still reports the day-one number understates the business by exactly the
+  // amount the contractor worked hardest to capture.
+  const all = store.state.estimates.map((e) => ({
+    est: e,
+    contract: summarizeContract(e, store.state.settings),
+  }));
   const open = all.filter((r) => r.est.status !== 'declined');
   const won = all.filter((r) => r.est.status === 'accepted');
 
-  const pipeline = open.reduce((a, r) => a + r.priced.totalCents, 0);
-  const wonValue = won.reduce((a, r) => a + r.priced.totalCents, 0);
-  const wonProfit = won.reduce((a, r) => a + r.priced.grossProfitCents, 0);
-  const avgMargin = all.length ? all.reduce((a, r) => a + r.priced.margin, 0) / all.length : 0;
-  const belowTarget = all.filter((r) => r.priced.margin < store.state.settings.targetMargin).length;
+  const pipeline = open.reduce((a, r) => a + r.contract.contractTotalCents, 0);
+  const wonValue = won.reduce((a, r) => a + r.contract.contractTotalCents, 0);
+  const wonProfit = won.reduce((a, r) => a + r.contract.contractProfitCents, 0);
+  const avgMargin = all.length
+    ? all.reduce((a, r) => a + r.contract.contractMargin, 0) / all.length : 0;
+  const belowTarget = all.filter(
+    (r) => r.contract.contractMargin < store.state.settings.targetMargin).length;
+
+  const atRisk = all.reduce((a, r) => a + r.contract.atRiskCents, 0);
+  const atRiskJobs = all.filter((r) => r.contract.unapprovedCount > 0).length;
+  const changeValue = all.reduce((a, r) => a + r.contract.approvedTotalCents, 0);
 
   $('#jobStats').innerHTML = `
-    <div class="stat"><div class="k">Open pipeline</div><div class="v">${formatMoney(pipeline, { cents: false })}</div><div class="s">${open.length} estimate${open.length === 1 ? '' : 's'}</div></div>
+    <div class="stat"><div class="k">Open pipeline</div><div class="v">${formatMoney(pipeline, { cents: false })}</div><div class="s">${open.length} job${open.length === 1 ? '' : 's'}</div></div>
     <div class="stat"><div class="k">Accepted</div><div class="v">${formatMoney(wonValue, { cents: false })}</div><div class="s">${formatMoney(wonProfit, { cents: false })} profit</div></div>
     <div class="stat"><div class="k">Average margin</div><div class="v">${formatPercent(avgMargin)}</div><div class="s">target ${formatPercent(store.state.settings.targetMargin)}</div></div>
-    <div class="stat"><div class="k">Under target</div><div class="v">${belowTarget}</div><div class="s">of ${all.length} estimate${all.length === 1 ? '' : 's'}</div></div>`;
+    ${atRisk
+      ? `<div class="stat" style="border-color:color-mix(in srgb,var(--warn) 45%,transparent)">
+           <div class="k">Unsigned changes</div>
+           <div class="v" style="color:var(--warn)">${formatMoney(atRisk, { cents: false })}</div>
+           <div class="s">across ${atRiskJobs} job${atRiskJobs === 1 ? '' : 's'}</div></div>`
+      : `<div class="stat"><div class="k">Under target</div><div class="v">${belowTarget}</div><div class="s">of ${all.length} job${all.length === 1 ? '' : 's'}</div></div>`}
+    ${changeValue
+      ? `<div class="stat"><div class="k">Approved changes</div><div class="v">${formatMoney(changeValue, { cents: false })}</div><div class="s">already in the totals above</div></div>`
+      : ''}`;
 
-  $('#estList').innerHTML = all.map(({ est, priced }) => `
+  $('#estList').innerHTML = all.map(({ est, contract }) => `
     <div class="est-row${est.id === store.state.activeId ? ' active' : ''}" data-open="${esc(est.id)}">
       <span>
         <div class="t">${esc(est.title || 'Untitled')}</div>
-        <div class="sub">${esc(est.number)} · ${esc(est.client?.name || 'no client')} · updated ${esc(est.updatedAt)}</div>
+        <div class="sub">${esc(est.number)} · ${esc(est.client?.name || 'no client')} · updated ${esc(est.updatedAt)}${
+          contract.unapprovedCount
+            ? ` · <span style="color:var(--warn);font-weight:600">${formatMoney(contract.atRiskCents, { cents: false })} unsigned</span>`
+            : ''}</div>
       </span>
       <select class="status-select" data-status="${esc(est.id)}" onclick="event.stopPropagation()">
         ${['draft', 'sent', 'accepted', 'declined'].map((s) =>
           `<option value="${s}"${est.status === s ? ' selected' : ''}>${s[0].toUpperCase() + s.slice(1)}</option>`).join('')}
       </select>
       <span class="num right">
-        ${formatMoney(priced.totalCents, { cents: false })}
-        <div class="tiny" style="color:var(--${priced.margin < store.state.settings.floorMargin ? 'bad' : priced.margin < store.state.settings.targetMargin ? 'warn' : 'good'})">
-          ${formatPercent(priced.margin)} margin
+        ${formatMoney(contract.contractTotalCents, { cents: false })}
+        <div class="tiny" style="color:var(--${contract.contractMargin < store.state.settings.floorMargin ? 'bad' : contract.contractMargin < store.state.settings.targetMargin ? 'warn' : 'good'})">
+          ${formatPercent(contract.contractMargin)} margin${contract.approvedCount ? ` · ${contract.approvedCount} change${contract.approvedCount === 1 ? '' : 's'}` : ''}
         </div>
       </span>
       <span style="display:flex;gap:4px">
