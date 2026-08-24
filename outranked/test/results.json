@@ -1,0 +1,70 @@
+{
+  "tests": [
+    {
+      "name": "page loads with correct title",
+      "pass": true
+    },
+    {
+      "name": "leaderboard renders all 18 seeded entries",
+      "pass": true
+    },
+    {
+      "name": "crown card shows the top-ranked entry with reign timer",
+      "pass": true
+    },
+    {
+      "name": "every row shows exact price-to-take (no math needed)",
+      "pass": true
+    },
+    {
+      "name": "new listing below $5 minimum is rejected",
+      "pass": true
+    },
+    {
+      "name": "placing a valid bid ranks the entry correctly and shows a toast",
+      "pass": true
+    },
+    {
+      "name": "topping up an existing entry stacks cumulatively",
+      "pass": true
+    },
+    {
+      "name": "auto-defend re-bids automatically when outbid",
+      "pass": true
+    },
+    {
+      "name": "live activity feed records bids and overtakes",
+      "pass": true
+    },
+    {
+      "name": "search filters the board instantly",
+      "pass": true
+    },
+    {
+      "name": "dark/light theme toggle works",
+      "pass": true
+    },
+    {
+      "name": "state persists across reload (localStorage)",
+      "pass": true
+    },
+    {
+      "name": "zero external network requests (self-contained page)",
+      "pass": true
+    },
+    {
+      "name": "XSS in listing name is escaped",
+      "pass": true
+    }
+  ],
+  "perf": {
+    "medianFCPms": 84,
+    "medianDOMContentLoadedms": 54.2,
+    "medianLoadms": 55.5,
+    "totalRequests": 1
+  },
+  "weight": {
+    "htmlBytes": 27759,
+    "gzipBytes": 9675
+  }
+}
