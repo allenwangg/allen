@@ -13,7 +13,7 @@
    state is embedded between markers, the UI renders from state, and
    each real bid publishes a new version of this document for everyone. */
 
-const STATE = /*STATE*/{"entries":[["JONI","joni.app",14013,156],["ShipFast","shipfa.st",9750,108],["Lovable","lovable.dev",8214,91],["CalAI","cal.ai",6120,68],["DataDuck","dataduck.io",5480,61],["PixelPit","pixelpit.gg",4322,48],["Brew&Byte","brewbyte.cafe",3610,40],["Nomad OS","nomados.app",2895,32],["Quill","quill.ink",2240,25],["Fathom","fathom.tools",1780,20],["Zest","zest.email",1315,15],["Moonlit","moonlit.studio",980,11],["Craftly","craftly.shop",740,8],["Herdwise","herdwise.farm",512,6],["TinyBets","tinybets.fun",305,3],["Plantr","plantr.garden",180,2],["Soba","soba.chat",95,1],["Duckhorn","duckhorn.dev",40,1]].map(function(e,i){return {id:"e"+i,name:e[0],url:e[1],total:e[2],bids:e[3],history:[e[2]],defend:0};}),"feed":["<b>CalAI</b> bid <span class=\"amt\">$220</span> → passed <b>DataDuck</b>","👑 <b>JONI</b> defended the crown with <span class=\"amt\">$500</span>","🆕 <b>Soba</b> entered at <span class=\"amt\">$95</span>","🛡 <b>ShipFast</b> auto-defended with <span class=\"amt\">$61</span>"],"stats":{"bids":214,"biggest":2500},"crownedAt":1787536810000,"crownId":"e0","longestReign":{"name":"JONI","ms":33120000}}/*END*/;
+const STATE = /*STATE*/{"entries":[["JONI","joni.app",14013,156],["ShipFast","shipfa.st",9750,108],["Lovable","lovable.dev",8214,91],["CalAI","cal.ai",6120,68],["DataDuck","dataduck.io",5480,61],["PixelPit","pixelpit.gg",4322,48],["Brew&Byte","brewbyte.cafe",3610,40],["Nomad OS","nomados.app",2895,32],["Quill","quill.ink",2240,25],["Fathom","fathom.tools",1780,20],["Zest","zest.email",1315,15],["Moonlit","moonlit.studio",980,11],["Craftly","craftly.shop",740,8],["Herdwise","herdwise.farm",512,6],["TinyBets","tinybets.fun",305,3],["Plantr","plantr.garden",180,2],["Soba","soba.chat",95,1],["Duckhorn","duckhorn.dev",40,1]].map(function(e,i){return {id:"e"+i,name:e[0],url:e[1],total:e[2],bids:e[3],history:[e[2]],defend:0};}),"feed":["<b>CalAI</b> bid <span class=\"amt\">$220</span> → passed <b>DataDuck</b>","👑 <b>JONI</b> defended the crown with <span class=\"amt\">$500</span>","🆕 <b>Soba</b> entered at <span class=\"amt\">$95</span>","🛡 <b>ShipFast</b> auto-defended with <span class=\"amt\">$61</span>"],"stats":{"bids":214,"biggest":2500},"crownedAt":1787536810000,"crownId":"e0","longestReign":{"name":"JONI","ms":33120000},"todaySeed":{"CalAI":220,"Soba":95,"TinyBets":45,"Quill":130}}/*END*/;
 
 /* Capture this script's pristine source now — the body rewrite below removes the element. */
 const BOOT_SRC = document.currentScript.textContent;
@@ -96,6 +96,10 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 9
 .crown-sub b{color:var(--text)}
 .crown-right{margin-left:auto;text-align:right}
 .crown-amt{font-size:26px;font-weight:700;color:var(--foil)}
+.tabs{display:flex;gap:8px;margin:2px 0 10px}
+.tab{flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-weight:700;font-size:14px}
+.tab.active{border-color:var(--foil);color:var(--foil);background:color-mix(in srgb,var(--foil) 8%,var(--panel))}
+.tab:hover{border-color:var(--rule)}
 .toolbar{display:flex;gap:10px;margin:8px 0 12px}
 .search{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--text);font:inherit}
 .search::placeholder{color:var(--dim)}
@@ -157,6 +161,15 @@ details.rules b{color:var(--text)}
 footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);font-size:13px;text-align:center}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--panel);border:1px solid var(--bill);color:var(--text);padding:12px 18px;border-radius:10px;box-shadow:var(--shadow);transition:transform .25s;z-index:60;font-size:14px}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.sharebar{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(160px);display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--foil);padding:10px 12px;border-radius:10px;box-shadow:var(--shadow);transition:transform .25s;z-index:59}
+.sharebar.show{transform:translateX(-50%) translateY(0)}
+.sharebar a,.sharebar button{font-size:13px;font-weight:700;padding:7px 12px;border-radius:8px;white-space:nowrap}
+.sharebar .brag{background:var(--foil);color:#181203}
+.sharebar .brag:hover{filter:brightness(1.1);text-decoration:none}
+.sharebar .xbtn{color:var(--dim);padding:7px 4px}
+.dare{display:block;margin-top:6px;font-size:12px;color:var(--muted);text-decoration:none}
+.dare:hover{color:var(--foil);text-decoration:none}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 @media (max-width:640px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .row{grid-template-columns:40px 1fr auto}
@@ -192,6 +205,10 @@ const BODY_HTML = `
   </section>
   <section class="ticker" aria-label="Recent activity"><div class="ticker-inner" id="tickerInner"></div></section>
   <section id="crown" aria-label="Current champion"></section>
+  <div class="tabs" role="tablist">
+    <button class="tab active" id="tabAll" data-view="all" role="tab" aria-selected="true">👑 All-time</button>
+    <button class="tab" id="tabToday" data-view="today" role="tab" aria-selected="false">🔥 Today — resets at midnight</button>
+  </div>
   <div class="toolbar"><input class="search" id="search" type="search" placeholder="Search the board…" aria-label="Search the board"></div>
   <section class="board" id="board" aria-label="Leaderboard"></section>
   <details class="rules">
@@ -227,7 +244,12 @@ const BODY_HTML = `
     <div class="mrow"><button type="button" class="ghost" data-close>Cancel</button><button type="submit" class="cta" id="payBtn">Pay &amp; rank</button></div>
   </form>
 </dialog>
-<div class="toast" id="toast" role="status"></div>`;
+<div class="sharebar" id="sharebar">
+  <a class="brag" id="bragBtn" href="#" target="_blank" rel="noopener">Brag on 𝕏</a>
+  <button class="xbtn" id="shareClose" aria-label="Dismiss">✕</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>`;
 
 const style = document.createElement("style");
 style.textContent = CSS;
@@ -259,10 +281,10 @@ function buildHTML(st){
   return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>OUTRANKED</title>\n</head>\n<body>\n<script id="boot">' + src + '</scr' + 'ipt>\n</body>\n</html>\n';
 }
 
-async function commit(toastMsg){
-  try { sessionStorage.setItem("outranked_toast", toastMsg); } catch(e) {}
+async function commit(toastMsg, brag){
+  try { sessionStorage.setItem("outranked_celebrate", JSON.stringify({ t: toastMsg, b: brag || "" })); } catch(e) {}
   await storeReady;
-  if (!store || readOnly) { render(); showToast(toastMsg); return; }
+  if (!store || readOnly) { render(); celebrate(); return; }
   try {
     await store.publish(buildHTML(state));   /* success → this view reloads */
   } catch (e) {
@@ -270,7 +292,7 @@ async function commit(toastMsg){
     if (code === "conflict") return;         /* a newer version won; reload is coming */
     if (code === "not_granted" || code === "not_writer" || code === "consent_required" ||
         code === "capability_disabled" || code === "capability_removed" || code === "not_declared") {
-      readOnlyNote(); render(); showToast(toastMsg); return;
+      readOnlyNote(); render(); celebrate(); return;
     }
     if (code === "rate_limited") { render(); showToast("Easy, tycoon — bids are coming in too fast. Yours is kept on this device."); return; }
     render(); showToast("Couldn't sync that bid — it's kept on this device.");
@@ -280,8 +302,29 @@ async function commit(toastMsg){
 /* ---------- state helpers ---------- */
 const state = STATE;
 let query = "";
+let view = "all";
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function ensureToday(e){
+  if (e.todayDate !== todayStr()){ e.todayDate = todayStr(); e.todayTotal = 0; }
+  return e;
+}
+function touchToday(e, amount){ ensureToday(e); e.todayTotal += amount; }
 function sorted(){ return [...state.entries].sort((a,b) => b.total - a.total); }
+function sortedToday(){ return state.entries.map(ensureToday).filter(e => e.todayTotal > 0).sort((a,b) => b.todayTotal - a.todayTotal); }
 function rankMap(){ const m = {}; sorted().forEach((e,i) => m[e.id] = i+1); return m; }
+function msToMidnightUTC(){
+  const now = new Date();
+  return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1) - now.getTime();
+}
+/* demo seeding: give today's board a small bid war on days with no activity yet */
+if (state.todaySeed){
+  for (const e of state.entries){
+    if (e.todayDate !== todayStr() && state.todaySeed[e.name]){
+      ensureToday(e);
+      e.todayTotal = state.todaySeed[e.name];
+    }
+  }
+}
 let prevRanks = rankMap();
 function dur(ms){
   const m = Math.floor(ms/60000), h = Math.floor(m/60), d = Math.floor(h/24);
@@ -300,26 +343,51 @@ function spark(hist){
 }
 
 function render(){
-  const list = sorted();
-  const top = list[0];
-  $("#crown").innerHTML =
-    '<div class="crown-card">' +
-      '<div class="crown-emoji">👑</div>' +
-      '<div><div class="crown-name">' + esc(top.name) + '</div>' +
-      '<div class="crown-sub">' + esc(top.url) + ' · reigning <b class="num" id="reignClock">' + dur(Date.now()-state.crownedAt) + '</b></div>' +
-      '<div class="crown-sub">Longest reign ever: <b>' + esc(state.longestReign.name) + '</b> — ' + dur(state.longestReign.ms) + '</div></div>' +
-      '<div class="crown-right"><div class="crown-amt num">' + fmt(top.total) + '</div>' +
-      '<button class="take" data-take="' + top.id + '">Dethrone — ' + fmt(top.total+1) + ' total<small>top-ups only pay the difference</small></button></div></div>';
+  const isToday = view === "today";
+  const list = isToday ? sortedToday() : sorted();
+
+  if (isToday){
+    const king = list[0];
+    $("#crown").innerHTML = king
+      ? '<div class="crown-card">' +
+        '<div class="crown-emoji">🔥</div>' +
+        '<div><div class="crown-name">' + esc(king.name) + '</div>' +
+        '<div class="crown-sub">King of Today · board resets in <b class="num">' + dur(msToMidnightUTC()) + '</b></div>' +
+        '<div class="crown-sub">All-time total: <b class="num">' + fmt(king.total) + '</b></div></div>' +
+        '<div class="crown-right"><div class="crown-amt num">' + fmt(king.todayTotal) + '</div>' +
+        '<button class="take" data-take="' + king.id + '">Take today\'s crown — ' + fmt(king.todayTotal+1) + '<small>everyone starts even again at midnight</small></button></div></div>'
+      : '<div class="crown-card">' +
+        '<div class="crown-emoji">🔥</div>' +
+        '<div><div class="crown-name">Nobody has bid today</div>' +
+        '<div class="crown-sub">Today\'s crown is basically free. Resets in <b class="num">' + dur(msToMidnightUTC()) + '</b>.</div></div>' +
+        '<div class="crown-right"><button class="take" data-open-bid>Take it — ' + fmt(MIN_NEW) + '</button></div></div>';
+  } else {
+    const top = list[0];
+    $("#crown").innerHTML =
+      '<div class="crown-card">' +
+        '<div class="crown-emoji">👑</div>' +
+        '<div><div class="crown-name">' + esc(top.name) + '</div>' +
+        '<div class="crown-sub">' + esc(top.url) + ' · reigning <b class="num" id="reignClock">' + dur(Date.now()-state.crownedAt) + '</b></div>' +
+        '<div class="crown-sub">Longest reign ever: <b>' + esc(state.longestReign.name) + '</b> — ' + dur(state.longestReign.ms) + '</div></div>' +
+        '<div class="crown-right"><div class="crown-amt num">' + fmt(top.total) + '</div>' +
+        '<button class="take" data-take="' + top.id + '">Dethrone — ' + fmt(top.total+1) + ' total<small>top-ups only pay the difference</small></button>' +
+        '<a class="dare" id="dareLink" href="' + tweetIntent("Someone paid " + fmt(top.total) + " to be #1 on OUTRANKED. It costs exactly " + fmt(top.total+1) + " to take it from them: " + SHARE_URL) + '" target="_blank" rel="noopener">📣 dare someone to dethrone them</a></div></div>';
+  }
 
   const q = query.trim().toLowerCase();
-  const ranks = rankMap();
   $("#board").innerHTML = list.map((e,i) => {
     if (q && !(e.name.toLowerCase().includes(q) || e.url.toLowerCase().includes(q))) return "";
-    const rank = i+1, prev = prevRanks[e.id];
+    const rank = i+1;
     let mv = '<span class="mv same">–</span>';
-    if (prev && prev > rank) mv = '<span class="mv up">▲' + (prev-rank) + '</span>';
-    else if (prev && prev < rank) mv = '<span class="mv down">▼' + (rank-prev) + '</span>';
+    if (!isToday){
+      const prev = prevRanks[e.id];
+      if (prev && prev > rank) mv = '<span class="mv up">▲' + (prev-rank) + '</span>';
+      else if (prev && prev < rank) mv = '<span class="mv down">▼' + (rank-prev) + '</span>';
+    }
     const hot = e.history.length > 3 && e.history[e.history.length-1] - e.history[e.history.length-4] > e.total*0.25;
+    const amt = isToday ? e.todayTotal : e.total;
+    const sub = isToday ? ('all-time ' + fmt(e.total)) : (e.bids + ' bid' + (e.bids === 1 ? '' : 's'));
+    const takeLabel = rank === 1 ? (isToday ? 'Take today\'s #1' : 'Dethrone') : 'Take #' + rank;
     return '<div class="row" data-id="' + e.id + '">' +
       '<div class="rank num">' + rank + mv + '</div>' +
       '<div class="who"><span class="nm">' + esc(e.name) +
@@ -327,10 +395,12 @@ function render(){
         (hot ? ' <span class="badge hot">🔥 HOT</span>' : '') + '</span>' +
         '<a class="url" href="https://' + esc(e.url) + '" target="_blank" rel="noopener nofollow">' + esc(e.url) + '</a></div>' +
       spark(e.history) +
-      '<div class="money"><div class="amt num">' + fmt(e.total) + '</div>' +
-      '<div class="bids num">' + e.bids + ' bid' + (e.bids === 1 ? '' : 's') + '</div>' +
-      '<button class="take" data-take="' + e.id + '">' + (rank === 1 ? 'Dethrone' : 'Take #' + rank) + ' — ' + fmt(e.total+1) + '</button></div></div>';
-  }).join("") || '<div class="row" style="grid-template-columns:1fr;color:var(--muted)">Nothing matches "' + esc(query) + '".</div>';
+      '<div class="money"><div class="amt num">' + fmt(amt) + '</div>' +
+      '<div class="bids num">' + sub + '</div>' +
+      '<button class="take" data-take="' + e.id + '">' + takeLabel + ' — ' + fmt(amt+1) + '</button></div></div>';
+  }).join("") || (isToday && !q
+    ? '<div class="row" style="grid-template-columns:1fr;color:var(--muted)">No bids yet today — first ' + fmt(MIN_NEW) + ' owns the board until midnight.</div>'
+    : '<div class="row" style="grid-template-columns:1fr;color:var(--muted)">Nothing matches "' + esc(query) + '".</div>');
 
   $("#statRaised").textContent = fmt(state.entries.reduce((s,e) => s+e.total, 0));
   $("#statBids").textContent = state.stats.bids.toLocaleString();
@@ -339,7 +409,7 @@ function render(){
 
   const items = state.feed.slice(0,12).map(f => '<span class="tick">' + f + '</span>').join("");
   $("#tickerInner").innerHTML = items + items;
-  prevRanks = ranks;
+  if (!isToday) prevRanks = rankMap();
 }
 
 /* ---------- bidding ---------- */
@@ -387,6 +457,7 @@ function runAutoDefend(aggressor){
         const need = Math.min(e.defend, justAhead.total - e.total + 1);
         if (need > 0){
           e.total += need; e.defend -= need; e.bids++; e.history.push(e.total);
+          touchToday(e, need);
           state.stats.bids++;
           feed('🛡 <b>' + esc(e.name) + '</b> auto-defended with <span class="amt">' + fmt(need) + '</span> — back above <b>' + esc(aggressor.name) + '</b>');
           acted = true;
@@ -408,6 +479,7 @@ function placeBid(name, url, amount, defendBudget){
     entry = { id: "u" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36), name, url: url || "—", total: amount, bids: 1, history: [amount], defend: 0 };
     state.entries.push(entry);
   }
+  touchToday(entry, amount);
   if (defendBudget > 0) entry.defend = defendBudget;
   state.stats.bids++;
   state.stats.biggest = Math.max(state.stats.biggest, amount);
@@ -424,6 +496,16 @@ document.addEventListener("click", e => {
   if (take) return openBid(take.dataset.take);
   if (e.target.closest("[data-open-bid]")) return openBid(null);
   if (e.target.closest("[data-close]")) return modal.close();
+  const tab = e.target.closest(".tab[data-view]");
+  if (tab){
+    view = tab.dataset.view;
+    document.querySelectorAll(".tab").forEach(t => {
+      const on = t.dataset.view === view;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-selected", on);
+    });
+    render();
+  }
 });
 $("#fDefend").addEventListener("change", e => { $("#fBudget").disabled = !e.target.checked; if (e.target.checked) $("#fBudget").focus(); });
 $("#bidForm").addEventListener("submit", e => {
@@ -437,7 +519,8 @@ $("#bidForm").addEventListener("submit", e => {
   const res = placeBid(name, url, amount, defendBudget);
   if (!res.ok){ err.textContent = res.msg; err.classList.add("show"); return; }
   modal.close();
-  commit("💸 Paid " + fmt(amount) + " — " + res.entry.name + " is #" + res.rank + (defendBudget ? " · 🛡 defending with " + fmt(defendBudget) : ""));
+  const brag = tweetIntent("I just paid " + fmt(amount) + " to make " + res.entry.name + " #" + res.rank + " on OUTRANKED 👑 Outbid me if you dare: " + SHARE_URL);
+  commit("💸 Paid " + fmt(amount) + " — " + res.entry.name + " is #" + res.rank + (defendBudget ? " · 🛡 defending with " + fmt(defendBudget) : ""), brag);
 });
 $("#search").addEventListener("input", e => { query = e.target.value; render(); });
 
@@ -450,12 +533,59 @@ function showToast(text){
   toastTimer = setTimeout(() => el.classList.remove("show"), 4000);
 }
 
+/* ---------- viral loops + celebration ---------- */
+const SHARE_URL = "https://claude.ai/code/artifact/2e073757-ea85-49b4-b889-f43609793991";
+function tweetIntent(text){ return "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text); }
+let shareTimer;
+function showShareBar(href){
+  if (!href) return;
+  $("#bragBtn").href = href;
+  $("#sharebar").classList.add("show");
+  clearTimeout(shareTimer);
+  shareTimer = setTimeout(() => $("#sharebar").classList.remove("show"), 30000);
+}
+$("#shareClose").addEventListener("click", () => $("#sharebar").classList.remove("show"));
+
+function confetti(){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d");
+  cv.width = innerWidth; cv.height = innerHeight;
+  const colors = ["#d9a944","#63c08e","#ecefe6","#d95c6e"];
+  const bits = Array.from({length: 90}, () => ({
+    x: innerWidth/2 + (Math.random()-.5)*160, y: innerHeight*0.62,
+    vx: (Math.random()-.5)*11, vy: -(5+Math.random()*9),
+    s: 4+Math.random()*4, c: colors[Math.floor(Math.random()*colors.length)], r: Math.random()*Math.PI
+  }));
+  let frames = 0;
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for (const b of bits){
+      b.x += b.vx; b.y += b.vy; b.vy += .32; b.r += .1;
+      ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.r);
+      ctx.fillStyle = b.c; ctx.fillRect(-b.s/2,-b.s/2,b.s,b.s); ctx.restore();
+    }
+    if (++frames < 110) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+}
+
+/* Show toast + brag bar + confetti — directly in sandbox mode, or after the
+   publish-triggered reload via the sessionStorage stash. */
+function celebrate(){
+  try {
+    const raw = sessionStorage.getItem("outranked_celebrate");
+    if (!raw) return;
+    sessionStorage.removeItem("outranked_celebrate");
+    const { t, b } = JSON.parse(raw);
+    if (t) showToast(t);
+    showShareBar(b);
+    confetti();
+  } catch(e) {}
+}
+
 render();
 setInterval(() => { const el = $("#reignClock"); if (el) el.textContent = dur(Date.now() - state.crownedAt); }, 30000);
-try {
-  const t = sessionStorage.getItem("outranked_toast");
-  if (t){ sessionStorage.removeItem("outranked_toast"); showToast(t); }
-} catch(e) {}
+celebrate();
 </script>
 </body>
 </html>

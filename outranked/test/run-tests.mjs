@@ -223,6 +223,45 @@ await test("webhook feed merges as VERIFIED bids, idempotently", async () => {
   await page.evaluate(() => { CONFIG.BOARD_FEED_URL = ""; });
 });
 
+await test("Today board ranks by today's bids, independent of all-time totals", async () => {
+  await page.click("#tabToday");
+  await page.waitForTimeout(100);
+  let names = await page.locator(".board .row .nm").allTextContents();
+  assert(!names.some(n => n.includes("JONI")), "JONI has no bids today and should not be on the Today board");
+  const expected = await page.evaluate(() => sortedToday().map(e => e.name));
+  const domOrder = names.map(n => n.trim().split("\n")[0].trim());
+  assert(JSON.stringify(domOrder.map(n => n.split(" ")[0])) === JSON.stringify(expected.map(n => n.split(" ")[0])),
+    `today DOM order ${domOrder} != today totals order ${expected}`);
+  // A $300 bid today outranks CalAI's $220 today, regardless of all-time totals
+  await page.click("[data-open-bid]");
+  await page.fill("#fName", "DayTripper");
+  await page.fill("#fAmt", "300");
+  await page.click("#payBtn");
+  await page.waitForTimeout(150);
+  names = (await page.locator(".board .row .nm").allTextContents()).map(n => n.trim());
+  const dt = names.findIndex(n => n.includes("DayTripper"));
+  const cal = names.findIndex(n => n.includes("CalAI"));
+  assert(dt !== -1 && cal !== -1 && dt < cal, `DayTripper ($300 today) should outrank CalAI ($220 today): got positions ${dt + 1} vs ${cal + 1}`);
+  const crown = await page.locator(".crown-card").textContent();
+  assert(crown.includes("resets in"), "Today crown missing reset countdown");
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+  const allNames = await page.locator(".board .row .nm").allTextContents();
+  assert(!allNames[0].includes("DayTripper"), "DayTripper must not lead the all-time board");
+});
+
+await test("outbound clicks are counted per listing (advertiser ROI proof)", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+  await ctx.route("https://joni.app/**", r => r.abort());
+  const before = await page.evaluate(() => state.entries.find(e => e.name === "JONI").clicks);
+  const popup = page.waitForEvent("popup").catch(() => null);
+  await page.locator('.row[data-id="e0"] a.url').click();
+  await popup;
+  const after = await page.evaluate(() => state.entries.find(e => e.name === "JONI").clicks);
+  assert(after === before + 1, `JONI clicks should go ${before}→${before + 1}, got ${after}`);
+});
+
 await ctx.close();
 
 // ---------- performance benchmark ----------

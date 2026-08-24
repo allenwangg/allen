@@ -91,7 +91,11 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 8
 .reign{font-size:13px;color:var(--muted)}
 .reign b{color:var(--text)}
 
-/* toolbar */
+/* tabs + toolbar */
+.tabs{display:flex;gap:8px;margin:2px 0 10px}
+.tab{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--muted);font-weight:700;font-size:14px}
+.tab.active{border-color:var(--gold);color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--panel))}
+.tab:hover{border-color:var(--dim)}
 .toolbar{display:flex;gap:10px;margin:8px 0 12px}
 .search{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);font:inherit}
 .search::placeholder{color:var(--dim)}
@@ -217,6 +221,11 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
 
   <section id="crown" aria-label="Current champion"></section>
 
+  <div class="tabs" role="tablist">
+    <button class="tab active" id="tabAll" data-view="all" role="tab" aria-selected="true">👑 All-time</button>
+    <button class="tab" id="tabToday" data-view="today" role="tab" aria-selected="false">🔥 Today — resets at midnight</button>
+  </div>
+
   <div class="toolbar">
     <input class="search" id="search" type="search" placeholder="Search the board…" aria-label="Search the board">
   </div>
@@ -317,18 +326,40 @@ if (!state || !Array.isArray(state.entries)) {
   state = {
     entries: SEED.map(([name,url,total],i)=>({
       id:"e"+i, name, url, total:+total, bids:Math.max(1,Math.round(+total/90)),
-      history:[+total], defend:0, mine:false
+      history:[+total], defend:0, mine:false, clicks:Math.round(+total/1.3)
     })),
     feed: [], stats:{bids:214, biggest:2500}, crownedAt: Date.now()-1000*60*137, crownId:"e0",
     longestReign:{name:"JONI", ms:1000*60*60*9+1000*60*12}
   };
 }
 let query = "";
+let view = "all";                       // "all" | "today"
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function ensureToday(e){
+  if (e.todayDate !== todayStr()){ e.todayDate = todayStr(); e.todayTotal = 0; }
+  return e;
+}
+function touchToday(e, amount){ ensureToday(e); e.todayTotal += amount; }
+
+/* seed a small bid war on today's board so it never starts empty in demo */
+if (!state.seededToday || state.seededToday !== todayStr()){
+  state.seededToday = todayStr();
+  const todaySeed = {"CalAI":220, "Soba":95, "TinyBets":45, "Quill":130};
+  for (const e of state.entries){ ensureToday(e); if (todaySeed[e.name] && !e.todayTotal) e.todayTotal = todaySeed[e.name]; }
+}
+
 let prevRanks = rankMap();
 
 function sorted(){ return [...state.entries].sort((a,b)=>b.total-a.total); }
+function sortedToday(){ return state.entries.map(ensureToday).filter(e=>e.todayTotal>0).sort((a,b)=>b.todayTotal-a.todayTotal); }
 function rankMap(){ const m={}; sorted().forEach((e,i)=>m[e.id]=i+1); return m; }
+function rankMapToday(){ const m={}; sortedToday().forEach((e,i)=>m[e.id]=i+1); return m; }
 function save(){ try{ localStorage.setItem("outranked_v1", JSON.stringify(state)); }catch(e){} }
+function msToMidnightUTC(){
+  const now = new Date();
+  return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1) - now.getTime();
+}
 
 /* ============ rendering ============ */
 function spark(hist){
@@ -341,13 +372,41 @@ function spark(hist){
 }
 
 function render(){
-  const list = sorted();
-  const ranks = rankMap();
+  const isToday = view === "today";
+  const list = isToday ? sortedToday() : sorted();
 
   // crown
-  const top = list[0];
-  const reignMs = Date.now() - state.crownedAt;
-  $("#crown").innerHTML = `
+  if (isToday){
+    const king = list[0];
+    if (king){
+      $("#crown").innerHTML = `
+      <div class="crown-card">
+        <div class="crown-emoji">🔥</div>
+        <div>
+          <div class="crown-name">${esc(king.name)}</div>
+          <div class="crown-sub">King of Today · board resets in <b class="num">${dur(msToMidnightUTC())}</b></div>
+          <div class="crown-sub">All-time total: <b class="num">${fmt(king.total)}</b></div>
+        </div>
+        <div class="crown-right">
+          <div class="crown-amt num">${fmt(king.todayTotal)}</div>
+          <button class="take" data-take="${king.id}">Take today's crown — ${fmt(king.todayTotal+1)}<small>everyone starts even again at midnight</small></button>
+        </div>
+      </div>`;
+    } else {
+      $("#crown").innerHTML = `
+      <div class="crown-card">
+        <div class="crown-emoji">🔥</div>
+        <div>
+          <div class="crown-name">Nobody has bid today</div>
+          <div class="crown-sub">Today's crown is basically free. Resets in <b class="num">${dur(msToMidnightUTC())}</b>.</div>
+        </div>
+        <div class="crown-right"><button class="take" data-open-bid>Take it — ${fmt(MIN_NEW)}</button></div>
+      </div>`;
+    }
+  } else {
+    const top = list[0];
+    const reignMs = Date.now() - state.crownedAt;
+    $("#crown").innerHTML = `
     <div class="crown-card">
       <div class="crown-emoji">👑</div>
       <div>
@@ -361,16 +420,25 @@ function render(){
         <a class="dare" id="dareLink" href="${dareIntent(top)}" target="_blank" rel="noopener">📣 dare someone to dethrone them</a>
       </div>
     </div>`;
+  }
 
   // board
   const q = query.trim().toLowerCase();
   $("#board").innerHTML = list.map((e,i)=>{
     if (q && !(e.name.toLowerCase().includes(q)||e.url.toLowerCase().includes(q))) return "";
-    const rank = i+1, prev = prevRanks[e.id];
+    const rank = i+1;
     let mv = `<span class="mv same">–</span>`;
-    if (prev && prev>rank) mv = `<span class="mv up">▲${prev-rank}</span>`;
-    else if (prev && prev<rank) mv = `<span class="mv down">▼${rank-prev}</span>`;
+    if (!isToday){
+      const prev = prevRanks[e.id];
+      if (prev && prev>rank) mv = `<span class="mv up">▲${prev-rank}</span>`;
+      else if (prev && prev<rank) mv = `<span class="mv down">▼${rank-prev}</span>`;
+    }
     const hot = e.history.length>3 && e.history.at(-1)-e.history.at(-4) > e.total*0.25;
+    const amt = isToday ? e.todayTotal : e.total;
+    const sub = isToday
+      ? `all-time ${fmt(e.total)}`
+      : `${e.bids} bid${e.bids===1?"":"s"} · ${(e.clicks||0).toLocaleString()} clicks`;
+    const takeLabel = rank===1 ? (isToday?"Take today's #1":"Dethrone") : `Take #${rank}`;
     return `
     <div class="row" data-id="${e.id}">
       <div class="rank num">${rank}${mv}</div>
@@ -384,12 +452,14 @@ function render(){
       </div>
       ${spark(e.history)}
       <div class="money">
-        <div class="amt num">${fmt(e.total)}</div>
-        <div class="bids num">${e.bids} bid${e.bids===1?"":"s"}</div>
-        <button class="take" data-take="${e.id}">${rank===1?"Dethrone":"Take #"+rank} — ${fmt(costToBeat(e,null))}</button>
+        <div class="amt num">${fmt(amt)}</div>
+        <div class="bids num">${sub}</div>
+        <button class="take" data-take="${e.id}">${takeLabel} — ${fmt(amt+1)}</button>
       </div>
     </div>`;
-  }).join("") || `<div class="row" style="grid-template-columns:1fr;color:var(--muted)">Nothing matches "${esc(query)}".</div>`;
+  }).join("") || (isToday && !q
+    ? `<div class="row" style="grid-template-columns:1fr;color:var(--muted)">No bids yet today — first ${fmt(MIN_NEW)} owns the board until midnight.</div>`
+    : `<div class="row" style="grid-template-columns:1fr;color:var(--muted)">Nothing matches "${esc(query)}".</div>`);
 
   // stats
   const raised = state.entries.reduce((s,e)=>s+e.total,0);
@@ -401,7 +471,7 @@ function render(){
   const items = state.feed.slice(0,12).map(f=>`<span class="tick">${f}</span>`).join("");
   $("#tickerInner").innerHTML = items + items;
 
-  prevRanks = ranks;
+  if (!isToday) prevRanks = rankMap();
   save();
 }
 
@@ -451,9 +521,10 @@ function placeBid({name,url,amount,defendBudget}){
     entry.total += amount; entry.bids++; entry.history.push(entry.total);
   } else {
     if (amount < MIN_NEW) return {ok:false, msg:`New listings start at ${fmt(MIN_NEW)}.`};
-    entry = {id:"u"+Date.now(), name, url:url||"—", total:amount, bids:1, history:[amount], defend:0, mine:true};
+    entry = {id:"u"+Date.now(), name, url:url||"—", total:amount, bids:1, history:[amount], defend:0, mine:true, clicks:0};
     state.entries.push(entry);
   }
+  touchToday(entry, amount);
   entry.mine = true;
   if (defendBudget>0) entry.defend = defendBudget;
   state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
@@ -490,6 +561,7 @@ function runAutoDefend(aggressor){
         const need = Math.min(e.defend, justAhead.total - e.total + 1);
         if (need>0 && need<=e.defend){
           e.total += need; e.defend -= need; e.bids++; e.history.push(e.total);
+          touchToday(e, need);
           state.stats.bids++;
           feed(`🛡 <b>${esc(e.name)}</b> auto-defended with <span class="amt">${fmt(need)}</span> — back above <b>${esc(aggressor.name)}</b>`);
           acted = true;
@@ -513,6 +585,7 @@ function simulate(){
     const above = list[idx-1] || target;
     amount = Math.max(1, above.total - target.total + 1 + Math.floor(Math.random()*20));
     target.total += amount; target.bids++; target.history.push(target.total);
+    touchToday(target, amount);
     state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
     feed(`<b>${esc(target.name)}</b> bid <span class="amt">${fmt(amount)}</span> → passed <b>${esc(above.name)}</b>`);
     flash(target.id);
@@ -520,7 +593,9 @@ function simulate(){
   } else if (roll < 0.45){
     name = NAMES[Math.floor(Math.random()*NAMES.length)] + " " + Math.floor(Math.random()*90+10);
     amount = MIN_NEW + Math.floor(Math.random()*120);
-    state.entries.push({id:"s"+Date.now(), name, url:name.toLowerCase().replace(/\s+/g,"")+".io", total:amount, bids:1, history:[amount], defend:0, mine:false});
+    const fresh = {id:"s"+Date.now(), name, url:name.toLowerCase().replace(/\s+/g,"")+".io", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
+    touchToday(fresh, amount);
+    state.entries.push(fresh);
     state.stats.bids++;
     feed(`🆕 <b>${esc(name)}</b> entered at <span class="amt">${fmt(amount)}</span>`);
   } else if (roll < 0.5 && list.length>1){
@@ -528,6 +603,7 @@ function simulate(){
     amount = list[0].total - target.total + 1;
     if (amount>0 && amount<3000){
       target.total += amount; target.bids++; target.history.push(target.total);
+      touchToday(target, amount);
       state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
       feed(`⚔️ <b>${esc(target.name)}</b> went for the crown — <span class="amt">${fmt(amount)}</span>!`);
       flash(target.id);
@@ -549,6 +625,23 @@ document.addEventListener("click", e=>{
   if (take) return openBid(take.dataset.take);
   if (e.target.closest("[data-open-bid]")) return openBid(null);
   if (e.target.closest("[data-close]")) return modal.close();
+  const tab = e.target.closest(".tab[data-view]");
+  if (tab){
+    view = tab.dataset.view;
+    document.querySelectorAll(".tab").forEach(t=>{
+      const on = t.dataset.view === view;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-selected", on);
+    });
+    render();
+    return;
+  }
+  const link = e.target.closest("a.url");
+  if (link){
+    const row = link.closest(".row");
+    const entry = row && state.entries.find(x=>x.id===row.dataset.id);
+    if (entry){ entry.clicks = (entry.clicks||0)+1; save(); }
+  }
 });
 $("#fDefend").addEventListener("change", e=>{ $("#fBudget").disabled = !e.target.checked; if(e.target.checked) $("#fBudget").focus(); });
 $("#bidForm").addEventListener("submit", e=>{

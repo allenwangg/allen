@@ -8,6 +8,8 @@ people come back and pay again:
 
 | Mechanic | What it does |
 |---|---|
+| **The Today board** | The flagship board resets at midnight UTC, so there's a winnable bid war every day at every budget. outbid.lol had to retrofit this (/today) after its all-time board froze at a five-figure #1 — OUTRANKED launches with it. |
+| **Public click counts** | Every listing shows the outbound clicks it received — the ROI proof that turns bids from ego spend into defensible ad spend. |
 | **Price-to-take buttons** | Every row shows the exact dollar amount to take that rank. No math, no friction between impulse and payment. |
 | **Auto-defend budgets** | Set a defense budget; the board re-bids +$1 for you the moment you're outbid. Proxy bidding captures revenue while you sleep. |
 | **King-of-the-Hill reign timer** | #1 wears the crown and the clock runs. The longest reign is recorded forever — a second competition (time) layered on the first (money). |
@@ -31,6 +33,19 @@ A live version where **every viewer bids on the same shared board** (the page
 republishes itself with the new state on every bid) is deployed as a Claude artifact:
 
 https://claude.ai/code/artifact/2e073757-ea85-49b4-b889-f43609793991
+
+## Turning the money on
+
+See [MONEY.md](MONEY.md) — Stripe account + bank link (the one step only the operator
+can do), then paste the Payment Link into `CONFIG` in `index.html`. Optional
+auto-verification via `server/stripe-webhook-worker.js`.
+
+## Launching it
+
+See [MARKETING.md](MARKETING.md) — the full launch playbook reverse-engineered from
+outbid.lol's actual viral run, with ready-to-post copy for X, Reddit, HN, PH, video,
+and press. `outbid-lol-alternative.html` is the SEO intercept page for "outbid.lol
+alternative" queries.
 
 ## Running the tests
 

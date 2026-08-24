@@ -75,16 +75,24 @@
     {
       "name": "webhook feed merges as VERIFIED bids, idempotently",
       "pass": true
+    },
+    {
+      "name": "Today board ranks by today's bids, independent of all-time totals",
+      "pass": true
+    },
+    {
+      "name": "outbound clicks are counted per listing (advertiser ROI proof)",
+      "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 88,
-    "medianDOMContentLoadedms": 55.5,
-    "medianLoadms": 57.1,
+    "medianFCPms": 116,
+    "medianDOMContentLoadedms": 75.7,
+    "medianLoadms": 77.4,
     "totalRequests": 1
   },
   "weight": {
-    "htmlBytes": 35934,
-    "gzipBytes": 12103
+    "htmlBytes": 40162,
+    "gzipBytes": 13211
   }
 }
