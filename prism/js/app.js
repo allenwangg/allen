@@ -171,8 +171,7 @@
 
   /* ---------------- shared chrome ---------------- */
 
-  function headerHTML(opts) {
-    var st = Store.streak();
+  function headerHTML() {
     var lvl = Store.level();
     var flameOn = Store.streakIncludesToday();
     return '' +
