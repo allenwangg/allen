@@ -58,6 +58,30 @@
     setTimeout(function () { el.remove(); }, 1400);
   }
 
+  /* Six browsable themes over the library's finer-grained categories. */
+  var THEMES = [
+    { id: 'mind', label: 'Mind', cats: ['Psychology', 'Neuroscience', 'Behavior', 'Well-being'] },
+    { id: 'thinking', label: 'Thinking', cats: ['Critical Thinking', 'Game Theory', 'Mathematics'] },
+    { id: 'science', label: 'Science', cats: ['Science', 'Biology', 'Earth Science', 'Space', 'Science History'] },
+    { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
+    { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science'] },
+    { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology'] }
+  ];
+  var activeTheme = 'all';   // resets each load; filtering is a browsing aid, not a setting
+
+  function themeOf(course) {
+    for (var i = 0; i < THEMES.length; i++) {
+      if (THEMES[i].cats.indexOf(course.category) >= 0) return THEMES[i].id;
+    }
+    return 'other';
+  }
+
+  function themeCount(id) {
+    var n = 0;
+    for (var i = 0; i < COURSES.length; i++) if (id === 'all' || themeOf(COURSES[i]) === id) n += 1;
+    return n;
+  }
+
   /* Distinct cover glyph per course (fallback: first lesson's intro art). */
   var COVER_ART = {
     'cognitive-biases': 'lens', 'stoicism': 'shield', 'psychology-of-money': 'coin',
@@ -302,9 +326,18 @@
     }
     h += '</section>';
 
-    h += '<h2 class="section-title">Courses</h2><section class="grid">';
+    h += '<div class="lib-head"><h2 class="section-title">Courses</h2>' +
+      '<span class="lib-count">' + COURSES.length + ' courses · ' + themeCount(activeTheme) + ' shown</span></div>';
+    h += '<div class="filters" id="filters"><button class="filter' + (activeTheme === 'all' ? ' on' : '') + '" data-t="all">All <i>' + COURSES.length + '</i></button>';
+    for (var t = 0; t < THEMES.length; t++) {
+      var tc = themeCount(THEMES[t].id);
+      if (!tc) continue;
+      h += '<button class="filter' + (activeTheme === THEMES[t].id ? ' on' : '') + '" data-t="' + THEMES[t].id + '">' + esc(THEMES[t].label) + ' <i>' + tc + '</i></button>';
+    }
+    h += '</div><section class="grid">';
     for (var k = 0; k < COURSES.length; k++) {
       var c = COURSES[k];
+      if (activeTheme !== 'all' && themeOf(c) !== activeTheme) continue;
       var pr = Store.courseProgress(c);
       var pctc = pr.total ? pr.done / pr.total : 0;
       h += '<a class="cover" style="--ah:' + HUES[k % HUES.length] + '" href="#/course/' + esc(c.id) + '">' +
@@ -322,6 +355,12 @@
     h += '</section></main>';
     $app.innerHTML = h;
     bindChrome();
+    var chips = document.querySelectorAll('.filter');
+    for (var fi = 0; fi < chips.length; fi++) {
+      (function (btn) {
+        btn.onclick = function () { activeTheme = btn.getAttribute('data-t'); renderHome(); };
+      })(chips[fi]);
+    }
     maybeShowTour();
   }
 

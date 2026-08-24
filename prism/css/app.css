@@ -648,3 +648,22 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 .tour-row b { color: var(--ink); }
 
 .version { margin-top: 16px; text-align: center; color: var(--mut); font-size: 11.5px; }
+
+/* ---------------- library filters ---------------- */
+
+.lib-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.lib-count { color: var(--mut); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.filters {
+  display: flex; gap: 8px; margin-bottom: 14px; padding-bottom: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.filters::-webkit-scrollbar { display: none; }
+.filter {
+  display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+  padding: 7px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
+  background: var(--surface); border: 1.4px solid var(--line); color: var(--mut);
+  transition: border-color .14s, color .14s, background .14s;
+}
+.filter:hover { color: var(--ink); border-color: var(--accent-line); }
+.filter i { font-style: normal; font-size: 11.5px; font-weight: 700; opacity: .65; font-variant-numeric: tabular-nums; }
+.filter.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
