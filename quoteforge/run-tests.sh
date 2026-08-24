@@ -13,6 +13,8 @@ done
 if [ "${1:-}" = "--all" ]; then
   echo "  browser suite"
   node quoteforge/test/browser.mjs || fail=1
+  echo "  security suite"
+  node quoteforge/test/security.mjs || fail=1
 fi
 
 if [ "$fail" -ne 0 ]; then
