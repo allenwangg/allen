@@ -5100,7 +5100,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "A Pendulum in the Panthéon",
-            "body": "In 1851 Léon Foucault hung a 28-kilogram bob on a 67-meter wire from the dome of the Panthéon in Paris. A free pendulum's swing plane holds steady while the Earth rotates underneath it, so hour after hour the bob's path crept around the floor — about 11 degrees per hour at Paris's latitude, recorded by a stylus tracing a ring of sand. You could stand there and watch the planet turn.",
+            "body": "In 1851 Léon Foucault hung a 28-kilogram bob on a 67-meter wire from the dome of the Panthéon in Paris. A free pendulum's swing plane holds steady while the Earth rotates underneath it, so hour after hour the bob's path crept around the floor — about 11 degrees per hour at Paris's latitude, traced by a stylus in a ring of sand. You could stand there and watch the planet turn.",
             "art": "clock"
           },
           {
@@ -5169,7 +5169,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Clue in the Morgue",
-            "body": "In 1847 Semmelweis's friend Jakob Kolletschka nicked his finger during an autopsy and died — with symptoms identical to childbed fever. The pieces snapped together: doctors went straight from dissecting corpses to delivering babies. Blaming 'cadaverous particles' carried on their hands, Semmelweis ordered scrubbing in chlorinated lime. Deaths on the doctors' ward plummeted toward the midwives' rate.",
+            "body": "In 1847 Semmelweis's friend Jakob Kolletschka nicked his finger during an autopsy and died — with symptoms identical to childbed fever. It clicked: doctors went straight from dissecting corpses to delivering babies. He blamed 'cadaverous particles' on their hands and ordered scrubbing in chlorinated lime. Deaths on the doctors' ward plummeted toward the midwives' rate.",
             "art": "key"
           },
           {
@@ -5215,13 +5215,13 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Dish Fleming Didn't Wash",
-            "body": "September 1928, St Mary's Hospital, London. Back from holiday, Alexander Fleming was sorting old staphylococcus plates when one stopped him: a stray mold had landed there, and around it the bacteria were dissolving in a clear ring. He cultured the mold — a Penicillium — and named the substance it oozed penicillin. But he couldn't purify or stabilize it, and interest drained away.",
+            "body": "September 1928, St Mary's Hospital, London. Back from holiday, Alexander Fleming was sorting old staphylococcus plates when one stopped him: a stray mold had landed there, and around it the bacteria were dissolving in a clear ring. He cultured the mold — a Penicillium — and named the substance it oozed penicillin. He couldn't purify or stabilize it, and interest drained away.",
             "art": "seed"
           },
           {
             "type": "concept",
             "title": "The Forgotten Half of the Story",
-            "body": "Penicillin sat in the literature for a decade until Howard Florey, Ernst Chain, and Norman Heatley's Oxford team purified it. In 1940 it protected infected mice; in 1941 it hauled a dying policeman, Albert Alexander, back from the brink — until the supply ran out and he died. Scaled up in American factories, it was saving soldiers by D-Day. The 1945 Nobel went to Fleming, Florey, and Chain together.",
+            "body": "Penicillin sat in the literature for a decade until Howard Florey, Ernst Chain, and Norman Heatley's Oxford team purified it. In 1940 it saved infected mice; in 1941 it pulled dying policeman Albert Alexander back from the brink — until the supply ran out and he died. Scaled up in US factories, it was saving soldiers by D-Day. Fleming, Florey, and Chain shared the 1945 Nobel.",
             "art": "bridge"
           },
           {
@@ -5331,7 +5331,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Particle With No Charge",
-            "body": "By 1932 a mystery was loose: beryllium struck by alpha particles emitted something neutral yet penetrating that hammered protons out of paraffin wax. The Joliot-Curies called it gamma radiation, but the energies made no sense. James Chadwick, who had heard Rutherford predict a neutral particle back in 1920, proved in about two intense weeks that it was the neutron — a chargeless partner to the proton.",
+            "body": "By 1932 a mystery was loose: beryllium struck by alpha particles emitted a penetrating ray that hammered protons out of paraffin wax. The Joliot-Curies called it gamma radiation, but the energies made no sense. James Chadwick, primed by Rutherford's 1920 prediction of a neutral particle, proved in about two intense weeks it was the neutron — a chargeless twin of the proton.",
             "art": "puzzle"
           },
           {
@@ -5407,7 +5407,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Thirty-Five Years of Silence",
-            "body": "Mendel presented his results in 1865 and published in 1866 — in the proceedings of a provincial natural history society. Almost nobody grasped what they meant, and the paper was cited barely a handful of times. Elected abbot, he was buried in administration and died in 1884, unknown to science. In 1900 three botanists independently rediscovered his laws — and found he had beaten them by 35 years.",
+            "body": "Mendel presented his results in 1865 and published in 1866 — in a provincial natural history society's journal. Almost nobody grasped it; the paper was cited barely a handful of times. Elected abbot, he was buried in administration and died in 1884, unknown to science. In 1900 three botanists independently rediscovered his laws — and found he had beaten them by 35 years.",
             "art": "hourglass"
           },
           {
@@ -5419,7 +5419,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Mouse That Shouldn't Have Died",
-            "body": "In 1928 British pathologist Frederick Griffith mixed two strains of pneumonia bacteria: a smooth lethal strain, heat-killed, and a rough harmless one, alive. Neither alone hurt a mouse. Together they killed it — and the mouse's blood swarmed with living smooth bacteria. Something in the dead cells had transformed the live ones, and the change bred true. He called it the transforming principle.",
+            "body": "In 1928 British pathologist Frederick Griffith mixed two strains of pneumococcus: a smooth lethal strain, heat-killed, and a rough harmless one, alive. Neither alone hurt a mouse. Together they killed it — and the mouse's blood swarmed with living smooth bacteria. Something in the dead cells had transformed the live ones — heritably. He called it the transforming principle.",
             "art": "flame"
           },
           {
@@ -5442,7 +5442,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "The Race and the Credit",
-            "body": "In January 1953 Maurice Wilkins showed Photo 51 to James Watson without Franklin's knowledge; her precise measurements also reached Watson and Francis Crick through an internal report. Weeks later they had the double helix, published in April 1953. Franklin died in 1958, at 37, never told how directly her data had fed the model; the 1962 Nobel went to Watson, Crick, and Wilkins.",
+            "body": "In January 1953 Maurice Wilkins showed Photo 51 to Watson without Franklin's knowledge; her precise measurements also reached Watson and Francis Crick through an internal report. Weeks later they had the double helix, published in April 1953. Franklin died in 1958, at 37, never told how directly her data had fed the model; the 1962 Nobel went to Watson, Crick, and Wilkins.",
             "art": "ladder"
           },
           {
@@ -5684,7 +5684,7 @@ window.COURSES = [
           {
             "type": "example",
             "title": "The Volcker Disinflation",
-            "body": "US inflation neared 15% in 1980 after a decade of drift. Fed chair Paul Volcker attacked it with interest rates near 20% — mortgages topped 18%, indebted farmers blockaded Fed headquarters with tractors, and the 1981-82 recession pushed unemployment to 10.8%. By 1983 inflation was near 3%, and it stayed low for decades. Central banks learned that credibility is bought with pain.",
+            "body": "US inflation neared 15% in 1980 after a decade of drift. Fed chair Paul Volcker attacked it with interest rates near 20% — mortgages topped 18%, indebted farmers blockaded Fed headquarters with tractors, and the 1981-82 recession pushed unemployment to 10.8%. By 1983 inflation was near 3%, and it stayed low for decades. Central banks learned: credibility is bought with pain.",
             "art": "mountain"
           },
           {
@@ -5784,7 +5784,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Lender of Last Resort",
-            "body": "Banks borrow short and lend long, so even a healthy bank dies if everyone demands cash at once. Walter Bagehot's 1873 classic Lombard Street gave central banks the crisis playbook: lend freely to stop the panic, at a penalty rate so no one abuses the privilege, against good collateral so you rescue illiquid banks, not doomed ones. Modern bailouts are still judged by those three tests.",
+            "body": "Banks borrow short and lend long, so even a healthy bank dies if everyone demands cash at once. Walter Bagehot's 1873 Lombard Street gave central banks the crisis playbook: lend freely to stop the panic, at a penalty rate so no one abuses the privilege, against good collateral so you rescue illiquid banks, not doomed ones. Modern bailouts are still judged by those three tests.",
             "art": "shield"
           },
           {
@@ -5801,7 +5801,7 @@ window.COURSES = [
           {
             "type": "example",
             "title": "2008 and QE, Honestly",
-            "body": "After Lehman Brothers failed in September 2008, the Fed cut rates to zero — out of conventional ammunition. So it created money to buy trillions in Treasury and mortgage bonds — quantitative easing — swelling its balance sheet from $900 billion to $4.5 trillion by 2015. The honest verdict: modestly lower long-term rates, calmer markets, none of the predicted hyperinflation — but no fast recovery either.",
+            "body": "When Lehman failed in September 2008, the Fed cut rates to zero and was out of ammunition. So it created money to buy trillions in Treasury and mortgage bonds — quantitative easing — swelling its balance sheet from $900 billion to $4.5 trillion by 2015. The honest verdict: modestly lower long-term rates, calmer markets, no hyperinflation — but no fast recovery either.",
             "art": "bridge"
           },
           {
@@ -5871,7 +5871,7 @@ window.COURSES = [
           {
             "type": "concept",
             "title": "Comparative Advantage",
-            "body": "The key is opportunity cost: what you give up to make a thing. Every hour Portugal spends weaving is an hour not making wine, where its edge is enormous — so Portugal should pour itself into wine and buy cloth. England, worse at both, gives up little wine by weaving, so cloth is its calling. Specialize where your sacrifice is smallest: not where you're best, but where you're least costly.",
+            "body": "The key is opportunity cost: what you give up to make a good. Each hour Portugal spends weaving is an hour not making wine, where its edge is enormous — so it should pour itself into wine and buy cloth. England, worse at both, gives up little wine by weaving, so cloth is its calling. Specialize where your sacrifice is smallest — not where you're best, where you're least costly.",
             "art": "fork"
           },
           {
@@ -5911,7 +5911,7 @@ window.COURSES = [
           {
             "type": "example",
             "title": "The China Shock",
-            "body": "David Autor, David Dorn, and Gordon Hanson studied the surge of Chinese imports after 1999: roughly a million US manufacturing jobs lost — over two million with ripple effects — concentrated in particular towns, where wages and employment stayed depressed more than a decade later. The gains from trade were real. So were losses that hit specific places far longer than textbooks predicted.",
+            "body": "David Autor, David Dorn, and Gordon Hanson studied the surge of Chinese imports after 1999: roughly a million US manufacturing jobs lost — over two million with ripple effects — concentrated in particular towns, where wages and employment stayed depressed a decade later. The gains from trade were real. So were losses hitting specific places far longer than textbooks predicted.",
             "art": "wave"
           },
           {
@@ -8262,6 +8262,5534 @@ window.COURSES = [
           {
             "front": "When did our brains triple, and when did humans leave Africa?",
             "back": "Brains roughly tripled over the last ~3 million years; Homo sapiens arose in Africa ~300,000 years ago, with the main dispersal ~60-70,000 years ago."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "art-of-storytelling",
+    "title": "The Art of Storytelling",
+    "tagline": "Why stories grip minds — and how to craft ones that land.",
+    "category": "Communication",
+    "description": "The science of why narrative hijacks human attention, and the craft moves — shape, detail, delivery — that make your stories land in writing, pitches, and conversation.",
+    "lessons": [
+      {
+        "id": "why-brains-love-stories",
+        "title": "Why Brains Love Stories",
+        "summary": "Transportation, simulation, the sevenfold memory boost — and why one face can beat a million numbers.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Tunnel",
+            "body": "It's 1 a.m. You promised yourself one chapter three hours ago. The room, the clock, your aching neck — all gone. Psychologists call this 'transportation,' and it isn't a quirk of bookworms. It's a doorway that advertisers, demagogues, and great teachers all know about. This lesson is about what happens to a mind on the other side.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "The Mind's Open Gate",
+            "body": "In 2000, Melanie Green and Timothy Brock had people read 'Murder at the Mall,' about a little girl fatally stabbed on a shopping trip. The more 'transported' readers were — absorbed, picturing scenes, emotions engaged — the more their real-world attitudes moved toward the story's implications, and the fewer counter-arguments they raised.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Green and Brock's experiments, what marked the most transported readers?",
+            "choices": [
+              "They fact-checked the story more aggressively",
+              "They recalled the plot worse than skimmers did",
+              "Their attitudes shifted toward the story's view, and they counter-argued less",
+              "They enjoyed the story but were left unpersuaded"
+            ],
+            "answer": 2,
+            "explain": "Transportation is persuasion through the side door: while you're inside a story, the mind's debate team goes quiet. Scrutiny, not absorption, is what protects beliefs — which is why stories slip past defenses that arguments trigger."
+          },
+          {
+            "type": "concept",
+            "title": "Stories Run on Your Hardware",
+            "body": "Read 'she kicked the door open' and motor regions of your brain stir; read 'cinnamon' and smell regions do. In fMRI work by Nicole Speer and colleagues (2009), readers' brains tracked characters' actions, goals, and locations scene by scene — partially enacting them. A story isn't described to you. It is rehearsed in you.",
+            "art": "brain"
+          },
+          {
+            "type": "example",
+            "title": "The Flight Simulator",
+            "body": "Psychologist Keith Oatley calls fiction 'the mind's flight simulator.' Pilots crash in simulation so they won't in the air; readers betray, grieve, and forgive on the page before life demands it. In his lab's studies, frequent fiction readers scored higher at reading emotion in strangers' eyes — the practice seems to transfer.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When you read 'she kicked the door open,' movement-planning regions of your brain activate — much as if you had moved.",
+            "answer": true,
+            "explain": "Speer's fMRI studies showed readers simulating actions, goals, and scene changes as they read. That embodiment is why stories feel like experience — and why they leave experience-shaped memories behind."
+          },
+          {
+            "type": "concept",
+            "title": "Velcro for Memory",
+            "body": "In 1969, Gordon Bower and Michal Clark gave students 12 lists of 10 nouns each. One group studied by rehearsing; the other wove every list into a short story. On the final test, rehearsers recalled about 13 percent of the words. The story-weavers recalled 93 percent — roughly seven times more. Each word now had a cause, a place, and a consequence.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Memorize in ten seconds: mirror, nail, sheep, kettle, glacier. What trick beats brute rehearsal roughly sevenfold?",
+            "answer": "Chain them into a story: 'The mirror cracked on a nail, spooking the sheep into the kettle, which slid off the glacier.' Absurd is fine — narrative order does the storing. That's Bower and Clark's 93-versus-13 result, on demand."
+          },
+          {
+            "type": "concept",
+            "title": "The One and the Million",
+            "body": "Deborah Small and George Loewenstein found donors give far more to one identified person than to equivalent statistics. In a follow-up, the photo and story of Rokia, a seven-year-old in Mali, out-earned an appeal citing millions facing hunger — and adding those statistics to Rokia's story actually lowered giving. Story logic can beat, and even fight, statistical logic.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "We tell ourselves stories in order to live.",
+            "by": "Joan Didion"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A relief charity tests three appeals. Given Small and Loewenstein's findings, which raises the most money?",
+            "choices": [
+              "Statistics: 'Three million children face food shortages this year'",
+              "One child: Rokia's photo and her story",
+              "Rokia's story with the statistics attached for credibility",
+              "An expert narrating the statistics on video"
+            ],
+            "answer": 1,
+            "explain": "The single identified life wins — and bolting statistics onto Rokia's story lowered donations, as if numbers switched donors into calculation mode. Powerful, and a warning: our feelings fail to scale as the numbers grow."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Transportation: absorbed readers shift attitudes and counter-argue less (Green & Brock, 2000).",
+              "Stories run as simulations — the reading brain partly enacts actions, senses, and goals.",
+              "Narrative chaining lifted word recall from 13% to 93% (Bower & Clark, 1969).",
+              "One identifiable person out-pulls a million statistics (Small & Loewenstein).",
+              "Absorption lowers your defenses too — notice when a story is doing your thinking."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Green & Brock (2000) find about 'transported' readers?",
+            "back": "The more absorbed readers were, the more their attitudes shifted toward the story's view — and the fewer counter-arguments they generated."
+          },
+          {
+            "front": "Bower & Clark (1969): what boosted word-list recall about sevenfold?",
+            "back": "Weaving each list into a story. Narrative chaining lifted recall from about 13% to 93% — every word gained a cause, a place, and a consequence."
+          },
+          {
+            "front": "In what sense does the brain 'simulate' a story?",
+            "back": "Reading about actions, smells, and goals activates the brain regions for doing them (Speer et al., 2009) — a story is partly enacted, not just decoded."
+          },
+          {
+            "front": "What is the identifiable-victim effect?",
+            "back": "One named, pictured person draws more help than large statistics — and adding statistics can lower giving (Small & Loewenstein)."
+          }
+        ]
+      },
+      {
+        "id": "the-shape-of-a-story",
+        "title": "The Shape of a Story",
+        "summary": "Want plus wall, three acts, Vonnegut's curves, the Hero's Journey — and the 'so what' test for stakes.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Skeleton Beneath",
+            "body": "A screenwriter can ruin any movie for you in one sentence: 'Watch — setup, break, chase, collapse, comeback.' Once you see the skeleton, you can't unsee it. That's not cynicism; it's craft. Audiences don't need a new skeleton — they need new flesh on a shape their nerves already know. Start with the engine that moves every shape.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "The Engine: Want Plus Wall",
+            "body": "Strip any story to its engine and two parts remain: a character who wants something, and something in the way. 'The king died, and then the queen died' is a list. 'The dying queen swore to outlive the king's scheming brother' is a story — desire has met resistance. No want, no motion; no obstacle, no interest. Everything else is bodywork.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which logline actually contains a story?",
+            "choices": [
+              "Maya is a gifted baker with a loyal following",
+              "Maya bakes a wedding cake and everyone enjoys it",
+              "Maya must bake a wedding cake overnight after her oven dies at closing time",
+              "Baking has evolved remarkably over five centuries"
+            ],
+            "answer": 2,
+            "explain": "Want (deliver the cake by morning) meets wall (dead oven, no time). The others are a portrait, a pleasant event, and a lecture — nothing resists anyone, so nothing moves. Find the want, then raise the wall."
+          },
+          {
+            "type": "quote",
+            "text": "Every character should want something, even if it is only a glass of water.",
+            "by": "Kurt Vonnegut"
+          },
+          {
+            "type": "concept",
+            "title": "Three Acts, One Pyramid",
+            "body": "The oldest scaffold: Act One sets up a world and breaks it. Act Two escalates — attempts fail, stakes climb. Act Three resolves. In 1863, Gustav Freytag drew drama as a pyramid: rising action up one slope, climax at the point, falling action down the other. Aristotle got there first in six words: a whole has beginning, middle, and end.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the classic three-act shape, the climax should land in Act One, so the audience is hooked from the start.",
+            "answer": false,
+            "explain": "Hooks open; climaxes close. Freytag's peak comes only after rising action has piled up pressure. Spend your biggest moment first and Act Two has nowhere to climb — a common pitch mistake, too."
+          },
+          {
+            "type": "concept",
+            "title": "Vonnegut's Curves",
+            "body": "Kurt Vonnegut graphed stories on a blackboard: good-to-ill fortune on one axis, beginning-to-end on the other. His favorite curve, 'Man in Hole': somebody gets into trouble, gets out of it, and ends better off than where they began. Audiences love that dip and rise, he noted — the shape sells whether or not anyone consciously spots it.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "The Hero's Journey",
+            "body": "In 1949, Joseph Campbell distilled world myths into one loop: a hero leaves the ordinary world, is tested and transformed, and returns carrying something of value. George Lucas leaned on it deliberately for Star Wars. Treat it as one influential template — a lens that fits quests beautifully — not a law that every story must obey.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your film is a quiet year in a caregiver's life, and it fits none of Campbell's stages. What's the craft-sound response?",
+            "choices": [
+              "Use the Journey as one lens: keep what serves this story, drop the rest",
+              "Restructure the year until every stage appears",
+              "Conclude the material simply can't work as a story",
+              "Add a literal voyage so the template applies"
+            ],
+            "answer": 0,
+            "explain": "Campbell described a recurring pattern, not a requirement. Forcing quiet material into quest shape breaks the material — the template serves the story, never the reverse."
+          },
+          {
+            "type": "example",
+            "title": "Breaking the Shape on Purpose",
+            "body": "Memento runs its detective story backward, so we share the hero's amnesia. Groundhog Day traps its whole arc inside one looping day. Each film breaks a standard shape, and the break itself carries the meaning — disorientation, entrapment. That's the rule for rule-breaking: break a template only when the break says something the template can't.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Stakes: The 'So What' Test",
+            "body": "Stakes are not what a character wants — they're what it costs to fail. Test every story you tell with one question: 'So what happens if she loses?' If the honest answer is 'nothing much,' no polish will save it. Raise the cost, or tie the outcome to something the audience already cares about. Consequence is what converts events into drama.",
+            "art": "target"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Pitch: 'Our hero hopes to win the regional spelling bee.' The room shrugs. Run the 'so what' test — what's missing, and one fix?",
+            "answer": "Failure costs nothing yet. Attach a consequence: the bee's scholarship is her one route out of a shrinking town, and she promised her late mother's coach a final win. Now losing loses something — and the shrug becomes a lean."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Story engine: a character who wants something, plus a wall in the way.",
+              "Three acts and Freytag's pyramid: setup, escalating confrontation, climax, resolution.",
+              "Vonnegut's 'Man in Hole': trouble, escape, better off — audiences love the dip and rise.",
+              "The Hero's Journey (Campbell, 1949) is a template, not a law — break shapes only meaningfully.",
+              "Stakes are the cost of failure: always run the 'so what' test."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What two ingredients make conflict — the engine of story?",
+            "back": "A character who wants something, and an obstacle in the way. No want, no motion; no wall, no interest."
+          },
+          {
+            "front": "Describe Vonnegut's 'Man in Hole' story shape.",
+            "back": "Fortune graphed over time: somebody gets into trouble, gets out of it, and ends better off than where they began. Audiences love the dip and rise."
+          },
+          {
+            "front": "What is the Hero's Journey — and what isn't it?",
+            "back": "Campbell's 1949 template: departure, trials, transformed return. One influential lens, not a law — break it only when the break means something."
+          },
+          {
+            "front": "What does the 'so what' test check?",
+            "back": "Stakes: what it costs the character to fail. If failure costs nothing, the audience owes you nothing — raise the cost or connect it to what they care about."
+          }
+        ]
+      },
+      {
+        "id": "the-craft-of-telling",
+        "title": "The Craft of the Telling",
+        "summary": "Concrete detail, Chekhov's gun, in medias res openings, peak-end endings, and sentences with a pulse.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Sentences",
+            "body": "Version one: 'He was nervous before the interview.' Version two: 'He wiped his palms on his jeans twice before touching the door handle.' Same fact. But the first is a report you file away; the second plays as a tiny movie. This lesson is the handful of moves that turn sentences of the first kind into the second.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "Show the Sweat",
+            "body": "Abstractions — 'nervous,' 'beautiful,' 'chaotic' — ask readers to take your word. Concrete detail lets them run the simulation from Lesson 1: bodies, objects, actions. Note what does the work: nouns and verbs, not stacked adjectives. 'The kitchen was very messy' tells; 'jam-smeared knives in the sink, flour footprints to the door' shows.",
+            "art": "eye"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The most reliable way to make writing vivid is to add more adjectives.",
+            "answer": false,
+            "explain": "Vividness comes from concrete nouns and verbs the reader can simulate — jam-smeared knives, flour footprints — not from piling modifiers onto abstractions. Adjectives decorate; specifics transport."
+          },
+          {
+            "type": "concept",
+            "title": "The One Telling Detail",
+            "body": "Amateurs inventory; masters select. Ten generic details — 'tall, tired, forty-ish, brown coat' — blur into fog, while one chosen behavior, like a restaurateur who has stopped correcting people who mispronounce his name, implies a whole inner life. Chekhov made selection a law of economy: every detail you plant must later earn its keep.",
+            "art": "key"
+          },
+          {
+            "type": "quote",
+            "text": "If in the first act you have hung a pistol on the wall, then in the following one it should be fired.",
+            "by": "Anton Chekhov"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You may keep exactly one detail about a failing restaurant's owner. Which earns its place?",
+            "choices": [
+              "He was sad, tired, stressed, and increasingly worried",
+              "He had stopped correcting customers who mispronounced his name",
+              "The dining room held twelve tables, three windows, and a counter",
+              "Business had been declining for quite some time"
+            ],
+            "answer": 1,
+            "explain": "One behavior implies surrender better than four adjectives assert it. The room inventory and the summary are furniture — the telling detail is the one a reader feels they couldn't have invented."
+          },
+          {
+            "type": "concept",
+            "title": "Start in the Middle",
+            "body": "Homer opens the Odyssey with the war ten years finished and the hero still missing — in medias res, 'into the middle of things.' Late openings work because they create questions, and questions create pull: how did we get here? Start as close to the turn as the story survives, then smuggle in backstory once curiosity is paying for it.",
+            "art": "bell"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Flat opening: 'Sarah had always been adventurous, a trait inherited from her grandmother.' Rebuild it in medias res.",
+            "answer": "Drop into motion: 'Three hours up the cliff face, Sarah noticed the fraying in the rope.' Now the reader owes you a question — how did she get here, and will the rope hold? The grandmother can wait until the ledge."
+          },
+          {
+            "type": "concept",
+            "title": "End on the Peak",
+            "body": "Daniel Kahneman's peak-end rule: we remember an experience by its most intense moment and its final one, not by its average. Patients rated a longer medical procedure with a gentler ending as less unpleasant overall. For storytellers the math is blunt — a strong close outweighs a slow stretch, and a limp final line taxes everything before it.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Read It Aloud",
+            "body": "Voice lives in rhythm. Writing teacher Gary Provost proved it with a paragraph built entirely of five-word sentences: the drone sets in fast, and only varied lengths — short jabs set against long, winding lines — make prose sing. Your ear catches what your eye forgives. Read drafts aloud; wherever you stumble or drone, the sentence is confessing.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "By the peak-end rule, which conference talk leaves the fondest memory?",
+            "choices": [
+              "Uniformly pleasant for forty minutes, then a mumbled 'that's all'",
+              "A dazzling opening that gradually deflates",
+              "The shortest one, since less can go wrong",
+              "A rough patch mid-talk, one electric demo, and a crisp final line"
+            ],
+            "answer": 3,
+            "explain": "Memory keeps the peak (the demo) and the end (the crisp close), not the average or the length. Deflating arcs and 'that's all' shrugs are how good talks get remembered as mediocre ones."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Concrete nouns and verbs beat abstractions — show the sweat, don't report the nerves.",
+              "Select the one telling detail; Chekhov's gun: every planted detail must earn its keep.",
+              "Open in medias res — start near the turn, let questions pull, backfill later.",
+              "Peak-end rule: audiences remember the high point and the close, so engineer both.",
+              "Read it aloud and vary sentence lengths until the prose has a pulse."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Fix 'He was nervous' using concrete detail.",
+            "back": "Show the body, not the label: 'He wiped his palms on his jeans twice before touching the door handle.' Concrete nouns and verbs beat abstractions."
+          },
+          {
+            "front": "What is Chekhov's gun?",
+            "back": "A law of economy: a pistol shown in act one must fire later. Every planted detail must earn its keep — one telling detail beats ten generic ones."
+          },
+          {
+            "front": "What does opening in medias res do?",
+            "back": "Drops the reader mid-action, creating a question — how did we get here? — that pulls them forward. Backstory waits until curiosity pays for it."
+          },
+          {
+            "front": "What does the peak-end rule imply for endings?",
+            "back": "We remember an experience by its most intense moment and its ending, not its average (Kahneman) — so engineer the final beat; a limp close taxes everything."
+          }
+        ]
+      },
+      {
+        "id": "stories-at-work",
+        "title": "Stories at Work",
+        "summary": "Pitch spines, data with a carrier, scars over open wounds — and the line between persuasion and manipulation.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Slide 14",
+            "body": "Slide 14 of the funding deck: a market-size chart, a room quietly checking phones. The founder stops. 'Let me start over. Two years ago my mother's diagnosis sat unread in her own medical records.' Fourteen slides of numbers couldn't hold the room; one sentence of story did. This lesson is about using that power at work — without abusing it.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "The Pitch Is a Story",
+            "body": "A pitch that lists features is a portrait; a pitch that lands is a story. Someone your audience recognizes wants something, a wall blocks them, and your idea is the turn: problem, turn, resolution. Put the customer, not the product, in the hero's seat — then let the demo play as the moment the wall finally comes down.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which pitch opening treats the pitch as a story?",
+            "choices": [
+              "'Our platform offers fourteen integrations, including...'",
+              "'Nurses lose ninety minutes a shift to paperwork. Dana misses bedtime at home. We built the tool that hands her that time back.'",
+              "'Our founding team met in the Stanford AI lab'",
+              "'This market will reach four billion dollars by 2030'"
+            ],
+            "answer": 1,
+            "explain": "It has a character (Dana), a want (her evening), a wall (paperwork), and a turn (the tool). Features, founder bios, and market sizes are supporting evidence — none of them can be the engine."
+          },
+          {
+            "type": "concept",
+            "title": "The Story Spine",
+            "body": "Pixar story artist Emma Coats spread a fill-in-the-blank skeleton devised by playwright Kenn Adams: 'Once upon a time... Every day... Until one day... Because of that... Because of that... Until finally...' The hinge is 'until one day' — the break in routine. Draft any pitch or case study through the spine and its holes announce themselves.",
+            "art": "seed"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the story spine, 'Until one day...' marks the break in routine — the slot where a pitch's product or insight belongs.",
+            "answer": true,
+            "explain": "'Every day' is the status quo — the problem being lived with. 'Until one day' is the turn. Pitches that never break routine are lists; pitches that break it too early skip the pain that makes the turn matter."
+          },
+          {
+            "type": "concept",
+            "title": "Data Needs a Carrier",
+            "body": "Hans Rosling narrated two centuries of global health data like a sportscaster — countries surging, stalling, catching up — and made statistics a spectator sport. The lesson isn't showmanship. A number states; a story moves. Audiences retell the race, and the data rides along inside it. Give every figure that matters a carrier narrative.",
+            "art": "graph"
+          },
+          {
+            "type": "example",
+            "title": "The Bronze Medal Smile",
+            "body": "Medvec, Madey, and Gilovich (1995) studied Olympic podiums: bronze medalists looked happier than silver medalists. Silver stands beside the gold that slipped away; bronze stands one step from no medal at all. One image — two faces on a podium — and a finding about counterfactual thinking travels for free, dinner table to dinner table.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your finding: 'Support-team turnover fell from 18% to 11% after the mentoring program.' Make it a story a VP will retell.",
+            "answer": "Track one person: 'A year ago, Priya had a resignation letter drafted. Her mentor asked for ninety more days — she now leads the team. Multiply her by forty and turnover falls from 18% to 11%.' The number rides inside the person."
+          },
+          {
+            "type": "quote",
+            "text": "No one ever made a decision because of a number. They need a story.",
+            "by": "Daniel Kahneman"
+          },
+          {
+            "type": "concept",
+            "title": "Scars, Not Open Wounds",
+            "body": "Personal failure stories build trust fast — they hand listeners something they could use against you, and that costliness is the signal. But vulnerability needs judgment: tell scars, not open wounds. A resolved struggle with a lesson invites trust; an unprocessed crisis transfers its weight to the room. Share for connection, not catharsis.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "The Line",
+            "body": "Everything in this course works on lowered defenses — Lesson 1 showed transported minds counter-argue less. That is exactly why the constraint is truthfulness: no invented facts, no composites passed off as one real person, no story smuggling a claim your evidence can't back. Persuasion invites a conclusion the truth supports; manipulation needs the listener never to check.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If a story moves people toward a genuinely good outcome, inventing a few of its details is harmless.",
+            "answer": false,
+            "explain": "Transportation lowers counter-arguing, so the teller is carrying the audience's skepticism for them. Invented details passed off as fact exploit that trust — and one discovered fabrication retroactively poisons every true story you've told."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Pitch as story: the customer is the hero; problem, turn, resolution — your product is the turn.",
+              "Story spine: 'Once upon a time... Every day... Until one day...' — draft through it to find holes.",
+              "Data needs a carrier: one tracked human or image makes a statistic retellable.",
+              "Vulnerability with judgment: share scars that carry a lesson, not open wounds.",
+              "The ethical line is truthfulness — transported audiences counter-argue less, so the burden is yours."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Recite the story spine popularized by Pixar.",
+            "back": "'Once upon a time... Every day... Until one day... Because of that... Until finally...' The hinge is 'until one day' — the break in routine."
+          },
+          {
+            "front": "Why does data need a narrative carrier?",
+            "back": "Numbers state; stories get retold, and the data rides inside. Bronze medalists looking happier than silver (Medvec, 1995) carries counterfactual thinking for free."
+          },
+          {
+            "front": "How do personal stories build trust — safely?",
+            "back": "Share scars, not open wounds: resolved struggles that carry a lesson. Costly honesty signals trust; unprocessed crises transfer their weight to the listener."
+          },
+          {
+            "front": "Where is the line between narrative persuasion and manipulation?",
+            "back": "Truthfulness. Transported audiences counter-argue less, so the teller carries the burden: no invented facts, no fake composites, no smuggled claims."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "climate-system",
+    "title": "The Climate System",
+    "tagline": "Sunlight, carbon, evidence, feedbacks — Earth's thermostat",
+    "category": "Earth Science",
+    "description": "How Earth's energy balance works, where the added carbon comes from, how independent lines of evidence confirm the warming, and which feedbacks set its size. Strictly the science: mechanism and measurement.",
+    "lessons": [
+      {
+        "id": "greenhouse-mechanism",
+        "title": "The Greenhouse Mechanism",
+        "summary": "Why a transparent sky traps heat — and the chain of scientists who proved it.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Planet in Sunlight",
+            "body": "Stand outside on a clear day. Sunlight pours through 100 km of air almost untouched and warms your skin. Yet that same air, so transparent on the way in, is about to intercept the heat on its way out. That one-way trick — easy in, hard out — is the greenhouse effect, and it is why Earth is habitable at all.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Sunlight In, Infrared Out",
+            "body": "Earth can't soak up sunlight forever; it must send energy back to space or heat without limit. But a planet at 15°C doesn't glow like the Sun. It radiates invisible infrared — longer, lower-energy waves than sunlight. The whole climate story hinges on this exchange: shortwave energy arrives, longwave energy must leave.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Earth absorbs sunlight all day, every day. Why doesn't its temperature simply climb forever?",
+            "choices": [
+              "Winds carry the extra heat to the poles",
+              "It radiates infrared energy back out to space",
+              "The oceans store the extra heat permanently",
+              "Clouds reflect the surplus sunlight away"
+            ],
+            "answer": 1,
+            "explain": "Every warm object radiates. Earth sheds energy as infrared light, and its temperature settles where outgoing infrared balances incoming sunlight. Winds and oceans only move heat around — radiation to space is the sole exit."
+          },
+          {
+            "type": "concept",
+            "title": "The Picky Absorbers",
+            "body": "Air is 99% nitrogen and oxygen: twin atoms in symmetric pairs. Vibrate them and their electric charge stays balanced, so infrared slips straight past. CO2, water vapor, and methane have three or more atoms in bent or stretchy arrangements. Their vibrations slosh charge back and forth, letting them absorb infrared and pass its energy to the surrounding air as heat.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Nitrogen and oxygen make up about 99% of the atmosphere, so they do most of the heat-trapping.",
+            "answer": false,
+            "explain": "Their symmetric two-atom structure cannot interact with infrared light, so they trap essentially none of it. The greenhouse effect runs almost entirely on trace gases — water vapor, CO2, methane — that together make up under 1% of the air. Abundance isn't what matters; molecular shape is."
+          },
+          {
+            "type": "concept",
+            "title": "Fourier's Puzzle, 1824",
+            "body": "Joseph Fourier ran the numbers on sunlight alone and hit a contradiction: Earth should be far colder than it is. Something about the atmosphere, he argued, must admit solar heat more easily than it lets Earth's heat back out. He couldn't name the mechanism — infrared physics barely existed — but he had defined the question.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "quote",
+            "text": "An atmosphere of that gas would give to our earth a high temperature.",
+            "by": "Eunice Foote, 1856 — 'that gas' is carbon dioxide"
+          },
+          {
+            "type": "example",
+            "title": "Tyndall's Brass Tube, 1859",
+            "body": "Foote had shown that sun-warmed jars of CO2 ran hotter than jars of plain air. Three years later John Tyndall built the decisive lab test: a brass tube, heat at one end, a sensitive detector at the other. Filled with nitrogen or oxygen — nothing. Filled with CO2 or water vapor, the signal collapsed: those gases were swallowing infrared mid-flight.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Strip every greenhouse gas from the atmosphere but keep the sunlight. What happens to Earth's average temperature?",
+            "answer": "It falls from about +15°C to about −18°C — a frozen world. That 33-degree gap is the natural greenhouse effect, and it has kept Earth livable for billions of years, long before humans touched anything."
+          },
+          {
+            "type": "concept",
+            "title": "Arrhenius Does the Math, 1896",
+            "body": "Svante Arrhenius spent a year of hand calculation on a sharper question: not whether CO2 warms Earth, but by how much. Doubling atmospheric CO2, he computed, would raise global temperature several degrees — around 5–6°C in his estimate, remarkably close in spirit to modern answers. The greenhouse effect now had a number attached.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Arrhenius add in 1896 that Foote and Tyndall had not?",
+            "choices": [
+              "Proof that the Sun's output never changes",
+              "The discovery that CO2 absorbs heat radiation",
+              "The first calculation of how much warming more CO2 would cause",
+              "The first worldwide network of thermometers"
+            ],
+            "answer": 2,
+            "explain": "Foote and Tyndall showed experimentally that CO2 absorbs heat radiation. Arrhenius turned measurement into prediction: he computed the temperature change from doubling CO2 — the first estimate of climate sensitivity."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Earth balances incoming sunlight by radiating infrared back to space.",
+              "Symmetric N2 and O2 ignore infrared; CO2, water vapor, and methane absorb it and warm the air.",
+              "Fourier posed the puzzle (1824); Foote and Tyndall proved CO2 traps heat (1856, 1859); Arrhenius computed the warming (1896).",
+              "Without greenhouse gases, Earth would average about −18°C instead of +15°C."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why are N2 and O2 transparent to infrared?",
+            "back": "Symmetric two-atom molecules: their vibrations never unbalance electric charge, so they can't absorb IR. Gases with 3+ atoms — CO2, H2O, CH4 — can."
+          },
+          {
+            "front": "Earth's average temperature with no greenhouse effect?",
+            "back": "About −18°C instead of the actual ~15°C — a 33-degree natural greenhouse boost."
+          },
+          {
+            "front": "What did Foote (1856) and Tyndall (1859) show?",
+            "back": "Experimentally, that CO2 and water vapor absorb heat radiation while nitrogen and oxygen do not."
+          },
+          {
+            "front": "What did Arrhenius calculate in 1896?",
+            "back": "The warming from doubling atmospheric CO2 — the first climate sensitivity estimate, roughly 5–6°C."
+          }
+        ]
+      },
+      {
+        "id": "carbon-cycle",
+        "title": "The Carbon Cycle",
+        "summary": "Fast loops, slow loops, and why fossil carbon breaks the bookkeeping.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Carbon on Two Clocks",
+            "body": "The carbon in your next exhale may have been inside a leaf last summer, dissolved in the Pacific a decade ago, or locked in limestone for a hundred million years. Carbon never stops moving — but it moves on wildly different clocks, and telling those clocks apart is the key to understanding why fossil fuels are unlike everything else.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Fast Cycle",
+            "body": "Photosynthesis pulls roughly 120 billion tonnes of carbon from the air every year; respiration and decay push almost exactly that much back. The ocean surface runs a similar swap, absorbing and releasing CO2 across its skin. These flows are enormous — but they are loops. Carbon out, carbon back, on timescales of seasons to centuries.",
+            "art": "orbit"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When you burn a log, you release carbon that the tree pulled from the atmosphere within recent decades.",
+            "answer": true,
+            "explain": "That is fast-cycle carbon: it was in the air recently, and regrowth can reclaim it on the same timescale, so the atmosphere's total load barely shifts. Fossil fuels break exactly this symmetry — their carbon left the air millions of years ago."
+          },
+          {
+            "type": "concept",
+            "title": "The Slow Cycle",
+            "body": "A second cycle grinds beneath the fast one. Rain slowly weathers rock, washing carbon to the sea, where it settles into limestone. Volcanoes vent CO2 back over millions of years. And a small fraction of buried plants and plankton, cooked under pressure, becomes coal, oil, and gas. This loop carries far less carbon per year — but it sets Earth's baseline over geologic time.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Out-of-Cycle Carbon",
+            "body": "Fossil fuels are slow-cycle carbon: sunlight banked by living things over hundreds of millions of years, then sealed away from the sky. Burning them injects that vault into the fast cycle within decades — a flow nature has no matching drain for. Nothing in the fast cycle is sized to remove carbon that took a hundred million years to store.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does burning fossil fuels raise atmospheric CO2 when burning firewood barely does?",
+            "choices": [
+              "Fossil fuels release a more potent form of CO2",
+              "Firewood releases no CO2 when it burns",
+              "Forests absorb fossil-fuel CO2 but not wood smoke",
+              "Fossil carbon left the air millions of years ago and re-enters with no fast return loop"
+            ],
+            "answer": 3,
+            "explain": "The CO2 molecules are identical. The difference is bookkeeping: wood carbon was in the air recently and regrowth reclaims it, while fossil carbon is a one-way transfer from the slow cycle into the fast one — a deposit with no matching withdrawal."
+          },
+          {
+            "type": "example",
+            "title": "The Keeling Curve",
+            "body": "In 1958, Charles David Keeling began measuring CO2 on Mauna Loa, high above local pollution. His record — still running — is the most famous graph in Earth science: a relentless climb from 315 ppm then to over 420 ppm now, decorated with a small zigzag that repeats every single year, like a heartbeat under the trend.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Each year the Keeling curve dips through Northern Hemisphere summer and rises through winter. What is that sawtooth recording?",
+            "answer": "The planet breathing. Most land plants grow in the Northern Hemisphere: summer growth draws CO2 down, winter decay releases it back. The sawtooth is a live global photosynthesis signal — with the fossil-fuel rise underneath it."
+          },
+          {
+            "type": "concept",
+            "title": "The Isotopic Fingerprint",
+            "body": "Carbon comes in flavors. Plants prefer light carbon-12, so fossil fuels — ancient plant matter — are depleted in carbon-13 and hold no carbon-14 at all, since it decays away within about 50,000 years. As CO2 rises, the atmosphere's carbon-13 fraction is falling in lockstep, and carbon-14 fell too before nuclear tests muddied it. The added carbon carries a fossil signature.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Volcanoes release more CO2 each year than human activity does.",
+            "answer": false,
+            "explain": "Measured volcanic emissions total a few tenths of a billion tonnes of CO2 per year; human emissions are near 40 billion — roughly a hundred times more. Humanity emits a typical year of global volcanism every few days."
+          },
+          {
+            "type": "concept",
+            "title": "The Budget Check",
+            "body": "The accounting closes. Fuel sales tell us how much carbon we add — about 10 billion tonnes per year. Only about half stays in the air; oceans and land plants absorb the rest, which is why seawater is measurably acidifying. The observed atmospheric rise matches the human ledger, year after year, decade after decade.",
+            "art": "balance"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The fast cycle loops carbon through plants, soils, and the ocean surface in seasons to centuries.",
+              "The slow cycle — rock weathering, limestone, volcanoes, fossil formation — moves far less, over millions of years.",
+              "Fossil fuels transfer slow-cycle carbon into the fast cycle with no matching drain.",
+              "The Keeling curve shows the rise plus a seasonal sawtooth: the Northern Hemisphere breathing.",
+              "Falling carbon-13 (and pre-bomb carbon-14) fingerprints the added CO2 as fossil carbon."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Fast carbon cycle vs slow carbon cycle?",
+            "back": "Fast: photosynthesis, respiration, ocean-surface exchange (seasons to centuries). Slow: weathering, volcanoes, fossil formation (millions of years)."
+          },
+          {
+            "front": "Why is fossil-fuel carbon called 'out-of-cycle'?",
+            "back": "It left the atmosphere millions of years ago; burning returns it to the fast cycle far quicker than any natural process can remove it."
+          },
+          {
+            "front": "What causes the Keeling curve's annual sawtooth?",
+            "back": "Northern Hemisphere plants draw CO2 down each summer; decay returns it each winter — the planet 'breathing' atop the long-term rise."
+          },
+          {
+            "front": "How do isotopes show the new CO2 is fossil carbon?",
+            "back": "Fossil fuels are low in carbon-13 and empty of carbon-14; the atmosphere shows exactly that dilution as CO2 climbs."
+          }
+        ]
+      },
+      {
+        "id": "how-we-know",
+        "title": "How We Know",
+        "summary": "Independent lines of evidence, and the logic that pins down the cause.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "One Conclusion, Many Roads",
+            "body": "If a single thermometer record were all we had, you would be right to be suspicious. It isn't. Ice sheets, ocean depths, glaciers, tide gauges, satellites, and migrating species all keep independent records — governed by different physics, read by different instruments, curated by rival teams. This lesson is about why they all point the same way.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Instrumental Record",
+            "body": "Thermometer networks reach back to about 1850. Independent groups — NASA, NOAA, the UK's Met Office, and Berkeley Earth, founded by a physicist who set out to re-check the others — compile them with different methods and corrections. All land on the same answer: about 1.2°C of warming since the late 1800s, fastest in recent decades.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The measured warming trend is mostly an artifact of thermometers sitting in growing cities.",
+            "answer": false,
+            "explain": "Urban heat is real but tiny at global scale. Rural-only stations, ocean measurements, and satellites — none of which sit in cities — show essentially the same warming. Berkeley Earth tested this specific claim and found it changes almost nothing."
+          },
+          {
+            "type": "concept",
+            "title": "800,000 Years in Ice",
+            "body": "Snow falling on Antarctica compresses into ice, trapping bubbles of actual ancient air. Drill down three kilometers and you read 800,000 years of atmosphere like pages in a book: CO2 swinging between roughly 170 and 300 ppm through eight ice-age cycles. Today's level isn't just high — it is off the top of the entire record, reached in about a century.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Today's CO2 is about 420 ppm. What was the highest level in the entire 800,000-year ice-core record before industrial times?",
+            "answer": "About 300 ppm, at the warmest peaks between ice ages. Every natural cycle stayed inside roughly 170–300 ppm. We passed the top of that whole range in about a century — and ice bubbles are trapped ancient air itself, not an indirect proxy."
+          },
+          {
+            "type": "concept",
+            "title": "The Ocean's Testimony",
+            "body": "Air holds little heat; water holds vastly more. Over 90% of the energy trapped by added greenhouse gases has gone into the ocean, tracked since the 2000s by about 4,000 free-drifting Argo floats. Ocean heat content climbs with almost no year-to-year wobble — the cleanest single curve in climate science. And warming water expands, pushing up sea level.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where has most of the extra trapped heat actually ended up?",
+            "choices": [
+              "In the ocean",
+              "In the atmosphere",
+              "In melting ice",
+              "In warming land surfaces"
+            ],
+            "answer": 0,
+            "explain": "Over 90% goes into the ocean; the atmosphere holds only a few percent. That is why ocean heat content is the steadiest gauge of Earth's energy imbalance — El Niño years merely shuffle heat between sea and air."
+          },
+          {
+            "type": "concept",
+            "title": "The World Responds",
+            "body": "Physical systems that never consult each other agree. Tide gauges and satellites show seas up about 20 cm since 1900, and the rise is accelerating. Reference glaciers worldwide have lost mass for decades straight. Spring arrives earlier; plants, birds, and marine species shift poleward and upslope. None of these systems reads a thermometer — they respond to heat itself.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Attribution Test",
+            "body": "Attribution works by subtraction. Run climate models with natural forcings only — solar cycles, volcanoes — and the last half-century of warming vanishes; the simulations drift flat or cool. Add the measured greenhouse gases and the observed pattern snaps into place: more warming at night, in winter, and in the Arctic. Natural knobs alone cannot reproduce what we see.",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "The Fingerprint in the Sky",
+            "body": "Here is the killer diagnostic. If a brighter Sun were the cause, the whole atmosphere would warm, top to bottom. Instead, the surface and lower atmosphere warm while the stratosphere cools — exactly what added CO2 predicts, since it traps heat below and radiates more efficiently above. The Sun cannot fake that pattern; a greenhouse cannot avoid it.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If the Sun were driving modern warming, the stratosphere should be warming along with the surface.",
+            "answer": true,
+            "explain": "A stronger Sun heats the atmosphere at every level. What satellites and weather balloons actually find is stratospheric cooling alongside surface warming — the distinctive greenhouse signature, not a solar one."
+          },
+          {
+            "type": "concept",
+            "title": "What '97%' Actually Measured",
+            "body": "The consensus studies did not poll opinions about the future. Cook and colleagues (2013) read the abstracts of about 12,000 peer-reviewed climate papers: of those taking a position, roughly 97% endorsed human-caused warming. Independent surveys of publishing climate scientists land in the same range. It quantifies agreement on evidence — not a vote on policy.",
+            "art": "dialog"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Independent record-keepers — thermometers, ice, oceans, glaciers, sea level, species — all agree.",
+              "Ice cores hold 800,000 years of real trapped air; today's CO2 exceeds that entire range.",
+              "Over 90% of the trapped heat sits in the ocean, the steadiest curve we have.",
+              "Natural forcings alone cannot reproduce the observed pattern; stratospheric cooling is the greenhouse fingerprint.",
+              "The 97% figure measures agreement in published evidence, not a policy vote."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why are ice cores direct evidence for past CO2?",
+            "back": "Their bubbles are actual samples of ancient air — you measure the old atmosphere itself, reaching back 800,000 years."
+          },
+          {
+            "front": "Where does over 90% of the trapped extra heat go?",
+            "back": "Into the ocean, tracked by ~4,000 Argo floats. Ocean heat content rises steadily with little year-to-year noise."
+          },
+          {
+            "front": "What is the greenhouse 'fingerprint' in the sky?",
+            "back": "Surface and lower atmosphere warm while the stratosphere cools. A brighter Sun would warm every level at once."
+          },
+          {
+            "front": "What did the 97% consensus studies measure?",
+            "back": "The share of peer-reviewed climate papers (and publishing scientists) endorsing human-caused warming, among those taking a position."
+          }
+        ]
+      },
+      {
+        "id": "feedbacks-sensitivity",
+        "title": "Feedbacks and Sensitivity",
+        "summary": "Amplifiers, dampers, clouds — and the number that sets the stakes.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Thermostat's Dials",
+            "body": "Add CO2 and you nudge Earth's energy budget. But the planet doesn't just sit there — it responds. Ice melts, humidity shifts, clouds rearrange. Some responses amplify the initial push; one great damper resists it. The tug-of-war among them decides the most consequential number in climate science: how much warming you get per nudge.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "The Ice-Albedo Amplifier",
+            "body": "Fresh snow reflects up to 90% of incoming sunlight; open ocean absorbs more than 90%. So when warming melts sea ice, a mirror becomes a sponge: exposed dark water soaks up more sun, warms further, and melts more ice. This loop is a major reason the Arctic has warmed nearly four times faster than the global average.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Sea ice melts, exposing dark open ocean. What happens next?",
+            "choices": [
+              "More sunlight is reflected, offsetting the warming",
+              "The ocean cools, since the melting ice chilled it",
+              "More sunlight is absorbed, driving further melt — an amplifying loop",
+              "Nothing changes; ice and seawater absorb sunlight equally"
+            ],
+            "answer": 2,
+            "explain": "Swapping bright ice for dark water raises the sunlight absorbed, which warms the water and melts still more ice — a positive (amplifying) feedback, strongest in the Arctic."
+          },
+          {
+            "type": "concept",
+            "title": "The Water Vapor Amplifier",
+            "body": "Warm air holds more moisture — roughly 7% more per degree. And water vapor is itself a potent greenhouse gas. So CO2-driven warming loads the air with extra vapor, which traps more heat, which loads in more vapor. The loop converges rather than running away, but it roughly doubles the warming CO2 would produce on its own.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Water vapor traps more heat than CO2 overall, so CO2 must be a minor player.",
+            "answer": false,
+            "explain": "Vapor condenses and rains out within about ten days, so it can only follow temperature, never lead it. CO2 lingers for centuries and sets the temperature that decides how much vapor the air holds. CO2 is the control knob; water vapor is the amplifier bolted onto it."
+          },
+          {
+            "type": "concept",
+            "title": "The Planck Damper",
+            "body": "Why doesn't amplification spiral into runaway? Physics installs a brake: the warmer an object gets, the more fiercely it radiates — not linearly, but as temperature to the fourth power. Every increment of warming makes Earth shed infrared faster. This Planck response is the strongest feedback of all, and it forces the climate to settle at a new balance point.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Clouds: The Honest Uncertainty",
+            "body": "Clouds cut both ways. Low, thick decks reflect sunlight and cool the planet; high, thin ice clouds trap infrared and warm it. Which effect grows as Earth heats up? Evidence increasingly points to a modest net amplification — but the size is genuinely uncertain, and cloud behavior remains the main reason climate sensitivity is a range, not a single number.",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "The Sensitivity Number",
+            "body": "Every feedback funnels into one benchmark: equilibrium climate sensitivity — the eventual warming from doubling CO2. The IPCC's 2021 assessment (AR6) puts the likely range at 2.5–4°C, best estimate 3°C, finally narrowing a 1.5–4.5°C spread that had barely budged since 1979. Ice-age evidence, the modern record, and basic physics converge on it independently.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A century after Arrhenius's first attempt: what is today's assessed warming for a doubling of CO2?",
+            "answer": "IPCC AR6 says likely 2.5–4°C at equilibrium, best estimate 3°C. The floor is firmer than the ceiling: ruling out low sensitivity proved easier than ruling out high — largely because of clouds."
+          },
+          {
+            "type": "concept",
+            "title": "Tipping-Point Candidates",
+            "body": "Some systems may hold thresholds where change becomes self-sustaining: the Greenland and West Antarctic ice sheets, the Atlantic overturning circulation, permafrost carbon, the Amazon. For most, science cannot yet pin the trigger temperature or the timescale — these are plausible risks, not scheduled events. Thresholds likely exist; their locations are uncertain.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "'The climate changed before humans existed.' What does that history actually imply?",
+            "choices": [
+              "It proves current change must also be natural",
+              "Past changes tracked physical forcings — the same physics says today's CO2 forcing will warm the planet",
+              "It shows climate shifts randomly, so causes can't be identified",
+              "It shows CO2 played no role in past climates"
+            ],
+            "answer": 1,
+            "explain": "Ice ages, volcanic eras, ancient carbon releases — each past shift had a measurable driver, and CO2 was frequently central. That track record is precisely why a large, fast CO2 forcing worries physicists: the system demonstrably responds to forcings, and this time we are the forcing."
+          },
+          {
+            "type": "concept",
+            "title": "This Time, We Are the Forcing",
+            "body": "Past climates were not gentle: ice ages, hothouse epochs, extinctions tied to carbon releases. But every change tracked a forcing — orbital wobbles, slow volcanic CO2. Today's warming is unfolding at least ten times faster than the exit from the last ice age, and CO2 is climbing faster than at any point in the core record. Paleoclimate's lesson isn't comfort; it's that the thermostat works — and our hand is on it.",
+            "art": "clock"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Ice-albedo and water vapor amplify CO2's initial push; the Planck response — hotter objects radiate more — is the great damper.",
+              "Clouds are the main honest uncertainty: likely a modest amplifier, but the size is unsettled.",
+              "Equilibrium climate sensitivity per AR6: likely 2.5–4°C per CO2 doubling, best estimate 3°C.",
+              "Tipping-point candidates (ice sheets, Atlantic circulation, permafrost, Amazon) carry genuinely uncertain thresholds.",
+              "Past climate change tracked forcings — which is exactly why a fast human forcing alarms physicists rather than reassuring them."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Name the two main amplifying feedbacks.",
+            "back": "Ice-albedo (dark ocean replaces bright ice) and water vapor (warm air holds ~7% more moisture per degree, trapping extra heat)."
+          },
+          {
+            "front": "What is the Planck response?",
+            "back": "The universal damper: warmer objects radiate far more strongly (temperature to the fourth power), so warming speeds Earth's heat loss and prevents runaway."
+          },
+          {
+            "front": "Equilibrium climate sensitivity per IPCC AR6?",
+            "back": "Likely 2.5–4°C of eventual warming per doubling of CO2, best estimate 3°C. Clouds are the main remaining uncertainty."
+          },
+          {
+            "front": "Why isn't 'the climate changed before' reassuring?",
+            "back": "Past changes tracked physical forcings — proof the system responds to them. Today's forcing is human CO2, applied faster than those natural shifts."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ethics-big-three",
+    "title": "Ethics: The Big Three",
+    "tagline": "Outcomes, duties, character - and where each one breaks.",
+    "category": "Philosophy",
+    "description": "Three great answers to 'What should I do?' - maximize the good, honor your duties, build your character. Learn each at full strength, see where it breaks, and put all three to work on the trolley problem and beyond.",
+    "lessons": [
+      {
+        "id": "consequentialism",
+        "title": "Consequentialism: Only Outcomes Count",
+        "summary": "Bentham's calculus, Mill's higher pleasures, and the cases that bite back.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Only Outcomes Count",
+            "body": "You're deciding what to do - donate or spend, tell a hard truth or soften it. Consequentialism gives the boldest answer in ethics: nothing matters morally except outcomes. An act is right exactly when it produces the most good. This lesson takes the idea at full strength, then shows you where it draws blood.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Bentham's Moral Arithmetic",
+            "body": "Jeremy Bentham (1748-1832) proposed a hedonic calculus: score each option's pleasure and pain by intensity, duration, certainty, and extent - how many people are touched - then pick the highest net total. The radical part is impartiality: everyone counts for one. A pauper's pain weighs the same as a king's, which made utilitarianism an engine of reform.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "For Bentham, what makes an action the right one?",
+            "choices": [
+              "It springs from a good motive and a sense of duty",
+              "It yields the greatest net pleasure over pain, counting everyone affected equally",
+              "It follows society's settled moral rules",
+              "It is what a person of good character would choose"
+            ],
+            "answer": 1,
+            "explain": "Bentham is a consequentialist: motives, rules, and character matter only as means to results. The single test is the outcome - the largest surplus of pleasure over pain, with every affected person weighed equally."
+          },
+          {
+            "type": "concept",
+            "title": "Mill's Repair: Higher Pleasures",
+            "body": "Critics jeered that utilitarianism was a doctrine worthy of swine. John Stuart Mill answered that pleasures differ in quality, not just amount: poetry over pushpin. His test - consult judges who genuinely know both kinds. They reliably prefer the life of the mind, he claimed, even when it carries more discontent than easy contentment ever would.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "It is better to be a human being dissatisfied than a pig satisfied; better to be Socrates dissatisfied than a fool satisfied.",
+            "by": "John Stuart Mill, Utilitarianism (1863)"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Mill agreed with Bentham that pleasures differ only in quantity, never in kind.",
+            "answer": false,
+            "explain": "This is exactly where Mill broke with Bentham. He argued some pleasures are higher in quality - the verdict of judges who have experienced both - so a small amount of a higher pleasure can outweigh a large amount of a lower one."
+          },
+          {
+            "type": "concept",
+            "title": "Why the Theory Seduces",
+            "body": "Feel the pull before you feel the bite. Utilitarianism is impartial: your suffering counts no more than a stranger's across the world. It is quantifiable: rival policies can be measured, not just debated. And it always delivers a verdict - no shrugging. When governments weigh vaccine schedules or famine relief, they reason in exactly this key.",
+            "art": "compass"
+          },
+          {
+            "type": "example",
+            "title": "The Transplant Surgeon",
+            "body": "Five patients are dying: two need kidneys, two need lungs, one a heart. A healthy traveler walks in for a checkup. Kill him quietly and you save five - the arithmetic Bentham taught you says do it. Nearly everyone recoils. If a theory's own math can bless murdering a patient, critics argue, the theory has mislocated what morality is.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "What does strict act utilitarianism actually say about the surgeon - and why do critics treat this case as a refutation?",
+            "answer": "Taken at face value, five lives outweigh one, so the secret killing maximizes welfare. Critics reply that any theory able to license butchering an innocent visitor has failed a basic test: some acts seem wrong no matter how good the sum comes out."
+          },
+          {
+            "type": "concept",
+            "title": "The Demandingness Problem",
+            "body": "There is a second bite. If only outcomes matter, morality never clocks off: the money for your concert ticket could save a child from malaria, so spending it looks wrong. Every hour and dollar faces the same audit. A theory that makes nearly your whole life morally forbidden, critics argue, has confused everyday ethics with sainthood.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "The Repair: Rule Utilitarianism",
+            "body": "Rule utilitarians shift the question: don't ask which act maximizes welfare, ask which rules would - if generally accepted - and then follow them. A rule letting surgeons harvest patients would wreck all trust in medicine, so it fails. The repair rescues our intuitions, but purists press back: why obey a rule when breaking it would do more good?",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How does rule utilitarianism block the transplant surgeon?",
+            "choices": [
+              "Patients hold an absolute right to life that outweighs any outcome",
+              "A practice of surgeons killing patients would destroy trust in medicine, so the best rules forbid it - whatever this one act's payoff",
+              "It denies that consequences are what make actions right or wrong",
+              "It trusts each surgeon's conscience to settle such cases"
+            ],
+            "answer": 1,
+            "explain": "Rule utilitarianism still cares only about welfare, just at the level of rules. Rights-as-trumps is deontology's move - that's the next lesson. Here the killing is forbidden because the general practice would be catastrophic."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Consequentialism: only outcomes make acts right or wrong",
+              "Bentham's calculus scores pleasure and pain impartially - everyone counts for one",
+              "Mill added quality: higher pleasures outrank lower ones",
+              "The bites: monstrous verdicts (the transplant surgeon) and crushing demandingness",
+              "Rule utilitarianism repairs by ranking rules, not single acts"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Consequentialism's core claim",
+            "back": "An act is right if it produces the best overall consequences - for classical utilitarians, the greatest net happiness, counting everyone equally."
+          },
+          {
+            "front": "Bentham's hedonic calculus",
+            "back": "A method for scoring pleasure and pain by intensity, duration, certainty, and extent, then choosing the act with the highest net total."
+          },
+          {
+            "front": "Mill's higher pleasures",
+            "back": "Pleasures differ in quality, not just quantity - judges who know both prefer the pleasures of the mind, even at the cost of contentment."
+          },
+          {
+            "front": "Act vs rule utilitarianism",
+            "back": "Act: judge each action by its own consequences. Rule: follow the rules whose general acceptance maximizes welfare - blocking the transplant surgeon."
+          }
+        ]
+      },
+      {
+        "id": "deontology",
+        "title": "Deontology: Duty First",
+        "summary": "Kant's categorical imperative, rights as trumps, and the murderer at the door.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Things You Just Don't Do",
+            "body": "The surgeon case left a mark: some acts seem wrong even when the arithmetic favors them. Deontology builds on that instinct. For Immanuel Kant (1724-1804), morality is not a scoreboard of outcomes but a set of duties binding every rational being. This lesson shows why that idea is powerful - and where it turns brittle.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Universalize It",
+            "body": "Kant's test is the categorical imperative: before acting, extract your maxim - the personal policy behind the act - and ask whether you could will everyone to adopt it. Not 'what if everyone did that?' as a worry about bad results, but a stricter check: does the policy even make sense as a universal law, or does it contradict itself?",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "The False Promise",
+            "body": "You need money and can get it only by promising a repayment you know you'll never make. Universalize the maxim: everyone in need makes false promises. In that world promises are dead - no lender believes them - so your own scheme becomes impossible. The maxim destroys the very institution it exploits. That, says Kant, is why it is forbidden.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why exactly does the false promise fail Kant's test?",
+            "choices": [
+              "Universalized, it makes promising itself meaningless, so the maxim self-destructs",
+              "Lying usually produces more pain than pleasure overall",
+              "Most societies strongly disapprove of breaking promises",
+              "A person of good character would never deceive a lender"
+            ],
+            "answer": 0,
+            "explain": "Kant's objection is logical, not statistical. The wrongness doesn't hang on outcomes or public opinion: a world where the maxim is law is a world where the maxim cannot work. That contradiction is the mark of a forbidden act."
+          },
+          {
+            "type": "quote",
+            "text": "Act only according to that maxim whereby you can at the same time will that it should become a universal law.",
+            "by": "Immanuel Kant, Groundwork of the Metaphysics of Morals (1785)"
+          },
+          {
+            "type": "concept",
+            "title": "Humanity, Never Merely a Means",
+            "body": "Kant's second formulation: treat humanity, in yourself or anyone else, always as an end, never merely as a means. You use the barista's labor and she uses your custom - fine, both consented. What is banned is bypassing someone's rational agency: deceiving, coercing, or using a person in ways they could not in principle agree to.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Kant's humanity formula forbids ever using another person as a means to your goals.",
+            "answer": false,
+            "explain": "The key word is 'merely.' Cooperation means using each other constantly, with consent on both sides. What Kant forbids is treating a person as only a tool - deceiving or coercing them so their own agency never gets a vote."
+          },
+          {
+            "type": "example",
+            "title": "The Murderer at the Door",
+            "body": "1797. Benjamin Constant poses the obvious test: a murderer asks where your friend is hiding. Surely you may lie? Kant, notoriously, answers no - truthfulness is an unconditional duty owed to humanity as such. Even sympathetic readers wince. The case has haunted deontology ever since: an ethics of principle, priced in a friend's life.",
+            "art": "bell"
+          },
+          {
+            "type": "reveal",
+            "prompt": "How could Kant possibly defend refusing to lie to the murderer?",
+            "answer": "For Kant a lie wrongs not just the listener but humanity: it corrodes the trust all speech depends on, and it cannot be universalized. And once you lie, he argues, the fallout is yours - if your lie unwittingly delivers your friend to the killer, you own that result."
+          },
+          {
+            "type": "concept",
+            "title": "Rights as Trumps",
+            "body": "Here is deontology's gift to modern life. Rights are constraints that block the arithmetic: your kidneys are not available even to save five, and the innocent cannot be framed even to stop a riot. Ronald Dworkin called rights 'trumps' - cards that beat the general welfare. When the surgeon case strikes you as monstrous, you are thinking in constraints.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "The Bite: Rigidity and Conflict",
+            "body": "Absolute duties come at a price. Rigidity: if no exception can bend 'do not lie,' the doctrine bites hardest exactly when the stakes peak - at the murderer's door. Conflict: keeping a promise and aiding someone in danger can collide in a single moment, and a system of exceptionless duties offers no principled tiebreaker. Something has to give.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You promised to meet a friend, but on the way you find a crash victim who needs help now. Which objection to Kant does this raise?",
+            "choices": [
+              "Duties are too easy to universalize",
+              "When duties collide, an ethics of exceptionless rules offers no principled way to choose",
+              "It shows deontology secretly reduces to utilitarianism",
+              "It proves nobody ever really acts from duty"
+            ],
+            "answer": 1,
+            "explain": "Both 'keep your promises' and 'aid those in peril' pass Kant's tests, yet here you cannot do both. Kantians reply by ranking perfect over imperfect duties, but critics press that a theory of absolute rules leaves collisions unresolved."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Deontology: some acts are required or forbidden regardless of outcomes",
+              "Test one: could your maxim hold as a universal law without self-destructing?",
+              "Test two: treat persons as ends, never merely as means",
+              "Rights work as trumps against greater-good arithmetic",
+              "The bites: rigidity (the murderer at the door) and colliding duties"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Categorical imperative (universal law)",
+            "back": "Act only on maxims you could will as universal laws. A maxim that self-destructs when universalized - like false promising - is forbidden."
+          },
+          {
+            "front": "Humanity formulation",
+            "back": "Treat humanity, in yourself and others, always as an end and never merely as a means - never bypass a person's rational consent."
+          },
+          {
+            "front": "Rights as trumps",
+            "back": "Deontic constraints protect each person: some things may not be done to an individual even to produce a better total outcome."
+          },
+          {
+            "front": "Deontology's bite",
+            "back": "Absolute duties can be rigid - no lying even to the murderer at the door - and can collide, leaving no principled way to choose."
+          }
+        ]
+      },
+      {
+        "id": "virtue-ethics",
+        "title": "Virtue Ethics: Becoming Good",
+        "summary": "Aristotle on flourishing, the mean, habit, and practical wisdom - revived in 1958.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Ask a Different Question",
+            "body": "Two lessons in, you have judged acts by outcomes and by rules - and watched both crack. Aristotle (384-322 BC) asks something else entirely: not 'what should I do?' but 'what kind of person should I become?' In the Nicomachean Ethics, morality is a craft of character, learned the way anything difficult is learned: by practice.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Eudaimonia: A Life That Goes Well",
+            "body": "The goal of it all, Aristotle argues, is eudaimonia - not a mood but flourishing: a whole life of excellent activity, the kind you could endorse looking back from its end. Pleasure, wealth, and honor all fail as candidates; each can be had while your life goes badly. Flourishing is doing distinctly human things - reasoning, choosing, befriending - superbly.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which is the best rendering of eudaimonia?",
+            "choices": [
+              "A sustained feeling of pleasure or contentment",
+              "Flourishing: a whole life of excellent, characteristic activity",
+              "Wealth and honor earned through public success",
+              "Strict obedience to the moral law"
+            ],
+            "answer": 1,
+            "explain": "Eudaimonia is often translated 'happiness,' but it names how a life goes, not how it feels. Pleasure and honor can attend a wasted life, and obedience to law is Kant's frame, not Aristotle's. Flourishing is the activity of living well."
+          },
+          {
+            "type": "concept",
+            "title": "Virtue Is a Mean",
+            "body": "Each virtue sits between two failure modes. Courage lies between cowardice and recklessness; generosity between stinginess and wastefulness; wit between boorishness and buffoonery. The mean is not an average, and not the same for everyone - the brave move for a trained firefighter would be reckless for you. It is what fits this person, this moment.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "For Aristotle, the mean is the exact arithmetic midpoint between extremes, the same for every person.",
+            "answer": false,
+            "explain": "The mean is 'relative to us': it shifts with the person, the stakes, and the situation. Right action can even sit near an extreme - fierce anger at a grave injustice can hit the mean. Finding it takes judgment, not a calculator."
+          },
+          {
+            "type": "concept",
+            "title": "Habituation: Practice Makes Character",
+            "body": "How do you acquire a virtue? Not by reading about it. Aristotle's answer is habituation: perform just acts and you become just; stand firm again and again and you become brave. Each choice cuts the channel deeper, reshaping not only behavior but what you feel and notice - until the good act is your default, done with pleasure, not gritted teeth.",
+            "art": "path"
+          },
+          {
+            "type": "quote",
+            "text": "For the things we have to learn before we can do them, we learn by doing them.",
+            "by": "Aristotle, Nicomachean Ethics, Book II"
+          },
+          {
+            "type": "example",
+            "title": "The Rookie Firefighter",
+            "body": "At her first live burn a rookie's hands shake - she goes in anyway, following her training and her captain's lead. A hundred fires later the fear is calibrated: she reads the smoke, holds back when the ceiling sags, pushes on when it doesn't. Nobody handed her a courage rulebook. Repetition under guidance turned right action into second nature.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Becoming brave requires doing brave acts - but doesn't doing brave acts require already being brave? How does Aristotle escape the circle?",
+            "answer": "Practice comes first. The learner copies brave acts under guidance - teachers, law, exemplars - before owning the disposition. Repetition then reshapes feeling itself, until she acts bravely knowingly and from firm character. Virtue is habit's endpoint, not its prerequisite."
+          },
+          {
+            "type": "concept",
+            "title": "Phronesis: The Skill of Seeing",
+            "body": "Habit alone could make a well-trained dog. What completes virtue is phronesis, practical wisdom: the cultivated eye that reads a situation - what matters here, what this person needs, which act hits the mean - and gets the timing right. Rules cannot substitute for it, because rules cannot apply themselves. Ethics, for Aristotle, is perception plus practice.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "The Revival - and the Bite",
+            "body": "In 1958 Elizabeth Anscombe's 'Modern Moral Philosophy' accused modern ethics of clinging to law-like 'oughts' without a lawgiver, and pointed back to Aristotle: character, virtue, flourishing. A major revival followed. But the old objection returned with it: standing at a hard fork, 'act as the virtuous person would' may leave you without a verdict.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the standard objection to virtue ethics as a guide to decisions?",
+            "choices": [
+              "It is too demanding, requiring constant self-sacrifice",
+              "Its advice - do what the virtuous person would do - can be circular and vague exactly when you need a concrete verdict",
+              "It rigidly forbids lying in every circumstance",
+              "It reduces morality to brain chemistry"
+            ],
+            "answer": 1,
+            "explain": "Demandingness is the classic charge against utilitarianism, and rigidity against Kant. Virtue ethics' distinctive bite is indeterminacy: it richly describes the person to become, but hard cases seem to need more than 'be wise.'"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Aristotle's question: what kind of person should I become?",
+              "Eudaimonia: flourishing across a whole life, not a passing feeling",
+              "Virtue is a mean between extremes, found case by case",
+              "Habituation builds character; phronesis applies it",
+              "The bite: rich on character, thin on verdicts (revival: Anscombe, 1958)"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Eudaimonia",
+            "back": "Aristotle's goal of ethics: flourishing - a whole life of excellent activity in accordance with virtue, not a passing feeling of pleasure."
+          },
+          {
+            "front": "The golden mean",
+            "back": "Each virtue sits between two vices - courage between cowardice and recklessness - and is relative to the person and situation, not an arithmetic midpoint."
+          },
+          {
+            "front": "Habituation",
+            "back": "Character is built by practice: you become brave by doing brave acts, under guidance, until right action becomes second nature."
+          },
+          {
+            "front": "Phronesis",
+            "back": "Practical wisdom - the cultivated ability to see what a situation calls for and hit the mean, which no rulebook can replace."
+          }
+        ]
+      },
+      {
+        "id": "trolley-and-life",
+        "title": "The Trolley and Real Life",
+        "summary": "Foot, Thomson, double effect, moral psychology, and three lenses on one driverless car.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Five Lives, One Lever",
+            "body": "You now hold three instruments: outcomes, duties, character. Time to stress-test them on the most famous thought experiment in ethics - a runaway trolley - and then on a machine that has to make the choice for real. What the cases reveal is not which theory wins. It is what each one sees that the others miss.",
+            "art": "fork"
+          },
+          {
+            "type": "example",
+            "title": "Foot's Runaway Trolley (1967)",
+            "body": "Philippa Foot, 1967: the driver of a runaway tram can stay on course and kill five workers, or steer onto a side track and kill one. Most people say steer. A utilitarian nods - one death beats five - and for once the gut agrees. Foot's aim was to probe why this trade feels allowed when other one-for-five trades, like the surgeon's, feel forbidden.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the trolley case, what does a straight utilitarian calculation conclude?",
+            "choices": [
+              "Steer: one death is a better outcome than five",
+              "Stay on course: killing is worse than letting die",
+              "Both options are equally wrong",
+              "There is no fact of the matter"
+            ],
+            "answer": 0,
+            "explain": "For a utilitarian only the totals matter, so steering is not merely permitted but required. Notice that the second option smuggles in a deontological distinction - doing versus allowing - which pure outcome-math ignores."
+          },
+          {
+            "type": "example",
+            "title": "Thomson's Footbridge",
+            "body": "Judith Jarvis Thomson raised the stakes: same trolley, same five - but now you stand on a footbridge beside a man large enough to stop it. Push him off and five live. The math is identical, one for five. Yet most people who happily steered the tram now refuse to push. If your verdicts merely tracked outcomes, that difference should not exist.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Since the footbridge trades one life for five, just like the switch, most people judge the two cases the same way.",
+            "answer": false,
+            "explain": "The asymmetry is the entire puzzle: large majorities divert the trolley but refuse to push the man, despite identical arithmetic. Whatever drives the difference, it is not the totals."
+          },
+          {
+            "type": "concept",
+            "title": "Double Effect: Means vs Side Effect",
+            "body": "Two old distinctions may explain your split verdicts. Doing versus allowing: making harm happen weighs more than letting it happen. And the doctrine of double effect: harm intended as your means is far harder to justify than the same harm foreseen as a side effect of a good aim. Steering saves five, with one death as collateral; pushing makes the man's body your brake.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Apply double effect yourself: why is the side-track worker's death a side effect, but the pushed man's death a means?",
+            "answer": "Test it: if the side-track worker somehow escaped, your plan still succeeds - five saved. If the pushed man vanished mid-fall, the trolley rolls on and the five die. His being struck is required by your plan; the worker's death never was. That is means versus side effect."
+          },
+          {
+            "type": "concept",
+            "title": "What Brains Add: Greene's fMRI",
+            "body": "Joshua Greene scanned people judging both cases. 'Personal' dilemmas like the footbridge showed more activity in emotion-linked regions; 'impersonal' ones like the switch, more in areas tied to controlled reasoning. His dual-process theory: fast alarm-like responses versus slower cost-benefit thought. But note what this is: correlation - not, by itself, a verdict on who is right.",
+            "art": "brain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Greene's imaging results prove that the refusal to push the man is an emotional mistake.",
+            "answer": false,
+            "explain": "The scans show correlates of judgment, not its correctness. Moving from 'this intuition involves emotion' to 'this intuition is wrong' requires a further philosophical argument - Greene himself supplies one, and critics dispute it. You cannot read ethics straight off an fMRI."
+          },
+          {
+            "type": "concept",
+            "title": "A Modern Trolley: The Driverless Car",
+            "body": "An autonomous car's brakes fail. The consequentialist asks: which crash programming minimizes expected deaths across millions of rides? The deontologist asks: may the software swerve into a bystander, using her as a means to save the passengers? The virtue ethicist asks: what would a manufacturer of honest, careful character test, disclose, and decide?",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Instruments, Not Jerseys",
+            "body": "Notice what each lens caught: outcomes captured the stakes, duties flagged the bystander's rights, virtue interrogated the engineers' honesty. Mature moral thinking treats the theories as a toolkit - each tracking real moral data, each with a known failure mode - rather than a team you join once and defend forever. Hard cases deserve all three.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which is the distinctively deontological question about crash programming?",
+            "choices": [
+              "Which setting minimizes total expected deaths?",
+              "Does swerving treat the bystander merely as a means to protect the passengers?",
+              "What would an engineer of good character do?",
+              "Which setting do most customers prefer in surveys?"
+            ],
+            "answer": 1,
+            "explain": "Minimizing deaths is the consequentialist frame; character is virtue ethics; surveys measure opinion, not obligation. The deontological question asks whether anyone's agency is bypassed - whether a person is used merely as a means."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Foot's switch and Thomson's footbridge: same arithmetic, opposite intuitions",
+              "The gap tracks doing vs allowing and means vs side effect (double effect)",
+              "Greene's fMRI data illuminate how we judge - not, by itself, who is right",
+              "Real cases reward all three lenses: outcomes, duties, character",
+              "Use the theories as instruments in a toolkit, not team jerseys"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Trolley vs footbridge",
+            "back": "Most people steer the trolley (one dies instead of five) but refuse to push the man off the footbridge - same arithmetic, opposite verdicts."
+          },
+          {
+            "front": "Doctrine of double effect",
+            "back": "Harm intended as a means is harder to justify than the same harm foreseen as a side effect of a good aim - one reading of the trolley asymmetry."
+          },
+          {
+            "front": "Greene's dual-process claim",
+            "back": "fMRI links 'personal' dilemmas to emotion-related activity and 'impersonal' ones to calculation - data that inform, but do not settle, the ethics."
+          },
+          {
+            "front": "Frameworks as toolkit",
+            "back": "Consequences, duties, and character each capture real moral data; hard cases are best examined through all three lenses, not one team's jersey."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "genius-of-language",
+    "title": "The Genius of Language",
+    "tagline": "The everyday miracle humming inside your head",
+    "category": "Linguistics",
+    "description": "How language builds infinity from a handful of meaningless sounds, how children crack the code without lessons, and why its endless variety and constant change are features, not flaws.",
+    "lessons": [
+      {
+        "id": "machinery",
+        "title": "The Machinery",
+        "summary": "Meaningless sounds, arbitrary signs, recursive rules — the design tricks that give every language infinite reach.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Miracle You're Using Now",
+            "body": "You are decoding these squiggles at a couple of hundred words a minute, effortlessly. Every human society ever found runs on language — a system that builds unlimited meaning from a few dozen meaningless noises. This lesson opens the hood on that machine.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Duality of Patterning",
+            "body": "English runs on roughly 44 distinct sounds, and not one of them means anything alone. The /k/ in 'cat' is pure noise. But layer those empty units into patterns and you get 'cat', 'act', 'tack' — and hundreds of thousands of words. Linguists call this two-level trick duality of patterning, and every known language has it.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What makes duality of patterning so powerful?",
+            "choices": [
+              "Each sound carries its own small piece of meaning",
+              "A few meaningless sounds recombine into unlimited meaningful words",
+              "It lets speakers get by with fewer words overall",
+              "Every language uses exactly the same 44 sounds"
+            ],
+            "answer": 1,
+            "explain": "The sounds themselves mean nothing — that is the point. Because they are empty units, they can be freely recombined into a vast, open-ended vocabulary without inventing a new noise for every idea."
+          },
+          {
+            "type": "concept",
+            "title": "The Arbitrary Sign",
+            "body": "Why does 'dog' mean dog? No reason at all. French gets by with 'chien', Japanese with 'inu', and each works perfectly. Ferdinand de Saussure called this the arbitrariness of the sign: the link between a word's sound and its meaning is social convention, not natural resemblance. That freedom is what lets vocabularies grow without limit.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Words generally sound like the things they mean, which is how listeners work out their meanings.",
+            "answer": false,
+            "explain": "Apart from a few imitative words like 'buzz', the sound-meaning link is arbitrary convention — Saussure's central insight. Nothing in the noise 'dog' points at a dog; you simply have to learn the pairing."
+          },
+          {
+            "type": "example",
+            "title": "Bouba and Kiki",
+            "body": "Now the delicious exception. Shown a spiky star and a rounded blob and asked which is 'kiki' and which is 'bouba', about 95% of people call the spiky one kiki. Wolfgang Köhler ran the first version in 1929 (with 'takete' and 'maluma'); Ramachandran and Hubbard revived it in 2001 and found the effect across cultures. Sound symbolism is real — it just seasons an arbitrary system.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If the sign is arbitrary, why do 95% of us agree the spiky shape is 'kiki'?",
+            "answer": "Sharp sounds like /k/ and /i/ involve abrupt bursts and tense mouth shapes that brains map onto jagged visual forms. Such cross-sensory echoes bias a handful of words — but they only nudge language at the edges. 'Dog' still has to be memorized."
+          },
+          {
+            "type": "concept",
+            "title": "Infinite Use of Finite Means",
+            "body": "Grammar rules can apply to their own output: 'She left' becomes 'He knows she left', then 'You said he knows she left' — with no ceiling. This looping property, recursion, means the sentence you are reading right now may never have existed before, yet you parse it instantly. A finite toolkit, an unbounded range of thoughts.",
+            "art": "network"
+          },
+          {
+            "type": "quote",
+            "text": "Language makes infinite use of finite means.",
+            "by": "Wilhelm von Humboldt"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You understand sentences nobody has ever produced before. What best explains that?",
+            "choices": [
+              "You have memorized an enormous stock of ready-made sentences",
+              "Rules that can apply to their own output generate endless new sentences",
+              "Most 'new' sentences are really slight mishearings of familiar ones"
+            ],
+            "answer": 1,
+            "explain": "No memory could store every possible sentence. Recursion lets a finite grammar embed phrases inside phrases, so genuinely novel sentences are routine — you build and parse them on the fly."
+          },
+          {
+            "type": "concept",
+            "title": "Seven Thousand Experiments",
+            "body": "About 7,000 languages are spoken on Earth today, and every one runs this same machinery — meaningless sounds, arbitrary signs, recursive rules. Yet nearly half are endangered, many with only a few thousand speakers left. Each loss switches off a unique, fully working experiment in how the system can be built.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Roughly 7,000 living languages are spoken in the world today.",
+            "answer": true,
+            "explain": "Catalogues such as Ethnologue count about 7,000 living languages — though the number falls each decade as smaller languages lose their last speakers."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Duality of patterning: a few dozen meaningless sounds recombine into unlimited words.",
+              "The sound-meaning link is arbitrary convention (Saussure), with bouba/kiki sound symbolism at the edges.",
+              "Recursion lets finite rules generate infinitely many new sentences.",
+              "About 7,000 living languages all run this same machinery."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is duality of patterning?",
+            "back": "A two-level system: meaningless sounds combine into meaningful words, letting a few dozen noises yield an unlimited vocabulary."
+          },
+          {
+            "front": "What did Saussure mean by the arbitrariness of the sign?",
+            "back": "The link between a word's sound and its meaning is pure convention — 'dog', 'chien', and 'inu' all work equally well."
+          },
+          {
+            "front": "What does the bouba/kiki effect show?",
+            "back": "About 95% of people match 'kiki' to spiky shapes: real sound symbolism that seasons, but does not overturn, the arbitrary sign."
+          },
+          {
+            "front": "What is recursion in grammar?",
+            "back": "Rules can apply to their own output, embedding phrases inside phrases — so finite means generate infinitely many sentences."
+          }
+        ]
+      },
+      {
+        "id": "children",
+        "title": "How Children Do It",
+        "summary": "How infants crack the code with no lessons: narrowing ears, invented errors, sensitive periods, and babbling hands.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Fastest Learners on Earth",
+            "body": "By age four, a typical child commands thousands of words and most of her language's grammar — without a single lesson. Adults sweating through evening Spanish classes should feel humbled: the toddler in the next room is out-learning them using nothing but overheard talk. This lesson follows the evidence for how.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "No Lessons Required",
+            "body": "Children are not taught language; they extract it. Parents correct facts ('that's a cow, not a horse') far more than grammar, and studies show grammar corrections mostly bounce off. Yet the milestones arrive on schedule worldwide: babbling around 6 months, first words near 12, two-word combinations by about 24.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Children master grammar mainly because adults explicitly correct their mistakes.",
+            "answer": false,
+            "explain": "Grammar corrections are rare and largely ignored — in one classic exchange a child repeated 'Nobody don't like me' after eight patient corrections. Children induce the rules themselves from the speech around them."
+          },
+          {
+            "type": "concept",
+            "title": "Citizens of the World",
+            "body": "Patricia Kuhl's lab showed that young infants can hear the sound contrasts of any language on Earth — Japanese babies distinguish English 'r' from 'l' as well as American babies do. Then, between about 6 and 12 months, perception narrows to the sounds of the native language. By 10-12 months, the universal ear is gone.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Kuhl's studies, what happens to infants' hearing of foreign sound contrasts by 10-12 months?",
+            "choices": [
+              "It sharpens, because babies crave novelty",
+              "It narrows: they tune to native sounds and stop noticing foreign contrasts",
+              "Nothing changes; adults hear all contrasts equally well"
+            ],
+            "answer": 1,
+            "explain": "Infants begin as universal listeners and become native-language specialists by their first birthday. That early tuning is one reason languages learned later so often carry an accent."
+          },
+          {
+            "type": "example",
+            "title": "The Genius of 'Goed'",
+            "body": "A three-year-old who said 'went' at two may suddenly start saying 'goed' and 'foots'. She has never heard an adult say these — so she cannot be imitating. She has discovered rules (add -ed, add -s) and is over-applying them to the exceptions. Errors like these, called overregularization, are the fingerprints of a rule-building mind.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A child says 'goed' — a word no adult around her ever uses. Why is that error good news?",
+            "answer": "It proves she is not parroting. She has induced the past-tense rule 'add -ed' from the speech she hears and is applying it productively, even where English makes an exception. The mistake is direct evidence of rule-learning."
+          },
+          {
+            "type": "concept",
+            "title": "A Window That Narrows",
+            "body": "Start a language in childhood and you can pass for native; start after adolescence and an accent usually stays, even in otherwise fluent speakers — signs of a sensitive period. The starkest evidence is tragic: Genie, found in 1970 at age 13 after years of abusive isolation from speech, later learned many words but never full grammar, despite years of devoted support.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If you start learning a second language as an adult, you can never become fluent.",
+            "answer": false,
+            "explain": "Adults reach high fluency all the time — vocabulary and grammar remain very learnable. What the sensitive period most firmly locks in is phonology: a native-like accent becomes rare after adolescence."
+          },
+          {
+            "type": "concept",
+            "title": "Babbling Without Sound",
+            "body": "Around 6-7 months, babies everywhere loop consonant-vowel syllables — 'bababa', 'dadada' — whatever language surrounds them. The clincher: deaf infants raised with sign language babble with their hands, cycling rhythmic fragments of signs just as hearing babies cycle syllables. The drive to practice is not about sound; it is about language itself.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Deaf babies exposed to sign language 'babble' with their hands. What does this suggest?",
+            "choices": [
+              "Babbling is just random exercise of the mouth muscles",
+              "The drive to practice language is general, not tied to speech sounds",
+              "Sign languages are simpler, so babies master them earlier"
+            ],
+            "answer": 1,
+            "explain": "Manual babbling mirrors vocal babbling in timing and rhythm. The infant brain is set to rehearse patterned language in whatever channel it is offered — spoken or signed."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Children extract grammar from overheard speech; explicit teaching and correction play little role.",
+              "Kuhl: infants start as universal listeners, then tune to native sounds by 10-12 months.",
+              "Overregularizations like 'goed' are proof of rule-learning, not sloppy imitation.",
+              "A sensitive period favors early starters — most firmly for accent; Genie's tragic case shows late-start limits on grammar.",
+              "Babbling is universal — deaf babies babble in sign."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Patricia Kuhl discover about infant hearing?",
+            "back": "Young infants distinguish the sounds of all languages, then tune to their native language's sounds by about 10-12 months."
+          },
+          {
+            "front": "Why is a child saying 'goed' evidence of rule-learning?",
+            "back": "No adult says 'goed' — the child induced the add -ed rule and over-applied it to an exception. Invention, not imitation."
+          },
+          {
+            "front": "What does the sensitive period most strongly affect?",
+            "back": "Accent. Late starters can master vocabulary and grammar, but a native-like accent is rare after adolescence."
+          },
+          {
+            "front": "How do deaf babies exposed to sign language babble?",
+            "back": "With their hands — rhythmic loops of sign fragments that mirror vocal babbling, showing the drive to practice language itself."
+          }
+        ]
+      },
+      {
+        "id": "variety",
+        "title": "Variety and Universals",
+        "summary": "Word-order tendencies, color words, compass-minded speakers — what varies, what holds everywhere, and what Whorf got half right.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "7,000 Ways to Say the World",
+            "body": "Some languages have three color words; some make you track north at all times; some put the verb last. Yet beneath the dazzling variety run deep shared patterns. This lesson tours the differences — and asks, honestly, how much the language you speak shapes the way you think.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Greenberg's Tendencies",
+            "body": "In 1963 Joseph Greenberg compared 30 far-flung languages and found striking word-order patterns: nearly every language places the subject before the object. Orders like SOV (Japanese) and SVO (English) cover close to 90% of languages, while object-first orders are vanishingly rare. Universals here are strong statistical leanings, not iron laws.",
+            "art": "balance"
+          },
+          {
+            "type": "quote",
+            "text": "Unfortunately, or luckily, no language is tyrannically consistent. All grammars leak.",
+            "by": "Edward Sapir"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Greenberg's cross-language comparison reveal about word order?",
+            "choices": [
+              "Every language uses subject-verb-object, like English",
+              "Word order varies completely at random across languages",
+              "Nearly all languages put the subject before the object — a strong tendency, not a law"
+            ],
+            "answer": 2,
+            "explain": "SOV and SVO together cover about nine languages in ten, and object-before-subject orders are rare. Universals of this kind are powerful statistical tendencies with genuine exceptions."
+          },
+          {
+            "type": "concept",
+            "title": "How Many Colors Are There?",
+            "body": "Berlin and Kay (1969) surveyed 98 languages and claimed basic color words grow in a near-fixed order: two-term languages split dark from light; a third term is red; then green or yellow; then blue. Later work like the World Color Survey broadly supports the tendency, but critics dispute the sampling and the single universal path — the debate is live.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "According to Berlin and Kay, if a language has only three basic color terms, the third is almost always red.",
+            "answer": true,
+            "explain": "Their proposed sequence runs dark/light first, then red, then green or yellow, then blue. The pattern holds broadly across surveyed languages, though how universal it truly is remains debated."
+          },
+          {
+            "type": "example",
+            "title": "The Language With No 'Left'",
+            "body": "In Guugu Yimithirr, an Aboriginal language of north Queensland, you don't say 'the cup on your left' — you say 'the cup to the north'. Speakers use compass directions for everything, even indoors, so they constantly track their heading. Tested in unfamiliar terrain, they point home with uncanny accuracy. Habitual speech, trained cognition.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "How would a Guugu Yimithirr speaker warn you about an ant crawling on your left leg?",
+            "answer": "Something like 'there's an ant on your north-west leg' — depending on which way you happen to be facing. With no egocentric left/right, speakers keep a running compass fix at all times, a habit of attention their language drills from childhood."
+          },
+          {
+            "type": "concept",
+            "title": "Whorf, Weighed Honestly",
+            "body": "Does language shape thought? The strong claim — your language imprisons what you can think — is rejected: people readily grasp concepts their language lacks words for. But weak effects are real and measurable: color vocabulary nudges color memory, and Guugu Yimithirr speakers' compass minds are trained by daily speech. Influence, not prison.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the current scientific verdict on the Sapir-Whorf hypothesis?",
+            "choices": [
+              "Strong version confirmed: without a word for something, you cannot think it",
+              "Weak version supported: language habits measurably nudge memory and attention",
+              "Fully debunked: language has zero effect on thought",
+              "Untestable, so linguists simply ignore it"
+            ],
+            "answer": 1,
+            "explain": "The strong 'prison' version fails — translation and learning new concepts happen constantly. But careful experiments on color, space, and number show real, modest effects of language on habits of thought."
+          },
+          {
+            "type": "concept",
+            "title": "No Primitive Languages",
+            "body": "Nineteenth-century Europeans expected 'simple tribes' to speak simple languages. The opposite kept turning up: small-scale societies often speak languages of staggering grammatical intricacy — in some, a single verb carries what English needs a whole sentence for. Every documented language is a complete system, fully able to express new ideas.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Some isolated societies speak primitive languages with only rudimentary grammar.",
+            "answer": false,
+            "explain": "No such language has ever been found. Languages of small, non-industrial societies are often more grammatically elaborate than English. Grammatical complexity does not track technological complexity."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Greenberg: word order shows strong cross-language tendencies — subjects almost always precede objects.",
+              "Berlin & Kay: color vocabularies tend to grow in a shared sequence — broadly supported, still debated.",
+              "Guugu Yimithirr replaces left/right with compass directions, training constant orientation.",
+              "Whorf: the strong version is rejected; weak effects on memory and attention are real.",
+              "There are no primitive languages — every language is a complete system."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Greenberg find about word order?",
+            "back": "Strong tendencies, not laws: nearly all languages place the subject before the object; SOV and SVO cover about 90% of languages."
+          },
+          {
+            "front": "What did Berlin & Kay propose about color terms?",
+            "back": "Basic color words grow in a shared order — dark/light, then red, then green/yellow, then blue. Broadly supported, still debated."
+          },
+          {
+            "front": "How does Guugu Yimithirr handle 'left' and 'right'?",
+            "back": "It doesn't — speakers use absolute compass directions for everything, so they constantly track their own heading."
+          },
+          {
+            "front": "What is the honest verdict on Sapir-Whorf?",
+            "back": "The strong version (language imprisons thought) is rejected; weak effects on memory and attention are experimentally supported."
+          }
+        ]
+      },
+      {
+        "id": "writing",
+        "title": "Writing and Change",
+        "summary": "Writing as a rare invention, the vowel shift behind English spelling chaos, and why language change is life, not decay.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Newest Old Technology",
+            "body": "Speech is as old as our species; writing is a gadget — invented about 5,200 years ago, mastered by a small minority of humans for most of history, and never developed at all for most languages. This lesson treats writing as the technology it is, then watches the living language keep moving underneath it.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "Invented Almost Never",
+            "body": "Writing arose in Sumer around 3200 BCE, as temple accountants' clay-token records evolved into cuneiform. Full writing was independently invented remarkably few times: Mesopotamia, China (by about 1200 BCE), and Mesoamerica (by about 600 BCE) are the clear cases; Egypt may be a fourth or may have borrowed the idea. Everyone else adapted a neighbor's script.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How often was full writing independently invented?",
+            "choices": [
+              "Dozens of times — most cultures developed it on their own",
+              "Only a handful of times: clearly Mesopotamia, China, and Mesoamerica",
+              "Exactly once, in Egypt, spreading everywhere from there"
+            ],
+            "answer": 1,
+            "explain": "Almost all scripts descend from a few ancestral inventions. Sumerian cuneiform, Chinese characters, and Mesoamerican glyphs are the certain independent births; Egypt's status is debated."
+          },
+          {
+            "type": "concept",
+            "title": "Three Ways to Freeze Speech",
+            "body": "Scripts differ in which slice of language each symbol captures. Logographic systems like Chinese give every morpheme a character — thousands needed. Syllabaries like Japanese kana or Cherokee write whole syllables — dozens suffice. Alphabets go smallest, one symbol per sound: roughly 20-40 letters unlock everything. Smaller units, fewer symbols, more abstraction.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Chinese characters are mostly little pictures of the things they name.",
+            "answer": false,
+            "explain": "A few began as pictures, but the vast majority are compounds pairing a meaning hint with a sound hint. Chinese writes morphemes of the Chinese language, not free-floating ideas — you must know the language to read it."
+          },
+          {
+            "type": "example",
+            "title": "Sequoyah's Solo Invention",
+            "body": "Around 1820, Sequoyah — a Cherokee man who could not read English — studied writing from the outside and single-handedly built an 85-character syllabary for Cherokee. It fit the language so well that Cherokee literacy soon rivaled that of surrounding English speakers. One person, one lifetime: writing is an invention, and still inventable.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "The Great Vowel Shift",
+            "body": "Between roughly 1400 and 1700, English long vowels rotated: 'bite' had sounded like 'beet', 'meet' like 'mate', 'boot' like 'boat'. Catastrophically for spellers, printing arrived mid-shift — Caxton, 1476 — and spelling froze while pronunciation kept moving. Much of English spelling is a photograph of how words sounded six centuries ago.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does 'knight' — once pronounced roughly 'k-nicht' — keep its silent k and gh?",
+            "answer": "Every letter was once spoken: the k and the throaty gh were real sounds of Middle English. Pronunciation moved on; frozen printed spelling did not. English spelling is less a code for today's sounds than a fossil record of yesterday's."
+          },
+          {
+            "type": "quote",
+            "text": "To enchain syllables, and to lash the wind, are equally the undertakings of pride.",
+            "by": "Samuel Johnson"
+          },
+          {
+            "type": "concept",
+            "title": "Change Is Not Decay",
+            "body": "Complaints that English is decaying are as old as English. Today's target, the intensifier 'literally', follows a well-worn path: 'very' once meant 'truly', 'really' asserted reality, 'awfully' meant awe-inspiring — all faded into intensifiers, and the language thrived. Change is how a living language works; only dead languages hold still.",
+            "art": "flame"
+          },
+          {
+            "type": "example",
+            "title": "Singular 'They', Aged 600",
+            "body": "Grumble about singular 'they'? Take it up with the canon: Chaucer used it in the 1300s, Shakespeare wrote 'God send every one their heart's desire', and Jane Austen reached for it constantly. English shed 'thou' in a similar drift centuries ago. Singular they is not a novelty bending grammar — it is an old resource returning to prominence.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Singular 'they' is a 21st-century invention that breaks traditional English grammar.",
+            "answer": false,
+            "explain": "It has been in continuous use since the 1300s — by Chaucer, Shakespeare, and Austen among others. What is new is mainly the debate, and its dedicated use for specific individuals, not the grammar itself."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Writing is a roughly 5,200-year-old technology, independently invented only a few times: Sumer, China, Mesoamerica.",
+              "Scripts encode different units: logographs (morphemes), syllabaries (syllables), alphabets (sounds).",
+              "The Great Vowel Shift moved English vowels after printing froze spelling — hence the chaos.",
+              "Language change is not decay: 'literally' follows 'very' and 'awfully'; singular they dates to Chaucer."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "When and where did writing first appear?",
+            "back": "Around 3200 BCE in Sumer (Mesopotamia), evolving from accountants' clay-token records into cuneiform."
+          },
+          {
+            "front": "What do alphabets, syllabaries, and logographic scripts each encode?",
+            "back": "Alphabets write individual sounds, syllabaries whole syllables, logographic systems whole morphemes — smaller units need fewer symbols."
+          },
+          {
+            "front": "Why is English spelling so irregular?",
+            "back": "Printing froze spelling around 1476, then the Great Vowel Shift kept moving pronunciation — spelling preserves medieval sounds."
+          },
+          {
+            "front": "Why isn't singular 'they' bad grammar?",
+            "back": "It has been standard since the 1300s — Chaucer, Shakespeare, and Austen used it. The complaint is newer than the construction."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "how-internet-works",
+    "title": "How the Internet Works",
+    "tagline": "Trace a URL's half-second journey from keystroke to page",
+    "category": "Technology",
+    "description": "What really happens between typing an address and seeing a page? Follow your request through packets, DNS, encryption, and rendering — one half-second, fully explained.",
+    "lessons": [
+      {
+        "id": "packets-not-pipes",
+        "title": "Packets, Not Pipes",
+        "summary": "How the internet moves data — and why it was built to survive failure.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Half-Second Journey",
+            "body": "You type a URL, press Enter, and a page appears half a second later. In that blink, your request is diced into packets, flung across continents, and reassembled — no single wire ever connects you to the server. This lesson starts with the idea that makes it all possible: packets, not pipes.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "The Phone Company's Way",
+            "body": "For a century, telephone networks used circuit switching: to connect two callers, the system reserved a continuous electrical path between them and held it for the whole call. Simple and predictable — but wasteful. The line sat idle during every pause, and if any link along the path failed, the call died with it.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "Chop It Into Packets",
+            "body": "In the early 1960s, Paul Baran at RAND and Donald Davies in Britain independently proposed a radical alternative: slice each message into small blocks — Davies named them 'packets' — each stamped with its destination address. Packets from thousands of conversations could share the same wires, with no path reserved at all.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the key difference between circuit switching and packet switching?",
+            "choices": [
+              "Circuits reserve one dedicated path; packets share wires, each finding its own way",
+              "Packet switching is analog while circuit switching is digital",
+              "Circuit switching splits messages into pieces; packet switching sends them whole",
+              "Packets always travel faster than signals in a circuit"
+            ],
+            "answer": 0,
+            "explain": "A circuit holds one continuous path open for the whole conversation, idle pauses included. Packet switching chops messages into addressed blocks that share every link with everyone else's traffic."
+          },
+          {
+            "type": "example",
+            "title": "Two Letters, Then a Crash",
+            "body": "On October 29, 1969, UCLA student Charley Kline tried to log in to a computer at Stanford Research Institute over the brand-new ARPANET. He typed L, then O — and the SRI machine crashed before the G. The first message ever sent between networked computers was 'LO'. About an hour later, the full LOGIN went through.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The first ARPANET transmission in 1969 was the complete word 'LOGIN'.",
+            "answer": false,
+            "explain": "Only 'LO' made it across before the receiving computer at SRI crashed. The full login succeeded about an hour later — a fittingly humble start for the network that became the internet."
+          },
+          {
+            "type": "concept",
+            "title": "A Common Language: TCP/IP",
+            "body": "By the 1970s, rival networks couldn't talk to each other. In 1974, Vint Cerf and Bob Kahn published the design that fixed this: TCP/IP. IP moves individual packets between networks; TCP, running on the two endpoints, numbers the pieces, confirms delivery, and re-sends whatever gets lost. ARPANET switched over on January 1, 1983.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A router along your packet's path suddenly dies mid-download. What happens to your page?",
+            "answer": "Almost nothing you'd notice. Each packet is routed independently, so the network simply steers later packets around the dead router. TCP re-sends the few packets lost in the failure, and your page finishes loading."
+          },
+          {
+            "type": "concept",
+            "title": "Independent Travelers",
+            "body": "Every packet carries its destination address and travels alone. Two packets from the same photo may cross different cities and arrive out of order — packet 47 before packet 12. Sequence numbers let your device reassemble them perfectly. Routers stay simple: read the address, pick the next hop, forward, forget.",
+            "art": "map"
+          },
+          {
+            "type": "quote",
+            "text": "The Net interprets censorship as damage and routes around it.",
+            "by": "John Gilmore"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does the internet keep working even when routers and cables fail?",
+            "choices": [
+              "Every message travels along several backup circuits at the same time",
+              "Packets are routed hop by hop, so traffic simply flows around failures",
+              "A central control computer detects failures and reroutes all traffic",
+              "Internet cables are engineered so that they never fail"
+            ],
+            "answer": 1,
+            "explain": "There is no reserved path and no central controller. Each router independently forwards each packet toward its destination, so when a link dies, packets take other routes — resilience is built into the design."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Circuit switching reserves one path per conversation; packet switching chops messages into addressed blocks that share every wire.",
+              "Baran and Davies imagined packets in the early 1960s; ARPANET's first message, 'LO', crashed mid-LOGIN on October 29, 1969.",
+              "Cerf and Kahn's TCP/IP (1974) lets different networks interconnect: IP moves packets, TCP reassembles and re-sends.",
+              "Packets route independently around failures — the internet is resilient by design, not by luck."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did circuit switching reserve for each call?",
+            "back": "A dedicated end-to-end path, held open for the whole conversation — idle pauses included."
+          },
+          {
+            "front": "What was ARPANET's first message, and why?",
+            "back": "'LO' — the SRI computer crashed while UCLA's Charley Kline was typing LOGIN, on October 29, 1969."
+          },
+          {
+            "front": "Who published TCP/IP's design in 1974?",
+            "back": "Vint Cerf and Bob Kahn. IP moves packets between networks; TCP reassembles them and re-sends losses."
+          },
+          {
+            "front": "Why do packets survive router failures?",
+            "back": "Each packet routes independently, hop by hop — traffic flows around dead links, and TCP re-sends anything lost."
+          }
+        ]
+      },
+      {
+        "id": "names-and-addresses",
+        "title": "Names and Addresses",
+        "summary": "How wikipedia.org becomes an IP address before your request can leave.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Numbers Under the Names",
+            "body": "You typed a name — wikipedia.org — but routers don't move packets by name. Every destination on the internet is a number: an IP address. Before your request can go anywhere, that name must be translated. The system doing it, in milliseconds and behind your back, is one of the internet's quietest marvels.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Every Machine Gets a Number",
+            "body": "An IPv4 address is four numbers from 0 to 255, like 208.80.154.224 — one of Wikipedia's. Four billion combinations sounded ample in the 1980s; it wasn't, so IPv6 arrived with 128-bit addresses, enough for trillions per person. Packets carry these numbers, and routers use them to choose each next hop.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "The Internet's Phone Book",
+            "body": "Early ARPANET kept every name-to-number mapping in one file, HOSTS.TXT, hand-edited at Stanford and downloaded by everyone. By 1983 that couldn't scale, so Paul Mockapetris designed the Domain Name System: a distributed, delegated database where no single office holds the whole book, yet any name can be found.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What job does DNS perform when you visit a website?",
+            "choices": [
+              "It translates domain names like wikipedia.org into IP addresses",
+              "It delivers the website's pages to your browser",
+              "It encrypts your connection so others can't read it",
+              "It assigns your own device its IP address"
+            ],
+            "answer": 0,
+            "explain": "DNS answers one question: what number is this name? The page itself comes later, over HTTP, once your device knows the server's address. (Your own address comes from DHCP, and encryption from TLS.)"
+          },
+          {
+            "type": "concept",
+            "title": "Climbing Down the Tree",
+            "body": "When your resolver — run by your ISP, or a public one like 1.1.1.1 — meets an unknown name, it climbs a hierarchy. A root server points it to the servers for the top-level domain, such as .org. The .org servers point to Wikipedia's own authoritative name servers. Those give the final answer. Three questions, one number.",
+            "art": "pyramid"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your resolver has never heard of wikipedia.org. Which three kinds of servers does it ask, and in what order?",
+            "answer": "First a root server, which says where to find the .org servers. Then a .org top-level domain server, which says where Wikipedia's own name servers live. Finally Wikipedia's authoritative server, which returns the actual IP address."
+          },
+          {
+            "type": "concept",
+            "title": "Thirteen Names, a Thousand Bodies",
+            "body": "The root of DNS is served under just 13 named identities, a.root-servers.net through m. But each name is really many identical servers scattered worldwide, all sharing one address — a trick called anycast that routes you to the nearest copy. More than a thousand root instances quietly anchor every lookup on Earth.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "Remember the Answer",
+            "body": "A full lookup takes maybe 50 milliseconds — too slow to repeat for every image on a page. So answers are cached everywhere: in your browser, your operating system, your resolver. Each DNS record carries a TTL, a time-to-live in seconds, telling caches how long to trust it. Popular names are usually answered from memory nearby.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Every time you visit a website, your request travels all the way to a DNS root server.",
+            "answer": false,
+            "explain": "Caching short-circuits the climb. Your browser, your operating system, and your resolver all remember recent answers — and resolvers remember where the TLD servers are — so only a tiny fraction of lookups ever reach the root."
+          },
+          {
+            "type": "example",
+            "title": "The Day the Names Went Dark",
+            "body": "On October 21, 2016, the Mirai botnet — hijacked cameras and DVRs — flooded Dyn, a company hosting DNS for major sites. Twitter, Netflix, and Reddit vanished for millions of users, though their servers ran fine. In 2021, Facebook cut itself off for six hours by accidentally withdrawing the routes to its own DNS servers.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "During the 2016 Dyn attack, Twitter's servers were healthy — yet users saw the site as down. Why?",
+            "choices": [
+              "Without DNS answers, browsers couldn't turn twitter.com into an IP address, so requests had nowhere to go",
+              "The attackers had knocked Twitter's own servers offline directly",
+              "The attack physically cut the fiber cables carrying Twitter's traffic",
+              "Browsers automatically block websites whenever an attack is detected"
+            ],
+            "answer": 0,
+            "explain": "DNS is the front door to everything else. If names can't resolve, working servers might as well not exist — which is why a DNS outage 'breaks the internet' without breaking any of the sites themselves."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Routers deliver by IP address; DNS translates names like wikipedia.org into those numbers (Paul Mockapetris, 1983).",
+              "A fresh lookup walks the hierarchy: root server → TLD server (.org) → the domain's authoritative server.",
+              "Caching, governed by per-record TTLs, answers most lookups from memory — few ever reach the root.",
+              "When DNS fails, healthy sites become unreachable: names stop resolving, so requests have nowhere to go."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does DNS translate?",
+            "back": "Domain names into IP addresses — e.g. wikipedia.org into a number like 208.80.154.224."
+          },
+          {
+            "front": "Name the three steps of a full DNS resolution.",
+            "back": "Root server → TLD server (like .org) → the domain's authoritative server, which returns the IP."
+          },
+          {
+            "front": "What does a DNS record's TTL control?",
+            "back": "Time-to-live: how many seconds caches may reuse the answer before asking again."
+          },
+          {
+            "front": "Why did Twitter seem down during the 2016 Dyn attack?",
+            "back": "Its DNS host was flooded, so names stopped resolving — healthy servers became unreachable."
+          }
+        ]
+      },
+      {
+        "id": "secrets-in-public",
+        "title": "Secrets in Public",
+        "summary": "How strangers agree on secrets over wires anyone can tap — and what the padlock really promises.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Postcards on a Shared Wire",
+            "body": "Your packets cross wires and routers owned by strangers — the café's Wi-Fi, your ISP, backbone carriers, foreign networks. Early web traffic, plain HTTP, traveled like a postcard: any hop along the way could read your passwords and messages. This lesson is about the mathematics that sealed the envelope.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Key-Sharing Trap",
+            "body": "Symmetric encryption is ancient and fast: one shared key both locks and unlocks a message, and AES, today's standard, works this way. But there's a trap. To share a secret key with a distant website, you would have to send it — across the very wires you don't trust. For centuries the only fix was couriers and locked briefcases.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Agreeing in Plain Sight",
+            "body": "In 1976, Whitfield Diffie and Martin Hellman published a result that seemed impossible: two strangers can exchange math over a public channel and each end up with the same secret number — while an eavesdropper who heard everything cannot compute it. The trick relies on operations easy to perform but brutally hard to reverse.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "truefalse",
+            "statement": "With Diffie–Hellman, two strangers can create a shared secret even if an eavesdropper records every message between them.",
+            "answer": true,
+            "explain": "That is the 1976 breakthrough. Each side mixes a private number into the public exchange; recovering the shared secret from what traveled the wire is computationally infeasible for the eavesdropper."
+          },
+          {
+            "type": "concept",
+            "title": "Two Keys, One Lock: RSA",
+            "body": "In 1977, Rivest, Shamir, and Adleman at MIT extended the idea with RSA: every user gets a key pair. The public key locks; only the matching private key unlocks. Security rests on a lopsided fact — multiplying two enormous primes is instant, but factoring their product back apart would take computers longer than lifetimes.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "'Public key' sounds like a contradiction. How can a key be safe to publish?",
+            "answer": "Because the pair splits the job. The public key can only lock messages — it cannot unlock anything. Publishing it is like handing out open padlocks: anyone can snap one shut on a box for you, but only you hold the key that opens them."
+          },
+          {
+            "type": "concept",
+            "title": "The TLS Handshake",
+            "body": "When you open an https:// site, your browser and the server perform a rapid ritual called the TLS handshake. Hello, here are the ciphers I speak. Hello back — here is my certificate; let's run a Diffie–Hellman-style key agreement. Within about one round trip they hold fresh shared keys, and everything after travels encrypted.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "After using public-key math to agree on keys, why does HTTPS switch to symmetric encryption for the actual page data?",
+            "choices": [
+              "Symmetric ciphers like AES are far faster, so public-key math is used only to establish the shared key",
+              "Symmetric encryption is mathematically unbreakable, while public-key encryption is not",
+              "Public-key encryption only works on text, so images would be left unprotected",
+              "Browsers are forbidden from using public-key encryption after the handshake"
+            ],
+            "answer": 0,
+            "explain": "Public-key operations are thousands of times slower than AES. TLS spends the expensive math once — to prove identity and agree on session keys — then encrypts the torrent of page data with a fast symmetric cipher."
+          },
+          {
+            "type": "concept",
+            "title": "Who Are You, Really?",
+            "body": "Encryption without identity is a sealed envelope handed to a stranger. So servers present certificates: signed statements that this public key belongs to this domain, vouched for by a certificate authority your browser already trusts. Your browser checks the signature in microseconds. That's the padlock: encrypted, and to the right party.",
+            "art": "shield"
+          },
+          {
+            "type": "quote",
+            "text": "Security is a process, not a product.",
+            "by": "Bruce Schneier"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A padlock in the address bar proves a website is honest and safe to trust.",
+            "answer": false,
+            "explain": "The padlock proves two things only: the connection is encrypted, and it really terminates at the domain in the address bar. A phishing site can hold a valid certificate for its own look-alike domain — check the name, not just the lock."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Plain HTTP is a postcard: every network between you and the server can read it.",
+              "Diffie and Hellman (1976) showed strangers can agree on a secret in public; RSA (1977) added public keys that lock and private keys that unlock.",
+              "TLS uses slow public-key math once per connection — identity plus key agreement — then fast symmetric encryption like AES for the data.",
+              "The padlock means encrypted, to the domain shown. Certificates vouch for identity, never for honesty."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What problem does Diffie–Hellman (1976) solve?",
+            "back": "Two strangers agree on a shared secret over a public channel, even if an eavesdropper records everything."
+          },
+          {
+            "front": "In RSA, what can the public key do — and not do?",
+            "back": "It can lock (encrypt) messages but cannot unlock them; only the matching private key decrypts."
+          },
+          {
+            "front": "Why does TLS switch to symmetric encryption after the handshake?",
+            "back": "Symmetric ciphers like AES are vastly faster; public-key math runs once, to prove identity and agree on session keys."
+          },
+          {
+            "front": "What does the browser padlock actually guarantee?",
+            "back": "Encryption, plus that the connection ends at the domain shown — not that the site itself is honest."
+          }
+        ]
+      },
+      {
+        "id": "loading-a-page",
+        "title": "Loading a Page",
+        "summary": "The full half-second itinerary: handshakes, requests, rendering — and why distance still matters.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Press Enter",
+            "body": "You now hold every piece: packets, names, encryption. Time to run the whole play in order. When you press Enter, your browser launches a tightly choreographed sequence — parse, resolve, connect, secure, request, render — and most of it finishes before your finger leaves the key. Let's slow that half-second down.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Reading the Address",
+            "body": "First the browser parses the URL. The https:// scheme says which protocol to speak — HTTP secured by TLS. The host, en.wikipedia.org, names the server DNS must resolve. The path, /wiki/Internet, names which page to request from that host. Three parts, three jobs: how to talk, whom to talk to, what to ask for.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Three Handshakes Deep",
+            "body": "Before one byte of the page moves, there are introductions. DNS turns the name into an IP address. Then TCP's three-way handshake — SYN, SYN-ACK, ACK — establishes a reliable connection. Then the TLS handshake agrees on encryption keys. Each step costs at least one round trip, and they must happen in strict order.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which step must happen first when loading https://en.wikipedia.org?",
+            "choices": [
+              "The DNS lookup — you can't connect to a server before you know its IP address",
+              "The TLS handshake, so that the DNS lookup itself is encrypted",
+              "The HTTP request — the browser asks for the page, then works out the address",
+              "Downloading the images, since they are the largest files"
+            ],
+            "answer": 0,
+            "explain": "It's a dependency chain: DNS supplies the IP address that TCP needs to connect, TCP supplies the connection that TLS secures, and only then can the encrypted HTTP request be sent."
+          },
+          {
+            "type": "concept",
+            "title": "The Ask and the Answer",
+            "body": "Now the browser finally speaks HTTP: GET /wiki/Internet, plus headers describing what it accepts. The server replies with a status code — 200 for success, the famous 404 for not found — its own headers, and the payload: the page's HTML, usually compressed. One request, one response, and that text is the page's skeleton.",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The HTML has arrived — yet your browser immediately fires off dozens more requests. Why?",
+            "answer": "HTML is only the skeleton. As the browser parses it, it discovers references to stylesheets, scripts, fonts, and images — each a separate resource needing its own HTTP request. One press of Enter routinely triggers dozens of fetches."
+          },
+          {
+            "type": "concept",
+            "title": "From Text to Pixels",
+            "body": "Rendering turns text into a picture. The browser parses HTML into a tree of elements — the DOM — applies CSS rules to compute each element's style, calculates layout (every box's size and position), then paints pixels. JavaScript can rewrite the tree at any moment, and the later stages re-run as new resources arrive.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Your browser shows nothing at all until every image on the page has finished downloading.",
+            "answer": false,
+            "explain": "Browsers render progressively: text and layout appear as soon as the HTML and CSS allow, and images pop in as they arrive. That's why you can start reading an article while its photos are still loading."
+          },
+          {
+            "type": "concept",
+            "title": "The Speed of Light Is a Budget",
+            "body": "Light in optical fiber covers about 200,000 kilometers per second — a third slower than in vacuum. New York to Sydney and back is roughly 32,000 kilometers: at least 160 milliseconds before any reply can possibly arrive. Stack the DNS, TCP, and TLS round trips on top, and a distant site feels slow on any connection.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Move the Server, Not the Light",
+            "body": "You can't speed up light, but you can shorten the trip. Content delivery networks — Akamai, Cloudflare, and others — keep copies of popular files on thousands of servers placed near users, and big sites run caching data centers of their own. Your request may be answered from your own city, cutting each round trip to a few milliseconds.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You upgrade to gigabit internet, but a site hosted in Australia still feels sluggish. What's the likeliest reason?",
+            "choices": [
+              "Bandwidth doesn't shorten round trips — distance sets a latency floor, and handshakes multiply it",
+              "A gigabit connection is still too little bandwidth for a modern web page",
+              "Pages from other countries must be translated between network standards",
+              "Fiber-optic connections don't work over undersea cables"
+            ],
+            "answer": 0,
+            "explain": "Bandwidth is how much data moves per second; latency is how long each round trip takes. A page load needs many round trips — DNS, TCP, TLS, then requests — so a 160-millisecond ocean crossing dominates. That's exactly the problem CDNs attack."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The chain runs in strict order: parse the URL → DNS lookup → TCP handshake → TLS handshake → HTTP request and response.",
+              "HTML is a skeleton; parsing it triggers dozens more requests for CSS, JavaScript, fonts, and images.",
+              "The browser builds the DOM, applies styles, computes layout, and paints — progressively, as resources arrive.",
+              "Bandwidth is volume, latency is distance: round trips at light speed set the floor, and CDNs cut it by moving copies near you."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Put in order: TLS handshake, DNS lookup, HTTP request, TCP handshake.",
+            "back": "DNS lookup → TCP handshake → TLS handshake → HTTP request. Each step depends on the one before it."
+          },
+          {
+            "front": "Why does one page load trigger dozens of requests?",
+            "back": "The HTML skeleton references CSS, JavaScript, fonts, and images — each fetched with its own request."
+          },
+          {
+            "front": "Latency vs bandwidth — what's the difference?",
+            "back": "Bandwidth is how much data per second; latency is how long a round trip takes. Distance sets a latency floor."
+          },
+          {
+            "front": "How do CDNs make far-away sites feel close?",
+            "back": "They cache copies on servers near users, so requests are answered from a nearby city instead of across an ocean."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "immune-system",
+    "title": "The Immune System",
+    "tagline": "How your inner army learns, remembers, and misfires",
+    "category": "Biology",
+    "description": "Meet the army inside you: how it detects and destroys invaders, remembers them for decades, and what happens when it overreacts, attacks you, or gets recruited by medicine.",
+    "lessons": [
+      {
+        "id": "two-lines-of-defense",
+        "title": "Two Lines of Defense",
+        "summary": "Barriers, first responders, and specialists — and why feeling sick is mostly your own defense at work.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Army Inside You",
+            "body": "Right now, trillions of immune cells are patrolling your body — and most invaders never even meet them. Your defense runs in two lines: fast, generic first responders, and slow, precise specialists. This lesson walks the walls with both, and ends with a twist about why you feel sick at all.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Walls Before Warriors",
+            "body": "Before any cell fights, physics and chemistry do. Your skin is a dry, acidic, constantly shedding wall. Your airways trap microbes in mucus and sweep them out on beating cilia. Your stomach bathes anything you swallow in acid around pH 1.5 to 2, killing most microbes that hitch a ride on food.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Most pathogens you encounter today will never trigger a single immune cell. Why not?",
+            "answer": "They never get in. Skin, mucus, cilia, stomach acid, and tears stop the vast majority of microbes before any cell has to fight. The cheapest battle is the one your barriers cancel."
+          },
+          {
+            "type": "concept",
+            "title": "First Responders",
+            "body": "Breach the wall — a splinter, a cut — and innate immunity arrives in minutes. Macrophages ('big eaters') engulf and digest microbes whole. Neutrophils, your most numerous white blood cells, swarm the site in huge numbers. These fighters are fast but generic: they attack anything foreign, no questions asked.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Inflammation Is Logistics",
+            "body": "The redness, heat, and swelling around a cut are not damage — they are supply lines. Injured tissue and sentinel cells release signals that widen local blood vessels and make them leaky, so fluid, clotting factors, and fresh white blood cells pour in. What looks like the wound getting worse is reinforcements arriving.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A cut on your finger turns red, warm, and swollen. What is mainly happening?",
+            "choices": [
+              "Bacteria are dissolving the tissue around the cut",
+              "Blood vessels have widened and turned leaky, rushing defenders to the site",
+              "The skin is having an allergic reaction to the air",
+              "The wound is infected and healing has stopped"
+            ],
+            "answer": 1,
+            "explain": "That is inflammation: signals from damaged tissue widen and loosen nearby vessels so white blood cells and repair materials flood in. The heat and redness are extra blood flow, not destruction."
+          },
+          {
+            "type": "concept",
+            "title": "Fever Is a Tactic",
+            "body": "A fever is not your body losing control. Your hypothalamus deliberately raises its temperature set point, like turning up a thermostat. A few extra degrees speed up immune cell production and signaling while stressing many heat-sensitive pathogens. That is why you shiver: your body is climbing to the new target.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A fever means the infection has overwhelmed your body's temperature control.",
+            "answer": false,
+            "explain": "It is the opposite. Your hypothalamus raises the set point on purpose — a strategy that speeds your defenses and slows many microbes. The control system is working, not broken."
+          },
+          {
+            "type": "concept",
+            "title": "The Specialists",
+            "body": "If invaders persist, adaptive immunity takes over: T cells and B cells, each built to recognize one specific molecular shape. B cells release antibodies that tag their exact target; killer T cells destroy infected cells one by one. The trade-off is speed — this precision force needs about a week to mobilize against a brand-new enemy.",
+            "art": "target"
+          },
+          {
+            "type": "example",
+            "title": "Anatomy of an Infection",
+            "body": "Day 1: a new virus slips past your barriers and starts copying itself. Days 1 to 4: innate cells hold the line while you ache and run a fever. Around days 5 to 7: adaptive forces arrive in strength — antibodies tag the virus, killer T cells clear infected cells — and you turn the corner. The slow first response is why a new infection takes about a week to beat.",
+            "art": "hourglass"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Sore muscles, fever, fatigue, a streaming nose. How much of that is the virus — and how much is you?",
+            "answer": "Mostly you. Fever is your own thermostat reset, aches come from your own inflammatory signals, mucus is your barrier flushing itself, and fatigue is energy being diverted to the fight. Feeling sick is largely the sound of your defense working."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Barriers — skin, mucus and cilia, stomach acid — stop most invaders before any cell has to fight",
+              "Innate immunity is fast but generic: macrophages and neutrophils attack anything foreign within minutes",
+              "Inflammation and fever are deliberate strategies, not malfunctions",
+              "Adaptive immunity (T and B cells) is precise but needs about a week on first exposure",
+              "Many sick-day symptoms are your own response, not direct damage by the pathogen"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Name three barrier defenses that stop pathogens before any immune cell engages",
+            "back": "Skin, mucus swept by cilia, and stomach acid (tears count too) — most microbes never get past them"
+          },
+          {
+            "front": "Innate vs adaptive immunity — the core trade-off?",
+            "back": "Innate is fast (minutes) but generic; adaptive (T and B cells) is precise but needs about a week on first exposure"
+          },
+          {
+            "front": "Why does a fresh cut turn red, hot, and swollen?",
+            "back": "Inflammation: vessels widen and leak so white blood cells and repair factors flood in — logistics, not damage"
+          },
+          {
+            "front": "Is fever a malfunction?",
+            "back": "No — the hypothalamus deliberately raises the body's set point, which speeds immune reactions and stresses many pathogens"
+          }
+        ]
+      },
+      {
+        "id": "learning-and-memory",
+        "title": "Learning and Memory",
+        "summary": "Clonal selection, antibodies as shape-matchers, the memory curve — and how flu keeps slipping past it.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The System That Learns",
+            "body": "Beat an infection once and your body files a record so precise that the same germ may never make you sick again. This lesson covers the biology of that memory: antibodies that match shapes, cells selected like winning lottery tickets, and the brutal school that teaches your army not to attack you.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "Antibodies Match Shapes",
+            "body": "An antibody is a Y-shaped protein whose tips fit one molecular shape — one antigen — the way a key fits a lock. Binding does not dissolve the germ; it tags it for destruction, blocks it from entering your cells, and clumps invaders together for macrophages to swallow. Precision is the whole point: one antibody, one target.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does an antibody actually do when it meets its matching virus?",
+            "choices": [
+              "Dissolves the virus like a chemical acid",
+              "Binds its specific shape, tagging and blocking it so other defenses can finish the job",
+              "Kills any nearby germ, matching or not",
+              "Absorbs the virus and digests it"
+            ],
+            "answer": 1,
+            "explain": "Antibodies are shape-matchers, not weapons. By binding one specific antigen they neutralize it and flag it — the actual killing is done by the cells and proteins they recruit."
+          },
+          {
+            "type": "concept",
+            "title": "Clonal Selection",
+            "body": "How do you make a key for a lock you have never seen? Frank Macfarlane Burnet's answer (1957): you don't. Your body pre-builds millions of B cells, each carrying a different, randomly generated receptor. When a germ arrives, the few cells that happen to match it are selected and multiply into an army of clones. The germ picks its own enemy.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Memory Curve",
+            "body": "First exposure: antibodies trickle out over one to two weeks while you get sick — the primary response. But some selected clones persist as memory cells for years or decades. Second exposure: memory cells erupt within days, making antibodies faster, in far greater numbers, and with better fit. This secondary response often wins before you feel anything.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Your immune system designs a brand-new antibody from scratch each time it meets a new germ.",
+            "answer": false,
+            "explain": "It selects rather than designs. The matching receptors already exist among millions of randomly pre-built B cells; infection simply finds the winners and multiplies them — Burnet's clonal selection."
+          },
+          {
+            "type": "example",
+            "title": "Chickenpox: One and Done",
+            "body": "Before the vaccine, nearly every child caught chickenpox — and almost nobody caught it twice. Memory B and T cells from that childhood battle still patrol decades later, crushing re-exposures before symptoms start. Measles memory is similarly long-lived. When a virus cannot change its appearance, one thorough lesson lasts a lifetime.",
+            "art": "mirror"
+          },
+          {
+            "type": "concept",
+            "title": "The Flu's Disguise Kit",
+            "body": "So why does flu return every winter? Influenza keeps mutating its surface proteins. Drift: small typos accumulate each year until your old antibodies fit poorly — hence updated annual shots. Shift: flu strains swap whole gene segments, sometimes with pig or bird viruses, creating a surface no one's memory recognizes. Shifts are how pandemics like 1918 begin.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "One childhood measles series can protect you for life, yet flu vaccination is annual. What explains the difference?",
+            "answer": "The target. Measles cannot change its surface much without breaking, so your memory stays sharp for decades. Flu redraws its surface every year (drift) and occasionally swaps it wholesale (shift), so old memory goes stale and the vaccine must be refreshed."
+          },
+          {
+            "type": "concept",
+            "title": "School for T Cells",
+            "body": "Random receptors mean some T cells inevitably match your own tissues. So the thymus runs a brutal exam: developing T cells are shown the body's own molecules, and those that bind self are ordered to die. Most never graduate. The survivors can strike invaders while tolerating you — but a few self-reactive cells slip through, a loose end for Lesson 4.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Most T cells your body makes are destroyed before they ever fight an infection.",
+            "answer": true,
+            "explain": "True. The thymus deletes the large majority of developing T cells — chiefly those that bind your own tissues, plus those that bind nothing useful. Harsh screening is the price of an army that does not attack its host."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Antibodies are Y-shaped shape-matchers: one antibody binds one antigen and tags it for destruction",
+              "Clonal selection (Burnet, 1957): matching cells already exist and are multiplied, not designed on demand",
+              "The primary response is slow; the memory-driven secondary response often wins before symptoms appear",
+              "Flu evades memory through antigenic drift (yearly typos) and shift (wholesale swaps that risk pandemics)",
+              "Thymic education deletes most self-reactive T cells — the escapees will matter in Lesson 4"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Clonal selection in one sentence (Burnet, 1957)",
+            "back": "Millions of pre-built B cells carry random receptors; a germ selects its matches, which multiply into clones — selection, not design"
+          },
+          {
+            "front": "Primary vs secondary immune response?",
+            "back": "Primary: a slow trickle over 1–2 weeks while you are sick. Secondary: memory cells erupt within days — often over before symptoms start"
+          },
+          {
+            "front": "Why does flu come back every year despite immunity?",
+            "back": "Antigenic drift slowly changes flu's surface until old antibodies fit poorly; rarer shifts swap gene segments wholesale, risking pandemics"
+          },
+          {
+            "front": "How does the immune system avoid attacking your own body?",
+            "back": "Thymic education: developing T cells that bind self-molecules are deleted; the few escapees set the stage for autoimmunity"
+          }
+        ]
+      },
+      {
+        "id": "vaccines",
+        "title": "Vaccines: Training Without the War",
+        "summary": "From variolation to mRNA: showing the immune system the wanted poster without the crime — and eradicating smallpox.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Wanted Poster",
+            "body": "Everything in Lesson 2 points to a trick: if memory forms after infection, could you form the memory without the disease? Vaccination shows your immune system the wanted poster without letting the criminal loose. It may be medicine's greatest idea — and it began centuries before anyone knew cells existed.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Variolation, the Risky Draft",
+            "body": "Centuries before vaccines, practitioners in China, India, Africa, and the Ottoman Empire deliberately infected people with material from smallpox scabs — variolation. It usually caused mild disease and lasting immunity, but roughly 1 to 2 percent of patients died, and the freshly infected could spread real smallpox. Better odds than the roughly 30 percent death rate of natural smallpox — but still a gamble.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Variolation used actual smallpox material, so it sometimes caused the full deadly disease.",
+            "answer": true,
+            "explain": "True — that was its fatal flaw. Around 1 to 2 percent of variolated patients died of the smallpox it gave them, and they were contagious while infected. The search for a safer trigger led to Jenner."
+          },
+          {
+            "type": "example",
+            "title": "Jenner's Cowpox Bet",
+            "body": "English milkmaids who caught mild cowpox seemed immune to smallpox. In 1796, Edward Jenner inoculated eight-year-old James Phipps with cowpox from a milkmaid's sore, then later exposed him to smallpox. Phipps stayed healthy: a related but harmless virus had trained his immune system. 'Vaccine' comes from vacca — Latin for cow.",
+            "art": "bridge"
+          },
+          {
+            "type": "quote",
+            "text": "The annihilation of the smallpox, the most dreadful scourge of the human species, must be the final result of this practice.",
+            "by": "Edward Jenner, 1801"
+          },
+          {
+            "type": "concept",
+            "title": "Four Ways to Print the Poster",
+            "body": "Modern vaccines are variations on Jenner's theme. Attenuated: a live but weakened germ (measles, chickenpox) — strong, lasting memory. Inactivated: the germ, killed (polio shot, flu shot). Subunit: just a signature piece of the germ (hepatitis B, HPV). mRNA: brief instructions your own cells use to build that piece themselves (COVID-19). All show the shape; none commit the crime.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does an mRNA vaccine actually put into your body?",
+            "choices": [
+              "A weakened live virus that multiplies slowly",
+              "Ready-made antibodies against the virus",
+              "Short-lived genetic instructions your cells use to build one recognizable viral protein",
+              "The whole virus, killed so it cannot multiply"
+            ],
+            "answer": 2,
+            "explain": "mRNA vaccines contain no virus at all — just temporary instructions for one viral protein. Your cells display the piece, your immune system files the wanted poster, and the mRNA degrades within days."
+          },
+          {
+            "type": "concept",
+            "title": "Herd Immunity Is Arithmetic",
+            "body": "Vaccination protects the unvaccinated too — if enough people are immune, chains of transmission break. The threshold depends on contagiousness, measured by R0: how many people one case infects in a defenseless population. Roughly 1 - 1/R0 of the population must be immune. Flu (R0 near 1.5) needs about a third. Measles (R0 of 12 to 18) needs about 95 percent — one of the highest bars in medicine.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Stopping measles outbreaks takes roughly 95 percent immunity. Why so much higher than for flu?",
+            "answer": "Contagiousness. One measles case in a defenseless crowd infects 12 to 18 others, so by 1 - 1/R0 nearly everyone must be immune to starve it. A flu case infects only one or two, so a far smaller immune share breaks its chains."
+          },
+          {
+            "type": "example",
+            "title": "Target Zero: Smallpox",
+            "body": "Smallpox killed roughly 300 million people in the 20th century alone. A WHO campaign combined mass vaccination with ring vaccination — encircling every outbreak with immunity — until the virus had nowhere left to go. The last natural case was Ali Maow Maalin in Somalia, 1977. In 1980 the WHO declared smallpox eradicated: a human disease driven to zero.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Smallpox remains the only human infectious disease ever eradicated.",
+            "answer": true,
+            "explain": "True so far. Smallpox had helpful features: no animal reservoir, unmistakable symptoms, and a vaccine giving strong, lasting immunity. Polio is the closest challenger — wild cases are down more than 99 percent since 1988."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Variolation traded a 1–2 percent death risk for immunity; Jenner's 1796 cowpox vaccine removed the smallpox gamble",
+              "Every vaccine shows the immune system a wanted poster — attenuated, inactivated, subunit, or mRNA — without the crime",
+              "Herd immunity thresholds follow contagiousness: roughly 1 - 1/R0, so measles needs about 95 percent coverage",
+              "Smallpox eradication, declared by the WHO in 1980, is the crowning proof that vaccination can drive a disease to zero"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Jenner do in 1796, and why did it work?",
+            "back": "He inoculated James Phipps with cowpox; the related but harmless virus trained an immune memory that also recognized smallpox"
+          },
+          {
+            "front": "The four main vaccine platforms?",
+            "back": "Attenuated (weakened live), inactivated (killed), subunit (a signature piece), mRNA (instructions to build a piece) — all safe previews of the germ"
+          },
+          {
+            "front": "Herd immunity threshold formula — and the measles number?",
+            "back": "Roughly 1 - 1/R0 of the population must be immune; with R0 of 12–18, measles needs about 95 percent coverage"
+          },
+          {
+            "front": "Why is smallpox eradication (1980) vaccination's crowning proof?",
+            "back": "Mass plus ring vaccination drove a virus that killed some 300 million people in the 1900s to zero — the only human disease eradicated"
+          }
+        ]
+      },
+      {
+        "id": "when-it-misfires",
+        "title": "When It Misfires",
+        "summary": "Allergies, autoimmunity, antibiotic misuse — and recruiting the immune army to fight cancer.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Friendly Fire",
+            "body": "An army this powerful is dangerous to its own country. This final lesson tours the failure modes — full-scale attacks on peanut proteins, on your own pancreas — plus two modern plot twists: drugs people take against the wrong enemy entirely, and drugs that recruit your immune system to hunt cancer.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Allergies: False Alarms",
+            "body": "An allergy is your immune system mounting a full assault on something harmless — peanut protein, pollen, cat dander. IgE antibodies against the substance sit primed on mast cells; on re-exposure, those cells dump histamine, driving itching, swelling, and sneezing. Anaphylaxis is that alarm at maximum volume, body-wide — dangerous precisely because the response is so strong.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is a peanut allergy, at the cellular level?",
+            "choices": [
+              "A weak immune system letting peanut toxins through",
+              "IgE antibodies and mast cells treating a harmless peanut protein as a dangerous invader",
+              "A digestive enzyme deficiency, like lactose intolerance",
+              "Peanut proteins directly poisoning sensitive people"
+            ],
+            "answer": 1,
+            "explain": "Allergy is over-reaction, not weakness — a forceful, healthy-looking immune attack aimed at the wrong target. Keep that in mind whenever you hear that 'boosting' immunity is automatically good."
+          },
+          {
+            "type": "concept",
+            "title": "The Old-Friends Hypothesis",
+            "body": "Why are allergies rising in wealthy countries? One idea — the hygiene or 'old friends' hypothesis — says immune systems now train on too little early-life exposure to the mostly harmless microbes humans evolved alongside, and so misfire at trivia. Farm children do get fewer allergies, but the evidence is mixed: this is a hypothesis, not settled fact — and it concerns microbial exposure, not skipping soap.",
+            "art": "compass"
+          },
+          {
+            "type": "example",
+            "title": "The LEAP Reversal",
+            "body": "For years, parents were told to keep peanuts away from at-risk infants. The LEAP trial (2015) tested the opposite: high-risk babies fed peanut products early and regularly were about 80 percent less likely to develop peanut allergy than avoiders. Guidelines reversed — early exposure teaches tolerance. A rare, clean case of a trial overturning official advice.",
+            "art": "anchor"
+          },
+          {
+            "type": "truefalse",
+            "statement": "To protect a high-risk infant from peanut allergy, peanuts should be kept out of the diet for as long as possible.",
+            "answer": false,
+            "explain": "The LEAP trial reversed exactly this advice: early, regular peanut exposure cut allergy risk by about 80 percent in high-risk infants. For a high-risk baby, the question for the pediatrician is how to introduce peanut safely, not whether."
+          },
+          {
+            "type": "concept",
+            "title": "Autoimmunity: The Escapees",
+            "body": "Remember the self-reactive T cells that slipped through thymic screening? When they activate, the army turns on its own country. In type 1 diabetes, immune cells destroy the pancreas's insulin-producing beta cells. In multiple sclerosis, they strip the myelin insulation from nerves. Treatment is a bind: damping the attack also damps real defense.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "People with type 1 diabetes must inject insulin for life. What destroyed their ability to make it?",
+            "answer": "Their own immune system. Self-reactive cells — escapees of thymic education — killed the pancreatic beta cells that produce insulin. Type 1 diabetes is not caused by eating too much sugar; it is friendly fire."
+          },
+          {
+            "type": "concept",
+            "title": "Antibiotics: The Wrong Battlefield",
+            "body": "Antibiotics kill bacteria by breaking machinery only bacteria have — cell walls, bacterial ribosomes. Viruses have none of that machinery, so antibiotics do nothing against colds or flu. Worse, every needless course wipes out susceptible bacteria in and on you and hands the resistant few an open field. Resistance is not your body adapting — it is bacterial evolution on fast-forward.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You have had a nasty cold — a virus — for three days. Will antibiotics help you recover?",
+            "choices": [
+              "Yes — antibiotics fight all serious infections",
+              "Yes, but only a strong broad-spectrum one",
+              "No — colds are viral, and antibiotics only work on bacteria",
+              "No, but take them anyway to stop the cold 'turning bacterial'"
+            ],
+            "answer": 2,
+            "explain": "Antibiotics break bacteria-only machinery and do nothing to viruses. Taking them 'just in case' is not routine prevention either — it mostly breeds resistant bacteria: real cost, no benefit for a cold."
+          },
+          {
+            "type": "concept",
+            "title": "Releasing the Brakes on Cancer",
+            "body": "Your T cells carry built-in brakes — checkpoints — that prevent runaway attacks. Some cancers survive by pressing those brakes. Checkpoint-inhibitor drugs block that trick, freeing T cells to strike tumors; in some advanced melanomas the results were unprecedented. James Allison and Tasuku Honjo shared the 2018 Nobel Prize for the discovery: medicine recruiting the army instead of replacing it.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Since immune activity fights disease, anything that 'boosts your immune system' makes you healthier.",
+            "answer": false,
+            "explain": "This whole lesson argues otherwise: allergies, anaphylaxis, and autoimmune disease ARE immune activity turned up — at the wrong targets. You want training and regulation, not raw volume. Vaccines, sleep, and decent nutrition support that; 'immune-boosting' supplements largely do not."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Allergy is a forceful immune attack on something harmless — IgE and mast cells, not weakness",
+              "LEAP (2015): early peanut exposure cut allergy risk by about 80 percent, reversing avoidance advice",
+              "Autoimmunity is thymic escapees attacking self: beta cells in type 1 diabetes, myelin in MS",
+              "Antibiotics kill only bacteria; using them on viral illness breeds resistance for no benefit",
+              "Checkpoint inhibitors (Allison and Honjo, 2018 Nobel) release T cell brakes to fight cancer"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is an allergy, mechanically?",
+            "back": "IgE antibodies prime mast cells against a harmless protein; re-exposure dumps histamine — a forceful attack on the wrong target"
+          },
+          {
+            "front": "What did the 2015 LEAP trial show about peanut allergy?",
+            "back": "Early, regular peanut exposure in high-risk infants cut allergy risk by about 80 percent — the opposite of the old avoidance advice"
+          },
+          {
+            "front": "Why don't antibiotics work on colds or flu?",
+            "back": "They break bacteria-only machinery (cell walls, bacterial ribosomes); viruses have neither — misuse just selects for resistant bacteria"
+          },
+          {
+            "front": "What do checkpoint inhibitors do?",
+            "back": "They block the brakes cancers press on T cells, freeing them to attack tumors — Allison and Honjo's 2018 Nobel-winning insight"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "money-in-history",
+    "title": "Money in History",
+    "tagline": "Five millennia of inventing, wrecking, and reinventing money",
+    "category": "History",
+    "description": "How humans invented money, debased it, and rebuilt it — from Mesopotamian clay ledgers and Lydian coins to Chinese paper, gold standards, and today's fiat. Five thousand years of value in four lessons.",
+    "lessons": [
+      {
+        "id": "before-coins",
+        "title": "Before Coins",
+        "summary": "The barter story economists told, the credit ledgers that actually came first, and the cattle, cowries, and salt that served as money.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Myth of Barter",
+            "body": "Every economics textbook opens with the same scene: villagers swapping chickens for pots until coins mercifully appear. It's tidy, logical — and, anthropologists say, it never happened. In this lesson you'll trace what actually came first: ledgers, debts, and social obligation, plus the occasional cow.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "The Story Economists Told",
+            "body": "Adam Smith spelled out barter's fatal flaw in 1776: the 'double coincidence of wants.' You have fish and need shoes — but the shoemaker hates fish. Money, the story goes, was invented to solve this. It's an elegant thought experiment. Smith just never pointed to a society that actually lived this way.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "What the Record Shows",
+            "body": "Anthropologist Caroline Humphrey put it bluntly: no example of a pure barter economy has ever been described. Instead, fieldwork finds neighbors running tabs — favors, gifts, and debts tracked in memory and custom. Barter mostly appears between strangers, or after a money system collapses.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why do scholars doubt the barter-origin story of money?",
+            "choices": [
+              "Barter was too efficient to ever need replacing",
+              "No society running purely on barter has ever been documented",
+              "Ancient people could not calculate exchange rates",
+              "Coins have been unearthed that predate all trade"
+            ],
+            "answer": 1,
+            "explain": "Smith's tale was a thought experiment, not history. Anthropologists like Caroline Humphrey found credit, gifts, and running tabs in the field — not chicken-for-pot swap meets."
+          },
+          {
+            "type": "concept",
+            "title": "Temple Ledgers of Mesopotamia",
+            "body": "Around 3000 BCE, scribes in Mesopotamian temples pressed cuneiform marks into clay: rations owed, barley advanced, debts due at harvest. Values were reckoned in silver shekels — yet silver rarely changed hands. Money began as an accounting standard on a ledger, some 2,400 years before the first coin.",
+            "art": "pyramid"
+          },
+          {
+            "type": "quote",
+            "text": "We did not begin with barter, discover money, and then eventually develop credit systems. It happened precisely the other way around.",
+            "by": "David Graeber, Debt: The First 5,000 Years (2011)"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Money was serving as a unit of account in Mesopotamia centuries before anyone struck a coin.",
+            "answer": true,
+            "explain": "Temple scribes were pricing goods in silver shekels around 3000 BCE, while the first coins appear in Lydia only around 600 BCE — a gap of roughly 2,400 years."
+          },
+          {
+            "type": "example",
+            "title": "Cattle, Cowries, and Salt",
+            "body": "Communities also used goods themselves as money: cattle in early Rome and East Africa, cowrie shells shipped from the Maldives to markets across Africa and Asia, salt bars in the Sahara. A good commodity money is durable, portable, and wanted by everyone — which is why a cow makes awkward small change.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your paycheck's name — 'salary' — preserves a commodity money. Which one?",
+            "answer": "Salt. The word comes from Latin salarium, a Roman soldier's allowance linked to sal, salt — money tied to the era's essential preservative. The word has outlived the commodity by two thousand years."
+          },
+          {
+            "type": "concept",
+            "title": "The Three Jobs of Money",
+            "body": "Whatever form it takes, money does three jobs. Medium of exchange: everyone accepts it, so you never need the double coincidence. Unit of account: it measures value, as shekels priced barley. Store of value: it holds worth until you spend it. When a money fails badly at one job, it starts to die.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Silver in Mesopotamian ledgers priced goods but rarely changed hands. Which function of money was it mainly performing?",
+            "choices": [
+              "Medium of exchange",
+              "Store of value",
+              "Unit of account"
+            ],
+            "answer": 2,
+            "explain": "Scribes used the silver shekel as a measuring stick for value — a unit of account. Actual payment was often barley, wool, or labor, tallied against the ledger."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The barter-origin story is a thought experiment; anthropology finds credit and obligation came first.",
+              "Mesopotamian temples kept debt ledgers priced in silver shekels by about 3000 BCE — money before coins.",
+              "Cattle, cowries, and salt served as commodity money; the word 'salary' remembers the salt.",
+              "Money's three functions: medium of exchange, unit of account, store of value."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did anthropologists find about pure barter economies?",
+            "back": "None has ever been documented. Everyday exchange ran on credit, favors, and obligation; barter shows up between strangers or after money collapses."
+          },
+          {
+            "front": "Where and when do the earliest money records appear?",
+            "back": "Mesopotamian temple accounts, c. 3000 BCE — debts and rations priced in silver shekels on cuneiform tablets, about 2,400 years before coins."
+          },
+          {
+            "front": "Why is your 'salary' a fossil of commodity money?",
+            "back": "It comes from Latin salarium, tied to sal (salt) — a Roman soldier's salt allowance. Salt, cattle, and cowrie shells all served as money."
+          },
+          {
+            "front": "Name money's three functions.",
+            "back": "Medium of exchange, unit of account, store of value. Mesopotamian silver worked mainly as a unit of account — a measure, not hand-to-hand cash."
+          }
+        ]
+      },
+      {
+        "id": "coins-and-debasement",
+        "title": "Coins and Debasement",
+        "summary": "Lydia invents the coin, Athens perfects the brand, Rome hollows out the denarius — and Gresham's law explains what happened next.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Metal Gets a Face",
+            "body": "Around 600 BCE in Lydia, in western Anatolia, lumps of precious metal got a royal stamp — and money you could count instead of weigh was born. In this lesson you'll watch coinage spread, then watch Rome quietly hollow out its own silver, and learn the law that predicts exactly what happens next.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "Lydia's Electrum",
+            "body": "Lydia's first coins were electrum — a natural gold-silver alloy washed down the Pactolus river — stamped with a lion's head. The stamp was the invention: the state guaranteed each coin's weight and purity. Around 550 BCE, King Croesus refined the idea, minting separate coins of pure gold and pure silver.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Athens' Owls",
+            "body": "Athens struck silver tetradrachms — Athena on one face, her owl on the other — from ore dug at the Laurion mines. The city kept the owls' purity famously constant for centuries, and they became the Mediterranean's trusted trade money, accepted from Egypt to Persia. Reliability was the brand.",
+            "art": "eye"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was the real innovation of Lydia's first coins?",
+            "choices": [
+              "They were the first use of gold and silver in trade",
+              "A state stamp guaranteed each piece's weight and purity",
+              "They were the first money of any kind",
+              "They could be redeemed for goods at the royal palace"
+            ],
+            "answer": 1,
+            "explain": "Precious metal had been traded by weight for millennia, and ledger money is older still. The stamp meant you could count coins and trust them, instead of weighing and testing metal at every deal."
+          },
+          {
+            "type": "concept",
+            "title": "The Denarius Slides",
+            "body": "Rome's silver denarius began nearly pure — roughly 95 to 98 percent silver. Nero clipped that to about 93 percent in 64 CE to stretch revenue. Each crisis invited another shave: near 50 percent under Septimius Severus by the early 200s, and by the 270s the coin was bronze wearing a thin silver wash.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Roman emperors debased the denarius mainly by striking fewer coins each year.",
+            "answer": false,
+            "explain": "The opposite: they cut the silver in each coin and added base metal, so the same bullion struck more coins — a hidden tax that paid the armies today and fueled inflation tomorrow."
+          },
+          {
+            "type": "example",
+            "title": "The Third-Century Crisis",
+            "body": "Between 235 and 284 CE, Rome burned through dozens of emperors, each buying the legions' loyalty with freshly debased coin. As silver content collapsed, prices climbed relentlessly. Diocletian's Edict on Maximum Prices (301 CE) tried to outlaw inflation by decree; goods simply vanished from the markets.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You're a third-century emperor who must double the army's pay without new taxes. What's the move — and its price?",
+            "answer": "Melt the coinage and restrike it with less silver per coin: same bullion, twice the coins. It works once. Repeat it, and prices chase the debasement while trust in your money drains away."
+          },
+          {
+            "type": "concept",
+            "title": "Gresham's Law",
+            "body": "'Bad money drives out good' — but only under one condition: rules forcing both to be accepted at the same face value. Hand people a debased denarius and a pure old one, legally equal, and they'll spend the bad and stash the good. Soon only bad money circulates. No forced equivalence, no Gresham.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "When does Gresham's law — bad money drives out good — actually operate?",
+            "choices": [
+              "Whenever two currencies circulate side by side",
+              "When legal tender rules force debased and full-bodied coins to trade at equal face value",
+              "Only when the bad money is counterfeit",
+              "Whenever a government mints in two different metals"
+            ],
+            "answer": 1,
+            "explain": "Without a fixed legal rate, good money simply commands a premium and both keep circulating. The forced equivalence is what makes hoarding the good coin and spending the bad one the smart move."
+          },
+          {
+            "type": "example",
+            "title": "Hoards Tell the Story",
+            "body": "Archaeology confirms the theory: buried Roman coin hoards from the debasement era are rich in older, high-silver denarii — exactly the coins that vanished from daily circulation. Savers picked out the good coins and put them in the ground, leaving the silver-washed bronze to do the shopping.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Given a debased coin and a pure coin of equal face value, Gresham's law predicts you'll spend the pure one first.",
+            "answer": false,
+            "explain": "You'll spend the debased one and hoard the pure — its metal is worth more than its face. That's why Rome's good coins ended up in buried hoards while the bad ones circulated."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Lydia's stamped electrum (c. 600 BCE) made metal countable; Croesus split it into pure gold and silver coins.",
+              "Athens' owls ruled Mediterranean trade for centuries because their purity never wavered.",
+              "The denarius fell from roughly 95-98% silver to a silver wash by the 270s CE; inflation followed.",
+              "Gresham's law: when law forces equal face values, bad money circulates and good money hides."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What made Lydia's stamped lumps (c. 600 BCE) the first true coins?",
+            "back": "The state's stamp guaranteed weight and purity, so traders could count coins instead of weighing and testing metal at every exchange."
+          },
+          {
+            "front": "Trace the denarius's silver content over time.",
+            "back": "Roughly 95-98% silver at introduction, cut by Nero in 64 CE, near 50% by the early 200s, and down to a thin silver wash over bronze by the 270s CE."
+          },
+          {
+            "front": "State Gresham's law — with its necessary condition.",
+            "back": "When law forces good and bad money to trade at the same face value, people spend the debased coins and hoard the good: bad money drives out good."
+          },
+          {
+            "front": "What followed Rome's third-century debasement?",
+            "back": "Persistent inflation. Diocletian's Edict on Maximum Prices (301 CE) tried to cap prices by decree — and goods simply vanished from markets."
+          }
+        ]
+      },
+      {
+        "id": "paper-and-banks",
+        "title": "Paper and Banks",
+        "summary": "China prints the first paper money, London goldsmiths invent the banknote, the Bank of England is born, and John Law shows how paper can burn.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Money Becomes a Promise",
+            "body": "A coin carries its value in metal. A banknote carries a promise — and promises weigh nothing. In this lesson you'll watch China print the world's first paper money, a Venetian traveler struggle to believe it, London goldsmiths invent the banknote, and a Scottish gambler blow up France with one.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Jiaozi of Song China",
+            "body": "In Sichuan, the coinage was iron — a large purchase meant carting metal by the wheelbarrow. Merchants began taking deposits and circulating paper receipts instead. In 1024 the Song government took the business over, printing jiaozi: the world's first state-issued paper money, backed by a cash reserve.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did paper money first take hold in Song-era Sichuan?",
+            "choices": [
+              "The region's iron coinage was too heavy for large trades",
+              "Paper had just been invented there",
+              "Gold and silver mines had run dry across China",
+              "An emperor banned metal money outright"
+            ],
+            "answer": 0,
+            "explain": "Sichuan ran on cumbersome iron coins, so paper receipts for deposited cash were a huge convenience. Paper itself was ancient in China by then — the innovation was monetary, not material."
+          },
+          {
+            "type": "concept",
+            "title": "Kublai's Pure Fiat",
+            "body": "Under Kublai Khan (r. 1260-1294), the Yuan dynasty went further: paper chao, printed on mulberry-bark paper, was the empire's money, and refusing it was a punishable offense. Backed at first by silk and silver, it later rested on the Khan's command alone — pure fiat, centuries before the West dared.",
+            "art": "network"
+          },
+          {
+            "type": "quote",
+            "text": "All these pieces of paper are issued with as much solemnity and authority as if they were of pure gold or silver.",
+            "by": "Marco Polo, The Travels, c. 1300"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Anyone holding Kublai Khan's paper chao could freely redeem it for gold on demand.",
+            "answer": false,
+            "explain": "The flow ran the other way: merchants had to surrender gold and silver to the mint in exchange for paper. The chao's value rested on the Khan's command, not on convertibility."
+          },
+          {
+            "type": "concept",
+            "title": "Goldsmiths' Receipts",
+            "body": "In 1600s London, merchants parked their gold with goldsmiths — the men with the strongboxes — and took paper receipts. Soon people were paying each other with the receipts and leaving the gold untouched. The receipt had become a banknote, and the goldsmiths noticed something: the gold almost never left.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "The Fractional Reserve Trick",
+            "body": "If depositors rarely reclaim their gold, why not lend most of it out — or issue more notes than there is gold in the box? That's fractional reserve banking: keep a reserve fraction, lend the rest, earn the interest. It multiplies the money supply, and it's perfectly stable until everyone knocks at once.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A goldsmith holds 100 pounds in gold, but his circulating notes total 500. Why isn't he bankrupt by this afternoon?",
+            "answer": "Because redemptions trickle in while most notes keep circulating as money. The 100 in gold covers a normal day easily. He is solvent on trust — and one rumor away from a run that no reserve fraction can survive."
+          },
+          {
+            "type": "concept",
+            "title": "The Bank of England, 1694",
+            "body": "After naval defeat by France, King William's government needed 1.2 million pounds fast. In 1694, subscribers lent it and were incorporated as the Bank of England, issuing notes against the loan. A permanent national debt and a note-issuing bank: the modern financial state assembling itself, piece by piece.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "John Law's Mississippi Bubble",
+            "body": "Scottish gambler-economist John Law persuaded France to try paper money in 1716, then fused his bank with the Mississippi Company. As shares soared through 1719, Law printed notes so buyers could keep bidding. In 1720 the spiral broke: shares and notes crashed together, and Law fled France in disgrace.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was the fatal flaw in John Law's system?",
+            "choices": [
+              "Paper money simply cannot work in a large economy",
+              "He printed money to prop up share prices, chaining the currency to a bubble",
+              "France lacked the printing capacity to sustain the notes",
+              "The Mississippi colonies were secretly controlled by Britain"
+            ],
+            "answer": 1,
+            "explain": "China had already run paper money for centuries, so paper itself wasn't the flaw. Law made the printing press serve the share price — when the bubble popped, it took the currency down with it."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Song China issued the first government paper money, the jiaozi, from 1024 — born of heavy iron coin.",
+              "Kublai Khan's chao was pure fiat, accepted on pain of punishment — to Marco Polo's astonishment.",
+              "Goldsmiths' receipts became banknotes; lending against idle gold became fractional reserve banking.",
+              "The Bank of England (1694) tied note issue to national debt; John Law's 1720 collapse showed paper without restraint burns."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What was the jiaozi?",
+            "back": "The world's first government-issued paper money — printed in Sichuan under Song China from 1024, replacing bulky iron coin with paper notes."
+          },
+          {
+            "front": "How did European banknotes evolve?",
+            "back": "Goldsmiths' deposit receipts circulated as payment in 1600s London; the Bank of England (founded 1694 to fund war debt) made such notes national money."
+          },
+          {
+            "front": "What is fractional reserve banking?",
+            "back": "Keeping only a fraction of deposits in reserve and lending the rest, since redemptions rarely come at once. It multiplies money — and works until a run."
+          },
+          {
+            "front": "What sank John Law's system in 1720?",
+            "back": "He printed banknotes to prop up Mississippi Company shares; when confidence broke, shares and currency collapsed together, scarring France against paper."
+          }
+        ]
+      },
+      {
+        "id": "gold-to-fiat",
+        "title": "From Gold to Fiat",
+        "summary": "The gold standard's rise, the Depression it deepened, Bretton Woods, the Nixon shock of 1971, and what actually backs money now.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Century Money Came Untethered",
+            "body": "In 1900, money meant gold: a banknote was a claim check on metal in a vault. By 2000, money was a managed promise, anchored to nothing but institutions and trust. In this lesson you'll cross that century — through a depression, a New Hampshire hotel, and one Sunday night broadcast in August 1971.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "The Classical Gold Standard",
+            "body": "From the 1870s to 1914, the major economies defined their currencies as fixed weights of gold, convertible on demand. Exchange rates barely moved and capital flowed freely — but governments surrendered control: the money supply went wherever the gold went, whatever the domestic economy needed.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Under the classical gold standard, what did a country actually commit to?",
+            "choices": [
+              "Converting its currency into a fixed amount of gold on demand",
+              "Keeping consumer prices identical year after year",
+              "Backing every note with silver as well as gold",
+              "Banning paper banknotes entirely"
+            ],
+            "answer": 0,
+            "explain": "The pledge was convertibility at a fixed parity. Prices could and did drift — the standard chained money to gold; it never promised a constant cost of living."
+          },
+          {
+            "type": "concept",
+            "title": "Golden Fetters",
+            "body": "When depression struck in 1929, the gold standard became a transmission belt. Defending a gold parity meant raising interest rates and forcing deflation precisely when economies needed the opposite. Barry Eichengreen's evidence is stark: the earlier a country cut loose from gold, the earlier it recovered.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Countries that stayed loyal to gold longest in the 1930s recovered from the Depression fastest.",
+            "answer": false,
+            "explain": "It ran the other way. Britain left gold in 1931 and turned upward early; France clung on until 1936 and stagnated. Leaving gold freed a country to reflate its economy."
+          },
+          {
+            "type": "concept",
+            "title": "Bretton Woods, 1944",
+            "body": "In July 1944, delegates from 44 nations met at a resort hotel in Bretton Woods, New Hampshire, to design the postwar order: currencies pegged to the US dollar, the dollar convertible to gold at 35 dollars an ounce — for foreign governments only — with the IMF and World Bank standing as referees.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "By the late 1960s, dollars held abroad far exceeded America's gold stock. What choice did that force on Washington?",
+            "answer": "Keep honoring every claim at 35 dollars an ounce until the vaults emptied, squeeze the US economy hard enough to defend the peg, or break the link. On August 15, 1971, Nixon chose to break it."
+          },
+          {
+            "type": "example",
+            "title": "The Nixon Shock",
+            "body": "On Sunday evening, August 15, 1971, Nixon preempted prime-time television to announce a wage-price freeze, an import surcharge — and the suspension of the dollar's convertibility into gold, 'temporarily.' The gold window never reopened. By 1973 the major currencies floated, and the world ran on fiat.",
+            "art": "bell"
+          },
+          {
+            "type": "quote",
+            "text": "I have directed Secretary Connally to suspend temporarily the convertibility of the dollar into gold or other reserve assets.",
+            "by": "Richard Nixon, televised address, August 15, 1971"
+          },
+          {
+            "type": "concept",
+            "title": "What Backs Fiat?",
+            "body": "'Backed by nothing' misses the machinery. Taxes are payable only in the state's money, guaranteeing demand. Central banks manage its scarcity, targeting low inflation. Courts enforce contracts written in it. Fiat is backed by an enforceable claim on a real economy — as strong as the institutions behind it.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Since 1971 the dollar converts to no fixed amount of gold. What actually sustains its value?",
+            "choices": [
+              "Secret gold reserves still held at Fort Knox",
+              "Tax demand, managed scarcity, and trust in institutions",
+              "The intrinsic worth of high-grade cotton paper",
+              "An international treaty fixing its purchasing power"
+            ],
+            "answer": 1,
+            "explain": "You need dollars to pay US taxes, the Federal Reserve limits how many exist, and law and habit make them the unit everyone accepts. Trust does the work the metal used to do."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Under Bretton Woods, any American citizen could swap dollars for gold at 35 dollars an ounce.",
+            "answer": false,
+            "explain": "Only foreign governments and central banks could use the gold window. Private gold ownership had been restricted in the US since 1933 and wasn't fully legalized again until 1974."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The classical gold standard (1870s-1914) fixed currencies to gold — and stripped governments of monetary control.",
+              "Golden fetters spread the Depression; countries that left gold earlier recovered earlier (Eichengreen).",
+              "Bretton Woods (1944) pegged currencies to a gold-convertible dollar; the Nixon shock ended that on August 15, 1971.",
+              "Fiat money is backed by tax demand, managed scarcity, and institutional trust — not by 'nothing.'"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why did the gold standard deepen the Great Depression?",
+            "back": "Defending gold parities forced deflation and high rates in a slump. Eichengreen showed countries that left gold earlier recovered earlier."
+          },
+          {
+            "front": "What did Bretton Woods (1944) establish?",
+            "back": "Currencies pegged to the dollar, the dollar convertible to gold at $35/oz for foreign governments, with the IMF and World Bank overseeing the system."
+          },
+          {
+            "front": "What was the Nixon shock?",
+            "back": "On August 15, 1971, Nixon suspended dollar-gold convertibility 'temporarily.' The gold window never reopened; by 1973 major currencies floated."
+          },
+          {
+            "front": "What backs fiat money today?",
+            "back": "Not metal: taxes payable only in it, central banks managing its scarcity, legal tender status, and trust in institutions — not 'nothing.'"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "music-and-brain",
+    "title": "Music and the Brain",
+    "tagline": "Why sound patterns hijack your brain's oldest machinery",
+    "category": "Arts & Science",
+    "description": "Why organized sound seizes the oldest machinery in your head: prediction and dopamine, chills and earworms, what musical training really rewires, and the songs that outlast memory itself.",
+    "lessons": [
+      {
+        "id": "expectation-engine",
+        "title": "The Expectation Engine",
+        "summary": "How prediction, tension, and dopamine turn organized sound into craving — from Meyer's theory to the deceptive cadence.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Music Is a Guessing Game",
+            "body": "Press play on any song and your brain instantly starts betting on what comes next — the next beat, the next note, the next chord. Music, more than any other art, is built from those bets. This lesson shows how composers rig the game, and why both winning and losing it can feel so good.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Meyer's Big Idea",
+            "body": "In 1956, philosopher Leonard Meyer argued that musical emotion doesn't live in pretty chords — it lives in expectation. When a melody implies a continuation, then delays, swerves, or denies it, you feel tension; when it finally arrives, release. His book Emotion and Meaning in Music became the founding text of the field.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "truefalse",
+            "statement": "According to Leonard Meyer, musical emotion comes mainly from the intrinsic beauty of each chord, not from what you expect to happen next.",
+            "answer": false,
+            "explain": "Meyer argued the opposite: emotion arises when music sets up expectations, then delays or thwarts them. The same chord can feel bland or electric depending on what your brain predicted."
+          },
+          {
+            "type": "concept",
+            "title": "Huron's Sweet Anticipation",
+            "body": "David Huron's 2006 book Sweet Anticipation breaks each musical moment into five feelings — the ITPRA cycle: Imagination (what might come), Tension (bracing just before), Prediction (were you right?), Reaction (a fast gut response), and Appraisal (slower judgment). Accurate predictions feel rewarding; safe surprises get repackaged as thrills.",
+            "art": "compass"
+          },
+          {
+            "type": "example",
+            "title": "The Deceptive Cadence",
+            "body": "A composer builds toward the home chord — the dominant practically shouts 'resolution next!' — then lands on the minor sixth chord instead. That V–vi swerve is the deceptive cadence, a staple from Bach to Radiohead. Your prediction fails, tension spikes, and the real resolution, when it finally comes, lands twice as hard.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does a deceptive cadence give you that little lurch in the chest?",
+            "choices": [
+              "Minor chords are inherently sad, so the vi chord saddens you",
+              "Your brain confidently predicted the home chord, and the swerve violates that prediction",
+              "The deceptive chord is played louder than the chords before it",
+              "It uses notes from outside the key, which the ear cannot process"
+            ],
+            "answer": 1,
+            "explain": "The vi chord is perfectly ordinary on its own. The jolt is pure expectation: the dominant made your brain bet heavily on the tonic, and the swerve breaks that bet — Meyer's mechanism in action."
+          },
+          {
+            "type": "concept",
+            "title": "The Art of the Delay",
+            "body": "Skilled composers are tension engineers. Wagner keeps Tristan und Isolde harmonically unresolved for hours; a pop chorus withholds its hook for one extra bar; a DJ stretches the build before the drop. Every delay raises the stakes of your prediction, so the eventual arrival pays out more. Resolution exactly on schedule is merely pleasant.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "Haydn's Practical Joke",
+            "body": "In his 1791 'Surprise' Symphony, Joseph Haydn opens the slow movement with a tiptoeing, lullaby-soft theme — then detonates a fortissimo chord out of nowhere. Legend says he wanted to jolt dozing Londoners. The joke only works because the quiet theme first lulls your prediction machinery into certainty. Surprise needs setup.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "Dopamine on a Schedule",
+            "body": "In 2011, Valorie Salimpoor's team scanned people listening to chill-inducing favorite music. Dopamine flowed in two waves: the caudate lit up during the tense seconds of anticipation, and the nucleus accumbens fired at the peak chill itself. Music taps the same wanting-then-getting circuitry as food and other rewards — anticipation is half the high.",
+            "art": "brain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In the 2011 Salimpoor study, dopamine appeared in two brain regions at two different moments. Which region handled which moment?",
+            "answer": "The caudate released dopamine during anticipation — the tense build-up before the favorite passage — while the nucleus accumbens released it at the peak chill itself. Wanting and getting run on separate timers in your reward system."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Your reward system saves all its dopamine for the peak moment of a song — nothing is released while you are still waiting for it.",
+            "answer": false,
+            "explain": "Salimpoor's team found dopamine in the caudate during anticipation, seconds before the peak. The wait itself is chemically rewarding — one reason build-ups and drops are so addictive."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Meyer (1956): musical emotion comes from expectations set up, delayed, and resolved — not from chords in isolation.",
+              "Huron's ITPRA cycle — Imagination, Tension, Prediction, Reaction, Appraisal — is the life cycle of a musical moment.",
+              "The deceptive cadence (V–vi) violates a confident prediction, making the true resolution hit harder when it comes.",
+              "Salimpoor 2011: dopamine flows in the caudate during anticipation and in the nucleus accumbens at peak chills."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Who argued in 1956 that musical emotion comes from expectation rather than from chords in isolation?",
+            "back": "Leonard Meyer, in Emotion and Meaning in Music (1956) — the founding text of music-expectation research."
+          },
+          {
+            "front": "What do the five letters of Huron's ITPRA framework stand for?",
+            "back": "Imagination, Tension, Prediction, Reaction, Appraisal — from his 2006 book Sweet Anticipation."
+          },
+          {
+            "front": "What is a deceptive cadence, and why does it move you?",
+            "back": "A V–vi swerve where the expected home chord never lands; the violated prediction spikes tension and sweetens the real resolution."
+          },
+          {
+            "front": "In Salimpoor 2011, which regions released dopamine during anticipation versus at peak chills?",
+            "back": "The caudate during anticipation; the nucleus accumbens at the peak chill."
+          }
+        ]
+      },
+      {
+        "id": "chills-grooves-sad-songs",
+        "title": "Chills, Grooves and Sad Songs",
+        "summary": "Frisson, the groove sweet spot, the appeal of sad songs, and the science of tunes that won't leave your head.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Goosebumps on Demand",
+            "body": "A key change hits and a shiver races down your neck. A drumbeat drops and your shoulders move before you decide anything. A sad song somehow makes a bad day better. This lesson covers music's strangest bodily powers — frisson, groove, sweet sorrow — and the loop that keeps one tune circling your head all day.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Frisson, Measured",
+            "body": "That shiver has a name: frisson. Roughly two-thirds of people experience it; researchers verify it with goosebump cameras and skin-conductance sensors. Reliable triggers are sudden change — a voice entering, a leap in volume, an unexpected harmony. People high in the personality trait 'openness to experience' report it most often.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Musical chills are a universal human response — essentially everyone experiences frisson.",
+            "answer": false,
+            "explain": "Only about two-thirds of people report frisson; roughly a third never get it. It is a stable individual difference, and it tracks the personality trait openness to experience."
+          },
+          {
+            "type": "concept",
+            "title": "The Groove Sweet Spot",
+            "body": "Groove is the pleasurable urge to move to music. In 2014, Maria Witek's team had listeners rate drum patterns from rigidly simple to wildly syncopated. Ratings followed an inverted U: medium syncopation won. Too predictable leaves your body nothing to do; too chaotic gives it nothing to grip. Groove lives where the beat leaves gaps your body wants to fill.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Based on Witek's 2014 study, which drum pattern would most make people want to move?",
+            "choices": [
+              "A perfectly regular, metronome-steady beat",
+              "A moderately syncopated funk pattern with a few off-beat accents",
+              "A maximally complex pattern whose accents rarely match the pulse",
+              "It makes no difference — groove depends only on tempo"
+            ],
+            "answer": 1,
+            "explain": "Witek found an inverted-U: medium syncopation drew the highest ratings for groove and pleasure. Total regularity is boring, total chaos loses the pulse — the sweet spot invites your body to fill the gaps."
+          },
+          {
+            "type": "concept",
+            "title": "Why Sad Songs Feel Good",
+            "body": "Sad music delivers sorrow with the sting removed: no real loss has occurred, so you can savor the feeling the way fiction lets you enjoy fear. David Huron adds a hypothesis — still unproven, with mixed evidence — that grief without consequence may trigger prolactin, a consoling hormone. Add nostalgia's warm glow, and sorrow becomes a place worth visiting.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "Without music, life would be a mistake.",
+            "by": "Friedrich Nietzsche"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Huron proposed a hormonal reason sad music might literally comfort you. What is the idea — and what is its scientific status?",
+            "answer": "The prolactin hypothesis: sorrow without real loss may release prolactin, a hormone linked to consolation and calming. It remains a hypothesis — direct tests have returned mixed results, so treat it as an intriguing maybe, not settled science."
+          },
+          {
+            "type": "concept",
+            "title": "Anatomy of an Earworm",
+            "body": "Scientists call it involuntary musical imagery: a tune that replays in your head without permission. Around 90 percent of people report one at least weekly. The stickiest tunes are simple, repetitive, and recently heard — common melodic shapes with one distinctive twist. Recent exposure is the single biggest trigger, which is why the radio hit follows you home.",
+            "art": "orbit"
+          },
+          {
+            "type": "example",
+            "title": "Evicting a Stuck Tune",
+            "body": "In Kelly Jakubowski's 2017 study of 3,000 people, Lady Gaga's 'Bad Romance' topped the earworm charts — fast, simple in contour, relentlessly hooky. To evict one: listen to the whole song so the loop can close, occupy yourself with a moderately demanding task, or chew gum — it ties up the motor machinery your inner singing borrows.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The songs most likely to become earworms are complex, unusual melodies that challenge the ear.",
+            "answer": false,
+            "explain": "It's the opposite: earworms are typically simple, repetitive, recently heard tunes built on common melodic contours with one small quirk — which is why choruses and jingles stick, not fugues."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Frisson — musical chills — is real and measurable, but only about two-thirds of people experience it.",
+              "Witek 2014: the urge to move peaks at medium syncopation — an inverted U between boring and chaotic.",
+              "Sad music is safe sorrow: no real-world loss, a possible prolactin comfort (still only a hypothesis), plus nostalgia.",
+              "Earworms strike about 90% of us weekly; simple, repetitive, recently heard tunes stick hardest."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Roughly what share of people experience frisson, and who gets it most?",
+            "back": "About two-thirds; people high in the trait openness to experience report it most often."
+          },
+          {
+            "front": "What level of syncopation produces maximum groove, per Witek 2014?",
+            "back": "Medium — an inverted-U: enough off-beat gaps to invite movement, not so many that the pulse dissolves."
+          },
+          {
+            "front": "What is the prolactin hypothesis for sad music, and is it proven?",
+            "back": "Huron's idea that sorrow without real loss releases consoling prolactin. It is unproven — direct tests have produced mixed results."
+          },
+          {
+            "front": "Name three features of a typical earworm tune.",
+            "back": "Simple, repetitive, and recently heard — usually a common melodic contour with one catchy twist."
+          }
+        ]
+      },
+      {
+        "id": "the-musical-brain",
+        "title": "The Musical Brain",
+        "summary": "A tour of the distributed musical brain: tonotopy, musicians' plasticity, amusia, and the honest story of the Mozart effect.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Where Music Lives",
+            "body": "Open a brain atlas and you'll find a visual cortex and a language network — but no 'music center.' Music commandeers nearly everything: hearing, movement, memory, emotion, prediction. This lesson tours that distributed orchestra, shows what decades of practice physically rebuild, and settles what one famous 1993 study did and didn't show.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "An Orchestra, Not a Soloist",
+            "body": "A single song recruits auditory cortex for sound, motor regions and cerebellum for the beat, the hippocampus for memory, the amygdala and reward circuits for feeling, and frontal areas for prediction — across both hemispheres. That's why no single stroke silences music completely, and why melody can slip past damage that blocks other routes.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where does your brain process music?",
+            "choices": [
+              "In a dedicated music center located in the right hemisphere",
+              "In the auditory cortex and nowhere else",
+              "Across distributed networks in both hemispheres — auditory, motor, memory, and emotion systems",
+              "In the language network, since music is simply a kind of language"
+            ],
+            "answer": 2,
+            "explain": "There is no single music center. Hearing, movement, memory, emotion, and prediction systems all take part, on both sides of the brain — music is an orchestra of regions, not a soloist."
+          },
+          {
+            "type": "concept",
+            "title": "A Keyboard in Your Cortex",
+            "body": "Your primary auditory cortex is tonotopic: neurons are arranged by frequency, low pitches at one end and high at the other, like a piano keyboard laid across the temporal lobe. The cochlea in your inner ear sorts frequencies the same way, and the brain preserves that map station by station — pitch has a literal geography in your head.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Practiced Brain",
+            "body": "Gottfried Schlaug's studies found that musicians who began training before about age seven have a larger anterior corpus callosum — the bridge of fibers linking the hemispheres — than non-musicians. Thousands of hours of two-handed coordination during a sensitive childhood window appear to physically widen the traffic lanes between the brain's two sides.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Early musical training can visibly change brain anatomy — musicians who started as young children tend to have a larger corpus callosum.",
+            "answer": true,
+            "explain": "Schlaug's work found exactly this in musicians who began before about age seven. It is a striking case of experience reshaping anatomy during a sensitive period of development."
+          },
+          {
+            "type": "concept",
+            "title": "Ears Wired to Hands",
+            "body": "Train long enough and hearing and moving fuse. Play a melody to a pianist and the finger areas of their motor cortex activate, hands perfectly still; sit them at a silent keyboard and auditory regions fire anyway. This auditory–motor coupling is why trained musicians can 'hear' a score just by reading it — practice welds the two systems together.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "When Melody Goes Missing",
+            "body": "About 4 percent of people have congenital amusia: they can't tell when a note is out of key and can't recognize tunes without lyrics, despite normal hearing and intelligence. The culprit isn't the ear — it's weak fine-grained pitch discrimination and reduced communication between auditory and frontal regions. Rhythm is often untouched.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A friend with normal hearing swears they 'can't hear music' — melodies all sound alike, and off-key notes don't register. What might be going on?",
+            "answer": "Congenital amusia, found in roughly 4% of people. The ear works; the fault lies in fine-grained pitch processing and weak links between auditory and frontal areas. It is inborn, unrelated to intelligence, and rhythm perception can be perfectly fine."
+          },
+          {
+            "type": "example",
+            "title": "Ten Minutes of Mozart",
+            "body": "In 1993, Frances Rauscher played college students ten minutes of a Mozart sonata; they briefly scored better on a spatial-reasoning task — an edge that vanished within about fifteen minutes. The press rebranded this sliver as 'Mozart makes you smarter,' and by 1998 Georgia's governor was sending classical CDs home with every newborn.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did the original 1993 'Mozart effect' study actually show?",
+            "choices": [
+              "Listening to Mozart permanently raises IQ",
+              "Classical music accelerates infants' brain development",
+              "A brief boost on one spatial task, fading within about fifteen minutes, likely from arousal and mood",
+              "No effect of any kind — the data were later retracted"
+            ],
+            "answer": 2,
+            "explain": "Rauscher tested adults, on one task, and the edge evaporated in minutes. Later work showed any enjoyable, arousing stimulus does the same — the baby-genius version was a media invention."
+          },
+          {
+            "type": "concept",
+            "title": "What Training Really Buys",
+            "body": "Does learning an instrument raise IQ? Barely, if at all. Glenn Schellenberg's 2004 trial found music lessons added only a couple of IQ points, and Samuel Mehr's 2013 preschool experiments found no reliable cognitive transfer. What training demonstrably builds is musicianship: refined hearing, motor precision, auditory attention. Learn music because music is worth knowing.",
+            "art": "target"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "There is no single music center: music runs on distributed networks spanning both hemispheres.",
+              "The auditory cortex is tonotopic — a frequency map laid out like a keyboard across the temporal lobe.",
+              "Schlaug: musicians trained before about age seven show a larger corpus callosum, and practice couples hearing to movement.",
+              "About 4% of people have congenital amusia — inborn tune-deafness with normal hearing and intelligence.",
+              "The Mozart effect was a brief arousal blip, not an IQ boost; training builds musicianship, not general intelligence."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Is there a single 'music center' in the brain?",
+            "back": "No — music recruits distributed networks in both hemispheres: auditory, motor, memory, emotion, and prediction systems."
+          },
+          {
+            "front": "What does 'tonotopy' mean in the auditory cortex?",
+            "back": "Neurons are arranged by frequency, low to high, like a keyboard — pitch has a spatial map in the temporal lobe."
+          },
+          {
+            "front": "What anatomical difference did Schlaug find in early-trained musicians?",
+            "back": "A larger anterior corpus callosum in musicians who began training before about age seven."
+          },
+          {
+            "front": "What did Rauscher's 1993 Mozart study really show?",
+            "back": "A tiny spatial-task boost in adults lasting about fifteen minutes, best explained by arousal and mood — not an IQ gain."
+          }
+        ]
+      },
+      {
+        "id": "music-across-life",
+        "title": "Music Across a Lifetime",
+        "summary": "From universal lullabies to absolute pitch, dementia-resistant melodies, and why the songs of your teens never let go.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Cradle to Twilight",
+            "body": "Before you could speak, a lullaby could slow your heartbeat. In your teens, certain songs fused with your identity for good. And decades from now, when other memories fade, those same songs may still open doors. This lesson follows music through a whole human life — from universal cradle songs to the playlists that outlast memory itself.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Born Ready to Listen",
+            "body": "Newborns process rhythm and melody long before words. Sung to, infants calm, settle, and hold eye contact longer than when spoken to. In a 2021 study led by Constance Bainbridge, babies relaxed — heart rates dropping — to lullabies from entirely unfamiliar cultures, in languages they had never heard. Something in the cradle-song formula travels without translation.",
+            "art": "seed"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Lullabies only soothe infants when they are sung in the baby's own language and familiar cultural style.",
+            "answer": false,
+            "explain": "In the 2021 Bainbridge study, foreign lullabies lowered infants' heart rates too. The soothing recipe — slow, smooth, soft contours — works across cultures and languages."
+          },
+          {
+            "type": "concept",
+            "title": "A Natural History of Song",
+            "body": "In 2019, Samuel Mehr's team published the Natural History of Song: recordings and ethnographies from 315 societies, coded and compared. Music appeared in every single one, clustering into recognizable types — dance songs, lullabies, healing songs, love songs. Listeners worldwide could hear a snippet from a culture they'd never met and guess its job: acoustic form tracks social function.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Mehr's 2019 Natural History of Song project find?",
+            "choices": [
+              "Music exists in most, but not all, human societies",
+              "Song types like lullabies and dance songs are recognizable even across unfamiliar cultures",
+              "All cultures build music from the same scales and harmonies",
+              "Musical styles vary so much that outsiders cannot guess what a song is for"
+            ],
+            "answer": 1,
+            "explain": "Music turned up in all 315 societies studied, and listeners could identify a lullaby or dance song from cultures they had never encountered. Function shapes form similarly everywhere."
+          },
+          {
+            "type": "concept",
+            "title": "The Perfect Pitch Lottery",
+            "body": "Absolute pitch — naming a lone note cold, with no reference — is rare: roughly one in ten thousand in Western populations. It seems to require both a genetic predisposition and musical training in early childhood. Diana Deutsch found it far more common among speakers of tonal languages like Mandarin, where pitch carries word meaning from birth.",
+            "art": "key"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why would growing up speaking Mandarin raise your odds of developing absolute pitch?",
+            "answer": "In a tonal language, pitch changes a word's meaning — 'ma' rises or falls into 'mother' or 'horse' — so infancy itself becomes pitch-labeling practice. Deutsch's work suggests this early training, layered on genetic predisposition, helps lock pitches to labels."
+          },
+          {
+            "type": "concept",
+            "title": "The Memory That Stays",
+            "body": "In Alzheimer's disease, musical memory is strikingly — though not perfectly — spared. A 2015 brain-mapping study found that the regions encoding long-known melodies are among the last the disease degrades. A patient who cannot name their spouse may still sing every verse of a childhood hymn, fluently and in tune.",
+            "art": "shield"
+          },
+          {
+            "type": "example",
+            "title": "Henry Wakes Up",
+            "body": "In the documentary Alive Inside, Henry — slumped and mostly unresponsive in his nursing home — gets headphones playing Cab Calloway, the music of his youth. He sings, sways, answers questions. The effect is real and repeatable: familiar music can lift mood, ease agitation, and reopen conversation. What it cannot do is cure or reverse dementia.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "quote",
+            "text": "Music, uniquely among the arts, is both completely abstract and profoundly emotional.",
+            "by": "Oliver Sacks"
+          },
+          {
+            "type": "concept",
+            "title": "The Reminiscence Bump",
+            "body": "Ask anyone for their favorite music and it likely dates from their teens or early twenties. Memory research calls this the reminiscence bump: experiences from roughly ages 10 to 30 are recalled best, because that is when identity forms, emotions run hot, and everything is a first. The songs of those years get encoded with you inside them.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Because familiar songs can 'wake up' people with dementia, music therapy can reverse the underlying disease.",
+            "answer": false,
+            "explain": "Responses like Henry's are genuine but temporary windows. Music improves mood, agitation, and connection — it does not restore lost neurons or halt the disease's progress."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Infants respond to song from birth, and lullabies soothe even across cultures (Bainbridge 2021).",
+              "Mehr 2019: music is universal, and song types like lullabies and dance songs are recognizable worldwide.",
+              "Absolute pitch is rare (~1 in 10,000) and needs early training plus genes; tonal languages raise the odds.",
+              "Musical memory resists dementia; familiar songs open real but temporary windows — not a cure.",
+              "The reminiscence bump: music from about ages 10 to 30 sticks hardest, fused with forming identity."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did the 2021 Bainbridge infant study show about foreign lullabies?",
+            "back": "Babies relaxed — heart rates dropped — to lullabies from unfamiliar cultures; the soothing formula crosses languages."
+          },
+          {
+            "front": "What is the core finding of the Natural History of Song (2019)?",
+            "back": "Music is universal across 315 societies, and listeners can recognize song types like lullabies and dance songs across cultures."
+          },
+          {
+            "front": "What three factors are linked to absolute pitch?",
+            "back": "Early musical training, genetic predisposition, and speaking a tonal language such as Mandarin."
+          },
+          {
+            "front": "Why does the music of your teens stick for life?",
+            "back": "The reminiscence bump: memories from about ages 10 to 30 encode best, fused with identity and first-time emotion."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nutrition-without-nonsense",
+    "title": "Nutrition Without Nonsense",
+    "tagline": "What the evidence really says — and how to smell the hype.",
+    "category": "Health",
+    "description": "Nutrition headlines contradict each other for a reason. Learn the physiology of energy and appetite, why diet studies mislead, which findings actually replicate, and how to spot marketing dressed up as science.",
+    "lessons": [
+      {
+        "id": "energy-and-the-machinery",
+        "title": "Energy and the Machinery",
+        "summary": "Calories, macronutrients, and the thermic effect — and why 'just eat less' is physics without the physiology.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Machine You Feed",
+            "body": "Every day you burn roughly 1,500 to 3,000 kilocalories just staying alive and moving around. Nutrition advice is deafening, but the machinery underneath is quiet and consistent: energy comes in as food, gets spent or stored, and obeys physics. This lesson covers the fuel, the furnace, and the myths that have grown around both.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "A Calorie Is a Unit, Not a Villain",
+            "body": "A kilocalorie — what food labels call a Calorie — is the energy needed to heat one kilogram of water by one degree Celsius. Energy balance is real: take in more energy than you spend, consistently, and the surplus gets stored, mostly as fat. No food is exempt from this accounting, however 'clean' its label looks.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Why 'Just Eat Less' Is Incomplete",
+            "body": "Energy balance is physics, but your intake isn't set by willpower alone. Hormones like leptin and ghrelin, sleep debt, stress, and an environment engineered for eating all push appetite around without consulting you. 'Just eat less' is thermodynamically true and practically incomplete — like telling someone in debt to 'just spend less' while ignoring why the spending happens.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A food label says a serving contains 200 Calories. What does that number actually measure?",
+            "choices": [
+              "The energy the food provides",
+              "How fattening the food is, regardless of amount",
+              "How much sugar the serving contains",
+              "How processed the food is"
+            ],
+            "answer": 0,
+            "explain": "A Calorie (kilocalorie) is purely a unit of energy — the same unit used to describe heating water. Whether food ends up stored as fat depends on your total energy balance, not on calories being inherently fattening."
+          },
+          {
+            "type": "concept",
+            "title": "Three Fuels, Three Jobs",
+            "body": "Protein (4 kcal per gram) supplies amino acids that rebuild muscle, enzymes, and immune cells — construction material first, fuel second. Carbohydrate (4 kcal/g) is your fastest fuel, feeding the brain and working muscle. Fat (9 kcal/g) is dense energy storage, insulation, hormone raw material, and the carrier for vitamins A, D, E, and K.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Fat in your diet has no essential role beyond storing energy.",
+            "answer": false,
+            "explain": "Fat builds cell membranes and hormones, carries the fat-soluble vitamins A, D, E, and K, and supplies essential fatty acids your body cannot make. Dietary fat is not just an energy depot."
+          },
+          {
+            "type": "concept",
+            "title": "Protein: The Fullness Heavyweight",
+            "body": "Calorie for calorie, protein is the most satiating macronutrient. In controlled feeding studies, higher-protein meals reliably blunt hunger and reduce later intake compared with equal-calorie meals built from carbs or fat. It's one reason eggs at breakfast hold you longer than the same calories of toast — and one honest mechanism behind many 'miracle' diets.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "The Thermic Effect of Food",
+            "body": "Digesting food costs energy, and the bill differs by macronutrient. Protein's thermic effect is about 20-30%: of 100 protein calories, roughly a quarter is burned just processing them. Carbohydrate costs about 5-10%, fat a mere 0-3%. The effect is modest overall — but it means 200 calories of chicken and 200 calories of butter are not quite the same 200.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You eat 100 kilocalories of pure protein. Roughly how much energy is left after your body pays the cost of digesting and processing it?",
+            "answer": "About 70-80 kcal. Protein's thermic effect burns roughly 20-30% of its calories during digestion and processing — the highest of any macronutrient, compared with about 5-10% for carbohydrate and 0-3% for fat."
+          },
+          {
+            "type": "concept",
+            "title": "Starvation Mode, Exaggerated",
+            "body": "Metabolic adaptation is real: as you lose weight, you burn somewhat less, partly because there is simply less of you. But adaptation slows loss — it cannot stop or reverse it. In the Minnesota Starvation Experiment, men eating about 1,570 kcal a day kept losing weight for six months straight. If undereating switched fat loss off, famines wouldn't cause wasting. They do.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Metabolism: Smaller Than the Myth",
+            "body": "Measured in metabolic wards, resting energy expenditure varies less between people than folklore claims: once body size and lean mass are accounted for, most people land within about 200-300 kcal a day of the average. Extreme outliers are rare. When two similar people swear they eat identically but weigh differently, reporting — not a broken furnace — is usually the gap.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your friend blames weight regain on a 'slow metabolism'. What does measurement actually show about metabolic differences between similar-sized people?",
+            "choices": [
+              "Most fall within about 200-300 kcal/day of each other once size and lean mass are accounted for",
+              "People routinely differ by 1,000 or more kcal/day at rest",
+              "A slow metabolism is the main cause of most weight gain",
+              "Dieting permanently destroys metabolism, so comparisons are meaningless"
+            ],
+            "answer": 0,
+            "explain": "Ward measurements show resting metabolic rates cluster tightly around what body size and lean mass predict — differences are real but modest, and far smaller than differences in intake and in how accurately intake gets reported."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A Calorie is a unit of energy. Energy balance is real physics, but hormones and environment steer most of the 'calories in'.",
+              "Protein rebuilds tissue and is the most filling macronutrient per calorie; carbs and fat have essential jobs too.",
+              "Thermic effect of food: protein burns ~20-30% of its calories in processing, carbs ~5-10%, fat ~0-3%.",
+              "Metabolic adaptation slows weight loss but cannot stop it; 'starvation mode' is exaggerated.",
+              "Between-person metabolic differences are modest — usually within ~200-300 kcal/day for similar bodies."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is a Calorie?",
+            "back": "A kilocalorie — the energy needed to heat 1 kg of water by 1°C. It measures energy, nothing else."
+          },
+          {
+            "front": "Which macronutrient is most filling and costs the most energy to digest?",
+            "back": "Protein: thermic effect ~20-30% of its calories, versus ~5-10% for carbs and ~0-3% for fat — and the highest satiety per calorie."
+          },
+          {
+            "front": "Is 'starvation mode' real?",
+            "back": "Metabolic adaptation is real but modest — it slows fat loss, it can't stop it. Semi-starved people keep losing weight."
+          },
+          {
+            "front": "How different are resting metabolisms between similar-sized people?",
+            "back": "Less than believed: mostly within ~200-300 kcal/day once body size and lean mass are accounted for."
+          }
+        ]
+      },
+      {
+        "id": "why-nutrition-science-is-hard",
+        "title": "Why Nutrition Science Is Hard",
+        "summary": "Impossible trials, unreliable questionnaires, and healthy-user confounding — how to read the evidence anyway.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Flip-Flop Machine",
+            "body": "Coffee causes cancer; coffee protects your heart. Eggs are killers; eggs are fine. A glass of wine is medicine; no amount is safe. The headlines aren't random lies — they're the predictable output of a field forced to study the hardest possible question: what millions of free-living humans eat, for decades. Here's why that's hard, and how to read the results anyway.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "The 30-Year Trial No One Can Run",
+            "body": "The gold-standard experiment — randomize thousands of people to fixed diets, control every meal, wait 30 years, count heart attacks — is impossible. Nobody will eat assigned food for decades; people drop out, adapt, and cheat, and the trial would cost billions. So for long-term questions, nutrition leans on observation: what people say they eat, and what happens to them.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "The Questionnaire Problem",
+            "body": "Much of nutrition epidemiology rests on food-frequency questionnaires: 'How often did you eat leafy greens over the past year?' Human memory is terrible at this. People forget snacks, shrink portions, and round answers toward the eater they'd like to be. The raw material of thousands of studies is, in meaningful part, flattering guesswork.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does so much nutrition research rely on food-frequency questionnaires instead of long randomized trials?",
+            "choices": [
+              "Decades-long controlled diet trials are practically impossible, so observation fills the gap",
+              "People remember what they eat accurately, so asking works well",
+              "Observational studies can prove causation just as well as trials",
+              "Food companies have blocked all randomized trials"
+            ],
+            "answer": 0,
+            "explain": "You can't lock thousands of people into assigned diets for 30 years. Questionnaires are known to be error-prone — researchers use them because they're the only feasible window into decades of eating, not because they're precise."
+          },
+          {
+            "type": "example",
+            "title": "The 47% Gap",
+            "body": "In 1992, Steven Lichtman's team studied people who insisted they couldn't lose weight on fewer than 1,200 reported kcal a day. Using doubly labeled water — a method that measures true energy burn — the NEJM study found these 'diet-resistant' subjects underreported eating by about 47% and overreported exercise by about 51%. Their metabolisms were normal. Their reporting was not.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the Lichtman study, objective measurement showed the 'diet-resistant' dieters had unusually slow metabolisms.",
+            "answer": false,
+            "explain": "Their measured metabolic rates were normal. The gap was reporting: intake underestimated by about 47%, exercise overestimated by about 51%. Honest misremembering — not metabolism — explained the mystery."
+          },
+          {
+            "type": "concept",
+            "title": "The Healthy-User Trap",
+            "body": "People who eat blueberries also tend to exercise, sleep enough, skip cigarettes, see doctors, and earn more. When blueberry eaters live longer, is it the berries or the bundle? That's healthy-user confounding. Statistics can adjust only for what was measured — never for everything that travels together with a health-conscious life.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Coffee has been linked to cancer in some studies and to longer life in others. What best explains headline whiplash like this?",
+            "answer": "Weak observational signals plus confounding. Small associations flip between studies by chance and by who drinks coffee — early cancer scares faded once analyses accounted for the smokers among heavy coffee drinkers. Single studies make headlines; the slow accumulation of evidence rarely does."
+          },
+          {
+            "type": "concept",
+            "title": "A Hierarchy, Not a Free-for-All",
+            "body": "Evidence has ranks. Randomized trials can show causation, because chance — not lifestyle — decides who eats what; in nutrition, though, they usually run short and small. Observational cohorts span decades of real life but can show only association. Neither alone settles much. Findings earn trust when trials, cohorts, and mechanism all point the same way.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "The Ioannidis Critique",
+            "body": "Stanford's John Ioannidis argues nutritional epidemiology delivers implausible precision — tiny associations from noisy questionnaires, translated into claims that a daily handful of nuts adds years of life. Critics reply that observation rightly flagged trans fats and confirmed tobacco's harms. Both camps agree on one thing: single food-disease findings deserve heavy skepticism.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "I think you'll find it's a bit more complicated than that.",
+            "by": "Ben Goldacre"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A cohort study finds moderate wine drinkers live longer than abstainers. Before crediting the wine, what should you check first?",
+            "choices": [
+              "Whether confounding — wealth, health, or sick ex-drinkers among the abstainers — explains the link",
+              "Nothing: a study with thousands of participants settles the question",
+              "Whether the wine was red, since resveratrol is proven to extend human life",
+              "Whether it was peer-reviewed — if so, the finding is proven"
+            ],
+            "answer": 0,
+            "explain": "Moderate drinkers differ from abstainers in income, health, and social ties — and abstainer groups often include people who quit drinking because they were already ill. Size doesn't cure confounding, resveratrol hasn't extended human life, and peer review filters obvious errors, not confounds."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Decades-long randomized diet trials are impossible, so long-term nutrition evidence is mostly observational.",
+              "Self-reports mislead: Lichtman's NEJM study found intake underreported by ~47% and exercise overreported by ~51%.",
+              "Healthy-user confounding means a food can mark a healthy life without causing it.",
+              "RCTs show causation but run short; cohorts run long but show association. Trust results where both align with mechanism.",
+              "Treat every single food-and-disease headline as provisional."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why are 30-year randomized diet trials essentially impossible?",
+            "back": "People won't eat assigned food for decades — they drop out and cheat, and costs explode. So long-term evidence relies on observation, which shows association only."
+          },
+          {
+            "front": "What did the Lichtman 1992 NEJM study find?",
+            "back": "'Diet-resistant' dieters underreported intake by ~47% and overreported exercise by ~51%. Their metabolisms were normal; the reporting was the problem."
+          },
+          {
+            "front": "What is healthy-user confounding?",
+            "back": "People who do one healthy thing do many others, so a food linked to long life may just mark a healthy lifestyle rather than cause the benefit."
+          },
+          {
+            "front": "RCTs versus epidemiology — what does each buy you?",
+            "back": "RCTs can show causation but run short and small; cohorts span decades but show only association. Trust findings supported by both, plus mechanism."
+          }
+        ]
+      },
+      {
+        "id": "what-actually-holds-up",
+        "title": "What Actually Holds Up",
+        "summary": "Ward studies, big trials, and the boring findings that survive: processing, fiber, protein, and adherence.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Boring Truths That Survive",
+            "body": "Strip away the flip-flops and a residue of solid findings remains — results that repeat in ward studies where every gram is weighed, in randomized trials, and across decades of cohort data. None of it is exciting. Little of it sells books. This lesson is the short list of nutrition claims that survive scrutiny, and how confident you can actually be in each.",
+            "art": "seed"
+          },
+          {
+            "type": "example",
+            "title": "The Ultra-Processed Ward Study",
+            "body": "In 2019, Kevin Hall's NIH team housed 20 adults in a metabolic ward and fed them ultra-processed or minimally processed diets — matched for offered calories, sugar, fat, fiber, and macros — two weeks each, eating as much or as little as they liked. On the ultra-processed diet, people spontaneously ate about 500 more kcal a day and gained weight; on the unprocessed one, they lost it.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Hall's 2019 NIH ward study, what happened when people ate freely from an ultra-processed diet matched to an unprocessed one for nutrients?",
+            "choices": [
+              "They ate about 500 kcal/day more and gained weight",
+              "They ate the same amount, since calories and macros were matched",
+              "They lost weight, because ultra-processed food is lower in fat",
+              "They only ate more because the ultra-processed food had more sugar"
+            ],
+            "answer": 0,
+            "explain": "With sugar, fat, fiber, and macros matched between the diets, something about processing itself — texture, energy density, eating speed — still drove roughly 500 extra kcal a day. It's the strongest controlled evidence that processing changes how much we eat."
+          },
+          {
+            "type": "concept",
+            "title": "Fiber: The Consensus Nutrient",
+            "body": "Fiber is where trials and cohorts agree. A 2019 Lancet review spanning 185 observational studies and 58 trials found people eating roughly 25-30 g a day had 15-30% lower rates of death, heart disease, stroke, and type 2 diabetes. Fiber slows digestion, feeds gut bacteria, and adds fullness per calorie. A typical Western diet delivers barely half that much.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Most people eating a typical Western diet already get the roughly 25-30 grams of daily fiber associated with lower disease risk.",
+            "answer": false,
+            "explain": "Typical intakes hover near 15 g a day — about half the amount linked with lower rates of death, heart disease, and diabetes. Whole grains, beans, vegetables, and fruit close the gap; no supplement required."
+          },
+          {
+            "type": "example",
+            "title": "PREDIMED, With an Asterisk",
+            "body": "Spain's PREDIMED trial randomized about 7,400 people at cardiac risk to a Mediterranean diet with extra olive oil or nuts, or to a low-fat control, and found about 30% fewer major cardiovascular events. The asterisk: randomization errors forced a 2018 retraction and re-analysis. The corrected result pointed the same way — but even landmark trials, it turns out, need auditing.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "PREDIMED is one of the largest diet RCTs ever run — and it was retracted and republished. What went wrong, and what survived?",
+            "answer": "Some participants weren't individually randomized: whole households, and one site's clinics, were enrolled together. With those removed, the re-analysis still found the Mediterranean diet reduced cardiovascular events — but the causal claims had to be stated more cautiously."
+          },
+          {
+            "type": "concept",
+            "title": "Protein Earns Its Keep",
+            "body": "Two protein findings replicate reliably: it is the most satiating macronutrient per calorie, and eating enough of it — especially alongside resistance exercise — preserves muscle through weight loss and aging. That's why higher-protein approaches keep appearing inside successful diets, whatever name is printed on the cover of the book.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Meal Timing: Mostly Noise",
+            "body": "Skipping breakfast, eating after 8 p.m., grazing on six small meals to 'stoke the metabolic fire' — controlled studies keep finding that, for most people, timing barely moves the needle compared with what and how much you eat. It can matter at the margins — shift workers, athletes, people managing diabetes — but there is no magic fat-burning window.",
+            "art": "clock"
+          },
+          {
+            "type": "example",
+            "title": "DIETFITS: The Most Useful Tie",
+            "body": "Stanford's DIETFITS trial (2018) randomized 609 adults to a healthy low-fat or healthy low-carb diet for a full year. Average loss: 5.3 versus 6.0 kg — statistically a tie. Neither genotype nor insulin response predicted which diet suited whom. Yet inside both groups some people lost over 25 kg and some gained — and sticking with the plan is what separated them.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "DIETFITS found no average difference between low-fat and low-carb. What best explains why some individuals in both groups still lost dramatic amounts?",
+            "choices": [
+              "Adherence — people who stuck with their assigned diet lost the most",
+              "Their genes matched them to the right diet",
+              "Low-carb actually worked; the low-fat group dragged the average down",
+              "Fast metabolisms made some participants immune to diet choice"
+            ],
+            "answer": 0,
+            "explain": "DIETFITS tested gene-diet matching directly, and it predicted nothing. Both diets produced big winners and losers, and adherence separated them. Diets work when followed — adherence is the whole game."
+          },
+          {
+            "type": "quote",
+            "text": "Eat food. Not too much. Mostly plants.",
+            "by": "Michael Pollan"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Hall's NIH ward RCT: an ultra-processed diet drove ~500 extra kcal/day even with nutrients matched.",
+              "Fiber around 25-30 g/day tracks with 15-30% lower rates of death and major disease across study types.",
+              "PREDIMED supports the Mediterranean pattern — read it with its retraction-and-reanalysis caveat.",
+              "Protein aids satiety and preserves muscle; meal timing matters little for most people.",
+              "DIETFITS: low-fat and low-carb tied on average. Adherence, not diet identity, predicted success."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Kevin Hall's 2019 NIH ward study show?",
+            "back": "On matched diets eaten freely, people ate ~500 kcal/day more on ultra-processed food and gained weight — controlled evidence that processing drives intake."
+          },
+          {
+            "front": "Which nutrient's benefits appear consistently across trials and cohorts?",
+            "back": "Fiber: ~25-30 g/day is associated with 15-30% lower rates of death, heart disease, stroke, and type 2 diabetes. Most Western diets get about half."
+          },
+          {
+            "front": "What did DIETFITS (2018) find about low-fat vs low-carb?",
+            "back": "A statistical tie at one year (5.3 vs 6.0 kg). Genes and insulin didn't predict success — adherence did."
+          },
+          {
+            "front": "What is the PREDIMED caveat?",
+            "back": "Randomization errors forced a 2018 retraction and re-analysis. Corrected results still favored the Mediterranean diet, stated with softer causal confidence."
+          }
+        ]
+      },
+      {
+        "id": "spotting-nonsense",
+        "title": "Spotting Nonsense",
+        "summary": "Superfoods, detoxes, single-study headlines, and the supplement aisle — a working red-flag checklist.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Your Nonsense Detector",
+            "body": "The wellness industry is worth trillions of dollars, and much of it rests on claims no trial supports. You don't need a nutrition degree to defend yourself — you need a short checklist and a feel for how marketing costumes itself as science. This lesson builds both, from 'superfood' labels to detox teas to the supplement aisle.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "'Superfood' Is a Marketing Word",
+            "body": "No regulator or scientific body defines 'superfood'. The EU went further in 2007: the word can't appear on labels unless a specific authorized health claim backs it. Blueberries, kale, and açai are perfectly good foods — but the label marks a marketing budget, not a nutritional category. No single food moves health outcomes; overall eating patterns do.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "'Superfood' is a scientific classification that regulators award to foods with proven health benefits.",
+            "answer": false,
+            "explain": "No scientific or regulatory body defines the term. In the EU, it can't even appear on labels without a separately authorized health claim. 'Superfood' signals marketing, not evidence."
+          },
+          {
+            "type": "concept",
+            "title": "You Already Own a Detox System",
+            "body": "Detox products promise to flush unnamed 'toxins'. But your liver chemically neutralizes waste and your kidneys filter roughly 180 liters of blood plasma every day, around the clock, unpaid. When researchers asked the makers of 15 detox products in 2009 to name one toxin their product removed, none could. If your liver actually failed, you'd need a hospital, not a tea.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A juice cleanse promises to 'flush toxins from your system'. What's the evidence-based response?",
+            "choices": [
+              "Your liver and kidneys already clear waste continuously; no cleanse has been shown to remove anything they miss",
+              "Cleanses work, but only if they last at least seven days",
+              "Juice cleanses remove toxins; detox teas are the scam",
+              "Modern food contains toxins your organs can't process, so cleansing is necessary"
+            ],
+            "answer": 0,
+            "explain": "Asked to name a single toxin their products removed, the makers of 15 detox products couldn't. Livers and kidneys do this job continuously — and genuine failure of either is a medical emergency, not a smoothie occasion."
+          },
+          {
+            "type": "concept",
+            "title": "One Study Is an Anecdote With Math",
+            "body": "Any single study can mislead — small samples, chance findings, p-hacking, or a press release that oversells. That's normal science, not scandal: knowledge accumulates across replications, not headlines. When a story says 'new study shows', check how many people, for how long, randomized or observational — and whether it agrees with the existing pile of evidence.",
+            "art": "bell"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A headline reads: 'New study: dark chocolate melts belly fat.' What questions should you ask before sharing it?",
+            "answer": "How many subjects, and for how long? Randomized or observational? Who funded it? Does it fit the accumulated evidence, or stand alone? Most single-study headlines fail at least two of these — and lone contrarian findings usually don't replicate."
+          },
+          {
+            "type": "concept",
+            "title": "The Supplement Reality Check",
+            "body": "Supplements are a global industry worth over $150 billion, yet large trials keep finding that in well-nourished people, most micronutrient pills — multivitamins included — don't reduce heart disease, cancer, or mortality. Your body absorbs nutrients from food alongside fiber and thousands of other compounds; isolating one into a capsule rarely reproduces the benefit.",
+            "art": "puzzle"
+          },
+          {
+            "type": "example",
+            "title": "When Supplements Do Earn Their Keep",
+            "body": "Real exceptions exist. B12 is non-negotiable for vegans: it's made by bacteria and found reliably only in animal foods. Folic acid before and during early pregnancy prevents neural-tube defects. Vitamin D is the nuanced one — deficiency is worth fixing, but extra D in people with adequate levels shows little benefit in trials. Supplement a measured need, not a marketing pitch.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these people has the strongest evidence-based reason to take a supplement?",
+            "choices": [
+              "A vegan taking vitamin B12",
+              "A healthy omnivore taking a daily multivitamin as 'insurance'",
+              "A gym-goer replacing vegetables with a greens powder",
+              "An office worker megadosing vitamin C to prevent colds"
+            ],
+            "answer": 0,
+            "explain": "B12 comes reliably only from animal foods, so vegans need it supplemented or fortified. Multivitamins show no mortality or disease benefit in well-nourished adults, greens powders aren't vegetables, and vitamin C megadoses don't prevent colds in the general population."
+          },
+          {
+            "type": "concept",
+            "title": "The Red-Flag Checklist",
+            "body": "Three flags catch most nonsense. 'One weird trick': real physiology never hinges on a single trick, food, or ten-day window. A demonized lone ingredient — sugar, seed oils, gluten — blamed for every modern disease; complex conditions don't have one dietary villain. Testimonials instead of trials: before-and-after photos are marketing, not data. One flag, slow down. Two, walk away.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "The first principle is that you must not fool yourself — and you are the easiest person to fool.",
+            "by": "Richard Feynman"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "'Superfood' has no regulatory or scientific meaning — it's a marketing term.",
+              "Your liver and kidneys are the detox system; no product has been shown to remove what they miss.",
+              "A single study is a data point, not a verdict — weigh it against the accumulated evidence.",
+              "Most supplements don't help the well-nourished. Real exceptions: B12 for vegans, folate in pregnancy, vitamin D deficiency.",
+              "Red flags: 'one weird trick', a demonized single ingredient, and testimonials in place of trials."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does 'superfood' mean scientifically?",
+            "back": "Nothing — no regulator or scientific body defines it. In the EU it can't appear on labels without an authorized claim. It's marketing."
+          },
+          {
+            "front": "Why don't you need a detox product?",
+            "back": "Your liver neutralizes waste and your kidneys filter ~180 liters of plasma daily. Asked to name one toxin removed, 15 detox-product makers couldn't."
+          },
+          {
+            "front": "Who actually benefits from micronutrient supplements?",
+            "back": "Mostly people with a real need: B12 for vegans, folate in pregnancy, vitamin D deficiency. Well-nourished people see little benefit from most pills."
+          },
+          {
+            "front": "Name three red flags of nutrition nonsense.",
+            "back": "'One weird trick' promises, a single demonized ingredient blamed for everything, and testimonials offered in place of trials."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-exploration",
+    "title": "Space Exploration",
+    "tagline": "The brutal physics and glorious history of leaving Earth.",
+    "category": "Space",
+    "description": "From Tsiolkovsky's unforgiving equation to boosters that land themselves: why orbit is so hard to reach, how the Moon was won, and why robots conquered the planets. Real dates, real numbers, no hype.",
+    "lessons": [
+      {
+        "id": "rocket-equation",
+        "title": "The Tyranny of the Rocket Equation",
+        "summary": "Why rockets are 88% propellant, what an orbit really is, and how staging and Goddard's 2.5-second flight made space reachable.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Hardest 100 Kilometers",
+            "body": "Space is not far away. If you could drive straight up, you'd cross the 100-kilometer Karman line in about an hour. The hard part isn't height — it's speed. To stay up, you must move sideways at 7.8 kilometers per second, more than twenty times the speed of sound. This lesson is about why that demand makes rockets enormous, precarious, and mostly fuel.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "One Equation Rules Them All",
+            "body": "In 1903, a self-taught Russian schoolteacher named Konstantin Tsiolkovsky derived the equation every rocket still obeys: the speed you gain equals your exhaust velocity times the logarithm of your mass ratio. A rocket is a machine that throws mass backward, fast; conservation of momentum drives it forward. It needs nothing to push against — the propellant itself is the thing pushed.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A rocket's engines fire in the vacuum of space. What is the rocket pushing against?",
+            "choices": [
+              "The thin air remaining at the top of the atmosphere",
+              "Nothing — it recoils from the mass it hurls backward",
+              "Earth's magnetic field",
+              "The launch pad, at least during liftoff"
+            ],
+            "answer": 1,
+            "explain": "Rockets need nothing to push against. By Newton's third law, hurling exhaust backward drives the rocket forward — momentum is conserved. A rocket actually performs slightly better in vacuum, where no air resists the exhaust."
+          },
+          {
+            "type": "concept",
+            "title": "The Price Tag: 9.4 km/s",
+            "body": "Orbital speed at low altitude is 7.8 km/s. But a rocket climbing off the pad also fights gravity and plows through air, wasting roughly another 1.5 km/s along the way. Total bill: about 9.4 km/s of delta-v — change in velocity — to reach low Earth orbit. Every gram you lift must be paid for in propellant burned against that unforgiving number.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "Falling and Missing",
+            "body": "Newton saw it in the 1680s: fire a cannonball horizontally from a mountaintop and it arcs to the ground. Fire it faster and it lands farther away. Fast enough — 7.8 km/s — and the ground curves away exactly as quickly as the ball falls. It falls forever and never lands. That is all an orbit is: falling, and missing. Astronauts float because they are falling too.",
+            "art": "orbit"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Astronauts on the space station float because there is no gravity 400 kilometers up.",
+            "answer": false,
+            "explain": "Gravity at that altitude is still about 90% of what you feel on the ground. Station and crew float because both are in continuous free fall around Earth — moving sideways so fast they keep missing it."
+          },
+          {
+            "type": "concept",
+            "title": "The Exponential Bites",
+            "body": "The rocket equation's logarithm has teeth. The best chemical exhaust leaves the nozzle at about 4.4 km/s, and wringing 9.4 km/s of speed from it demands a liftoff mass around 8.5 times the burnout mass — roughly 88% propellant before you count tanks, engines, or cargo. This is the tyranny: the payload must squeeze into the last few percent.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Staging: Shedding Dead Weight",
+            "body": "No single rocket can be 88% propellant and still have tanks strong enough to hold it, plus anything worth launching. The workaround is staging: stack rockets on rockets, and drop each stage's empty tanks and spent engines the instant they become dead weight. Tsiolkovsky imagined them as 'rocket trains.' Every vehicle that has ever reached orbit has staged.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The Saturn V weighed about 2,900 tonnes fueled on the pad. Guess how much of that actually departed for the Moon.",
+            "answer": "About 45 tonnes — the Apollo spacecraft and lander, roughly 1.5% of liftoff mass. Nearly everything else was propellant, plus the three stages burned and dropped along the way. That ratio is the rocket equation made visible."
+          },
+          {
+            "type": "example",
+            "title": "2.5 Seconds in a Cabbage Field",
+            "body": "On March 16, 1926, Robert Goddard launched the first liquid-fueled rocket from his aunt's farm in Auburn, Massachusetts. It burned gasoline and liquid oxygen for 2.5 seconds, climbed 41 feet, and came down in a cabbage field. It looked trivial. But liquid fuel — throttleable, restartable, powerful — is the technology every orbital rocket descends from.",
+            "art": "seed"
+          },
+          {
+            "type": "example",
+            "title": "The Times Regrets the Error",
+            "body": "In January 1920, a New York Times editorial jeered that Goddard lacked 'the knowledge ladled out daily in high schools,' insisting a rocket could not work in space with nothing to push against. On July 17, 1969 — with Apollo 11 outbound to the Moon — the Times printed a correction conceding that rockets do function in a vacuum. 'The Times regrets the error.'",
+            "art": "book"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The New York Times corrected its 1920 editorial mocking Goddard while Apollo 11 was on its way to the Moon.",
+            "answer": true,
+            "explain": "The correction ran July 17, 1969, the day after Apollo 11 launched and three days before the landing. Goddard had died in 1945, never seeing his vindication — or the industry his cabbage-field flight began."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Tsiolkovsky's 1903 rocket equation: speed gained = exhaust velocity times the log of the mass ratio — so rockets must be about 88% propellant.",
+              "Reaching low orbit costs about 9.4 km/s of delta-v: 7.8 km/s of sideways speed plus roughly 1.5 km/s of gravity and drag losses.",
+              "An orbit is falling and missing — the ground curves away as fast as you fall.",
+              "Staging discards dead weight mid-flight; every orbital rocket ever flown has used it.",
+              "Goddard flew the first liquid-fueled rocket in 1926; the New York Times mocked him in 1920 and corrected itself on July 17, 1969."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the Tsiolkovsky rocket equation say?",
+            "back": "Speed gained = exhaust velocity times the natural log of the mass ratio (1903). It's why a chemical rocket bound for orbit must be roughly 88% propellant."
+          },
+          {
+            "front": "How much delta-v does it take to reach low Earth orbit?",
+            "back": "About 9.4 km/s — 7.8 km/s of orbital speed plus roughly 1.5 km/s lost to gravity and air drag during the climb."
+          },
+          {
+            "front": "What is an orbit, in Newton's cannonball picture?",
+            "back": "Perpetual falling: you move sideways so fast that the ground curves away exactly as quickly as you drop — you fall forever and keep missing."
+          },
+          {
+            "front": "Who first flew a liquid-fueled rocket, and when?",
+            "back": "Robert Goddard, March 16, 1926, in Auburn, Massachusetts — 2.5 seconds, 41 feet. The New York Times mocked him in 1920 and corrected itself July 17, 1969."
+          }
+        ]
+      },
+      {
+        "id": "space-race",
+        "title": "The Space Race",
+        "summary": "From Sputnik's beep to Tranquility Base: the twelve years that carried humanity from zero to the Moon — and the near-disaster that proved the engineering.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Beep Heard Round the World",
+            "body": "On October 4, 1957, the Soviet Union lofted Sputnik — a polished 58-centimeter sphere weighing 83.6 kilograms — into orbit. For three weeks it did exactly one thing: beep. Any ham radio operator could tune it in, and Americans stepped outside at dusk to watch a Soviet machine cross their sky every 96 minutes. The space race had begun without warning.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "Why a Beep Was Terrifying",
+            "body": "Sputnik itself was harmless. The message was the launcher: the R-7, the world's first intercontinental ballistic missile. A rocket that could place 83 kilograms over any point on Earth could deliver a nuclear warhead the same way — and no ocean or radar fence could block it. Within a year, a shaken United States created NASA and poured money into science education.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did a harmless beeping sphere alarm the United States so deeply?",
+            "choices": [
+              "It was photographing American military bases",
+              "The rocket that orbited it could just as easily deliver a nuclear warhead anywhere on Earth",
+              "Its signal was jamming American radio broadcasts",
+              "It proved the Soviets had already reached the Moon"
+            ],
+            "answer": 1,
+            "explain": "Sputnik carried only a radio transmitter. The threat was the R-7 missile beneath it: a rocket capable of orbit was capable of any target on Earth, and no defense against it existed."
+          },
+          {
+            "type": "example",
+            "title": "108 Minutes",
+            "body": "On April 12, 1961, Yuri Gagarin rode Vostok 1 into orbit — the first human in space. One circuit of Earth, 108 minutes from launch to landing, ending with Gagarin parachuting into a field where a startled farmer's wife and her granddaughter watched a man in an orange suit walk over and ask for a telephone. The Soviets had won the first satellite, and now the first human.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Kennedy's Gamble",
+            "body": "On May 25, 1961, John F. Kennedy asked Congress to land a man on the Moon 'before this decade is out.' At that moment, America's entire human spaceflight experience was one 15-minute suborbital hop by Alan Shepard, twenty days earlier. No American had even orbited the Earth. Kennedy staked national prestige on a feat nobody yet knew how to perform.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When Kennedy committed America to a Moon landing, the United States had not yet put an astronaut into orbit.",
+            "answer": true,
+            "explain": "Only Shepard's 15-minute suborbital arc had flown, on May 5, 1961. John Glenn's first American orbit came nine months after Kennedy's speech, in February 1962. The commitment deliberately outran the capability."
+          },
+          {
+            "type": "example",
+            "title": "Earthrise",
+            "body": "In December 1968, Apollo 8 carried the first humans to another world — ten orbits around the Moon. Coming around the far side on December 24, Bill Anders saw a blue-and-white sphere climbing over the dead gray horizon and grabbed a camera. 'Earthrise' became one of history's most reproduced photographs and helped ignite the environmental movement back on the dot it showed.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "The 32-Kilogram Computer",
+            "body": "The Apollo Guidance Computer weighed 32 kilograms and held about 4 kilobytes of erasable memory, yet its software — built by an MIT team whose leads included Margaret Hamilton — was designed to shed low-priority work and keep flying when overloaded. Its programs were literally woven into 'core rope' memory by hand, one artifact of the roughly 400,000 people Apollo employed.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Minutes before the Apollo 11 landing, the computer flashed 1202 alarms — it was overloaded. What happened next?",
+            "choices": [
+              "It crashed, and Armstrong landed using only the window view",
+              "It shed low-priority tasks and kept the guidance running, exactly as designed",
+              "Mission Control radioed up replacement software",
+              "The landing was aborted and reattempted one orbit later"
+            ],
+            "answer": 1,
+            "explain": "The software was designed to dump less-critical tasks under overload and protect the guidance job. Controllers recognized the alarm within seconds and called 'Go.' The landing continued."
+          },
+          {
+            "type": "example",
+            "title": "Twenty-Five Seconds",
+            "body": "On July 20, 1969, the autopilot was carrying Eagle toward a boulder field, so Armstrong took over and flew on, hunting flat ground as the propellant fell. The famous calls — '60 seconds,' then '30 seconds' — meant time until a mandatory land-or-abort decision, not an empty tank. Touchdown came with about 25 seconds to spare; sloshing fuel had skewed the gauge low, and the true margin was closer to 45.",
+            "art": "hourglass"
+          },
+          {
+            "type": "quote",
+            "text": "That's one small step for man, one giant leap for mankind.",
+            "by": "Neil Armstrong, stepping onto the Moon, July 20, 1969"
+          },
+          {
+            "type": "reveal",
+            "prompt": "April 1970: an oxygen tank explosion crippled Apollo 13 more than 300,000 km from home, and carbon dioxide was building up in the lander the crew was using as a lifeboat. How did they survive?",
+            "answer": "Engineers on the ground improvised an adapter from plastic bags, cardboard, suit hoses, and duct tape to mate the command module's square CO2 scrubber cartridges to the lander's round system. The crew built it from a read-aloud recipe and splashed down safely on April 17."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Sputnik, October 4, 1957: the beep was harmless — the R-7 missile beneath it was the shock.",
+              "Gagarin orbited Earth on April 12, 1961; Kennedy answered by betting on the Moon with 15 minutes of American spaceflight experience.",
+              "Apollo 11 landed July 20, 1969 — Armstrong flying manually past boulders, down to about 25 seconds before a forced land-or-abort call.",
+              "The 32-kg Apollo computer shed overload by design; roughly 400,000 people stood behind it.",
+              "Apollo 13's crew came home on improvised engineering — plastic bags, cardboard, hoses, and tape."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "When did Sputnik launch, and what was the real threat?",
+            "back": "October 4, 1957. The satellite only beeped — but the R-7 rocket that orbited it was an intercontinental missile that could reach any point on Earth."
+          },
+          {
+            "front": "Who was the first human in space?",
+            "back": "Yuri Gagarin — one orbit aboard Vostok 1 on April 12, 1961, 108 minutes from launch to landing."
+          },
+          {
+            "front": "Tell the Apollo 11 fuel story accurately.",
+            "back": "Armstrong flew manually past a boulder field and landed about 25 seconds before a mandatory land-or-abort call. Sloshing fuel skewed the gauge; the true margin was near 45 seconds."
+          },
+          {
+            "front": "What saved Apollo 13's crew from CO2 poisoning?",
+            "back": "A ground-improvised adapter of plastic bags, cardboard, suit hoses, and duct tape, mating square scrubber cartridges to the lander's round system (April 1970)."
+          }
+        ]
+      },
+      {
+        "id": "robot-explorers",
+        "title": "The Robot Explorers",
+        "summary": "Two probes riding a 175-year alignment, rovers that refused to die, and how machines became our greatest explorers.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Once Every 175 Years",
+            "body": "In 1965, a summer student at JPL named Gary Flandro noticed that Jupiter, Saturn, Uranus, and Neptune would soon swing to the same side of the Sun — an arrangement that recurs only about every 175 years. One spacecraft could visit all four. The result was Voyager: two probes launched weeks apart in 1977, setting out on the greatest road trip ever taken.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "The Gravity Slingshot",
+            "body": "Voyager could never carry enough fuel to brake and accelerate between four planets. Instead it stole speed from them: swing close behind a moving planet and its gravity whips you forward, faster, onto a new course — the planet slows imperceptibly in exchange. Each flyby was aimed to sling the probe to the next world. Voyager 2 reached Neptune, 4.5 billion km out, in just 12 years.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How did Voyager 2 reach Neptune in only 12 years without giant engines?",
+            "choices": [
+              "It fired a nuclear rocket continuously for the whole trip",
+              "It borrowed momentum from each planet it passed, slingshotting on to the next",
+              "It unfurled a sail and rode the solar wind",
+              "It launched at full speed and simply coasted in a straight line"
+            ],
+            "answer": 1,
+            "explain": "Gravity assists let each planet's own orbital momentum accelerate and redirect the probe. Without the slingshots, a direct trip to Neptune would have taken roughly 30 years."
+          },
+          {
+            "type": "example",
+            "title": "A Message in a Bottle",
+            "body": "Bolted to each Voyager is a gold-plated copper record carrying Earth: greetings in 55 languages, thunder, whale song, a human heartbeat, Bach, and Chuck Berry's 'Johnny B. Goode' — 90 minutes of music chosen by a committee Carl Sagan led. The cover is etched with instructions for playing it. The records will remain intact for billions of years.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Still Whispering Home",
+            "body": "On August 25, 2012, Voyager 1 crossed the heliopause, where the Sun's wind gives way to interstellar space — though the Sun's gravity reigns far beyond. Now more than 24 billion km out, the farthest human-made object still whispers home through a 20-watt transmitter, each signal taking over 22 hours to arrive. Engineers shut instruments off one by one to stretch its fading power toward 2030.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Having crossed the heliopause, Voyager 1 has left the Solar System entirely.",
+            "answer": false,
+            "explain": "It left the Sun's wind, not the Sun's gravity. The Oort cloud of comets, still bound to the Sun, stretches vastly farther out; Voyager 1 will not clear it for tens of thousands of years."
+          },
+          {
+            "type": "example",
+            "title": "The Pale Blue Dot",
+            "body": "On February 14, 1990, about 6 billion kilometers out, Voyager 1 turned its camera back at Carl Sagan's urging and photographed Earth: a dot 0.12 pixels wide, suspended in a stray beam of scattered sunlight. Every war, every famine, every love story had happened on that dot. Sagan spent the next four years finding the words.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "Look again at that dot. That's here. That's home. That's us.",
+            "by": "Carl Sagan, Pale Blue Dot, 1994"
+          },
+          {
+            "type": "concept",
+            "title": "The 90-Day Warranty",
+            "body": "Mars rovers embarrass their warranties. Sojourner, the microwave-oven-sized pioneer of 1997, was built for 7 days and worked for 83. Spirit and Opportunity landed in 2004 carrying 90-day mission plans; Spirit drove for six years, Opportunity for almost fifteen. Today Perseverance drills and caches rock cores in Jezero Crater — samples still awaiting a ride home.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Opportunity landed on Mars in 2004 with a 90-day mission plan. How long did it actually work?",
+            "choices": [
+              "About 90 days, as designed",
+              "Just over a year",
+              "Nearly fifteen years",
+              "It is still driving today"
+            ],
+            "answer": 2,
+            "explain": "Opportunity worked until a global dust storm starved its solar panels in June 2018 — nearly 15 years, with 45 kilometers on the odometer, farther than a marathon. Spirit lasted six years."
+          },
+          {
+            "type": "example",
+            "title": "Plumes and an Ice Heart",
+            "body": "At Saturn, Cassini caught the small moon Enceladus venting geysers of salty water and organic molecules from a buried ocean — then flew straight through the spray to taste it. At Pluto, New Horizons arrived on July 14, 2015, after a nine-and-a-half-year sprint, and found a heart-shaped nitrogen glacier flanked by mountains of water ice. Nobody had predicted either world.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Opportunity's entire 15-year Mars program cost about $1 billion. Take a guess at what Apollo cost in today's dollars.",
+            "answer": "More than $250 billion. Robots need no food, water, air, or return ticket, and they accept decades-long one-way trips — which is why, measured in science per dollar, machines have owned deep space since Apollo ended."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A once-every-175-years planetary alignment let the 1977 Voyagers tour Jupiter, Saturn, Uranus, and Neptune by gravity slingshot.",
+              "Voyager 1 crossed the heliopause in August 2012 and still calls home from beyond 24 billion km on 20 watts.",
+              "The Pale Blue Dot photo (February 14, 1990): Earth at 0.12 pixels from 6 billion km away.",
+              "Mars rovers outlive their warranties — Opportunity turned a 90-day plan into nearly 15 years.",
+              "Cassini tasted Enceladus's ocean spray; New Horizons unveiled Pluto's nitrogen heart in 2015. Robots win on science per dollar."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why did both Voyagers launch in 1977?",
+            "back": "A once-every-175-years alignment of Jupiter, Saturn, Uranus, and Neptune made a single gravity-assist tour of all four giant planets possible."
+          },
+          {
+            "front": "Where is Voyager 1 today?",
+            "back": "In interstellar space — it crossed the heliopause in August 2012 and is more than 24 billion km out; its signals take over 22 hours to reach Earth."
+          },
+          {
+            "front": "Spirit and Opportunity: planned versus actual lifetimes?",
+            "back": "Planned: 90 Martian days each. Actual: Spirit ran six years; Opportunity nearly fifteen, driving 45 km before a 2018 dust storm ended the mission."
+          },
+          {
+            "front": "What did Cassini find erupting from Enceladus?",
+            "back": "Plumes of salty water and organic molecules venting from a subsurface ocean — Cassini flew through them, making the tiny moon a prime target in the search for life."
+          }
+        ]
+      },
+      {
+        "id": "new-era",
+        "title": "The New Era",
+        "summary": "Boosters that land themselves, a telescope that could not be repaired, and an honest accounting of what comes next.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Booster Came Back",
+            "body": "December 21, 2015: nine minutes after boosting eleven satellites toward orbit, a Falcon 9 first stage did something no orbital-class booster had ever done — it turned around, flew home, and landed standing upright at Cape Canaveral. Rockets had always been ammunition, spent once and discarded. This one would be an aircraft. The economics of space had just cracked open.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Airliners, Not Ammunition",
+            "body": "Propellant is cheap — well under 1% of a launch's cost. What kept spaceflight expensive for six decades was discarding a machine as complex as an airliner after every single flight. Recover and refly the booster and the arithmetic transforms: individual Falcon 9 stages have now flown more than twenty missions each, and the price per kilogram to orbit has fallen roughly tenfold.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did reaching orbit stay brutally expensive from Sputnik until the 2010s?",
+            "choices": [
+              "Rocket fuel costs tens of millions of dollars per launch",
+              "Every rocket was thrown away after a single flight",
+              "Only governments were permitted to launch anything",
+              "Orbital physics got harder as satellites grew heavier"
+            ],
+            "answer": 1,
+            "explain": "Fuel is under 1% of launch cost. The expense was building an airliner-grade machine and using it once. Reusability attacks exactly that — the hardware waste, not the physics."
+          },
+          {
+            "type": "concept",
+            "title": "A Quarter Century Off the Planet",
+            "body": "On November 2, 2000, three crewmates floated into the International Space Station and switched on the lights. Someone has lived off Earth every day since — more than 25 years of unbroken human presence, circling at 400 km and watching 16 sunrises a day. Built by 15 nations and sustained through the politics below, the station is slated for a controlled deorbit around 2030.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "At some point in the last 25 years, every human being was on Earth at the same time.",
+            "answer": false,
+            "explain": "Not since November 2, 2000. The ISS has been continuously crewed ever since — anyone younger than 25 has never lived in a world where all of humanity was home at once."
+          },
+          {
+            "type": "concept",
+            "title": "344 Ways to Fail",
+            "body": "The James Webb Space Telescope launched on December 25, 2021, folded like origami inside its rocket. It then had to deploy itself — a tennis-court-sized sunshield, an 18-segment golden mirror — while cruising to a station 1.5 million kilometers away, far beyond any repair mission. Engineers counted 344 single-point failures: steps where one jammed pin ends everything.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "JWST's deployment carried 344 single-point failures — any one of them fatal, a million miles from help. How many occurred?",
+            "answer": "Zero. Over two weeks in January 2022, every release fired and every hinge swung. Six months later, Webb's first images looked deeper into the universe's past than anything before — the payoff for a decade of obsessive testing."
+          },
+          {
+            "type": "concept",
+            "title": "Artemis, Without the Hype",
+            "body": "NASA is going back to the Moon — carefully and slowly. Artemis I flew an uncrewed capsule around it in late 2022; the crewed flights that follow have slipped repeatedly, as spaceflight schedules almost always do. The hardware is real and the program funded, but treat every announced date as an opening bid. Apollo took eight years; doing it sustainably may take longer.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Mars Is Not a Destination Yet",
+            "body": "A crewed Mars trip means 6 to 9 months of transit each way, bathed in cosmic radiation no current shielding fully stops, with launch windows opening only every 26 months — when Earth and Mars align. Miss your return window and you wait on the surface, roughly 500 days, for the next one. The physics is settled; the life support, radiation, and medicine are not.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why can a Mars mission launch only about every 26 months?",
+            "choices": [
+              "That's how long it takes to build each rocket",
+              "Earth and Mars align favorably for the crossing only that often",
+              "Martian dust storms block landings the rest of the time",
+              "Crews need 26 months of training between flights"
+            ],
+            "answer": 1,
+            "explain": "Earth laps Mars every 26 months — their synodic period — briefly opening a low-energy transfer window. Miss it, and orbital mechanics, not budgets, makes you wait for the next alignment."
+          },
+          {
+            "type": "concept",
+            "title": "The Money Landed in LEO",
+            "body": "While Mars headlines grabbed the attention, the actual space economy arrived 400 km up: thousands of internet satellites, Earth-imaging constellations, commercial crew flights, and private stations queuing to replace the ISS. Cheap launch was supposed to open the cosmos; its first act was to turn low Earth orbit into a business district. That revenue funds the frontier.",
+            "art": "network"
+          },
+          {
+            "type": "example",
+            "title": "Reading the Future Honestly",
+            "body": "A single century separates Goddard's cabbage field from boosters landing themselves — and each leap looked impossible until shortly before it looked inevitable. The honest forecast: orbit keeps getting cheaper, robots keep going everywhere, Moon landings resume, and Mars comes later than the announcements say. The rocket equation hasn't softened. We've just gotten better at paying it.",
+            "art": "compass"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Falcon 9's first booster landing (December 21, 2015) opened the reusability era; stages now fly more than twenty missions each.",
+              "Humans have lived continuously off Earth since November 2, 2000, aboard the ISS.",
+              "JWST deployed past 344 possible single-point failures with zero misses, 1.5 million km from any help (2021-22).",
+              "Mars is gated by physics: 6-9 month transits, 26-month launch windows, unsolved radiation exposure.",
+              "The space economy arrived in low Earth orbit first — and that revenue funds the frontier."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "When did an orbital-class booster first land intact?",
+            "back": "December 21, 2015 — a Falcon 9 first stage returned and landed upright at Cape Canaveral after sending its satellites toward orbit."
+          },
+          {
+            "front": "Since when has humanity been continuously in space?",
+            "back": "November 2, 2000 — the ISS has been crewed without a single day's break ever since, more than 25 years of continuous presence."
+          },
+          {
+            "front": "What was JWST's deployment record?",
+            "back": "344 possible single-point failures, zero occurred — the telescope unfolded itself 1.5 million km from Earth in January 2022."
+          },
+          {
+            "front": "Name three physical constraints on crewed Mars missions.",
+            "back": "Transits of 6-9 months each way, launch windows only every 26 months, and cosmic radiation that current shielding cannot fully block."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stock-market-explained",
+    "title": "The Stock Market, Explained",
+    "tagline": "Why the boring strategy keeps beating the exciting ones",
+    "category": "Finance",
+    "description": "How markets set prices, what indexes and funds really do, and the evidence behind patient investing. Educational, not investment advice.",
+    "lessons": [
+      {
+        "id": "what-a-stock-is",
+        "title": "What a Stock Is",
+        "summary": "Fractional ownership, the 1602 origin story, and how prices actually get made.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "You Own a Sliver",
+            "body": "Buy one share of a company and you own a real piece of it — a claim on its profits, a vote at its meetings, a stake in whatever it becomes. Everything else in this course builds on that one fact. So start with the first question: what exactly did you just buy?",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Fractional Ownership",
+            "body": "A company splits itself into shares — often billions of them. Each share is an identical claim on future earnings and assets. Apple has about 15 billion shares, so one share entitles you to roughly one fifteen-billionth of every dollar Apple ever earns. A tiny slice, but real ownership.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "Why Companies Go Public",
+            "body": "Going public — an IPO — turns private ownership into shares anyone can buy. The company raises money for growth without borrowing, early employees and investors can finally sell, and the stock becomes currency for hiring and acquisitions. The price: public books and thousands of new co-owners.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You buy one share of a coffee chain. What did you actually get?",
+            "choices": [
+              "A loan the company must repay you with interest",
+              "A tiny ownership stake with a claim on its earnings",
+              "A voucher redeemable for the company's products",
+              "A ticket whose value the company sets each day"
+            ],
+            "answer": 1,
+            "explain": "A share is fractional ownership — a claim on earnings and assets, plus a vote. It isn't debt (that's a bond), and nobody guarantees or sets its resale value."
+          },
+          {
+            "type": "example",
+            "title": "Amsterdam, 1602",
+            "body": "The Dutch East India Company (VOC) needed fortunes to fund spice voyages, so in 1602 it sold shares to the public — the first modern IPO. Traders then wanted to swap those shares, and Amsterdam's exchange grew up around them. The core machinery of today's market is over 400 years old.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Price Is a Bet on the Future",
+            "body": "A stock's price is the market's live estimate of what the company's future cash flows are worth today. Multiply price by total shares and you get market cap — the crowd's price tag for the whole business. When news shifts expectations about future profits, the price moves within seconds.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A company's shares trade at $50, and it has 2 billion shares outstanding. What's its market cap — and what does that number mean?",
+            "answer": "$100 billion: price times shares outstanding. It's the crowd's collective price tag for the entire business — what the market currently thinks all of its future earnings are worth."
+          },
+          {
+            "type": "concept",
+            "title": "What Happens to the Profits",
+            "body": "When a company earns money, it faces a fork: pay you cash directly (a dividend), buy back its own shares so each remaining share owns a bigger slice, or reinvest in growth so future earnings are larger. All three reward owners — the reward just arrives as cash today or a bigger claim tomorrow.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Nobody Sets the Price",
+            "body": "There is no official in charge of prices. An order book lists bids — what buyers will pay — and asks — what sellers will accept. When a bid meets an ask, a trade happens, and that trade is the new price. The quote you see is simply the last handshake between a buyer and a seller.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The stock exchange calculates each company's value and sets its share price accordingly.",
+            "answer": false,
+            "explain": "Exchanges only match orders. The price sits wherever the highest bid meets the lowest ask — a running vote by everyone trading, refreshed with every deal."
+          },
+          {
+            "type": "mcq",
+            "prompt": "A profitable company pays no dividend. What's the most accurate read?",
+            "choices": [
+              "Shareholders get nothing until a dividend starts",
+              "It may be reinvesting or buying back shares — owners still benefit",
+              "It's a sign the company is hiding losses"
+            ],
+            "answer": 1,
+            "explain": "Dividends are one branch of the fork. Buybacks concentrate your ownership, and reinvested profits grow the business — Amazon paid no dividend for decades while compounding."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A share is fractional ownership: a claim on a company's future earnings and assets.",
+              "The machinery began in Amsterdam, 1602, with the VOC — the first modern IPO and exchange.",
+              "Price × shares = market cap: the crowd's live bet on all future cash flows.",
+              "No one sets prices. The order book matches bids and asks; every trade prints a new one."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What do you actually own when you buy a share?",
+            "back": "A fractional stake in the company — an identical claim, share for share, on its future earnings and assets."
+          },
+          {
+            "front": "Where and when was the first modern IPO?",
+            "back": "Amsterdam, 1602: the Dutch East India Company (VOC) sold shares to the public, and an exchange grew up to trade them."
+          },
+          {
+            "front": "How do you compute market cap, and what does it mean?",
+            "back": "Share price × shares outstanding — the market's collective price tag on the whole business."
+          },
+          {
+            "front": "Who sets a stock's price?",
+            "back": "Nobody. The order book matches the highest bid with the lowest ask; each trade becomes the new quoted price."
+          }
+        ]
+      },
+      {
+        "id": "indexes-and-funds",
+        "title": "Indexes and Funds",
+        "summary": "What the S&P 500 and Dow really measure, Bogle's mocked invention, and why costs decide winners.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Reading 500 Stocks at Once",
+            "body": "Nobody can watch thousands of stocks, so we compress them into indexes — single numbers that track a whole basket. But the two most famous, the S&P 500 and the Dow, are built in very different ways, and one of them is frankly a little strange. Knowing the difference changes how you read headlines.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The S&P 500",
+            "body": "The S&P 500 tracks about 500 of the largest US companies, weighted by market cap: the bigger the company, the more it moves the index. A handful of giants can carry the whole number — the top ten firms alone often account for roughly a third of it. It's the default scoreboard for 'the market.'",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the S&P 500, every company influences the index equally.",
+            "answer": false,
+            "explain": "It's weighted by market cap. A giant like Apple or Microsoft can move the index more than the hundred smallest members combined."
+          },
+          {
+            "type": "concept",
+            "title": "The Dow's Odd Math",
+            "body": "The Dow Jones Industrial Average tracks just 30 big companies — and weights them by share price, a relic of 1896 hand calculation. A $400 stock moves the Dow eight times as much as a $50 stock, even if the $50 company is a far larger business. It survives on fame, not on design.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A $400-per-share midsize firm and a $50-per-share giant are both in the Dow. Each rises 1% today. Which moved the Dow more?",
+            "choices": [
+              "The giant — bigger companies always count more",
+              "The $400 stock — the Dow weights by share price",
+              "Equal — 1% is 1% in any index"
+            ],
+            "answer": 1,
+            "explain": "The Dow adds up share prices, so 1% of $400 is $4 of price — eight times the $0.50 from the giant. Cap-weighted indexes like the S&P 500 avoid this quirk."
+          },
+          {
+            "type": "concept",
+            "title": "Funds: Baskets You Can Buy",
+            "body": "A fund pools money to buy many stocks at once. Mutual funds price once daily after the close; ETFs trade all day on an exchange, like a stock. Either can be active (managers picking stocks for a higher fee) or index (holding the whole basket for a sliver of a percent). The wrapper matters less than the fee.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Bogle's Folly, 1976",
+            "body": "In 1976, Jack Bogle launched the first index fund for the public: no manager, no picks, just hold the S&P 500 at minimal cost. Wall Street jeered — flyers called index funds 'un-American,' rivals dubbed it 'Bogle's folly.' It raised just $11 million against a $150 million goal, then grew into one of the largest funds on Earth.",
+            "art": "seed"
+          },
+          {
+            "type": "quote",
+            "text": "Don't look for the needle in the haystack. Just buy the haystack!",
+            "by": "Jack Bogle, The Little Book of Common Sense Investing"
+          },
+          {
+            "type": "concept",
+            "title": "Fees Compound Too",
+            "body": "Returns compound — and so do costs. Pay 1% a year for 30 years and you don't lose 30%; the drag snowballs until roughly a quarter of your final portfolio is gone. Grow $10,000 at 7% and you'd have about $76,000; at 6% after the fee, about $57,000. One small-looking number, a quarter of your outcome.",
+            "art": "hourglass"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two funds hold the identical basket of stocks. One charges 0.05% a year, the other 1%. Thirty years from now, how big is the gap?",
+            "answer": "Enormous — the 1% fund quietly consumes about a quarter of your final wealth. Identical holdings, wildly different outcomes. Costs are the one part of investing you fully control."
+          },
+          {
+            "type": "concept",
+            "title": "The Scoreboard on Stock-Picking",
+            "body": "S&P's SPIVA scorecards run the experiment every year: do professional stock-pickers beat the plain index? Over one year, some do. Stretch to 15 years or more and roughly nine in ten active US large-cap funds trail the S&P 500 after fees. The longer the race, the more the low-cost basket wins.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Over 15-year stretches, about what share of active US large-cap funds beat the S&P 500?",
+            "choices": [
+              "Around 90% — that's why managers get paid",
+              "About half — it's a coin flip",
+              "Roughly 10% — most trail after fees"
+            ],
+            "answer": 2,
+            "explain": "SPIVA data shows about nine in ten active funds trailing over 15+ years. Fees and trading costs compound against them — and past winners rarely repeat."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The S&P 500 is cap-weighted — about 500 firms, but the giants steer it.",
+              "The Dow weights by share price, an 1896 relic that lets a $400 stock outshout a $50 giant.",
+              "Bogle's 1976 index fund was mocked as un-American folly; it became one of the largest funds ever.",
+              "A 1% annual fee compounds into roughly a quarter of your portfolio over 30 years.",
+              "Over 15+ years, about nine in ten active funds trail their index."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How is the S&P 500 weighted?",
+            "back": "By market cap: about 500 large US firms, with the biggest companies moving the index most."
+          },
+          {
+            "front": "What's odd about the Dow's construction?",
+            "back": "It's price-weighted — a $400 stock sways it eight times as much as a $50 stock, regardless of company size."
+          },
+          {
+            "front": "How was the first index fund received in 1976?",
+            "back": "Mocked as 'Bogle's folly' and 'un-American.' It raised $11M of a $150M goal — then became one of the largest funds on Earth."
+          },
+          {
+            "front": "What does a 1% annual fee really cost over 30 years?",
+            "back": "Roughly a quarter of your final portfolio — fee drag compounds just like returns do."
+          }
+        ]
+      },
+      {
+        "id": "efficient-ish",
+        "title": "Efficient... ish",
+        "summary": "Fama's unbeatable market meets Shiller's manic one — and the Nobel committee sides with both.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Genius or Madman?",
+            "body": "Lesson 2 left a puzzle: if professionals can't beat the market, it must be brutally smart. Yet this same market has priced tulip bulbs like houses and startups like empires. Is the crowd a genius or a madman? Economists fought over this for fifty years — and the answer turned out to be 'yes.'",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "The Efficient-Market Hypothesis",
+            "body": "Eugene Fama's 1970 hypothesis: prices already reflect all public information. Thousands of traders race to act on every scrap of news, and their buying and selling pushes the price to its new level within seconds. Any obvious bargain gets grabbed — and un-bargained — almost instantly.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Why Tips Arrive Pre-Priced",
+            "body": "This is why the stock tip in tonight's news is worthless by morning: the price adjusted when the news broke, not when you read it. When a company reports earnings, most of the move happens within minutes. Acting on public headlines isn't getting in early — it's the definition of late.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A company announces blowout earnings at 9 a.m. If you buy at lunch, you'll still capture most of the good news.",
+            "answer": false,
+            "explain": "Prices absorb public news within minutes — the jump happened at 9:00. By lunch you're paying a price that already contains the blowout quarter."
+          },
+          {
+            "type": "concept",
+            "title": "Shiller's Counterpunch",
+            "body": "In 1981, Robert Shiller compared stock prices with the dividends companies later actually paid. If prices were rational forecasts, they should wobble about as much as those fundamentals. Instead they swung far more — 'excess volatility.' Something beyond information moves prices: mood, stories, fear.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Shiller's 1981 excess-volatility work show?",
+            "choices": [
+              "Stock prices swing far more than later fundamentals justify",
+              "Stock prices react too slowly to breaking news",
+              "Dividends are more volatile than stock prices"
+            ],
+            "answer": 0,
+            "explain": "Prices gyrated much more than the dividend stream they were supposedly forecasting. Markets absorb news fast — and still overshoot in both directions."
+          },
+          {
+            "type": "example",
+            "title": "Tulips, Told Honestly",
+            "body": "Dutch tulip mania is real but smaller than legend. In the 1630s, rare bulbs traded among a network of merchants at wild prices — a few contracts quoted near the cost of an Amsterdam house — before collapsing in February 1637. Historians find no national ruin, and few top prices were ever paid. Bubbles happen; so does myth-making about them.",
+            "art": "flame"
+          },
+          {
+            "type": "example",
+            "title": "When Real Bubbles Burst",
+            "body": "The modern ones were bigger. The NASDAQ, swollen with dot-com stocks, peaked in March 2000 and lost about 78% by late 2002. In 2008, prices built on ever-rising house values collapsed and took the banking system to the brink. Prices that were rational forecasts shouldn't do this. They did.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If markets clearly overshoot into bubbles, why is beating the market still so hard?",
+            "answer": "Mispricing is only obvious in hindsight. In real time, nobody reliably knows whether prices are too high, how far they'll run, or when they'll turn — being early looks identical to being wrong. 'Hard to beat' and 'not fully rational' are both true."
+          },
+          {
+            "type": "example",
+            "title": "One Prize, Two Verdicts",
+            "body": "In 2013 the economics Nobel went jointly to Eugene Fama and Robert Shiller (with Lars Peter Hansen). One showed prices absorb information too fast to exploit; the other showed they swing too much to be rational. The committee's message: both findings survived every test. Hold them together.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The 2013 Nobel committee honored Fama and Shiller together, even though their views of the market conflict.",
+            "answer": true,
+            "explain": "That's the punchline of modern finance: the market is extremely hard to beat, and it is not perfectly rational. Practical investing starts from both truths."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "EMH (Fama): prices absorb public information within minutes — headlines arrive pre-priced.",
+              "Shiller: prices swing far more than fundamentals justify. Mood and stories move markets too.",
+              "Bubbles are real — dot-com, 2008 — but tulip mania was smaller than the legend.",
+              "2013's shared Nobel is the verdict: nearly unbeatable, yet not perfectly rational."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the efficient-market hypothesis say?",
+            "back": "Prices already reflect all public information — news is absorbed within minutes, so public tips arrive pre-priced."
+          },
+          {
+            "front": "What is 'excess volatility'?",
+            "back": "Shiller's 1981 finding that prices swing far more than the fundamentals they supposedly forecast — evidence of mood in the machine."
+          },
+          {
+            "front": "How big was tulip mania, honestly?",
+            "back": "A real 1637 spike and crash among a limited trading network — no national ruin. Real, but smaller than the legend."
+          },
+          {
+            "front": "Why did Fama AND Shiller share the 2013 Nobel?",
+            "back": "Both were right: markets absorb news too fast to beat easily, yet overshoot too much to be perfectly rational."
+          }
+        ]
+      },
+      {
+        "id": "the-real-edges",
+        "title": "The Investor's Real Edges",
+        "summary": "Time in the market, diversification, automation — and defeating the investor in the mirror.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Boring Superpowers",
+            "body": "Three lessons of humility: pros can't beat the index, news is pre-priced, and even obvious bubbles can't be timed. So where's your edge? It exists — but it isn't cleverness. It's time, diversification, and automation: advantages that ask nothing of your forecasting and everything of your patience.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Time In, Not Timing",
+            "body": "Over the 20 years through 2022, the S&P 500 returned about 9.8% a year. Miss just the 10 best days — 10 out of roughly 5,000 trading days — and that fell to 5.6%, less than half the final wealth. Jumping in and out doesn't trim risk; it risks the handful of days that carry the whole return.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "The Best Days Hide in the Worst",
+            "body": "Here's the trap: the market's best days cluster inside its scariest stretches. In that same 20-year span, 7 of the 10 best days landed within two weeks of the 10 worst. Sell during a crash to 'wait for calm' and you're maximally exposed to missing the rebound — which is exactly when it comes.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Markets are crashing and you sell, planning to buy back in 'when things settle.' What does the evidence say about this plan?",
+            "choices": [
+              "Smart — you'll skip the worst days",
+              "Risky — the best days cluster near the worst, and missing a few can halve long-run returns",
+              "Neutral — the best and worst days cancel out"
+            ],
+            "answer": 1,
+            "explain": "Seven of the 10 best days came within two weeks of the 10 worst. Sellers in a crash routinely miss the rebound — and missing 10 days over 20 years cut returns from 9.8% to 5.6%."
+          },
+          {
+            "type": "quote",
+            "text": "When we own portions of outstanding businesses with outstanding managements, our favorite holding period is forever.",
+            "by": "Warren Buffett, 1988 Berkshire Hathaway letter"
+          },
+          {
+            "type": "concept",
+            "title": "The Only Free Lunch",
+            "body": "Harry Markowitz proved it in 1952: combine assets that don't move together and portfolio risk drops without an equal drop in expected return — the closest thing investing has to a free lunch. You can't know which company, sector, or country wins the next decade. Own enough of them and you don't have to.",
+            "art": "shield"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Holding shares in eight different technology companies means you're well diversified.",
+            "answer": false,
+            "explain": "Eight stocks that rise and fall together are one bet in eight costumes. Diversification means assets that don't move in sync — across sectors, sizes, and countries."
+          },
+          {
+            "type": "concept",
+            "title": "Automation Beats Willpower",
+            "body": "Dollar-cost averaging — investing a fixed amount on a fixed schedule — is less a math trick than behavior technology. It deletes the hardest question ('is now a good time?'), and the arithmetic helps: the same $200 automatically buys more shares when prices are low and fewer when they're high.",
+            "art": "path"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You invest $200 every month, automatically. The market drops 30% and stays down for a year. What did your plan quietly do?",
+            "answer": "It kept buying — collecting about 40% more shares per $200 all year, with no decision required. When prices recovered, those cheap shares did the heavy lifting. The plan turned a scary year into an accumulation sale."
+          },
+          {
+            "type": "example",
+            "title": "The Investor in the Mirror",
+            "body": "Fund returns and investor returns differ, because people buy after rallies and sell after crashes — a 'behavior gap' that studies find costs a percent or more a year. Barber and Odean tracked 66,000 brokerage households through the 1990s: the most active fifth earned about 6 points a year less than the market. The most active traders earned the least.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Barber and Odean's study of 66,000 brokerage accounts, who earned the least?",
+            "choices": [
+              "The most active traders",
+              "Investors who rarely traded",
+              "Everyone did about the same"
+            ],
+            "answer": 0,
+            "explain": "The most active fifth trailed the market by roughly 6 percentage points a year — costs, taxes, and mistimed trades. The paper's title says it: 'Trading Is Hazardous to Your Wealth.'"
+          },
+          {
+            "type": "concept",
+            "title": "The Last Doubling",
+            "body": "At 8% a year, money doubles roughly every nine years, so 40 years delivers more than four doublings: $10,000 grows past $200,000. Most of that arrives in the final decade — compounding back-loads its rewards. That's why the boring strategy demands decades, and why it beats the exciting ones.",
+            "art": "seed"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Missing the 10 best days in 20 years cut returns from 9.8% to 5.6% — and those days hide near the worst ones.",
+              "Diversification is the only free lunch: assets that don't move together cut risk for free (Markowitz).",
+              "Dollar-cost averaging is behavior tech — it deletes the timing decision and buys more when prices fall.",
+              "The most active traders earn the least; the gap between fund returns and investor returns is self-inflicted.",
+              "Compounding back-loads its rewards. Decades, not drama, are the edge."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What happens if you miss the market's 10 best days over 20 years?",
+            "back": "Annual returns drop from about 9.8% to 5.6% — less than half the final wealth. And the best days cluster near the worst."
+          },
+          {
+            "front": "What did Markowitz call investing's only free lunch?",
+            "back": "Diversification: combining assets that don't move together cuts risk without an equal cut in expected return."
+          },
+          {
+            "front": "What is dollar-cost averaging really for?",
+            "back": "Behavior. Fixed automatic investing deletes the timing decision — and mechanically buys more shares when prices are low."
+          },
+          {
+            "front": "Who earned the least in Barber and Odean's 66,000-account study?",
+            "back": "The most active traders — about 6 percentage points a year behind the market. Trading is hazardous to your wealth."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "turning-points",
+    "title": "Turning Points of History",
+    "tagline": "Four hinges the modern world swung on",
+    "category": "History",
+    "description": "How print, the Columbian exchange, steam, and public health bent the arc of the modern world — with the costs counted as honestly as the gains.",
+    "lessons": [
+      {
+        "id": "printing-press",
+        "title": "The Printing Press",
+        "summary": "Gutenberg's system, Korea's earlier type, Luther's pamphlets, and the birth of the reading public.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A World Written by Hand",
+            "body": "Picture Europe in 1450. Every book you have ever seen was copied by hand, letter by letter, by a scribe who might spend a year on a single Bible. Books cost as much as farms; most people die without owning one. Then a goldsmith in Mainz assembles a machine, and within fifty years the written word is everywhere. Here is how it happened.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "Gutenberg's System",
+            "body": "Johannes Gutenberg invented no single thing. He combined three: movable metal type cast from a hand mould, a screw press adapted from wine-making, and a sticky oil-based ink that clung to metal. Each part existed somewhere; together they could stamp out hundreds of identical pages a day. The breakthrough was the system, not any one piece of it.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Korea Got There First",
+            "body": "Movable metal type was not born in Mainz. Korean printers used it generations earlier — the Jikji, a Buddhist anthology printed in 1377, survives in Paris as proof. But printing there served court and temple, and its texts used thousands of Chinese characters. Gutenberg's alphabet of a few dozen letters, sold for profit, is what let the idea catch fire.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was Gutenberg's real breakthrough?",
+            "choices": [
+              "He was the first person to imagine movable type",
+              "He combined type, press, and oil ink into one reliable system",
+              "He invented paper cheap enough to print on",
+              "He built the first machine that could copy pictures"
+            ],
+            "answer": 1,
+            "explain": "Movable metal type already existed in Korea — the Jikji was printed in 1377. Gutenberg's genius was integration: hand mould, screw press, and oil ink working as one system that stamped out identical pages fast and cheaply."
+          },
+          {
+            "type": "concept",
+            "title": "The Price of Words Collapses",
+            "body": "Around 1450, all of Europe held perhaps 30,000 hand-copied books. By 1500, presses had spread to over 250 towns and printed millions of volumes — scholarly estimates run from eight to twenty million, more books in fifty years than in the previous thousand. The price of a book collapsed, and with it the monopoly on who could know things.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Printing with movable metal type was invented in Korea before Gutenberg was born.",
+            "answer": true,
+            "explain": "Korean printers used movable metal type by 1377, when the Jikji was printed — decades before Gutenberg's press of around 1450. His contribution was a system fast and cheap enough to spread across a continent."
+          },
+          {
+            "type": "example",
+            "title": "Ninety-Five Theses, Countless Copies",
+            "body": "In October 1517, Martin Luther circulated ninety-five Latin theses attacking the sale of indulgences. Printers translated and reprinted them as cheap pamphlets; contemporaries claimed they crossed Germany in two weeks and Europe in two months. A dispute that would once have stayed inside one town became the Reformation — and Christendom split for good.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Printed books were identical copies. Why did that matter so much for science?",
+            "answer": "A scholar in Kraków and one in Bologna could argue over the same diagram on the same page. Errors, once printed, could be listed and corrected in the next edition. Knowledge began to accumulate instead of decay — Copernicus and Vesalius built on exact copies."
+          },
+          {
+            "type": "concept",
+            "title": "A Reading Public Is Born",
+            "body": "Print standardized more than pages. Spellings settled; vernaculars like German and English hardened into national written languages; page numbers, indexes, and title pages made knowledge searchable. Literacy crept from clergy to merchants to artisans. For the first time, thousands of strangers could read the same words — and join the same argument.",
+            "art": "network"
+          },
+          {
+            "type": "quote",
+            "text": "Printing, gunpowder and the compass: these three have changed the whole face and state of things throughout the world.",
+            "by": "Francis Bacon, Novum Organum (1620)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Luther's theses reached much of Europe within about two months of October 1517. What made that speed possible?",
+            "choices": [
+              "His followers carried copies along pilgrimage routes",
+              "The Church circulated them as official warnings against heresy",
+              "Printers reprinted and translated them as fast-selling pamphlets",
+              "Luther mailed manuscript copies to every major city"
+            ],
+            "answer": 2,
+            "explain": "Printers, chasing profit as much as reform, turned the theses into cheap vernacular pamphlets. Contemporaries claimed they crossed Germany in two weeks — a speed no team of scribes could ever have matched."
+          },
+          {
+            "type": "concept",
+            "title": "Information Revolutions Rhyme",
+            "body": "You have lived through this story's echo. Print cut the cost of copying words; the telegraph, of moving them; the internet, of both, to nearly zero. Each time the pattern repeats: gatekeepers lose control, new voices flood in, authorities panic about error and heresy spreading — and society slowly renegotiates whom to trust. The press ran it first.",
+            "art": "wave"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Gutenberg (~1450) fused movable metal type, a screw press, and oil ink into a system; Korea's Jikji (1377) used movable type first.",
+              "Europe went from roughly 30,000 hand-copied books to millions of printed volumes within fifty years.",
+              "Luther's 1517 theses spread across Europe in weeks as pamphlets — print made the Reformation possible.",
+              "Identical copies let science accumulate; standardized print built national languages and a reading public.",
+              "Every information revolution since — telegraph, internet — has rhymed with the press."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What three elements made up Gutenberg's printing system (~1450)?",
+            "back": "Movable metal type cast from a hand mould, a screw press, and oil-based ink — the breakthrough was the combination, not any single part."
+          },
+          {
+            "front": "What is the Jikji, and why does it matter?",
+            "back": "A Korean Buddhist anthology printed with movable metal type in 1377 — proof the technology predates Gutenberg by decades."
+          },
+          {
+            "front": "How fast did Luther's Ninety-Five Theses (1517) spread?",
+            "back": "Reprinted as cheap pamphlets, they reportedly crossed Germany in about two weeks and much of Europe within two months."
+          },
+          {
+            "front": "How did Europe's book supply change in print's first fifty years?",
+            "back": "From roughly 30,000 hand-copied volumes around 1450 to millions of printed books by 1500 — estimates run from eight to twenty million."
+          }
+        ]
+      },
+      {
+        "id": "columbian-exchange",
+        "title": "The Columbian Exchange",
+        "summary": "1492 reconnects two biospheres: foods remake cuisines, diseases kill millions, and silver, sugar, and slavery build a brutal economy.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "When Two Worlds Collided",
+            "body": "For more than ten thousand years after the Bering land bridge flooded, the Americas and the rest of the world evolved apart — different crops, different animals, different diseases. Columbus's 1492 landfall stitched the halves back together. What crossed the ocean in the decades that followed reshaped what humanity eats, where it lives, and who survived.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Naming the Exchange",
+            "body": "The name is younger than you would guess. In 1972, historian Alfred Crosby argued that the biological traffic set loose in 1492 — plants, animals, microbes, and people — changed more lives than any treaty or battle, and he called it the Columbian Exchange. Little of it was planned. Much of it was catastrophic. All of it was permanent.",
+            "art": "bridge"
+          },
+          {
+            "type": "example",
+            "title": "Two-Way Traffic",
+            "body": "Potatoes, maize, tomatoes, chillies, and cacao sailed east; wheat, rice, sugar, cattle, pigs, and horses sailed west. Strip the Exchange from the table and cuisines collapse: no red sauce in Italy, no chillies in Sichuan or India, no beef in Argentina, no potatoes in Poland. Every one of those 'ancient traditions' is younger than 1492.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these foods existed in Italy before 1492?",
+            "choices": [
+              "Tomatoes",
+              "Maize (corn)",
+              "Wheat",
+              "Chilli peppers"
+            ],
+            "answer": 2,
+            "explain": "Wheat is an Old World crop — it traveled west to the Americas. Tomatoes, maize, and chillies are American natives that reached Italy only after the Exchange. 'Traditional' tomato sauce is younger than the printing press."
+          },
+          {
+            "type": "concept",
+            "title": "The Potato Feeds Europe",
+            "body": "An acre of potatoes could feed a family that an acre of rye left hungry. Economists Nathan Nunn and Nancy Qian estimate this one Andean crop accounts for roughly a quarter of the Old World's population and urbanization growth between 1700 and 1900. It was also a dangerous dependence: when blight struck Ireland in 1845, about a million people starved.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Tomato sauce is an ancient Roman tradition stretching back thousands of years.",
+            "answer": false,
+            "explain": "Tomatoes are American natives that reached Italy only after 1492 — and were long viewed with suspicion there. Italy's 'timeless' red sauce is an invention of the past few centuries, a child of the Columbian Exchange."
+          },
+          {
+            "type": "concept",
+            "title": "The Great Dying",
+            "body": "Now the dark ledger. Smallpox, measles, influenza, and typhus crossed with the ships into peoples with no acquired immunity. Epidemics, compounded by war, enslavement, and famine, killed a large majority of indigenous Americans within about 150 years — many regional estimates run from 80 to 95 percent. It ranks among the deadliest catastrophes in history.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why did lethal epidemics flow overwhelmingly from the Old World to the New — and not the other way?",
+            "answer": "Crowd diseases like smallpox evolved where dense cities lived beside domesticated herds — Eurasia had cattle, pigs, and horses for millennia. The Americas had few herd animals, so fewer such pathogens arose there, and no one had immunity to Europe's."
+          },
+          {
+            "type": "concept",
+            "title": "Silver, Sugar, and Empire",
+            "body": "The Exchange ran on an economy. Silver from Potosí, dug by coerced Andean labor under the mita draft, flooded Europe and — via the Manila galleons — China, whose tax system demanded it. Sugar, an Old World grass planted in American soil, became the most profitable crop on earth, and its plantations demanded labor on a scale that remade three continents.",
+            "art": "coin"
+          },
+          {
+            "type": "example",
+            "title": "The Exchange's Cruelest Cargo",
+            "body": "Sugar's labor came by force. From the 1500s to the 1860s, about 12.5 million enslaved Africans were shipped across the Atlantic; roughly 10.7 million survived the crossing, most bound for sugar colonies in Brazil and the Caribbean. The Columbian Exchange was never just seeds and germs — it wired slavery into the foundations of the Atlantic economy.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was the primary cause of the collapse of indigenous American populations after 1492?",
+            "choices": [
+              "Battlefield deaths in wars of conquest",
+              "Old World epidemic diseases such as smallpox",
+              "Famines caused by failed local harvests",
+              "Forced migration to Europe"
+            ],
+            "answer": 1,
+            "explain": "War, enslavement, and famine compounded the disaster, but imported pathogens — smallpox above all — did most of the killing, with mortality estimated at 80 to 95 percent in the hardest-hit regions."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Alfred Crosby coined 'the Columbian Exchange' in 1972 for the biological traffic unleashed by 1492.",
+              "Potatoes, maize, tomatoes, and chillies went east; wheat, cattle, and horses went west — remaking cuisines everywhere.",
+              "Nunn and Qian credit the potato with roughly a quarter of Old World population growth from 1700 to 1900.",
+              "Old World diseases killed a large majority of indigenous Americans — the Exchange's central catastrophe.",
+              "Silver from Potosí, sugar plantations, and the Atlantic slave trade (~12.5 million people shipped) were its brutal economy."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Who coined the term 'Columbian Exchange', and when?",
+            "back": "Historian Alfred Crosby, in 1972 — naming the two-way biological traffic of crops, animals, microbes, and people that followed 1492."
+          },
+          {
+            "front": "Name two foods that crossed east and two that crossed west after 1492.",
+            "back": "East: potatoes, maize, tomatoes, chillies. West: wheat, cattle, horses, sugar. Modern 'traditional' cuisines are built on these swaps."
+          },
+          {
+            "front": "What did Old World diseases do to indigenous American populations?",
+            "back": "Smallpox and other epidemics, compounded by conquest and enslavement, killed a large majority — often estimated at 80-95% in the hardest-hit regions."
+          },
+          {
+            "front": "How many enslaved Africans were shipped across the Atlantic?",
+            "back": "About 12.5 million embarked between the 1500s and 1860s; roughly 10.7 million survived the crossing, most bound for sugar colonies."
+          }
+        ]
+      },
+      {
+        "id": "industrial-revolution",
+        "title": "The Industrial Revolution",
+        "summary": "Coal, steam, and cotton bend the flat line of human income upward — at a price paid in childhoods and cities.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Flat Line Breaks",
+            "body": "Plot average income per person from ancient Rome to the year 1800 and you get a nearly flat line — a medieval peasant lived about as well as a Roman one. Then, on a damp island rich in coal, the line bends upward and never stops. That bend, beginning in Britain around 1800, is the sharpest turn in the economic history of our species.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Why Britain? Why Then?",
+            "body": "Historians still argue, and honesty means saying so. Britain had coal that was cheap and shallow; wages high enough to make labor-saving machines profitable (Robert Allen's argument); patents, secure property, and a dense culture of tinkering artisans. Which ingredient mattered most is genuinely debated. That they all met in one place is not.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Taming Fire Into Motion",
+            "body": "In 1712, Thomas Newcomen built an engine that burned coal to pump water out of coal mines — revolutionary, but so wasteful it only paid where fuel was nearly free. In 1769, James Watt patented the separate condenser, which stopped squandering heat on reheating the cylinder every stroke; fuel use fell by about three-quarters. Steam could now power anything.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did James Watt actually contribute to steam power?",
+            "choices": [
+              "He invented the first working steam engine",
+              "He discovered that steam could exert pressure",
+              "He built the first steam locomotive",
+              "He added a separate condenser that slashed fuel waste"
+            ],
+            "answer": 3,
+            "explain": "Newcomen's engine had been pumping mines since 1712. Watt's 1769 separate condenser cut coal use by about three-quarters — efficiency, not invention, set steam free. Locomotives came later, with engineers like Stephenson."
+          },
+          {
+            "type": "concept",
+            "title": "The Factory Is Invented",
+            "body": "Spinning had been cottage work, done at home at your own pace. The new machines — Hargreaves's jenny, Arkwright's water frame — were too big or too costly for a cottage, so the work moved to the mill, and the mill's clock took charge of your day: shifts, bells, fines for lateness. Cotton output exploded; the rhythm of ordinary life bent to the machine.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Before 1800, living standards for ordinary people had been rising steadily for centuries.",
+            "answer": false,
+            "explain": "Average income per person was nearly flat from antiquity to 1800. Gains in output were absorbed by population growth — the Malthusian pattern — until industrialization broke the cycle."
+          },
+          {
+            "type": "concept",
+            "title": "Escaping Malthus",
+            "body": "Thomas Malthus explained the flat line in 1798: any gain in food just meant more surviving children, until scarcity bit again. He wrote at the exact moment his rule was breaking. Machines let output grow faster than population for the first time in history, and income per person — flat for millennia — has since risen more than tenfold where industry took hold.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The Luddites smashed textile machines from 1811 to 1816. What were they actually protesting?",
+            "answer": "Not technology itself. Skilled weavers and croppers attacked machines used to cut wages, gut quality, and replace trained workers with cheap, unapprenticed labor. Parliament answered by making frame-breaking a capital crime, and several Luddites were hanged."
+          },
+          {
+            "type": "concept",
+            "title": "The Bill Arrives",
+            "body": "The first generations paid a brutal bill. Six-year-olds worked mill shifts; the Factory Act of 1833, which merely limited child labor, counted as progress. Industrial cities killed: in the 1840s, life expectancy at birth in the slums of Liverpool and Manchester fell into the twenties, far below the countryside. The gains were real. So was the price.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "The Rocket Shrinks the Map",
+            "body": "In October 1829, Stephenson's Rocket won the Rainhill Trials at nearly thirty miles per hour, and the Liverpool & Manchester Railway opened the next year. Journeys of days shrank to hours; fresh food, daily papers, and people flowed between cities; and timetables pushed whole nations onto a single 'railway time'. Space itself seemed to contract.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did early spinning machinery move work out of homes and into factories?",
+            "choices": [
+              "Factory owners wanted to provide schooling alongside work",
+              "Machines like the water frame were too large and costly for cottages",
+              "New laws banned production inside private homes",
+              "Cottage workers refused to operate any machinery"
+            ],
+            "answer": 1,
+            "explain": "Arkwright's water frame needed water power and capital far beyond any cottage. Concentrating machines under one roof — and one clock — created the factory system, with its shifts, bells, and fines."
+          },
+          {
+            "type": "quote",
+            "text": "From this foul drain the greatest stream of human industry flows out to fertilise the whole world. From this filthy sewer pure gold flows.",
+            "by": "Alexis de Tocqueville, on Manchester (1835)"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Britain's mix of cheap coal, high wages, and institutions lit the fuse — the exact weighting is still debated.",
+              "Newcomen pumped mines from 1712; Watt's separate condenser (1769) cut fuel use ~75% and set steam free.",
+              "Factories replaced cottage work and put the clock in charge; output soared while autonomy vanished.",
+              "Income per person, flat for millennia, escaped the Malthusian trap — the hockey stick of modern growth.",
+              "The costs were real: child labor, cities that killed, and Luddites hanged for defending their trade."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Watt's separate condenser (1769) change?",
+            "back": "It stopped Newcomen-style engines from wasting most of their heat, cutting fuel use by about three-quarters — steam could finally power factories anywhere."
+          },
+          {
+            "front": "What is the Malthusian trap, and when did humanity escape it?",
+            "back": "Output gains absorbed by population growth, keeping incomes flat. Industrialization, from about 1800, let output outrun population for the first time."
+          },
+          {
+            "front": "What were the Luddites (1811-16) actually protesting?",
+            "back": "Not technology itself — machines used to cut wages, quality, and skilled jobs. Frame-breaking became a capital crime; several were hanged."
+          },
+          {
+            "front": "What did the Rocket and the first railways (1829-30) change?",
+            "back": "Rainhill's winner made steam land travel practical: days became hours, and railway timetables pushed nations onto a single standard time."
+          }
+        ]
+      },
+      {
+        "id": "health-revolution",
+        "title": "The Health Revolution",
+        "summary": "A pump map, germ theory, sewers, vaccines, and dwarf wheat — the least famous hinge doubled human lifespans.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Quietest Revolution",
+            "body": "Here is the hinge nobody makes films about. In 1800, life expectancy at birth was roughly 30 years everywhere on earth — not because adults dropped dead at 30, but because nearly half of all children died young. Today the world average is about 73. No war, empire, or invention has touched as many lives as that doubling. This lesson is how it happened.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "The Pump on Broad Street",
+            "body": "London, September 1854. Cholera is emptying Soho, and official medicine blames miasma — poisonous air. Physician John Snow instead maps every death, house by house. The black bars cluster around the Broad Street water pump; the brewery next door, whose workers drink beer, is spared. The pump handle comes off, and the case for waterborne disease is made.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "From Bad Air to Germs",
+            "body": "Snow had the pattern; Pasteur and Koch supplied the mechanism. Between the 1860s and 1880s, germ theory proved that specific microbes cause specific diseases — Koch isolated the anthrax, tuberculosis, and cholera bacilli. Two thousand years of miasma medicine collapsed, though slowly: Semmelweis had been ridiculed for urging handwashing decades before.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How did John Snow identify the source of the 1854 Soho cholera outbreak?",
+            "choices": [
+              "He detected the cholera microbe with an improved microscope",
+              "He mapped the deaths and traced them to one water pump",
+              "He proved the neighborhood's air was contaminated",
+              "He noticed that only unvaccinated families fell ill"
+            ],
+            "answer": 1,
+            "explain": "Snow's dot map showed deaths clustering around the Broad Street pump, while beer-drinking brewery workers nearby were spared. The microbe itself was not confirmed until Koch's work decades later."
+          },
+          {
+            "type": "concept",
+            "title": "Sewers Saved More Than Surgeons",
+            "body": "The unglamorous heroes are pipes. London built vast sewers after the 'Great Stink' of 1858; cities filtered, then chlorinated, their water. Economists Cutler and Miller estimate clean-water technology alone explains nearly half the fall in American urban death rates from 1900 to 1936. Sanitation was saving millions before antibiotics existed at all.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Antibiotics caused most of the historical decline in death rates.",
+            "answer": false,
+            "explain": "Death rates were falling steeply before penicillin reached patients in the 1940s — driven by sanitation, clean water, vaccination, and nutrition. Antibiotics were a later, powerful addition, not the main engine."
+          },
+          {
+            "type": "concept",
+            "title": "Beating Death's Champion",
+            "body": "Smallpox killed roughly 300 million people in the twentieth century alone. Jenner's cowpox vaccination of 1796 began the counterattack; a global WHO campaign of surveillance and ring vaccination finished it. The last natural case came in 1977, and eradication was declared in 1980 — still the only human disease ever deliberately driven to zero.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Penicillin reached patients in the 1940s. What everyday dangers did antibiotics erase?",
+            "answer": "Before them, a scratch could kill. Roughly one mother died for every 250 births, pneumonia and infected wounds were routine killers, and every surgery gambled with sepsis. Fleming's 1928 mould, mass-produced during the war, turned death sentences into a week of pills."
+          },
+          {
+            "type": "concept",
+            "title": "Borlaug's Dwarf Wheat",
+            "body": "In the 1960s, serious forecasters predicted unavoidable mass famine in Asia. Agronomist Norman Borlaug bred short-strawed, disease-resistant wheat that put its energy into grain instead of stalk. India and Pakistan nearly doubled wheat harvests between 1965 and 1970; estimates of famine deaths averted reach the hundreds of millions. He won the 1970 Nobel Peace Prize.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Green Revolution's Bill",
+            "body": "Honesty cuts both ways. The new varieties demanded fertilizer, pesticides, and irrigation — Punjab's falling water table today traces to choices made then. Monocultures displaced local crop diversity, and larger farmers often captured the gains first. The critiques are serious and ongoing; so are the hundreds of millions of people who got to eat.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What made Borlaug's 'dwarf' wheat varieties so productive?",
+            "choices": [
+              "They grew faster by skipping winter dormancy",
+              "Short, strong stalks carried heavy grain heads without collapsing",
+              "They needed no water or fertilizer to thrive",
+              "They were genetically engineered in a laboratory"
+            ],
+            "answer": 1,
+            "explain": "Tall traditional wheat fell over when heavily fertilized. Borlaug's short-strawed crosses — bred conventionally, decades before genetic engineering — stood upright and poured their energy into grain, letting yields roughly double."
+          },
+          {
+            "type": "quote",
+            "text": "Food is the moral right of all who are born into this world.",
+            "by": "Norman Borlaug, Nobel Peace Prize lecture (1970)"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Global life expectancy rose from roughly 30 in 1800 to about 73 today — mostly by saving children.",
+              "Snow's 1854 pump map, then Pasteur and Koch's germ theory, replaced miasma with mechanism.",
+              "Sanitation and clean water cut death rates decades before antibiotics; vaccination eradicated smallpox by 1980.",
+              "Borlaug's dwarf wheat helped avert the famines forecast for Asia — with real ecological costs still being paid.",
+              "This hinge is the least famous because its victory is invisible: deaths that never happened."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How did global life expectancy change from 1800 to today?",
+            "back": "From roughly 30 years to about 73 — driven above all by the collapse of child mortality, not by adults once dying at 30."
+          },
+          {
+            "front": "What did John Snow's 1854 map demonstrate?",
+            "back": "Cholera deaths clustered around the Broad Street pump — evidence for waterborne disease against the reigning miasma (bad air) theory."
+          },
+          {
+            "front": "Which came first — falling death rates or antibiotics?",
+            "back": "Falling death rates. Sanitation, clean water, and vaccines drove mortality down decades before penicillin reached patients in the 1940s."
+          },
+          {
+            "front": "What was the Green Revolution, and what was its trade-off?",
+            "back": "Borlaug's dwarf wheat roughly doubled South Asian yields and helped avert forecast famines — at the cost of heavy water, fertilizer, and monoculture use."
           }
         ]
       }

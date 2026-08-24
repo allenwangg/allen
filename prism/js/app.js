@@ -1211,7 +1211,7 @@
         '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
       '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
-      '<p class="version">Prism — 18 courses, 901 cards, one memory that keeps them.</p>' +
+      '<p class="version">Prism — 30 courses, 1,507 cards, one memory that keeps them.</p>' +
     '</div>';
     document.body.appendChild(wrap);
     function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
