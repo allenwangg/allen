@@ -40,9 +40,18 @@
     wave: '<path class="a" d="M32 108c10-44 44-52 66-34-14 2-22 10-24 22 26-14 54-2 60 20H32z"/><path class="s" d="M28 128q16-10 32 0t32 0 32 0 32 0"/><circle class="w" cx="156" cy="40" r="14"/><path class="w" d="M156 18v-6m22 28h6"/>'
   };
 
-  function svg(key) {
+  /* Soft pastel scene behind each glyph — a blob, a wash and a ground line.
+     Rendered under the line art so illustrations feel drawn, not iconographic. */
+  var SCENE =
+    '<ellipse class="blob" cx="104" cy="80" rx="74" ry="62"/>' +
+    '<ellipse class="blob2" cx="70" cy="60" rx="36" ry="30"/>' +
+    '<path class="ground" d="M30 140h140"/>';
+
+  function svg(key, opts) {
     var inner = G[key] || G.lightbulb;
-    return '<svg viewBox="0 0 200 160" role="img" aria-hidden="true" focusable="false">' + inner + '</svg>';
+    var scene = (opts && opts.flat) ? '' : SCENE;
+    return '<svg viewBox="0 0 200 160" role="img" aria-hidden="true" focusable="false">' +
+      scene + inner + '</svg>';
   }
 
   window.Art = { svg: svg, keys: Object.keys(G) };

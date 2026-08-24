@@ -765,3 +765,73 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 }
 :root[data-theme="dark"] .chip.streak .frz { background: #7cc6f033; color: #8fd0f5; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.streak .frz { background: #7cc6f033; color: #8fd0f5; } }
+
+/* ---------------- illustrated scenes ----------------
+   A soft pastel wash behind every glyph so the art reads as an illustration.
+   Tuned per theme; the line art itself is unchanged. */
+
+.blob  { fill: hsl(var(--ah) 70% 62% / .10); }
+.blob2 { fill: hsl(calc(var(--ah) + 44) 75% 66% / .09); }
+.ground { stroke: hsl(var(--ah) 40% 50% / .16); stroke-width: 3.5; stroke-linecap: round; fill: none; }
+:root[data-theme="dark"] .blob { fill: hsl(var(--ah) 70% 60% / .13); }
+:root[data-theme="dark"] .blob2 { fill: hsl(calc(var(--ah) + 44) 70% 62% / .11); }
+:root[data-theme="dark"] .ground { stroke: hsl(var(--ah) 50% 70% / .18); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .blob { fill: hsl(var(--ah) 70% 60% / .13); }
+  :root:not([data-theme="light"]) .blob2 { fill: hsl(calc(var(--ah) + 44) 70% 62% / .11); }
+  :root:not([data-theme="light"]) .ground { stroke: hsl(var(--ah) 50% 70% / .18); }
+}
+/* small placements read better without the scene furniture */
+.chip svg .blob, .chip svg .blob2, .chip svg .ground,
+.iconbtn svg .blob, .iconbtn svg .blob2, .iconbtn svg .ground { display: none; }
+
+/* ---------------- pastel theme (opt-in, alongside the existing light/dark) ---------------- */
+
+:root[data-theme="pastel"] {
+  --bg: #fbf7fb;
+  --bg-glow: radial-gradient(1200px 560px at 82% -12%, hsl(var(--ah) 78% 78% / .30), transparent 62%),
+             radial-gradient(900px 480px at 8% 8%, hsl(calc(var(--ah) + 50) 80% 82% / .24), transparent 60%);
+  --surface: #ffffff;
+  --surface-2: #f6f1f8;
+  --ink: #3b3552;
+  --mut: #7a7392;
+  --line: #ece4f2;
+  --accent: hsl(var(--ah) 58% 56%);
+  --accent-strong: hsl(var(--ah) 52% 44%);
+  --accent-soft: hsl(var(--ah) 70% 62% / .14);
+  --accent-line: hsl(var(--ah) 55% 62% / .38);
+  --good: #3aa07a;
+  --good-soft: #3aa07a1f;
+  --bad: #d9738a;
+  --bad-soft: #d9738a1f;
+  --gold: #b8863a;
+  --on-status: #ffffff;
+  --flame: #d1734a;
+  --think: #8a6fd0;
+  --shadow: 0 1px 2px #6a53891a, 0 10px 30px #6a538914;
+  --shadow-lift: 0 2px 6px #6a538920, 0 18px 46px #6a53891f;
+}
+:root[data-theme="pastel"] .blob  { fill: hsl(var(--ah) 78% 72% / .20); }
+:root[data-theme="pastel"] .blob2 { fill: hsl(calc(var(--ah) + 48) 82% 76% / .18); }
+:root[data-theme="pastel"] .ground { stroke: hsl(var(--ah) 45% 60% / .22); }
+:root[data-theme="pastel"] .cover-top {
+  background:
+    radial-gradient(420px 200px at 110% -30%, hsl(calc(var(--ah) + 46) 82% 78% / .55), transparent 62%),
+    linear-gradient(135deg, hsl(var(--ah) 78% 82% / .55), hsl(var(--ah) 70% 88% / .30));
+}
+:root[data-theme="pastel"] .card { border-color: #efe7f4; }
+:root[data-theme="pastel"] .btn.primary { color: #fff; }
+
+/* The hero illustration on a lesson card carries more of the page, so its
+   scene sits a touch stronger than the same glyph shown small elsewhere. */
+.card-art .blob  { fill: hsl(var(--ah) 72% 62% / .16); }
+.card-art .blob2 { fill: hsl(calc(var(--ah) + 44) 78% 66% / .14); }
+.card-art .ground { stroke: hsl(var(--ah) 42% 52% / .22); }
+:root[data-theme="pastel"] .card-art .blob  { fill: hsl(var(--ah) 80% 74% / .28); }
+:root[data-theme="pastel"] .card-art .blob2 { fill: hsl(calc(var(--ah) + 48) 84% 78% / .24); }
+:root[data-theme="dark"] .card-art .blob  { fill: hsl(var(--ah) 72% 60% / .17); }
+:root[data-theme="dark"] .card-art .blob2 { fill: hsl(calc(var(--ah) + 44) 72% 62% / .15); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .card-art .blob  { fill: hsl(var(--ah) 72% 60% / .17); }
+  :root:not([data-theme="light"]) .card-art .blob2 { fill: hsl(calc(var(--ah) + 44) 72% 62% / .15); }
+}

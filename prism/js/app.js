@@ -849,9 +849,15 @@
     if (speak) {
       speak.onclick = function () {
         var on = TTS.toggle(cardSpeech(card));
+        Store.setSetting('autoRead', on);      // choosing to listen keeps it listening
         speak.classList.toggle('on', on);
       };
       TTS.onChange = function (on) { var b = document.getElementById('btn-speak'); if (b) b.classList.toggle('on', on); };
+      // hands-free: once narration is on, every new card reads itself
+      if (Store.state.settings.autoRead) {
+        speak.classList.add('on');
+        setTimeout(function () { TTS.speak(cardSpeech(card)); }, 260);
+      }
     }
 
     var savebtn = document.getElementById('btn-save');
@@ -1557,7 +1563,11 @@
       '<label class="field">Theme<select id="set-theme">' +
         '<option value="system"' + (s.theme === 'system' ? ' selected' : '') + '>System</option>' +
         '<option value="light"' + (s.theme === 'light' ? ' selected' : '') + '>Light</option>' +
+        '<option value="pastel"' + (s.theme === 'pastel' ? ' selected' : '') + '>Pastel — soft and easy on the eyes</option>' +
         '<option value="dark"' + (s.theme === 'dark' ? ' selected' : '') + '>Dark</option></select></label>' +
+      '<label class="field">Narration<select id="set-read">' +
+        '<option value="off"' + (s.autoRead ? '' : ' selected') + '>Tap the speaker to listen</option>' +
+        '<option value="on"' + (s.autoRead ? ' selected' : '') + '>Read every card aloud</option></select></label>' +
       '<label class="field">Daily goal<select id="set-goal">' +
         [30, 50, 100, 200].map(function (g) { return '<option value="' + g + '"' + (s.dailyGoal === g ? ' selected' : '') + '>' + g + ' XP — ' + { 30: 'casual', 50: 'steady', 100: 'serious', 200: 'obsessed' }[g] + '</option>'; }).join('') +
       '</select></label>' +
@@ -1585,6 +1595,7 @@
       Store.setSetting('theme', document.getElementById('set-theme').value);
       Store.setSetting('dailyGoal', Number(document.getElementById('set-goal').value));
       Store.setSetting('sound', document.getElementById('set-sound').value === 'on');
+      Store.setSetting('autoRead', document.getElementById('set-read').value === 'on');
       applyTheme();
       close();
       route();
@@ -1621,7 +1632,7 @@
 
   function applyTheme() {
     var t = Store.state.settings.theme;
-    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    if (t === 'light' || t === 'dark' || t === 'pastel') document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
   }
 
