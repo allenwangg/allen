@@ -199,6 +199,95 @@ console.log('\n  estimator');
   await page.context().close();
 }
 
+/* ============================================ backup & settings ========== */
+console.log('\n  backup and settings');
+{
+  const page = await newPage();
+  await page.goto(`${base}/quoteforge/`, { waitUntil: 'networkidle' });
+
+  // Export is the documented safety net against losing local data, so it is
+  // checked like a feature rather than assumed to work.
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.locator('.tab[data-tab="jobs"]').click().then(() => page.waitForTimeout(250))
+      .then(() => page.locator('#btnExportAll').click()),
+  ]);
+  const stream = await download.createReadStream();
+  let raw = '';
+  for await (const chunk of stream) raw += chunk;
+  let backup = null;
+  try { backup = JSON.parse(raw); } catch { /* reported below */ }
+  check('backup downloads as valid JSON', backup !== null, `(${raw.slice(0, 60)})`);
+  check('backup is self-describing', backup?.kind === 'quoteforge-backup');
+  check('backup contains the estimates', (backup?.data?.estimates?.length || 0) >= 1);
+  check('backup carries the line items',
+    (backup?.data?.estimates?.[0]?.items?.length || 0) > 10);
+
+  // Import it into a clean profile and confirm the work comes back intact.
+  const fresh = await newPage();
+  await fresh.goto(`${base}/quoteforge/`, { waitUntil: 'networkidle' });
+  await fresh.evaluate(() => { localStorage.clear(); });
+  await fresh.reload({ waitUntil: 'networkidle' });
+  await fresh.waitForTimeout(300);
+
+  await fresh.locator('.tab[data-tab="jobs"]').click();
+  await fresh.waitForTimeout(200);
+  const countBefore = await fresh.locator('.est-row').count();
+  await fresh.locator('#fileImport').setInputFiles({
+    name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(raw),
+  });
+  await fresh.waitForTimeout(500);
+  check('importing a backup restores the estimates',
+    (await fresh.locator('.est-row').count()) > countBefore,
+    `(had ${countBefore})`);
+
+  // Re-importing the same file must not duplicate.
+  const afterFirst = await fresh.locator('.est-row').count();
+  await fresh.locator('#fileImport').setInputFiles({
+    name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(raw),
+  });
+  await fresh.waitForTimeout(500);
+  check('re-importing the same backup does not duplicate',
+    (await fresh.locator('.est-row').count()) === afterFirst);
+
+  // A junk file must produce a readable message, not a crash.
+  await fresh.locator('#fileImport').setInputFiles({
+    name: 'junk.json', mimeType: 'application/json', buffer: Buffer.from('<html>nope</html>'),
+  });
+  await fresh.waitForTimeout(400);
+  const toastText = await fresh.locator('.toast').last().textContent().catch(() => '');
+  check('a junk import explains itself instead of crashing',
+    /valid JSON|QuoteForge export/i.test(toastText), `(toast: "${toastText}")`);
+  await fresh.context().close();
+
+  /* --- settings editors --- */
+  await page.locator('.tab[data-tab="settings"]').click();
+  await page.waitForTimeout(250);
+
+  const milestoneRows = await page.locator('[data-msf="percent"]').count();
+  check('payment milestones are editable', milestoneRows === 3, `(got ${milestoneRows})`);
+  await page.locator('[data-msf="percent"]').first().fill('50');
+  await page.waitForTimeout(250);
+  check('changing a milestone updates its dollar amount',
+    (await page.locator('#milestoneEditor').textContent()).includes('%'));
+
+  const termCount = await page.locator('[data-term]').count();
+  check('terms are editable', termCount >= 5, `(got ${termCount})`);
+  await page.locator('#btnAddTerm').click();
+  await page.waitForTimeout(250);
+  check('a term can be added', (await page.locator('[data-term]').count()) === termCount + 1);
+
+  // Changing the target margin must move the coach, not just a label.
+  await page.locator('[data-pct="targetMargin"]').fill('45');
+  await page.waitForTimeout(250);
+  await page.locator('.tab[data-tab="estimate"]').click();
+  await page.waitForTimeout(250);
+  check('raising the target margin re-triggers the coach',
+    /under target|below your walk-away/i.test(await page.locator('.coach').textContent()));
+
+  await page.context().close();
+}
+
 /* ====================================================== proposal ========= */
 console.log('\n  proposal');
 {

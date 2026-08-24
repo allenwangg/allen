@@ -80,7 +80,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-86 unit assertions with no test framework and no install step, plus 49 browser
+86 unit assertions with no test framework and no install step, plus 61 browser
 assertions in `test/browser.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
@@ -90,8 +90,9 @@ focus across re-renders, reprice-to-target landing on the target, undo across an
 assembly insert, persistence across reload, signature capture producing real pixels,
 print producing a clean multi-page PDF, and — importantly — the proposal never leaking
 cost, markup, margin, or a "Subcontractor" heading to the client. It also checks that
-neither page scrolls sideways on a 390px phone, and that an edited price book cost
-flows into assemblies and survives a reload.
+neither page scrolls sideways on a 390px phone, that an edited price book cost
+flows into assemblies and survives a reload, and that a backup exported from one
+profile imports cleanly into another without duplicating on a second import.
 
 ### Two bugs the tests caught
 
