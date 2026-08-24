@@ -80,7 +80,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
- unit assertions with no test framework and no install step, plus 49 browser
+86 unit assertions with no test framework and no install step, plus 49 browser
 assertions in `test/browser.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
