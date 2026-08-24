@@ -321,15 +321,26 @@ export function insightsView(state) {
     Most people find one specific day is quietly costing them; fixing that one day is usually easier than changing every day.</p>
   </div>` : '';
 
-  let body;
+  // A user without enough data yet gets the explanation unblurred, whatever
+  // their plan. Putting a paywall over the words "you need more data" tells
+  // someone nothing useful and makes the product feel grabby at exactly the
+  // moment they are deciding whether to keep going.
   if (!res || res.status === 'insufficient-data') {
-    body = `<div class="empty-state">
-      <h3>Keep logging</h3>
-      <p>${esc(res?.message || 'Log at least 21 days to unlock personal correlations.')}</p>
-      <p class="subtle" style="max-width:520px;margin:12px auto 0">We don't show correlations early. With too few days,
-      anything we found would be noise — and a health app that confidently reports noise is worse than one that says nothing.</p>
-    </div>`;
-  } else if (!res.findings.length) {
+    return `
+    <div class="card">
+      <div class="card-head"><h1 style="margin:0">Personal insights</h1><span class="pill pill-pro">Pro</span></div>
+      <div class="empty-state">
+        <h3>Keep logging</h3>
+        <p>${esc(res?.message || 'Log at least 21 days to unlock personal correlations.')}</p>
+        <p class="subtle" style="max-width:520px;margin:12px auto 0">We don't show correlations early. With too few days,
+        anything we found would be noise — and a health app that confidently reports noise is worse than one that says nothing.</p>
+      </div>
+    </div>
+    ${weekdayCard}`;
+  }
+
+  let body;
+  if (!res.findings.length) {
     body = `<div class="empty-state">
       <h3>Nothing statistically solid yet</h3>
       <p>${esc(res.message)}</p>
