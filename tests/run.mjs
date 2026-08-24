@@ -1,0 +1,398 @@
+/**
+ * Dependency-free test runner. `node tests/run.mjs`
+ * Covers the two things that must not break: scoring monotonicity and the
+ * statistical honesty of the insight engine.
+ */
+import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
+import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern } from '../app/js/insights.js';
+
+let pass = 0, fail = 0;
+const failures = [];
+
+function t(name, fn) {
+  try { fn(); pass++; process.stdout.write('.'); }
+  catch (e) { fail++; failures.push([name, e.message]); process.stdout.write('F'); }
+}
+function eq(a, b, msg = '') {
+  if (a !== b) throw new Error(`${msg} expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
+}
+function near(a, b, tol = 1e-6, msg = '') {
+  if (a == null || Math.abs(a - b) > tol) throw new Error(`${msg} expected ~${b}, got ${a}`);
+}
+function ok(v, msg = 'expected truthy') { if (!v) throw new Error(msg); }
+
+/* -------- deterministic PRNG so failures are reproducible -------- */
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gauss(rnd) {
+  const u = Math.max(1e-9, rnd()), v = rnd();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+/* ================= model ================= */
+t('dateKey/addDays cross month', () => eq(addDays('2026-01-31', 1), '2026-02-01'));
+t('addDays leap year', () => eq(addDays('2028-02-28', 1), '2028-02-29'));
+t('addDays negative', () => eq(addDays('2026-03-01', -1), '2026-02-28'));
+t('daysBetween', () => eq(daysBetween('2026-01-01', '2026-03-01'), 59));
+t('daysBetween across DST', () => eq(daysBetween('2026-03-01', '2026-04-01'), 31));
+t('validateEntry clamps', () => {
+  const { entry, errors } = validateEntry({ date: '2026-01-01', sleepHours: 99 });
+  eq(entry.sleepHours, 16); ok(errors.some((e) => e.includes('clamped')));
+});
+t('validateEntry rejects bad date', () => eq(validateEntry({ date: 'nope' }).entry, null));
+t('validateEntry keeps optional null', () => eq(validateEntry({ date: '2026-01-01', hrv: '' }).entry.hrv, null));
+t('validateEntry survives garbage', () => {
+  const { entry } = validateEntry({ date: '2026-01-01', steps: 'banana' });
+  eq(entry.steps, 6000);
+});
+t('completeness full on default entry', () => eq(completeness(emptyEntry()), 1));
+
+/* ================= curves ================= */
+t('curve exact node', () => near(curve([[0, 0], [10, 100]], 10), 100));
+t('curve interpolates', () => near(curve([[0, 0], [10, 100]], 5), 50));
+t('curve flat below', () => near(curve([[2, 40], [10, 100]], 0), 40));
+t('curve flat above', () => near(curve([[2, 40], [10, 100]], 99), 100));
+t('curve null input', () => eq(curve([[0, 0], [10, 100]], null), null));
+t('sleep curve is U-shaped', () => {
+  const s7 = curve([[0,0],[4,20],[5.5,45],[6.5,75],[7,92],[7.5,100],[8.5,100],[9,88],[10,62],[12,30],[16,15]], 7.5);
+  const s12 = curve([[0,0],[4,20],[5.5,45],[6.5,75],[7,92],[7.5,100],[8.5,100],[9,88],[10,62],[12,30],[16,15]], 12);
+  const s4 = curve([[0,0],[4,20],[5.5,45],[6.5,75],[7,92],[7.5,100],[8.5,100],[9,88],[10,62],[12,30],[16,15]], 4);
+  ok(s7 > s12 && s7 > s4, 'optimum must beat both extremes');
+});
+t('weightedMean ignores nulls', () => near(weightedMean([{score:100,weight:1},{score:null,weight:9}]), 100));
+t('weightedMean all-null is null', () => eq(weightedMean([{score:null,weight:1}]), null));
+
+/* ================= scoring ================= */
+const ctx = { age: 40, weightKg: 80 };
+t('perfect day scores high', () => {
+  const e = emptyEntry('2026-01-01');
+  Object.assign(e, { sleepHours: 8, sleepQuality: 5, bedtimeMinutes: 1330, steps: 12000,
+    exerciseMinutes: 50, exerciseIntensity: 2, strengthSession: 1, proteinGrams: 130,
+    produceServings: 8, ultraProcessed: 0, fiberGrams: 35, hydrationLitres: 2.75,
+    alcoholUnits: 0, nicotine: 0, caffeineAfter2pm: 0, stress: 1, mood: 5, energy: 5,
+    sunlightMinutes: 60, socialMinutes: 180 });
+  ok(scoreDay(e, ctx).score > 92, 'got ' + scoreDay(e, ctx).score);
+});
+t('terrible day scores low', () => {
+  const e = emptyEntry('2026-01-01');
+  Object.assign(e, { sleepHours: 4, sleepQuality: 1, bedtimeMinutes: 200, steps: 800,
+    exerciseMinutes: 0, exerciseIntensity: 0, strengthSession: 0, proteinGrams: 30,
+    produceServings: 0, ultraProcessed: 9, fiberGrams: 3, hydrationLitres: 0.4,
+    alcoholUnits: 7, nicotine: 1, caffeineAfter2pm: 400, stress: 5, mood: 1, energy: 1,
+    sunlightMinutes: 0, socialMinutes: 0 });
+  ok(scoreDay(e, ctx).score < 20, 'got ' + scoreDay(e, ctx).score);
+});
+t('score bounded 0..100 over random fuzz', () => {
+  const rnd = mulberry32(7);
+  for (let i = 0; i < 4000; i++) {
+    const e = emptyEntry('2026-01-01');
+    for (const k of Object.keys(e)) {
+      if (typeof e[k] === 'number' && k !== 'createdAt' && k !== 'updatedAt' && k !== 'v') {
+        e[k] = rnd() * 400 - 50;   // deliberately out of range
+      }
+    }
+    const s = scoreDay(e, ctx).score;
+    ok(s === null || (s >= 0 && s <= 100), `score out of bounds: ${s}`);
+  }
+});
+t('more sleep monotonic up to optimum', () => {
+  const mk = (h) => { const e = emptyEntry('2026-01-01'); e.sleepHours = h; return scoreDay(e, ctx).score; };
+  ok(mk(5) < mk(6) && mk(6) < mk(7) && mk(7) <= mk(7.5), 'sleep must improve toward optimum');
+});
+t('alcohol strictly hurts', () => {
+  const mk = (a) => { const e = emptyEntry('2026-01-01'); e.alcoholUnits = a; return scoreDay(e, ctx).score; };
+  ok(mk(0) > mk(2) && mk(2) > mk(5));
+});
+t('pillar weights sum to 1', () => {
+  const e = emptyEntry('2026-01-01');
+  const total = Object.values(scoreDay(e, ctx).pillars).reduce((a, p) => a + p.weight, 0);
+  near(total, 1, 1e-9);
+});
+t('missing biomarkers do not zero metabolic', () => {
+  const e = emptyEntry('2026-01-01');
+  eq(scoreDay(e, ctx).pillars.metabolic.score, null);
+  ok(scoreDay(e, ctx).score > 0, 'composite must still compute');
+});
+t('protein scales with bodyweight', () => {
+  const e = emptyEntry('2026-01-01'); e.proteinGrams = 100; e.bodyweightKg = null;
+  const light = scoreDay(e, { age: 40, weightKg: 55 }).pillars.nutrition.score;
+  const heavy = scoreDay(e, { age: 40, weightKg: 110 }).pillars.nutrition.score;
+  ok(light > heavy, 'same grams should score better for a lighter person');
+});
+t('bedtime wraps past midnight', () => {
+  const mk = (b) => { const e = emptyEntry('2026-01-01'); e.bedtimeMinutes = b; return scoreDay(e, ctx).pillars.sleep.score; };
+  ok(mk(1320) > mk(90), '22:00 must beat 01:30');
+});
+
+/* ================= aggregates ================= */
+t('ewma smooths and tracks', () => {
+  const out = ewma([50, 50, 50, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90], 3);
+  ok(out[3] > 50 && out[3] < 90 && out[13] > 85);
+});
+t('ewma tolerates nulls', () => { const out = ewma([50, null, 60], 3); ok(out[1] != null); });
+t('streak counts consecutive', () => {
+  const es = ['2026-01-01','2026-01-02','2026-01-03'].map(emptyEntry);
+  eq(currentStreak(es), 3);
+});
+t('streak breaks on gap', () => {
+  const es = ['2026-01-01','2026-01-05','2026-01-06'].map(emptyEntry);
+  eq(currentStreak(es), 2);
+});
+t('streak of empty is 0', () => eq(currentStreak([]), 0));
+t('regularity needs 4 nights', () => eq(sleepRegularity([emptyEntry('2026-01-01')]), null));
+t('regularity rewards consistency', () => {
+  const steady = [0,1,2,3,4,5].map((i) => { const e = emptyEntry(addDays('2026-01-01', i)); e.bedtimeMinutes = 1350; return e; });
+  const chaotic = [0,1,2,3,4,5].map((i) => { const e = emptyEntry(addDays('2026-01-01', i)); e.bedtimeMinutes = i % 2 ? 1200 : 120; return e; });
+  ok(sleepRegularity(steady).score > sleepRegularity(chaotic).score);
+});
+
+/* ================= bio age ================= */
+t('bioAge sign is correct', () => {
+  ok(bioAgeDelta(88, { age: 40 }).years < 0, 'great habits => younger');
+  ok(bioAgeDelta(18, { age: 40 }).years > 0, 'poor habits => older');
+});
+t('bioAge near zero at population average', () => near(bioAgeDelta(50, { age: 35 }).years, 0, 0.15));
+t('bioAge saturates', () => {
+  ok(Math.abs(bioAgeDelta(100, { age: 70 }).years) <= 9);
+  ok(Math.abs(bioAgeDelta(0, { age: 70 }).years) <= 9);
+});
+t('bioAge monotonic in score', () => {
+  let prev = Infinity;
+  for (let s = 0; s <= 100; s += 5) {
+    const y = bioAgeDelta(s, { age: 45 }).years;
+    ok(y <= prev + 1e-9, `not monotonic at ${s}`);
+    prev = y;
+  }
+});
+t('bioAge null-safe', () => eq(bioAgeDelta(null, { age: 40 }), null));
+
+/* ================= statistics ================= */
+t('rank averages ties', () => { const r = rank([10, 20, 20, 30]); near(r[1], 2.5); near(r[2], 2.5); });
+t('rank ascending', () => { const r = rank([5, 1, 3]); eq(r[0], 3); eq(r[1], 1); eq(r[2], 2); });
+t('pearson perfect', () => near(pearson([1,2,3,4],[2,4,6,8]), 1, 1e-9));
+t('pearson inverse', () => near(pearson([1,2,3,4],[8,6,4,2]), -1, 1e-9));
+t('pearson zero variance => null', () => eq(pearson([1,1,1,1],[1,2,3,4]), null));
+t('spearman catches monotone nonlinear', () => near(spearman([1,2,3,4],[1,4,9,16]), 1, 1e-9));
+t('CI brackets r', () => { const [lo, hi] = correlationCI(0.5, 40); ok(lo < 0.5 && hi > 0.5); });
+t('CI narrows with n', () => {
+  const w = correlationCI(0.5, 20), n = correlationCI(0.5, 200);
+  ok((n[1] - n[0]) < (w[1] - w[0]));
+});
+t('BH controls: uniform p-values yield few passes', () => {
+  const rnd = mulberry32(99);
+  const ps = Array.from({ length: 300 }, () => rnd());
+  eq(benjaminiHochberg(ps, 0.1).passing.size <= 5, true);
+});
+t('BH passes obvious signal', () => {
+  const ps = [1e-9, 1e-8, 1e-7, ...Array.from({ length: 50 }, (_, i) => 0.4 + i * 0.01)];
+  ok(benjaminiHochberg(ps, 0.1).passing.size >= 3);
+});
+t('BH adjusted p is monotone non-decreasing in raw p', () => {
+  const ps = [0.001, 0.01, 0.02, 0.3, 0.5, 0.9];
+  const { adjusted } = benjaminiHochberg(ps, 0.1);
+  for (let i = 1; i < ps.length; i++) ok(adjusted[i] >= adjusted[i - 1] - 1e-12);
+});
+t('permutation p high for noise', () => {
+  const rnd = mulberry32(3);
+  const xs = Array.from({ length: 60 }, () => gauss(rnd));
+  const ys = Array.from({ length: 60 }, () => gauss(rnd));
+  ok(permutationP(xs, ys, spearman(xs, ys)) > 0.05);
+});
+t('permutation p low for strong signal', () => {
+  const rnd = mulberry32(4);
+  const xs = Array.from({ length: 60 }, () => gauss(rnd));
+  const ys = xs.map((x) => x * 2 + gauss(rnd) * 0.3);
+  ok(permutationP(xs, ys, spearman(xs, ys)) < 0.02);
+});
+
+/* ================= insight engine: the honesty tests ================= */
+function synth(n, seed, fn) {
+  const rnd = mulberry32(seed);
+  const out = [];
+  let d = '2026-01-01';
+  for (let i = 0; i < n; i++) {
+    const e = emptyEntry(d);
+    fn(e, i, rnd);
+    out.push(e);
+    d = addDays(d, 1);
+  }
+  return out;
+}
+
+t('refuses to report below MIN_PAIRS', () => {
+  const es = synth(10, 1, (e, i, r) => { e.sleepHours = 6 + r() * 3; e.mood = 1 + Math.floor(r() * 5); });
+  eq(discover(es).status, 'insufficient-data');
+});
+
+t('FALSE POSITIVE RATE on pure noise stays at/below target', () => {
+  // The single most important test in the suite. 40 independent noise datasets;
+  // if the engine hallucinates findings here, the product is a liability.
+  let datasetsWithFindings = 0;
+  const trials = 40;
+  for (let s = 0; s < trials; s++) {
+    const es = synth(90, 1000 + s, (e, i, r) => {
+      e.sleepHours = 5.5 + r() * 3.5;
+      e.steps = Math.round(2000 + r() * 10000);
+      e.exerciseMinutes = Math.round(r() * 70);
+      e.proteinGrams = Math.round(60 + r() * 90);
+      e.produceServings = Math.round(r() * 7);
+      e.ultraProcessed = Math.round(r() * 7);
+      e.alcoholUnits = Math.round(r() * 4);
+      e.sunlightMinutes = Math.round(r() * 70);
+      e.hydrationLitres = Math.round((0.8 + r() * 2.5) * 4) / 4;
+      e.caffeineAfter2pm = Math.round(r() * 5) * 50;
+      e.mood = 1 + Math.floor(r() * 5);
+      e.energy = 1 + Math.floor(r() * 5);
+      e.stress = 1 + Math.floor(r() * 5);
+      e.sleepQuality = 1 + Math.floor(r() * 5);
+      e.restingHR = Math.round(55 + r() * 20);
+      e.hrv = Math.round(25 + r() * 45);
+    });
+    if (discover(es).findings.length > 0) datasetsWithFindings++;
+  }
+  const rate = datasetsWithFindings / trials;
+  console.log(`\n  [noise] ${datasetsWithFindings}/${trials} noise datasets produced any finding (${(rate * 100).toFixed(0)}%)`);
+  ok(rate <= 0.05, `false-positive rate too high: ${rate}`);
+});
+
+t('RECOVERS a planted effect', () => {
+  // Alcohol on day d suppresses energy on day d+1. Buried in realistic noise.
+  const es = synth(120, 42, (e, i, r) => {
+    e.sleepHours = 6.4 + r() * 2.2;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.exerciseMinutes = Math.round(r() * 60);
+    e.proteinGrams = Math.round(70 + r() * 70);
+    e.produceServings = Math.round(r() * 6);
+    e.ultraProcessed = Math.round(r() * 6);
+    e.sunlightMinutes = Math.round(r() * 60);
+    e.alcoholUnits = Math.round(r() * 5);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+  });
+  for (let i = 1; i < es.length; i++) {
+    const drinks = es[i - 1].alcoholUnits;
+    es[i].energy = Math.max(1, Math.min(5, Math.round(4.6 - drinks * 0.62 + (mulberry32(i * 7)() - 0.5) * 1.1)));
+  }
+  es[0].energy = 3;
+  const res = discover(es);
+  const hit = res.findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === 'energy');
+  console.log(`\n  [signal] tested ${res.tested} hypotheses, ${res.findings.length} survived FDR; planted effect ${hit ? 'FOUND r=' + hit.r + ' lag=' + hit.lag + ' p_adj=' + hit.pAdjusted : 'MISSED'}`);
+  ok(hit, 'planted alcohol->next-day-energy effect was not recovered');
+  ok(hit.r < 0, 'direction must be negative');
+  ok(hit.lag === 1, 'should identify lag 1, got ' + hit.lag);
+});
+
+t('phrasing states the right verdict', () => {
+  const es = synth(120, 42, (e, i, r) => {
+    e.sleepHours = 6.4 + r() * 2.2; e.steps = Math.round(3000 + r() * 8000);
+    e.alcoholUnits = Math.round(r() * 5); e.mood = 1 + Math.floor(r() * 5);
+    e.stress = 1 + Math.floor(r() * 5); e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.proteinGrams = Math.round(70 + r() * 70); e.produceServings = Math.round(r() * 6);
+  });
+  for (let i = 1; i < es.length; i++) {
+    es[i].energy = Math.max(1, Math.min(5, Math.round(4.6 - es[i-1].alcoholUnits * 0.62 + (mulberry32(i*7)() - 0.5) * 1.1)));
+  }
+  es[0].energy = 3;
+  const hit = discover(es).findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === 'energy');
+  ok(hit.text.includes('costing you'), 'bad effect must be phrased as a cost: ' + hit.text);
+});
+
+t('skips same-day self-report pairs', () => {
+  const es = synth(90, 5, (e, i, r) => {
+    const bad = r();
+    e.mood = 1 + Math.floor(bad * 5); e.stress = 6 - e.mood; e.energy = e.mood;
+    e.sleepHours = 6 + r() * 2; e.steps = Math.round(3000 + r() * 6000);
+  });
+  const res = discover(es);
+  ok(!res.findings.some((f) => f.lag === 0 && ['mood','stress','energy','sleepQuality'].includes(f.driver)),
+     'same-day self-report tautology leaked through');
+});
+
+t('flat series produce nothing', () => {
+  const es = synth(90, 6, (e) => { e.sleepHours = 7; e.mood = 3; e.steps = 5000; e.energy = 3; });
+  eq(discover(es).findings.length, 0);
+});
+
+t('gaps break pairs rather than interpolating', () => {
+  const es = synth(60, 8, (e, i, r) => { e.alcoholUnits = Math.round(r()*4); e.energy = 1 + Math.floor(r()*5); });
+  const gapped = es.filter((_, i) => i % 2 === 0);   // every other day missing
+  const res = discover(gapped, { lags: [1] });
+  ok(res.status === 'insufficient-data' || res.findings.length === 0, 'must not fabricate pairs across gaps');
+});
+
+t('weekdayPattern finds a planted bad Friday', () => {
+  const es = synth(120, 11, (e, i, r) => { e.sleepHours = 7 + r() * 0.5; e.steps = 8000; });
+  const scoreFn = (e) => (new Date(...e.date.split('-').map((v, i) => (i === 1 ? +v - 1 : +v))).getDay() === 5 ? 60 : 78);
+  const wp = weekdayPattern(es, scoreFn);
+  eq(wp.worst.day, 'Friday');
+});
+
+/* ================= report + simulator ================= */
+const demo = synth(60, 21, (e, i, r) => {
+  e.sleepHours = 6.5 + r(); e.steps = Math.round(5000 + r() * 4000);
+  e.exerciseMinutes = Math.round(r() * 40); e.proteinGrams = Math.round(80 + r() * 40);
+  e.produceServings = Math.round(1 + r() * 4); e.ultraProcessed = Math.round(r() * 5);
+  e.alcoholUnits = Math.round(r() * 2); e.stress = 1 + Math.floor(r() * 5);
+  e.mood = 1 + Math.floor(r() * 5); e.energy = 1 + Math.floor(r() * 5);
+  e.restingHR = Math.round(58 + r() * 12); e.hrv = Math.round(30 + r() * 25);
+});
+t('buildReport populates every headline field', () => {
+  const r = buildReport(demo, ctx);
+  for (const k of ['today','avg7','avg28','sustained','pillarAverages','trendPerWeek','streak','bioAge','confidence','loggedDays']) {
+    ok(r[k] !== undefined && r[k] !== null, `missing ${k}`);
+  }
+});
+t('buildReport handles a single day', () => {
+  const r = buildReport([emptyEntry('2026-01-01')], ctx);
+  ok(r.today.score > 0); eq(r.streak, 1);
+});
+t('buildReport handles zero days', () => {
+  const r = buildReport([], ctx);
+  eq(r.today, null); eq(r.streak, 0);
+});
+t('simulate: more sleep raises score', () => {
+  const s = simulate(demo, { sleepHours: 1 }, ctx);
+  ok(s.scoreDelta > 0, 'got ' + s.scoreDelta);
+});
+t('simulate: more alcohol lowers score', () => {
+  const s = simulate(demo, { alcoholUnits: 3 }, ctx);
+  ok(s.scoreDelta < 0, 'got ' + s.scoreDelta);
+});
+t('simulate: improvement reduces bio age', () => {
+  const s = simulate(demo, { sleepHours: 1, steps: 4000, produceServings: 3 }, ctx);
+  ok(s.yearsDelta < 0, 'got ' + s.yearsDelta);
+});
+t('simulate respects field bounds', () => {
+  const s = simulate(demo, { sleepHours: 500 }, ctx);
+  ok(s.projected.score >= 0 && s.projected.score <= 100);
+});
+t('simulate ignores unknown fields', () => {
+  const s = simulate(demo, { notARealField: 10 }, ctx);
+  near(s.scoreDelta, 0, 0.001);
+});
+t('topLeverage returns ranked positive-delta actions', () => {
+  const l = topLeverage(demo, ctx);
+  ok(l.length > 0);
+  for (const x of l) ok(x.scoreDelta > 0, 'all suggestions must help');
+  for (let i = 1; i < l.length; i++) ok(l[i - 1].scoreDelta >= l[i].scoreDelta, 'must be sorted');
+});
+t('topLeverage does not repeat a field', () => {
+  const fields = topLeverage(demo, ctx).map((l) => l.field);
+  eq(new Set(fields).size, fields.length);
+});
+
+/* ================= report ================= */
+console.log(`\n\n${pass} passed, ${fail} failed`);
+if (failures.length) {
+  console.log('\nFailures:');
+  for (const [n, m] of failures) console.log(`  x ${n}\n      ${m}`);
+  process.exit(1);
+}
