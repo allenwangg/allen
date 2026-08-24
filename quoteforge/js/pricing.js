@@ -420,3 +420,104 @@ export function isPassThrough(item) {
   if (m === null || m === undefined || m === '') return false;
   return Number(m) === 0;
 }
+
+/* ======================================================= change orders ==== */
+
+/**
+ * A change order is priced exactly like a small estimate, using the parent
+ * job's own settings so that markup, overhead, and tax stay consistent with
+ * the contract it amends. Nothing about the math is special; what is special
+ * is that people forget to write them.
+ */
+export function priceChangeOrder(order, settings, parentSettings = {}) {
+  return priceEstimate(
+    { items: order.items || [], discount: order.discount || null, settings: parentSettings },
+    settings,
+  );
+}
+
+/** Change orders that have been signed off and are part of the contract. */
+export const CO_APPROVED = 'approved';
+/** Written up and sent, but not yet authorized. */
+export const CO_SENT = 'sent';
+/** Not yet sent to the client. */
+export const CO_DRAFT = 'draft';
+/** Client declined; excluded from every total. */
+export const CO_REJECTED = 'rejected';
+
+/**
+ * Roll the original contract and its change orders into one picture.
+ *
+ * The number worth building the feature for is `atRiskCents`: the cost of work
+ * described by change orders that are NOT yet approved. On a real job that is
+ * money already being spent on someone's say-so, with nothing signed. It is
+ * the second-biggest profit leak in contracting after mispricing, and unlike
+ * mispricing it is invisible until the final invoice is disputed.
+ */
+export function summarizeContract(estimate, settings) {
+  const base = priceEstimate(estimate, settings);
+
+  const orders = (estimate.changeOrders || []).map((co) => ({
+    order: co,
+    priced: priceChangeOrder(co, settings, estimate.settings || {}),
+  }));
+
+  const by = (status) => orders.filter((o) => o.order.status === status);
+  const approved = by(CO_APPROVED);
+  const unapproved = orders.filter(
+    (o) => o.order.status === CO_DRAFT || o.order.status === CO_SENT,
+  );
+
+  const sumTotal = (rows) => rows.reduce((a, r) => a + r.priced.totalCents, 0);
+  const sumProfit = (rows) => rows.reduce((a, r) => a + r.priced.grossProfitCents, 0);
+  const sumCost = (rows) => rows.reduce((a, r) => a + r.priced.burdenedCostCents, 0);
+
+  const approvedTotal = sumTotal(approved);
+  const approvedProfit = sumProfit(approved);
+  const approvedCost = sumCost(approved);
+
+  const contractTotal = base.totalCents + approvedTotal;
+  const contractProfit = base.grossProfitCents + approvedProfit;
+  const contractCost = base.burdenedCostCents + approvedCost;
+
+  // Margin is computed on the revenue that actually backs the profit, so a
+  // credit change order (negative total) cannot make the ratio nonsensical.
+  const revenue = base.afterDiscountCents + approvedTotal;
+
+  return {
+    base,
+    orders,
+    approved,
+    unapproved,
+    rejected: by(CO_REJECTED),
+    approvedCount: approved.length,
+    approvedTotalCents: approvedTotal,
+    contractTotalCents: contractTotal,
+    contractCostCents: contractCost,
+    contractProfitCents: contractProfit,
+    contractMargin: revenue === 0 ? 0 : contractProfit / revenue,
+    originalTotalCents: base.totalCents,
+
+    /** Unapproved change-order value — revenue you may never be paid. */
+    atRiskCents: sumTotal(unapproved),
+    /** Your own cost inside that unapproved work — the actual exposure. */
+    atRiskCostCents: sumCost(unapproved),
+    unapprovedCount: unapproved.length,
+  };
+}
+
+export function newChangeOrder(seq = 1) {
+  return {
+    id: `co_${seq}`,
+    number: `CO-${String(seq).padStart(2, '0')}`,
+    title: '',
+    reason: '',
+    status: CO_DRAFT,
+    createdAt: '',
+    decidedAt: '',
+    items: [],
+    discount: null,
+    daysAdded: 0,
+    signature: null,
+  };
+}

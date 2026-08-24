@@ -9,6 +9,7 @@ import {
   toCents, toDollars, formatMoney, markupToMargin, marginToMarkup,
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
+  priceChangeOrder, summarizeContract, newChangeOrder,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -415,6 +416,111 @@ t('solver stays accurate across many random shapes', () => {
     checked++;
   }
   ok(checked > 40, `property test was vacuous — only ${checked} cases actually ran`);
+});
+
+
+/* ------------------------------------------------------ change orders ----- */
+
+function contractFixture(orders = []) {
+  return {
+    items: [
+      { id: '1', qty: 40, unitCost: 60, category: 'labor', markup: null },
+      { id: '2', qty: 1, unitCost: 4000, category: 'material', markup: null },
+    ],
+    changeOrders: orders,
+  };
+}
+const co = (over = {}) => ({
+  id: 'co1', number: 'CO-01', status: 'draft', items: [], discount: null, ...over,
+});
+
+t('a change order prices with the parent job rules', () => {
+  const order = co({ items: [{ id: 'a', qty: 8, unitCost: 55, category: 'labor', markup: null }] });
+  const p = priceChangeOrder(order, S, {});
+  const standalone = priceEstimate({ items: order.items }, S);
+  eq(p.totalCents, standalone.totalCents, 'a change order should price like a small estimate:');
+  ok(p.totalCents > 0);
+});
+
+t('an empty contract summary is all zeros, not NaN', () => {
+  const c = summarizeContract({ items: [], changeOrders: [] }, S);
+  eq(c.contractTotalCents, 0);
+  eq(c.atRiskCents, 0);
+  ok(Number.isFinite(c.contractMargin));
+});
+
+t('only approved change orders join the contract total', () => {
+  const items = [{ id: 'a', qty: 10, unitCost: 100, category: 'labor', markup: null }];
+  const c = summarizeContract(contractFixture([
+    co({ id: 'x', status: 'approved', items }),
+    co({ id: 'y', status: 'sent', items }),
+    co({ id: 'z', status: 'draft', items }),
+    co({ id: 'w', status: 'rejected', items }),
+  ]), S);
+
+  eq(c.approvedCount, 1);
+  eq(c.unapprovedCount, 2, 'draft and sent are both unapproved:');
+  eq(c.rejected.length, 1);
+  ok(c.contractTotalCents > c.originalTotalCents, 'an approved order should raise the contract');
+
+  const one = priceChangeOrder(co({ items }), S, {});
+  eq(c.contractTotalCents, c.originalTotalCents + one.totalCents,
+    'exactly one order should be included:');
+  eq(c.atRiskCents, one.totalCents * 2, 'both unapproved orders should be at risk:');
+});
+
+t('a rejected change order is excluded from every figure', () => {
+  const items = [{ id: 'a', qty: 10, unitCost: 100, category: 'labor', markup: null }];
+  const withRejected = summarizeContract(contractFixture([co({ status: 'rejected', items })]), S);
+  const without = summarizeContract(contractFixture([]), S);
+  eq(withRejected.contractTotalCents, without.contractTotalCents);
+  eq(withRejected.atRiskCents, 0, 'a rejected order is not at risk — it is simply gone:');
+});
+
+t('at-risk exposure reports cost, not just revenue', () => {
+  const items = [{ id: 'a', qty: 20, unitCost: 100, category: 'labor', markup: null }];
+  const c = summarizeContract(contractFixture([co({ status: 'sent', items })]), S);
+  ok(c.atRiskCostCents > 0, 'the money already spent is the real exposure');
+  ok(c.atRiskCostCents < c.atRiskCents, 'cost should be less than the price it would bill at');
+});
+
+t('contract profit and margin include approved orders', () => {
+  const items = [{ id: 'a', qty: 20, unitCost: 100, category: 'labor', markup: null }];
+  const base = summarizeContract(contractFixture([]), S);
+  const grown = summarizeContract(contractFixture([co({ status: 'approved', items })]), S);
+  ok(grown.contractProfitCents > base.contractProfitCents, 'approved work should add profit');
+  ok(Number.isFinite(grown.contractMargin));
+  near(grown.contractMargin,
+    grown.contractProfitCents / (grown.base.afterDiscountCents + grown.approvedTotalCents),
+    1e-9);
+});
+
+t('a credit change order reduces the contract without breaking margin', () => {
+  // Client removes scope: negative quantities represent money given back.
+  const credit = co({
+    id: 'c', status: 'approved',
+    items: [{ id: 'a', qty: -6, unitCost: 100, category: 'labor', markup: null }],
+  });
+  const base = summarizeContract(contractFixture([]), S);
+  const c = summarizeContract(contractFixture([credit]), S);
+  ok(c.contractTotalCents < base.contractTotalCents, 'a credit should lower the contract');
+  ok(Number.isFinite(c.contractMargin), `margin went non-finite: ${c.contractMargin}`);
+  ok(c.contractMargin > 0, 'removing scope should not make a healthy job unprofitable');
+});
+
+t('change orders do not disturb the original estimate figures', () => {
+  const items = [{ id: 'a', qty: 10, unitCost: 100, category: 'labor', markup: null }];
+  const plain = priceEstimate(contractFixture([]), S);
+  const c = summarizeContract(contractFixture([co({ status: 'approved', items })]), S);
+  eq(c.base.totalCents, plain.totalCents, 'the original contract value must not move:');
+  eq(c.originalTotalCents, plain.totalCents);
+});
+
+t('newChangeOrder numbers are zero-padded and sequential', () => {
+  eq(newChangeOrder(1).number, 'CO-01');
+  eq(newChangeOrder(9).number, 'CO-09');
+  eq(newChangeOrder(12).number, 'CO-12');
+  eq(newChangeOrder(1).status, 'draft');
 });
 
 /* -------------------------------------------------------------- report ---- */

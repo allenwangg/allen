@@ -37,6 +37,7 @@
   <nav class="tabs no-print" role="tablist">
     <button class="tab" role="tab" data-tab="estimate" aria-selected="true">Estimate</button>
     <button class="tab" role="tab" data-tab="proposal" aria-selected="false">Proposal</button>
+    <button class="tab" role="tab" data-tab="changes"  aria-selected="false">Changes <span id="coBadge" class="tab-badge hidden"></span></button>
     <button class="tab" role="tab" data-tab="jobs"     aria-selected="false">Jobs</button>
     <button class="tab" role="tab" data-tab="settings" aria-selected="false">Settings</button>
   </nav>
@@ -154,6 +155,39 @@
       <label class="inline-toggle"><input type="checkbox" id="optPrices"> Show line prices</label>
     </div>
     <div class="proposal-shell"><div class="proposal" id="proposal"></div></div>
+  </main>
+
+  <!-- ===================================================== CHANGES PANE == -->
+  <main class="pane" id="pane-changes" hidden>
+    <div class="workspace">
+      <div>
+        <section class="card">
+          <header>
+            <h2>Change orders</h2>
+            <span class="spacer"></span>
+            <button class="btn sm primary" id="btnAddCO">+ Change order</button>
+          </header>
+          <div class="body" id="coList"></div>
+        </section>
+        <section class="card" id="coEditorCard" hidden>
+          <header>
+            <h2 id="coEditorTitle">Change order</h2>
+            <span class="spacer"></span>
+            <button class="btn sm" id="btnCOPrint">Print authorization</button>
+          </header>
+          <div class="body" id="coEditor"></div>
+        </section>
+      </div>
+      <aside class="profit-rail">
+        <section class="card">
+          <header><h2>Contract</h2></header>
+          <div class="body" id="contractPanel"></div>
+        </section>
+      </aside>
+    </div>
+    <!-- Print target for a change order authorization. Hidden on screen; the
+         print stylesheet swaps it in for the editor. -->
+    <div class="proposal-shell print-only" id="coPrintShell"><div class="proposal" id="coPrint"></div></div>
   </main>
 
   <!-- ======================================================== JOBS PANE == -->

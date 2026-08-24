@@ -681,10 +681,20 @@ table.pr-table tr.group-head td {
 
 /* ---------------------------------------------------------------- print -- */
 
+/* Screen-hidden print targets. */
+.print-only { display: none; }
+
 @media print {
   @page { size: letter; margin: 0.5in; }
 
   .topbar, .tabs, .profit-rail, .no-print, .toasts { display: none !important; }
+
+  /* Printing a change order: swap the editor out for the authorization
+     document without navigating away from the tab the user is working in. */
+  body[data-print="co"] .pane { display: none !important; }
+  body[data-print="co"] #pane-changes { display: block !important; }
+  body[data-print="co"] #pane-changes > .workspace { display: none !important; }
+  body[data-print="co"] #coPrintShell { display: block !important; }
   body { background: #fff; }
   .pane { padding: 0; }
   .proposal-shell { max-width: none; }
@@ -710,3 +720,51 @@ table.pr-table tr.group-head td {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ------------------------------------------------------- change orders --- */
+
+.tab-badge {
+  display: inline-grid; place-items: center;
+  min-width: 17px; height: 17px; padding: 0 5px;
+  border-radius: 999px;
+  background: var(--warn); color: #fff;
+  font-size: 10.5px; font-weight: 700;
+  vertical-align: 1px;
+}
+.tab-badge.ok { background: var(--good); }
+
+.co-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 12px; align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: pointer; text-align: left; width: 100%;
+  margin-bottom: 8px;
+}
+.co-row:hover { border-color: var(--accent); }
+.co-row.active { border-color: var(--accent); background: var(--accent-soft); }
+.co-row .t { font-weight: 600; }
+.co-row .sub { font-size: 11.5px; color: var(--text-3); }
+.co-row .amt { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.co-row .amt.credit { color: var(--good); }
+
+/* Unapproved work reads as a warning, because that is what it is. */
+.co-row.unapproved { box-shadow: inset 3px 0 0 var(--warn); }
+.co-row.approved   { box-shadow: inset 3px 0 0 var(--good); }
+.co-row.rejected   { opacity: .55; }
+
+.risk {
+  margin-top: 12px; padding: 12px 14px;
+  border-radius: var(--radius-s);
+  background: var(--warn-soft);
+  border: 1px solid color-mix(in srgb, var(--warn) 32%, transparent);
+  font-size: 12.5px; line-height: 1.5;
+}
+.risk.clear { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 28%, transparent); }
+.risk strong { display: block; margin-bottom: 3px; }
+
+.co-status-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.co-status-row .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }

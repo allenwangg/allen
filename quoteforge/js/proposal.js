@@ -349,3 +349,133 @@ export function proposalAsText({ estimate, priced, company }) {
 
   return L.join('\n');
 }
+
+/* ======================================================= change orders ==== */
+
+/**
+ * A change order authorization.
+ *
+ * This document exists to answer one question months later, in front of a
+ * client who does not remember agreeing to anything: what changed, why, what
+ * it cost, and when they said yes. So it leads with the reason, states the
+ * revised contract total rather than only the delta, and puts the signature
+ * block on the same page as the price.
+ */
+export function renderChangeOrder({ estimate, order, priced, contract, company }) {
+  const accent = company.accent || '#c2410c';
+  const isCredit = priced.totalCents < 0;
+
+  const rows = (order.items || []).length
+    ? priced.lines.map((l) => `
+        <tr>
+          <td>${esc(l.description || '—')}</td>
+          <td class="r">${fmtQty(l.qty)} ${esc(l.unit || '')}</td>
+          <td class="r">${formatMoney(l.priceCents)}</td>
+        </tr>`).join('')
+    : '<tr><td colspan="3" style="color:#a8a29e">No items yet.</td></tr>';
+
+  return `
+<div style="--pr-accent:${esc(accent)}">
+  <div class="pr-head">
+    <div>
+      ${company.logoDataUrl
+        ? `<img class="logo" src="${esc(company.logoDataUrl)}" alt="${esc(company.name)}">`
+        : `<div class="co-name">${esc(company.name || 'Your Company')}</div>`}
+      <div class="co-meta">
+        ${[company.phone, company.email].filter(Boolean).map(esc).join(' · ')}
+        ${company.license ? `<br>License ${esc(company.license)}` : ''}
+      </div>
+    </div>
+    <div class="pr-doc">
+      <div class="doc-kind">Change order</div>
+      <div class="doc-no">${esc(order.number || '')}</div>
+      <div class="co-meta" style="margin-top:6px">
+        Issued ${fmtDate(order.createdAt)}<br>
+        To contract ${esc(estimate.number || '')}
+      </div>
+    </div>
+  </div>
+
+  <div class="pr-parties">
+    <div>
+      <h3>Client</h3>
+      <div>${esc(estimate.client?.name || '—')}</div>
+    </div>
+    <div>
+      <h3>Job site</h3>
+      <div>${esc(estimate.jobAddress || '—')}</div>
+    </div>
+  </div>
+
+  <div class="pr-section">
+    <h3>Change requested</h3>
+    <p style="font-size:13px;font-weight:600;margin-bottom:4px">${esc(order.title || 'Untitled change')}</p>
+    ${order.reason
+      ? paras(order.reason)
+      : '<p style="color:#a8a29e">No reason recorded — describe what prompted this change.</p>'}
+  </div>
+
+  <div class="pr-section">
+    <h3>Work ${isCredit ? 'removed' : 'added'}</h3>
+    <table class="pr-table">
+      <thead><tr><th>Description</th><th class="r">Quantity</th><th class="r">Amount</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+
+  <div class="pr-totals">
+    <div class="row"><span>Original contract</span><span class="v">${formatMoney(contract.originalTotalCents)}</span></div>
+    ${contract.approvedCount
+      ? `<div class="row"><span>Previously approved changes</span><span class="v">${formatMoney(approvedExcluding(contract, order.id))}</span></div>`
+      : ''}
+    <div class="row"><span>This change order</span><span class="v">${isCredit ? '−' : '+'}${formatMoney(Math.abs(priced.totalCents))}</span></div>
+    <div class="row grand"><span>Revised contract total</span><span class="v">${formatMoney(revisedTotal(contract, order, priced))}</span></div>
+  </div>
+
+  ${Number(order.daysAdded)
+    ? `<div class="pr-section"><h3>Schedule</h3>
+        <p>This change ${Number(order.daysAdded) > 0 ? 'adds' : 'removes'}
+           <strong>${Math.abs(Number(order.daysAdded))} working day${Math.abs(Number(order.daysAdded)) === 1 ? '' : 's'}</strong>
+           ${Number(order.daysAdded) > 0 ? 'to' : 'from'} the completion date.</p></div>`
+    : ''}
+
+  <div class="pr-section">
+    <h3>Authorization</h3>
+    <p style="font-size:11px">
+      Signing below authorizes the work described above and amends the contract total to
+      <strong>${formatMoney(revisedTotal(contract, order, priced))}</strong>. All other terms of the
+      original proposal remain in effect. Work on this change will not begin until this
+      authorization is signed.
+    </p>
+    <div class="sign-grid">
+      <div class="sign-slot">
+        <div class="sign-line">${order.signature?.dataUrl
+          ? `<img src="${esc(order.signature.dataUrl)}" alt="Client signature">` : ''}</div>
+        <div class="sign-cap">Client signature</div>
+        ${order.decidedAt && order.status === 'approved'
+          ? `<div style="font-size:10px;color:#78716c;margin-top:2px">Approved ${fmtDate(order.decidedAt)}</div>` : ''}
+      </div>
+      <div class="sign-slot">
+        <div class="sign-line"></div>
+        <div class="sign-cap">Date</div>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+/** Approved change-order value, excluding the one being displayed. */
+function approvedExcluding(contract, orderId) {
+  return contract.approved
+    .filter((o) => o.order.id !== orderId)
+    .reduce((a, o) => a + o.priced.totalCents, 0);
+}
+
+/**
+ * What the contract becomes if this order is signed. An already-approved order
+ * is part of the contract total, so it must not be counted twice.
+ */
+function revisedTotal(contract, order, priced) {
+  const alreadyIn = order.status === 'approved';
+  return contract.contractTotalCents + (alreadyIn ? 0 : priced.totalCents);
+}

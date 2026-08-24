@@ -26,6 +26,11 @@ Open `index.html` in a browser. There is no build step, no dependencies, and no 
   offers a one-click fix.
 - **Client proposals** grouped by trade, with optional upgrades priced separately, a
   payment schedule that reconciles to the penny, your terms, and signature capture.
+- **Change orders**, because the second-biggest profit leak after mispricing is work
+  performed and never billed. Each one carries its own scope, price, reason, and
+  approval state, and prints as a one-page authorization. Unapproved work is reported
+  as *money at risk* — including your own cost already sunk into it — so the exposure
+  is visible from any tab rather than surfacing when the final invoice is disputed.
 - **Print to PDF** through the browser's own print dialog. No PDF library, no server.
 
 ## What it deliberately does not do
@@ -76,12 +81,12 @@ afterthought, and the UI says so.
 
 ```sh
 ./run-tests.sh           # unit suites — no dependencies, always runnable
-./run-tests.sh --all     # adds the browser suite (needs playwright + chromium)
+./run-tests.sh --all     # adds the browser suites (needs playwright + chromium)
 node js/pricing.test.js  # just the money math
 ```
 
-86 unit assertions with no test framework and no install step, plus 61 browser
-assertions in `test/browser.mjs`. The pricing suite includes a
+106 unit assertions with no test framework and no install step, plus 101 browser
+assertions across `test/browser.mjs`, `test/change-orders.mjs`, and `test/security.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
 
@@ -94,7 +99,13 @@ neither page scrolls sideways on a 390px phone, that an edited price book cost
 flows into assemblies and survives a reload, and that a backup exported from one
 profile imports cleanly into another without duplicating on a second import.
 
-### Two bugs the tests caught
+`test/security.mjs` is adversarial: it injects text-context, attribute-breakout, and
+event-handler payloads into every editable field — and into an imported estimate file,
+which is the path the contractor did not type themselves — then asserts nothing
+executes. It also asserts the inverse, that markup in a client name still renders as
+literal text, because escaping that eats the user's data is its own bug.
+
+### Three bugs the tests caught
 
 Worth recording, because both were invisible by inspection:
 
@@ -107,3 +118,8 @@ Worth recording, because both were invisible by inspection:
 2. **Internal notes on a client document.** The price book's note on the permit line
    reads "Pass through at 0% markup". It was being copied onto the line item and
    rendered on the homeowner's proposal.
+
+3. **A signature surviving a duplicate.** Duplicating a job cleared the estimate's
+   signature but not the signatures on its change orders, so a new job could ship
+   carrying a client's mark authorizing work they had never seen. The test that was
+   supposed to cover this was named "drops signatures" and never asserted it.

@@ -11,7 +11,7 @@
 import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
-  solveUniformMarkup, isPassThrough,
+  solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -19,13 +19,16 @@ import {
   ASSEMBLIES, UNITS, searchEffective, effectiveItem,
   effectiveTrades, expandAssemblyWith,
 } from './pricebook.js';
-import { renderProposal, proposalAsText, esc } from './proposal.js';
+import { renderProposal, proposalAsText, renderChangeOrder, esc } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 const storage = safeStorage();
 const store = new Store({ storage });
+
+/** Assigned by wireSignature; lets any view open the shared signature dialog. */
+let openSignature = () => {};
 
 const ui = {
   tab: 'estimate',
@@ -45,6 +48,7 @@ function boot() {
   wirePriceBook();
   wireAssemblies();
   wireProposal();
+  wireChangeOrders();
   wireJobs();
   wireShortcuts();
 
@@ -112,12 +116,15 @@ function render() {
     renderCategories(priced);
   } else if (ui.tab === 'proposal') {
     renderProposalPane(est, priced);
+  } else if (ui.tab === 'changes') {
+    renderChanges(est);
   } else if (ui.tab === 'jobs') {
     renderJobs();
   } else if (ui.tab === 'settings') {
     renderSettings();
   }
 
+  renderChangeBadge(est);
   $('#btnUndo').disabled = !store.canUndo();
   $('#btnRedo').disabled = !store.canRedo();
 }
@@ -127,7 +134,7 @@ function renderTabs() {
     const on = tab.dataset.tab === ui.tab;
     tab.setAttribute('aria-selected', String(on));
   }
-  for (const name of ['estimate', 'proposal', 'jobs', 'settings']) {
+  for (const name of ['estimate', 'proposal', 'changes', 'jobs', 'settings']) {
     $(`#pane-${name}`).hidden = name !== ui.tab;
   }
 }
@@ -595,7 +602,8 @@ function renderCategories(priced) {
 
 /* ------------------------------------------------------------ price book -- */
 
-function openPriceBook() {
+function openPriceBook({ into = null } = {}) {
+  ui.priceBookTarget = into;   // null = the estimate, otherwise a change order id
   $('#dlgPriceBook').showModal();
   const q = $('#pbQuery');
   q.value = '';
@@ -743,7 +751,7 @@ function markRowEdited(row, sku) {
 function addFromPriceBook(sku) {
   const book = effectiveItem(sku, store.state.priceBookOverrides);
   if (!book) return;
-  const item = store.addItem({
+  const fields = {
     description: book.description,
     category: book.category,
     unit: book.unit,
@@ -752,11 +760,17 @@ function addFromPriceBook(sku) {
     markup: book.category === 'other' ? 0 : null,
     sku: book.sku,
     trade: book.trade,
-  });
+  };
+
+  const coId = ui.priceBookTarget;
+  const item = coId ? store.addChangeOrderItem(coId, fields) : store.addItem(fields);
   toast(`Added ${book.description}.`, { undo: true });
   $('#dlgPriceBook').close();
   requestAnimationFrame(() => {
-    $(`tr[data-id="${CSS.escape(item.id)}"] [data-f="qty"]`)?.select();
+    const sel = coId
+      ? `[data-coitem="${CSS.escape(item.id)}"] [data-cif="qty"]`
+      : `tr[data-id="${CSS.escape(item.id)}"] [data-f="qty"]`;
+    $(sel)?.select();
   });
 }
 
@@ -901,23 +915,39 @@ function wireSignature() {
   canvas.addEventListener('pointercancel', stop);
   canvas.addEventListener('pointerleave', stop);
 
-  $('#btnSign').onclick = () => {
+  /**
+   * Signatures are captured for either the proposal or a change order. Both
+   * documents carry a signature line, so both need a way to fill it; the only
+   * difference is where the result is stored.
+   */
+  openSignature = (target = { kind: 'estimate' }) => {
+    ui.signTarget = target;
     dlg.showModal();
     requestAnimationFrame(setup);
     $('#sigName').value = store.active()?.client?.name || '';
   };
+  $('#btnSign').onclick = () => openSignature({ kind: 'estimate' });
   $('#btnSigClear').onclick = () => setup();
 
   $('#btnSigSave').onclick = () => {
     if (!dirty) { toast('Nothing signed yet.', { bad: true }); return; }
-    store.patchEstimate({
-      signature: {
-        dataUrl: canvas.toDataURL('image/png'),
-        name: $('#sigName').value.trim(),
-        signedAt: new Date().toISOString().slice(0, 10),
-      },
-      status: 'accepted',
-    }, { coalesce: false });
+    const signature = {
+      dataUrl: canvas.toDataURL('image/png'),
+      name: $('#sigName').value.trim(),
+      signedAt: new Date().toISOString().slice(0, 10),
+    };
+    const target = ui.signTarget || { kind: 'estimate' };
+
+    if (target.kind === 'co') {
+      store.patchChangeOrder(target.id, { signature }, { coalesce: false });
+      store.setChangeOrderStatus(target.id, 'approved');
+      dlg.close();
+      const c = summarizeContract(store.active(), store.state.settings);
+      toast(`Change order signed — contract is now ${formatMoney(c.contractTotalCents)}.`);
+      return;
+    }
+
+    store.patchEstimate({ signature, status: 'accepted' }, { coalesce: false });
     dlg.close();
     toast('Signed and marked accepted.');
   };
@@ -1230,7 +1260,7 @@ const SHORTCUTS = [
   ['⌘/Ctrl+Z', 'Undo'],
   ['⌘/Ctrl+⇧+Z', 'Redo'],
   ['⌘/Ctrl+P', 'Print / save as PDF'],
-  ['1 – 4', 'Switch tabs'],
+  ['1 – 5', 'Switch tabs'],
   ['?', 'This list'],
 ];
 
@@ -1259,8 +1289,9 @@ function wireShortcuts() {
       case '?': e.preventDefault(); $('#btnHelp').click(); break;
       case '1': ui.tab = 'estimate'; render(); break;
       case '2': ui.tab = 'proposal'; render(); break;
-      case '3': ui.tab = 'jobs'; render(); break;
-      case '4': ui.tab = 'settings'; render(); break;
+      case '3': ui.tab = 'changes'; render(); break;
+      case '4': ui.tab = 'jobs'; render(); break;
+      case '5': ui.tab = 'settings'; render(); break;
     }
   });
 }
@@ -1297,3 +1328,333 @@ function download(filename, content, type) {
 }
 
 boot();
+
+/* ------------------------------------------------------- change orders --- */
+
+/**
+ * The tab badge counts UNAPPROVED change orders, not all of them. An approved
+ * change order is finished business; an unapproved one is work that may
+ * already be underway with nothing signed, which is the thing worth nagging
+ * about from across the app.
+ */
+function renderChangeBadge(est) {
+  const badge = $('#coBadge');
+  if (!est || !est.changeOrders?.length) { badge.classList.add('hidden'); return; }
+  const c = summarizeContract(est, store.state.settings);
+  badge.classList.remove('hidden');
+  badge.textContent = c.unapprovedCount || c.approvedCount;
+  badge.classList.toggle('ok', c.unapprovedCount === 0);
+  badge.title = c.unapprovedCount
+    ? `${c.unapprovedCount} change order${c.unapprovedCount === 1 ? '' : 's'} awaiting approval`
+    : `${c.approvedCount} approved change order${c.approvedCount === 1 ? '' : 's'}`;
+}
+
+function renderChanges(est) {
+  if (!est) { $('#coList').innerHTML = ''; return; }
+  const c = summarizeContract(est, store.state.settings);
+
+  renderCOList(est, c);
+  renderContractPanel(c);
+  renderCOEditor(est, c);
+
+  const order = store.activeChangeOrder();
+  $('#coPrint').innerHTML = order
+    ? renderChangeOrder({
+        estimate: est,
+        order,
+        priced: c.orders.find((o) => o.order.id === order.id).priced,
+        contract: c,
+        company: store.state.company,
+      })
+    : '';
+}
+
+function renderCOList(est, contract) {
+  const list = $('#coList');
+  if (!est.changeOrders.length) {
+    list.innerHTML = `
+      <div class="empty-state" style="padding:28px 16px">
+        <h3>No change orders yet</h3>
+        <p>When the client asks for something that is not in the contract — or you open a wall
+           and find rot — write it up here before the work starts. An unsigned change is the
+           second most common way a job loses money.</p>
+        <button class="btn primary" data-conew>+ Write the first one</button>
+      </div>`;
+    list.onclick = (e) => { if (e.target.closest('[data-conew]')) newChangeOrder(); };
+    return;
+  }
+
+  const activeId = store.state.activeChangeOrderId;
+  list.innerHTML = contract.orders.map(({ order, priced }) => {
+    const credit = priced.totalCents < 0;
+    const cls = order.status === 'approved' ? 'approved'
+      : order.status === 'rejected' ? 'rejected' : 'unapproved';
+    return `
+      <div class="co-row ${cls}${order.id === activeId ? ' active' : ''}" data-co="${esc(order.id)}">
+        <span>
+          <div class="t">${esc(order.number)} — ${esc(order.title || 'Untitled change')}</div>
+          <div class="sub">${order.items.length} line${order.items.length === 1 ? '' : 's'}
+            · created ${esc(order.createdAt)}${order.decidedAt ? ` · decided ${esc(order.decidedAt)}` : ''}</div>
+        </span>
+        <span class="status-chip ${esc(order.status)}">${esc(order.status)}</span>
+        <span class="amt${credit ? ' credit' : ''}">${credit ? '−' : '+'}${formatMoney(Math.abs(priced.totalCents))}</span>
+        <button class="btn sm ghost danger" data-codel="${esc(order.id)}" title="Delete">✕</button>
+      </div>`;
+  }).join('');
+
+  list.onclick = (e) => {
+    const del = e.target.closest('[data-codel]')?.dataset.codel;
+    if (del) {
+      const order = est.changeOrders.find((o) => o.id === del);
+      store.removeChangeOrder(del);
+      toast(`Deleted ${order?.number || 'change order'}.`, { undo: true });
+      return;
+    }
+    const open = e.target.closest('[data-co]')?.dataset.co;
+    if (open) store.setActiveChangeOrder(open);
+  };
+}
+
+function renderContractPanel(c) {
+  const el = $('#contractPanel');
+  const grew = c.contractTotalCents - c.originalTotalCents;
+
+  el.innerHTML = `
+<div class="figure"><span class="label">Original contract</span><span class="value">${formatMoney(c.originalTotalCents)}</span></div>
+${c.approvedCount
+  ? `<div class="figure"><span class="label">Approved changes (${c.approvedCount})</span><span class="value">${grew < 0 ? '−' : '+'}${formatMoney(Math.abs(c.approvedTotalCents))}</span></div>`
+  : ''}
+<div class="figure total"><span class="label">Contract now</span><span class="value">${formatMoney(c.contractTotalCents)}</span></div>
+
+<div class="figure" style="margin-top:8px">
+  <span class="label tiny">Profit on the whole job</span>
+  <span class="value tiny">${formatMoney(c.contractProfitCents)}</span>
+</div>
+<div class="figure">
+  <span class="label tiny">Margin including changes</span>
+  <span class="value tiny">${formatPercent(c.contractMargin)}</span>
+</div>
+
+${c.unapprovedCount ? `
+  <div class="risk">
+    <strong>${formatMoney(c.atRiskCents)} not authorized.</strong>
+    ${c.unapprovedCount} change order${c.unapprovedCount === 1 ? '' : 's'}
+    ${c.unapprovedCount === 1 ? 'is' : 'are'} unsigned. If that work is already underway you are
+    carrying ${formatMoney(c.atRiskCostCents)} of your own cost with nothing to invoice against.
+    Get it signed before the crew starts.
+  </div>`
+  : c.approvedCount ? `
+  <div class="risk clear">
+    <strong>Everything is authorized.</strong>
+    All ${c.approvedCount} change order${c.approvedCount === 1 ? '' : 's'} on this job
+    ${c.approvedCount === 1 ? 'is' : 'are'} signed and in the contract total.
+  </div>` : ''}`;
+}
+
+function renderCOEditor(est, contract) {
+  const order = store.activeChangeOrder();
+  const card = $('#coEditorCard');
+  if (!order) { card.hidden = true; return; }
+  card.hidden = false;
+
+  const entry = contract.orders.find((o) => o.order.id === order.id);
+  const priced = entry.priced;
+  $('#coEditorTitle').textContent = `${order.number} — ${order.title || 'Untitled change'}`;
+
+  const focus = captureCOFocus();
+
+  const STATUSES = [
+    ['draft', 'Draft'], ['sent', 'Sent to client'],
+    ['approved', 'Approved'], ['rejected', 'Rejected'],
+  ];
+
+  $('#coEditor').innerHTML = `
+<div class="co-status-row">
+  ${STATUSES.map(([v, label]) =>
+    `<button class="btn sm" data-costatus="${v}" aria-pressed="${order.status === v}">${label}</button>`).join('')}
+</div>
+
+<div class="grid-2">
+  <div class="field">
+    <label>What changed</label>
+    <input data-cof="title" value="${esc(order.title)}" placeholder="Rotten subfloor at the tub wall">
+  </div>
+  <div class="field">
+    <label>Working days added</label>
+    <input class="num" type="number" step="1" data-cof="daysAdded" value="${esc(order.daysAdded || 0)}">
+  </div>
+</div>
+<div class="field">
+  <label>Why <span class="hint">— this is what the client will read months from now</span></label>
+  <textarea data-cof="reason" placeholder="Demolition exposed water damage to the subfloor and two joists. Repair is required before tile can be set.">${esc(order.reason)}</textarea>
+</div>
+
+<table class="items">
+  <thead>
+    <tr><th>Description</th><th>Category</th><th class="right">Qty</th><th>Unit</th>
+        <th class="right">Unit cost</th><th class="right">Price</th><th></th></tr>
+  </thead>
+  <tbody>
+    ${order.items.map((item) => {
+      const l = priced.lines.find((x) => x.id === item.id);
+      return `
+      <tr data-coitem="${esc(item.id)}">
+        <td><input data-cif="description" value="${esc(item.description)}" placeholder="Description"></td>
+        <td style="width:132px">
+          <select data-cif="category">
+            ${CATEGORIES.map((cat) => `<option value="${cat}"${cat === item.category ? ' selected' : ''}>${CATEGORY_LABELS[cat]}</option>`).join('')}
+          </select>
+        </td>
+        <td style="width:86px"><input data-cif="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}"></td>
+        <td style="width:72px">
+          <select data-cif="unit">
+            ${UNITS.map((u) => `<option value="${u}"${u === item.unit ? ' selected' : ''}>${u}</option>`).join('')}
+          </select>
+        </td>
+        <td style="width:92px"><input data-cif="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}"></td>
+        <td class="computed">${formatMoney(l?.priceCents || 0)}</td>
+        <td class="col-actions" style="width:34px">
+          <div class="row-tools"><button class="btn sm icon ghost" data-coidel title="Delete line">✕</button></div>
+        </td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="7" class="muted tiny" style="padding:12px">No lines yet.</td></tr>'}
+  </tbody>
+</table>
+
+<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+  <button class="btn sm primary" data-coadd>+ Line</button>
+  <button class="btn sm" data-cobook>Price book</button>
+  <button class="btn sm" data-cosign>${order.signature ? 'Re-sign' : 'Capture signature'}</button>
+  <span style="flex:1"></span>
+  <span class="tiny faint">Cost ${formatMoney(priced.burdenedCostCents)}</span>
+  <span class="num" style="font-weight:650">${priced.totalCents < 0 ? '−' : '+'}${formatMoney(Math.abs(priced.totalCents))}</span>
+  <span class="tiny ${priced.margin < store.state.settings.floorMargin ? '' : 'faint'}"
+        style="${priced.margin < store.state.settings.floorMargin ? 'color:var(--warn)' : ''}">
+    ${formatPercent(priced.margin)} margin
+  </span>
+</div>
+
+${order.status !== 'approved' ? `
+  <div class="coach warn" style="margin-top:12px">
+    <strong>Not authorized yet.</strong>
+    Print this, get a signature, then mark it approved. Until then it is not part of the
+    contract and you cannot invoice for it.
+  </div>`
+  : `
+  <div class="coach ${order.signature ? 'bad' : 'good'}" style="margin-top:12px">
+    <strong>Approved${order.decidedAt ? ` on ${esc(order.decidedAt)}` : ''}${order.signature ? ' and signed' : ''}.</strong>
+    ${order.signature
+      ? `The client signed for ${formatMoney(priced.totalCents)}. Editing the lines below changes
+         what they authorized — reissue this as a new change order instead, or clear the
+         signature and get it re-signed.`
+      : 'This is in the contract total. Anything you change here changes the contract.'}
+    ${order.signature
+      ? '<div class="fix"><button class="btn sm" data-coclearsig>Clear signature and reopen</button></div>'
+      : ''}
+  </div>`}`;
+
+  wireCOEditor(order);
+  restoreCOFocus(focus);
+}
+
+function wireCOEditor(order) {
+  const el = $('#coEditor');
+
+  el.oninput = (e) => {
+    const cof = e.target.dataset.cof;
+    if (cof) {
+      const v = cof === 'daysAdded' ? (Number(e.target.value) || 0) : e.target.value;
+      store.patchChangeOrder(order.id, { [cof]: v }, { label: `co-${order.id}-${cof}`, coalesce: true });
+      return;
+    }
+    const tr = e.target.closest('[data-coitem]');
+    const cif = e.target.dataset.cif;
+    if (!tr || !cif) return;
+    let value = e.target.value;
+    if (cif === 'qty' || cif === 'unitCost') {
+      value = value === '' ? 0 : Number(value);
+      if (!Number.isFinite(value)) return;
+    }
+    store.patchChangeOrderItem(order.id, tr.dataset.coitem, { [cif]: value },
+      { label: `coi-${tr.dataset.coitem}-${cif}`, coalesce: true });
+  };
+
+  el.onclick = (e) => {
+    const status = e.target.closest('[data-costatus]')?.dataset.costatus;
+    if (status) {
+      store.setChangeOrderStatus(order.id, status);
+      if (status === 'approved') {
+        const c = summarizeContract(store.active(), store.state.settings);
+        toast(`Approved — contract is now ${formatMoney(c.contractTotalCents)}.`, { undo: true });
+      }
+      return;
+    }
+    if (e.target.closest('[data-coadd]')) {
+      const item = store.addChangeOrderItem(order.id, {});
+      requestAnimationFrame(() => {
+        $(`[data-coitem="${CSS.escape(item.id)}"] [data-cif="description"]`)?.focus();
+      });
+      return;
+    }
+    if (e.target.closest('[data-cobook]')) { openPriceBook({ into: order.id }); return; }
+    if (e.target.closest('[data-cosign]')) { openSignature({ kind: 'co', id: order.id }); return; }
+    if (e.target.closest('[data-coclearsig]')) {
+      // Reopening drops the signature and the decision date together. Keeping
+      // either one would leave a document claiming the client authorized an
+      // amount that is no longer what the change order says.
+      store.patchChangeOrder(order.id, { signature: null, status: 'sent', decidedAt: '' },
+        { coalesce: false });
+      toast('Signature cleared — get this re-signed before invoicing.', { undo: true });
+      return;
+    }
+    const del = e.target.closest('[data-coidel]');
+    if (del) {
+      store.removeChangeOrderItem(order.id, del.closest('[data-coitem]').dataset.coitem);
+    }
+  };
+}
+
+/** Focus preservation, same reason as the main grid: typing must not be eaten. */
+function captureCOFocus() {
+  const el = document.activeElement;
+  if (!el) return null;
+  if (el.dataset?.cof) return { kind: 'field', key: el.dataset.cof, start: el.selectionStart, end: el.selectionEnd };
+  const tr = el.closest?.('[data-coitem]');
+  if (tr && el.dataset.cif) {
+    return { kind: 'item', id: tr.dataset.coitem, key: el.dataset.cif, start: el.selectionStart, end: el.selectionEnd };
+  }
+  return null;
+}
+
+function restoreCOFocus(focus) {
+  if (!focus) return;
+  const el = focus.kind === 'field'
+    ? $(`#coEditor [data-cof="${focus.key}"]`)
+    : $(`[data-coitem="${CSS.escape(focus.id)}"] [data-cif="${focus.key}"]`);
+  if (!el) return;
+  el.focus();
+  if (focus.start != null && el.setSelectionRange && el.type !== 'number') {
+    try { el.setSelectionRange(focus.start, focus.end); } catch { /* not selectable */ }
+  }
+}
+
+function newChangeOrder() {
+  const order = store.addChangeOrder();
+  ui.tab = 'changes';
+  render();
+  requestAnimationFrame(() => $('#coEditor [data-cof="title"]')?.focus());
+  return order;
+}
+
+function wireChangeOrders() {
+  $('#btnAddCO').onclick = newChangeOrder;
+
+  $('#btnCOPrint').onclick = () => {
+    if (!store.activeChangeOrder()) return;
+    document.body.dataset.print = 'co';
+    requestAnimationFrame(() => {
+      window.print();
+      delete document.body.dataset.print;
+    });
+  };
+}

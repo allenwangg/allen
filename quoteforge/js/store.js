@@ -75,6 +75,7 @@ export function newEstimate(overrides = {}) {
     scopeSummary: '',
     exclusions: '',
     items: [],
+    changeOrders: [],
     discount: null,
     milestones: defaultMilestones(),
     terms: [...DEFAULT_TERMS],
@@ -241,6 +242,17 @@ export class Store {
     copy.validUntil = addDays(todayISO(), 30);
     copy.signature = null;
     copy.items = copy.items.map((it) => ({ ...it, id: uid('li') }));
+    // Change orders come along, but a duplicate is a NEW job: it must not
+    // inherit the client's signature or the date they authorized different
+    // work, and every id has to be fresh so edits cannot reach the original.
+    copy.changeOrders = (copy.changeOrders || []).map((co) => ({
+      ...co,
+      id: uid('co'),
+      status: 'draft',
+      decidedAt: '',
+      signature: null,
+      items: co.items.map((it) => ({ ...it, id: uid('li') })),
+    }));
     this.update((s) => {
       copy.number = `Q-${s.nextNumber}`;
       s.nextNumber += 1;
@@ -489,21 +501,43 @@ function migrateEstimate(raw) {
     ...base,
     ...raw,
     client: { ...base.client, ...(raw.client || {}) },
-    items: (raw.items || []).map((i) => ({
-      id: i.id || uid('li'),
-      description: i.description || '',
-      category: i.category || 'material',
-      unit: i.unit || 'ea',
-      qty: Number(i.qty) || 0,
-      unitCost: Number(i.unitCost) || 0,
-      markup: i.markup === null || i.markup === undefined ? null : Number(i.markup),
-      optional: !!i.optional,
-      note: i.note || '',
-      sku: i.sku || '',
-      trade: i.trade || '',
-    })),
+    items: (raw.items || []).map(normalizeItem),
+    changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
     milestones: raw.milestones?.length ? raw.milestones : base.milestones,
     terms: raw.terms?.length ? raw.terms : base.terms,
+  };
+}
+
+/** One shape for a line item, wherever it came from. */
+function normalizeItem(i) {
+  return {
+    id: i.id || uid('li'),
+    description: i.description || '',
+    category: i.category || 'material',
+    unit: i.unit || 'ea',
+    qty: Number(i.qty) || 0,
+    unitCost: Number(i.unitCost) || 0,
+    markup: i.markup === null || i.markup === undefined ? null : Number(i.markup),
+    optional: !!i.optional,
+    note: i.note || '',
+    sku: i.sku || '',
+    trade: i.trade || '',
+  };
+}
+
+function migrateChangeOrder(raw) {
+  return {
+    id: raw.id || uid('co'),
+    number: raw.number || '',
+    title: raw.title || '',
+    reason: raw.reason || '',
+    status: ['draft', 'sent', 'approved', 'rejected'].includes(raw.status) ? raw.status : 'draft',
+    createdAt: raw.createdAt || todayISO(),
+    decidedAt: raw.decidedAt || '',
+    daysAdded: Number(raw.daysAdded) || 0,
+    discount: raw.discount || null,
+    signature: raw.signature || null,
+    items: (raw.items || []).map(normalizeItem),
   };
 }
 
@@ -566,5 +600,112 @@ Object.assign(Store.prototype, {
   priceBookEditCount() {
     return Object.values(this.state.priceBookOverrides || {})
       .filter((o) => o && !o.custom && o.unitCost !== undefined).length;
+  },
+});
+
+/* ---------------------------------------------------------- change orders --- */
+
+/**
+ * Change orders live on the estimate they amend rather than as their own
+ * top-level records. A change order without its contract is meaningless, and
+ * keeping them together means export, import, undo, and duplication all work
+ * on the whole job with no extra code.
+ */
+Object.assign(Store.prototype, {
+  /** The change order currently being edited, if any. */
+  activeChangeOrder() {
+    const est = this.active();
+    if (!est || !this.state.activeChangeOrderId) return null;
+    return est.changeOrders.find((c) => c.id === this.state.activeChangeOrderId) || null;
+  },
+
+  setActiveChangeOrder(id) {
+    this.update((s) => { s.activeChangeOrderId = id; }, { undoable: false });
+  },
+
+  addChangeOrder(partial = {}) {
+    const est = this.active();
+    if (!est) return null;
+    const seq = est.changeOrders.length + 1;
+    const order = {
+      id: uid('co'),
+      number: `CO-${String(seq).padStart(2, '0')}`,
+      title: '',
+      reason: '',
+      status: 'draft',
+      createdAt: todayISO(),
+      decidedAt: '',
+      daysAdded: 0,
+      items: [],
+      discount: null,
+      signature: null,
+      ...partial,
+    };
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      e.changeOrders.push(order);
+      s.activeChangeOrderId = order.id;
+    }, { label: 'add change order' });
+    return order;
+  },
+
+  patchChangeOrder(id, patch, opts = {}) {
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      const co = e?.changeOrders.find((c) => c.id === id);
+      if (co) Object.assign(co, patch);
+    }, { label: `co-${id}`, coalesce: true, ...opts });
+  },
+
+  removeChangeOrder(id) {
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      if (!e) return;
+      e.changeOrders = e.changeOrders.filter((c) => c.id !== id);
+      if (s.activeChangeOrderId === id) s.activeChangeOrderId = e.changeOrders[0]?.id || null;
+    }, { label: 'remove change order' });
+  },
+
+  /**
+   * Approving or rejecting stamps the date. That date is the whole point of a
+   * change order: it is the evidence that the client authorized the work
+   * before it was performed, which is what makes the final invoice defensible.
+   */
+  setChangeOrderStatus(id, status) {
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      const co = e?.changeOrders.find((c) => c.id === id);
+      if (!co) return;
+      co.status = status;
+      co.decidedAt = (status === 'approved' || status === 'rejected') ? todayISO() : '';
+    }, { label: 'change order status' });
+  },
+
+  addChangeOrderItem(coId, partial = {}) {
+    const item = normalizeItem({ qty: 1, unitCost: 0, category: 'material', unit: 'ea', ...partial });
+    item.markup = partial.markup === undefined ? null : partial.markup;
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      const co = e?.changeOrders.find((c) => c.id === coId);
+      if (co) co.items.push(item);
+    }, { label: 'add co item' });
+    return item;
+  },
+
+  patchChangeOrderItem(coId, itemId, patch, opts = {}) {
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      const co = e?.changeOrders.find((c) => c.id === coId);
+      const item = co?.items.find((i) => i.id === itemId);
+      if (item) Object.assign(item, patch);
+    }, { label: `co-item-${itemId}`, coalesce: true, ...opts });
+  },
+
+  removeChangeOrderItem(coId, itemId) {
+    this.update((s) => {
+      const e = s.estimates.find((x) => x.id === s.activeId);
+      const co = e?.changeOrders.find((c) => c.id === coId);
+      if (co) co.items = co.items.filter((i) => i.id !== itemId);
+    }, { label: 'remove co item' });
   },
 });

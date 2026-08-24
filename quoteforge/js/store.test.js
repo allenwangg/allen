@@ -6,7 +6,7 @@
  * estimates.
  */
 import { Store, migrate, newEstimate, uid, STORAGE_KEY } from './store.js';
-import { priceEstimate, defaultSettings } from './pricing.js';
+import { priceEstimate, defaultSettings, summarizeContract } from './pricing.js';
 
 let passed = 0, failed = 0;
 const failures = [];
@@ -369,6 +369,166 @@ t('a throwing subscriber cannot break other subscribers', () => {
     ok(reached, 'a throwing listener blocked the next one');
   } finally { console.error = err; }
 });
+
+/* ------------------------------------------------------- change orders ---- */
+
+t('a change order is numbered sequentially and starts as a draft', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const a = s.addChangeOrder({ title: 'Rotten subfloor' });
+  const b = s.addChangeOrder({ title: 'Extra outlet' });
+  eq(a.number, 'CO-01');
+  eq(b.number, 'CO-02');
+  eq(a.status, 'draft');
+  ok(a.createdAt, 'a change order needs a date from the start');
+  eq(s.active().changeOrders.length, 2);
+});
+
+t('change order items are added, edited, and removed', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const co = s.addChangeOrder();
+  const item = s.addChangeOrderItem(co.id, { description: 'Sister joists', qty: 6, unitCost: 85 });
+  eq(s.active().changeOrders[0].items.length, 1);
+
+  s.patchChangeOrderItem(co.id, item.id, { qty: 9 });
+  eq(s.active().changeOrders[0].items[0].qty, 9);
+
+  s.removeChangeOrderItem(co.id, item.id);
+  eq(s.active().changeOrders[0].items.length, 0);
+});
+
+t('approving stamps the decision date, reverting clears it', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const co = s.addChangeOrder();
+  eq(s.active().changeOrders[0].decidedAt, '');
+
+  s.setChangeOrderStatus(co.id, 'approved');
+  const stamped = s.active().changeOrders[0];
+  eq(stamped.status, 'approved');
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(stamped.decidedAt),
+    `expected a decision date, got "${stamped.decidedAt}"`);
+
+  // The date is evidence of authorization, so it must not survive going back
+  // to an undecided state.
+  s.setChangeOrderStatus(co.id, 'sent');
+  eq(s.active().changeOrders[0].decidedAt, '',
+    'an undecided change order must not carry a decision date');
+});
+
+t('rejecting also stamps a date', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const co = s.addChangeOrder();
+  s.setChangeOrderStatus(co.id, 'rejected');
+  ok(s.active().changeOrders[0].decidedAt, 'a rejection is a decision worth dating');
+});
+
+t('removing a change order promotes another as active', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const a = s.addChangeOrder();
+  const b = s.addChangeOrder();
+  eq(s.activeChangeOrder().id, b.id);
+  s.removeChangeOrder(b.id);
+  eq(s.activeChangeOrder().id, a.id);
+  s.removeChangeOrder(a.id);
+  eq(s.activeChangeOrder(), null);
+});
+
+t('change orders survive a save and reload', () => {
+  const storage = memStorage();
+  const a = new Store({ storage });
+  a.createEstimate({ title: 'Job' });
+  const co = a.addChangeOrder({ title: 'Rot repair' });
+  a.addChangeOrderItem(co.id, { description: 'Sister joists', qty: 6, unitCost: 85 });
+  a.setChangeOrderStatus(co.id, 'approved');
+  a.save({ immediate: true });
+
+  const b = new Store({ storage });
+  const restored = b.active().changeOrders[0];
+  eq(restored.title, 'Rot repair');
+  eq(restored.status, 'approved');
+  eq(restored.items[0].qty, 6);
+  ok(restored.decidedAt);
+});
+
+t('an estimate saved before change orders existed still loads', () => {
+  const migrated = migrate({
+    estimates: [{ id: 'old', title: 'Legacy job', items: [{ description: 'X', qty: 1, unitCost: 5 }] }],
+  });
+  eq(Array.isArray(migrated.estimates[0].changeOrders), true,
+    'a legacy estimate should gain an empty changeOrders array');
+  eq(migrated.estimates[0].changeOrders.length, 0);
+});
+
+t('a change order with a bad status is repaired on load', () => {
+  const migrated = migrate({
+    estimates: [{ id: 'e', changeOrders: [{ id: 'c', status: 'wat', items: [{ qty: '3', unitCost: '10' }] }] }],
+  });
+  const co = migrated.estimates[0].changeOrders[0];
+  eq(co.status, 'draft', 'an unknown status should fall back to draft:');
+  eq(co.items[0].qty, 3, 'string quantities should be coerced:');
+  ok(co.items[0].id, 'a missing item id should be generated');
+});
+
+t('duplicating a job carries its change orders but drops signatures', () => {
+  const s = mkStore();
+  const src = s.createEstimate({ title: 'Original' });
+  const co = s.addChangeOrder({ title: 'Rot' });
+  s.addChangeOrderItem(co.id, { description: 'Joists', qty: 4, unitCost: 90 });
+  s.patchChangeOrder(co.id, { signature: { dataUrl: 'x', signedAt: '2026-01-01' } });
+
+  const copy = s.duplicateEstimate(src.id);
+  eq(copy.changeOrders.length, 1, 'change orders should come along:');
+  eq(copy.changeOrders[0].items[0].qty, 4);
+  eq(copy.changeOrders[0].signature, null,
+    'a duplicate must not inherit the client signature on a change order:');
+  eq(copy.changeOrders[0].status, 'draft',
+    'a duplicated change order is not still approved:');
+  eq(copy.changeOrders[0].decidedAt, '');
+  ok(copy.changeOrders[0].id !== co.id, 'duplicated change orders need fresh ids');
+
+  // Editing the copy must not reach back into the original.
+  s.patchChangeOrderItem(copy.changeOrders[0].id, copy.changeOrders[0].items[0].id, { qty: 99 });
+  const original = s.state.estimates.find((e) => e.id === src.id);
+  eq(original.changeOrders[0].items[0].qty, 4, 'the copy aliased the original:');
+});
+
+t('a backup round-trips change orders intact', () => {
+  const a = mkStore();
+  a.createEstimate({ title: 'Job' });
+  const co = a.addChangeOrder({ title: 'Rot repair' });
+  a.addChangeOrderItem(co.id, { description: 'Joists', qty: 6, unitCost: 85 });
+  a.setChangeOrderStatus(co.id, 'approved');
+
+  const b = mkStore();
+  b.importJSON(a.exportAll());
+  const got = b.state.estimates[0].changeOrders[0];
+  eq(got.title, 'Rot repair');
+  eq(got.status, 'approved');
+  eq(got.items[0].unitCost, 85);
+});
+
+t('change orders feed the contract summary', () => {
+  const s = mkStore();
+  s.createEstimate();
+  s.addItem({ description: 'Base work', qty: 10, unitCost: 200, category: 'labor' });
+  const co = s.addChangeOrder({ title: 'Extra' });
+  s.addChangeOrderItem(co.id, { description: 'More', qty: 5, unitCost: 100, category: 'labor' });
+
+  let c = summarizeContract(s.active(), s.state.settings);
+  eq(c.unapprovedCount, 1);
+  eq(c.contractTotalCents, c.originalTotalCents, 'a draft must not change the contract yet:');
+  ok(c.atRiskCents > 0, 'unapproved work should register as exposure');
+
+  s.setChangeOrderStatus(co.id, 'approved');
+  c = summarizeContract(s.active(), s.state.settings);
+  eq(c.atRiskCents, 0, 'approval should clear the exposure:');
+  ok(c.contractTotalCents > c.originalTotalCents, 'approval should raise the contract');
+});
+
 
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }
