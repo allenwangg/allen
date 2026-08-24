@@ -66,7 +66,11 @@
     'how-economies-work': 'graph', 'art-of-strategy': 'puzzle', 'eastern-philosophy': 'wave',
     'story-of-evolution': 'path', 'brain-on-emotions': 'flame', 'negotiation': 'bridge',
     'science-of-sleep': 'hourglass', 'psychology-of-happiness': 'key',
-    'great-experiments': 'lightbulb', 'probability-and-luck': 'fork'
+    'great-experiments': 'lightbulb', 'probability-and-luck': 'fork',
+    'how-internet-works': 'network', 'genius-of-language': 'book', 'money-in-history': 'pyramid',
+    'immune-system': 'shield', 'music-and-brain': 'bell', 'ethics-big-three': 'compass',
+    'climate-system': 'mountain', 'art-of-storytelling': 'map', 'nutrition-without-nonsense': 'layers',
+    'stock-market-explained': 'ladder', 'turning-points': 'clock', 'space-exploration': 'eye'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 

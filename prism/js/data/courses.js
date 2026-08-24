@@ -3674,5 +3674,4597 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "art-of-strategy",
+    "title": "The Art of Strategy",
+    "tagline": "Why smart people get stuck — and how to redesign the game",
+    "category": "Game Theory",
+    "description": "Game theory as a lens on everyday life: why perfectly rational people land in outcomes nobody wants, and how repetition, credible commitment, and well-designed rules get them out.",
+    "lessons": [
+      {
+        "id": "the-prisoners-dilemma",
+        "title": "The Prisoner's Dilemma",
+        "summary": "Flood, Dresher, and Tucker's famous trap: why two rational players defect their way into an outcome both hate.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Rational People, One Bad Outcome",
+            "body": "Two people each make the smartest possible choice — and land in an outcome both of them hate. That's not a paradox of stupidity; it's the prisoner's dilemma, the most famous game in game theory. This lesson shows you the trap, why pure logic walks straight into it, and where it's quietly running your life.",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "Born at RAND, January 1950",
+            "body": "In January 1950, mathematicians Merrill Flood and Melvin Dresher at the RAND Corporation — the Cold War think tank — devised a simple two-player experiment to probe John Nash's brand-new equilibrium theory. Each player could cooperate or defect. The math pointed to mutual defection, even though both players would do better cooperating.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Tucker's Two Prisoners",
+            "body": "Later in 1950, Princeton mathematician Albert Tucker dressed the game in a story. Two suspects sit in separate cells. If both stay silent, each serves 1 year. If one confesses while the other stays silent, the confessor walks free and the silent one serves 10. If both confess, each serves 5. No messages pass between the cells.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You're one of Tucker's prisoners. If your partner stays silent, confessing frees you instead of costing a year. If your partner confesses, confessing gets you 5 years instead of 10. What's your rational move?",
+            "choices": [
+              "Stay silent — loyalty will be repaid",
+              "Confess — it beats silence no matter what your partner does",
+              "It depends on guessing what your partner will do"
+            ],
+            "answer": 1,
+            "explain": "Confessing wins in both scenarios, so you don't need to guess at all. Your partner faces identical logic — so both confess and serve 5 years, when mutual silence cost just 1."
+          },
+          {
+            "type": "concept",
+            "title": "Dominant Strategies",
+            "body": "A dominant strategy is a move that serves you best no matter what the other player does. Confessing dominates: it pays whether your partner talks or not. When both prisoners play their dominant strategy, the result — 5 years each — is stable; neither can improve alone. Yet it's plainly worse than the 1 year each that mutual silence offered.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If every player follows a dominant strategy, the group must end up at its best possible outcome.",
+            "answer": false,
+            "explain": "The dilemma proves the opposite: individually unbeatable moves can combine into a collectively lousy result. That gap between private logic and group welfare is the engine of this whole course."
+          },
+          {
+            "type": "example",
+            "title": "Price Wars",
+            "body": "Two gas stations face each other across an intersection. Cutting prices is each owner's dominant strategy: it steals customers if the rival holds firm, and protects share if the rival cuts. So both cut, margins vanish, and the customers they split remain the same. Airlines, supermarkets, and streaming services replay this game constantly.",
+            "art": "coin"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The US–Soviet arms race was a prisoner's dilemma played with warheads. What were the two 'moves'?",
+            "answer": "Restraint was cooperation; building more missiles was defection. Arming dominated — it felt safer whatever the rival did — so both superpowers spent trillions to end up as insecure as before."
+          },
+          {
+            "type": "example",
+            "title": "Emptying the Ocean",
+            "body": "Overfishing is the dilemma with many players. Each fleet reasons: the stock will collapse whether or not my boats hold back, so I should catch what I can. In 1992, Canada's Grand Banks cod fishery — worked for nearly 500 years — collapsed and has never fully recovered. Ecologists call this multiplayer version the tragedy of the commons.",
+            "art": "wave"
+          },
+          {
+            "type": "quote",
+            "text": "Freedom in a commons brings ruin to all.",
+            "by": "Garrett Hardin, 'The Tragedy of the Commons' (1968)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Price wars, arms races, and overfishing look different, but one shared feature makes each a prisoner's dilemma. Which?",
+            "choices": [
+              "The players are behaving irrationally",
+              "Defecting dominates for each player, yet mutual defection leaves everyone worse off than mutual cooperation",
+              "The players are unable to communicate with each other"
+            ],
+            "answer": 1,
+            "explain": "The players are ruthlessly rational — that's the point. And talk alone doesn't fix it: in a one-shot dilemma a promise to cooperate is cheap, because breaking it still pays."
+          },
+          {
+            "type": "concept",
+            "title": "Escaping the Trap",
+            "body": "The dilemma isn't destiny — you escape by changing the game, not the players. Make it repeat, so today's betrayal costs tomorrow's cooperation. Sign binding contracts. Add an enforcer who raises the price of defection, as fishing quotas do. When you spot a stubborn bad equilibrium, don't lecture the players; go redesign their payoffs.",
+            "art": "path"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Flood and Dresher built the game at RAND in January 1950; Albert Tucker gave it its prisoners.",
+              "A dominant strategy is best no matter what the other player does — here, both defect.",
+              "Two individually perfect moves combine into an outcome both players hate: 5 years each, not 1.",
+              "Price wars, arms races, and overfishing are the same trap; escape it by changing the payoffs, not the players."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "The prisoner's dilemma in one sentence",
+            "back": "Each player's dominant strategy is to defect, so both defect — an outcome worse for each than mutual cooperation."
+          },
+          {
+            "front": "Dominant strategy",
+            "back": "A move that serves you best no matter what your opponent does. In the prisoner's dilemma, confessing dominates staying silent."
+          },
+          {
+            "front": "Who created the prisoner's dilemma?",
+            "back": "Merrill Flood and Melvin Dresher at RAND (January 1950); Albert Tucker added the prisoner story the same year."
+          },
+          {
+            "front": "Tragedy of the commons",
+            "back": "A many-player prisoner's dilemma over a shared resource — every user's take-more strategy destroys it, e.g. Grand Banks cod, 1992."
+          }
+        ]
+      },
+      {
+        "id": "the-evolution-of-cooperation",
+        "title": "The Evolution of Cooperation",
+        "summary": "Axelrod's tournaments, Rapoport's four-line champion, and the shadow of the future that makes cooperation rational.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Cooperation Among Egoists",
+            "body": "Play the prisoner's dilemma once and defection rules. But life rarely plays once — you face the same colleagues, neighbors, and rivals again and again. In 1980, a political scientist staged a tournament to discover how cooperation could emerge among pure egoists. The winning program was four lines long.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Game, Replayed",
+            "body": "Repetition transforms the dilemma. In a one-shot game, betrayal is free. When the same two players meet round after round, with no known final round, defection today invites punishment tomorrow — and cooperation today can pay dividends for years. Strategy stops being a single choice and becomes a reputation.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Axelrod's Tournament",
+            "body": "In 1980, political scientist Robert Axelrod of the University of Michigan invited game theorists to submit computer programs for a round-robin repeated prisoner's dilemma. Fourteen entries arrived, some fiendishly clever. The winner, from psychologist Anatol Rapoport, was the simplest program submitted: Tit for Tat, just four lines of code.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Axelrod's tournament was won by the most sophisticated and complex program entered.",
+            "answer": false,
+            "explain": "Rapoport's Tit for Tat was the shortest of the fourteen entries — four lines. Axelrod then ran a second tournament with 62 entries, every author knowing Tit for Tat had won. It won again."
+          },
+          {
+            "type": "concept",
+            "title": "How Tit for Tat Plays",
+            "body": "The whole strategy: cooperate on the first move, then do whatever your opponent did last round. It meets cooperation with cooperation and answers defection with exactly one defection. It never throws the first punch, never lets a cheat go unanswered, and never holds a grudge past a single round. You always know where you stand with it.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You defect against Tit for Tat in round 7, then return to cooperating in round 8. What does it do in rounds 8 and 9?",
+            "choices": [
+              "Defects in round 8, then cooperates again in round 9",
+              "Defects forever — you broke its trust",
+              "Keeps cooperating, hoping you'll come around"
+            ],
+            "answer": 0,
+            "explain": "One retaliation, then the slate is clean. Defecting forever is a real strategy — Grim Trigger — but permanent grudges destroy value after a single slip, and never punishing invites endless exploitation."
+          },
+          {
+            "type": "concept",
+            "title": "Nice, Retaliatory, Forgiving, Clear",
+            "body": "Axelrod distilled four traits from the winner. Nice: never defect first — every top-scoring entry was nice. Retaliatory: answer defection at once, so cheating never pays. Forgiving: once you've punished, let it go, so feuds can't spiral. Clear: be so predictable that opponents can see cooperating with you is their best move.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In poker, being unreadable wins. Why did clarity win Axelrod's tournament instead?",
+            "answer": "Repeated dilemmas aren't zero-sum — you win by teaching, not tricking. A transparent strategy lets opponents learn that cooperation pays and defection instantly costs, so they settle into cooperating with you."
+          },
+          {
+            "type": "concept",
+            "title": "The Shadow of the Future",
+            "body": "Cooperation survives only when the future looms large — when you expect to meet again and coming rounds matter enough to outweigh today's temptation. Axelrod called this the shadow of the future. Shrink it — a known final round, a departing partner, an anonymous stranger — and the one-shot logic of defection comes flooding back.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "Live and Let Live, 1914",
+            "body": "In the trenches of World War I, enemy units that faced each other for months developed quiet truces: artillery fired at predictable times, aimed to miss; raids were staged. Axelrod's The Evolution of Cooperation (1984) explains why — the same soldiers met daily, so the shadow of the future was long. Headquarters stamped it out by ordering real raids.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A restaurant beside a world-famous landmark serves mediocre food at high prices, while a diner two blocks away is excellent and cheap. Game theory's explanation?",
+            "choices": [
+              "Tourists simply have worse taste than locals",
+              "The landmark spot faces one-shot customers — no shadow of the future disciplines it",
+              "High rents near landmarks force quality down"
+            ],
+            "answer": 1,
+            "explain": "The diner's customers return weekly, so bad meals get punished — a repeated game. The tourist spot will never see you again, making a bad meal a free defection. One-shot interactions breed bad behavior."
+          },
+          {
+            "type": "quote",
+            "text": "The foundation of cooperation is not really trust, but the durability of the relationship.",
+            "by": "Robert Axelrod, The Evolution of Cooperation (1984)"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Axelrod's 1980 computer tournament was won by Anatol Rapoport's four-line Tit for Tat — and the rematch too.",
+              "The winning traits: nice, retaliatory, forgiving, clear. Every top strategy was nice.",
+              "Cooperation lives in the shadow of the future: defect today, pay tomorrow.",
+              "Want better behavior — from others or yourself? Lengthen the relationship and make the next round visible."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Tit for Tat's algorithm",
+            "back": "Cooperate first, then copy your opponent's previous move. Anatol Rapoport's four-line entry won both of Axelrod's tournaments (1980)."
+          },
+          {
+            "front": "Four traits of Axelrod's winners",
+            "back": "Nice (never defect first), retaliatory (punish at once), forgiving (then let it go), clear (easy to read)."
+          },
+          {
+            "front": "Shadow of the future",
+            "back": "Cooperation holds when future rounds matter enough: expected repeat encounters discipline today's behavior."
+          },
+          {
+            "front": "Why are one-shot interactions nastier?",
+            "back": "With no future rounds, defection can't be punished — tourist-trap logic. Repetition turns cheating from free into costly."
+          }
+        ]
+      },
+      {
+        "id": "burning-your-bridges",
+        "title": "Burning Your Bridges",
+        "summary": "Schelling's paradoxes of commitment, costly signals, and why a threat kept secret is no threat at all.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Strength of Having No Choice",
+            "body": "Here's the strangest idea in strategy: you can win by destroying your own options. Generals burn bridges behind their armies; negotiators tie their own hands in public. Economist Thomas Schelling turned these paradoxes into a science of commitment — and showed why a threat nobody knows about might as well not exist.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Schelling's Paradox",
+            "body": "In The Strategy of Conflict (1960), Thomas Schelling — 2005 Nobel laureate — argued that in bargaining, weakness can be strength. A negotiator who provably cannot back down forces the other side to do the adjusting. Binding yourself, visibly and irreversibly, converts a mere wish into a fact your opponent must plan around.",
+            "art": "balance"
+          },
+          {
+            "type": "example",
+            "title": "Cortés Scuttles the Fleet",
+            "body": "In 1519, Hernán Cortés landed in Mexico with roughly 500 men and ordered his own ships destroyed. Retreat became impossible — his soldiers fought accordingly, and ally and enemy alike could see the campaign would not simply sail away. 'Burning your boats' survives as the emblem of commitment: cutting the path back to make the path forward credible.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Strategically, what did destroying his own fleet buy Cortés?",
+            "choices": [
+              "It made his commitment to fight visible and irreversible — no one could doubt his army would stand",
+              "It mainly freed his sailors to fight as soldiers on land",
+              "It denied the enemy any chance to capture his ships"
+            ],
+            "answer": 0,
+            "explain": "The sailors did join his ranks, but the strategic prize was credibility. A vow to fight to the end is cheap talk while retreat exists; sinking the option made the vow a fact."
+          },
+          {
+            "type": "concept",
+            "title": "The Credibility Problem",
+            "body": "Threats and promises are words, and words are cheap — your opponent knows that when the moment comes, carrying out a costly threat may no longer be in your interest. Commitment devices solve this by locking you in ahead of time: contracts with penalties, public pledges, burned bridges, automatic triggers. Credibility flows from what you cannot undo.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In a negotiation, keeping all your options open always makes you stronger.",
+            "answer": false,
+            "explain": "Schelling's point exactly: the ability to retreat undermines your threats. A visibly bound negotiator — 'my hands are tied' — often extracts more, because the other side must be the one to move."
+          },
+          {
+            "type": "example",
+            "title": "The Doomsday Machine",
+            "body": "In Stanley Kubrick's Dr. Strangelove (1964), the Soviets build a device that retaliates automatically against any nuclear attack — commitment perfected, since no human can flinch. But they keep it secret, and it deters no one. As Dr. Strangelove shrieks, the whole point of a doomsday machine is lost if you keep it a secret.",
+            "art": "bell"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A commitment device must pass two tests before it changes an opponent's behavior. What are they?",
+            "answer": "It must be irreversible — you genuinely cannot back down — and it must be visible, so the other side knows before choosing. The secret doomsday machine aced the first test and flunked the second."
+          },
+          {
+            "type": "concept",
+            "title": "Costly Signals",
+            "body": "Talk is cheap, so how do you prove quality? Michael Spence's answer — job-market signaling (1973), which earned the 2001 Nobel — is that credible signals must be costly, and costlier still for pretenders. A demanding degree can signal ability even if the classes teach nothing, because grinding through it is cheapest for the most able.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Spence's model, why does a diploma work as a signal of ability even if the coursework itself is useless?",
+            "choices": [
+              "Employers secretly value obedience and conformity",
+              "Earning it costs the able less than the less able, so only the able find it worth doing",
+              "Universities filter applicants before admitting them"
+            ],
+            "answer": 1,
+            "explain": "The signal's power is differential cost. If faking were as cheap as the real thing, everyone would send the signal and it would mean nothing — which is why effortless credentials carry no weight."
+          },
+          {
+            "type": "concept",
+            "title": "Brinkmanship",
+            "body": "Some threats are too big to believe — no one starts a nuclear war over a small dispute. Schelling's fix: the threat that leaves something to chance. Don't threaten to jump; rock the boat you're both standing in, letting the risk of disaster climb until someone yields. The Cuban Missile Crisis of 1962 was exactly this contest in shared risk.",
+            "art": "mountain"
+          },
+          {
+            "type": "quote",
+            "text": "The power to constrain an adversary may depend on the power to bind oneself.",
+            "by": "Thomas Schelling, The Strategy of Conflict (1960)"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Schelling (Nobel 2005): visibly, irreversibly binding yourself can force the other side to adjust.",
+              "Threats are cheap talk until a commitment device makes backing down impossible.",
+              "A deterrent kept secret deters nothing — commitments must be communicated.",
+              "Signals persuade when they're costly to fake: Spence's job-market signaling (1973, Nobel 2001).",
+              "Before your next negotiation, ask: which option should I visibly give up?"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Schelling's commitment paradox",
+            "back": "Limiting your own options can strengthen your position: a player who provably can't back down forces the other side to adjust (1960)."
+          },
+          {
+            "front": "Two tests of a commitment device",
+            "back": "Irreversible and visible. Dr. Strangelove's secret doomsday machine failed the second — a deterrent must be communicated."
+          },
+          {
+            "front": "Costly signaling (Spence, 1973)",
+            "back": "Signals are credible when faking is expensive: a degree signals ability because it costs the able less. Nobel 2001."
+          },
+          {
+            "front": "Brinkmanship",
+            "back": "Schelling's 'threat that leaves something to chance': raise shared risk step by step until someone yields, as in the Cuban Missile Crisis."
+          }
+        ]
+      },
+      {
+        "id": "designing-the-game",
+        "title": "Designing the Game",
+        "summary": "First-price vs. Vickrey auctions, the winner's curse, and the Nobel-winning craft of building the rules themselves.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Designing the Game Itself",
+            "body": "So far you've learned to play games well. The deeper power is choosing their rules. Auctions are the purest laboratory: change one clause and bluffers become truth-tellers, winners become losers, and billions of dollars move. This lesson runs from a 1961 trick that makes honesty unbeatable to the auction designs that won the 2020 Nobel Prize.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "The First-Price Guessing Game",
+            "body": "In a first-price sealed-bid auction, everyone submits one secret bid; the highest wins and pays what they bid. Bid your true value and winning gains you nothing, so you must shade your bid below it. But how far? That depends on guessing rivals' values — and their guesses about yours. Everyone bluffs, and the keenest bidder doesn't always win.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Vickrey's Honest Auction",
+            "body": "In 1961, economist William Vickrey proposed a fix: the highest bid still wins, but the winner pays the second-highest bid. Now your bid decides only whether you win — never what you pay — so bidding your exact true value becomes a dominant strategy. No bluffing, no espionage. The insight helped earn Vickrey the 1996 Nobel Prize.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A painting is worth exactly $1,000 to you. In a second-price (Vickrey) auction, what should you bid?",
+            "choices": [
+              "Around $800 — always leave room for profit",
+              "Exactly $1,000",
+              "About $1,100 — winning is what matters"
+            ],
+            "answer": 1,
+            "explain": "Shading risks losing at a price you'd happily have paid; overbidding risks winning above your value. Since the runner-up sets your price, truth costs nothing and protects everything. Shading is first-price logic."
+          },
+          {
+            "type": "example",
+            "title": "You've Used One on eBay",
+            "body": "eBay's proxy bidding is Vickrey's design in disguise. You enter your maximum once; the system bids just enough to keep you ahead, and the winner effectively pays the runner-up's price plus one increment. So enter your true maximum and walk away — no last-second sniper who values the item less than you do can take it from you.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In a first-price sealed-bid auction, just as in a Vickrey auction, bidding your true value is the dominant strategy.",
+            "answer": false,
+            "explain": "In first-price you pay your own bid, so truthful bidding guarantees zero gain — you must shade and guess. Only the second-price rule makes honesty dominant. The payment rule, not the sealed envelope, does the work."
+          },
+          {
+            "type": "example",
+            "title": "The Winner's Curse",
+            "body": "In 1971, three Atlantic Richfield engineers — Capen, Clapp, and Campbell — studied Gulf of Mexico oil-lease auctions and found the winners systematically overpaid, often earning less than routine investments. When bidders estimate the same uncertain value, the auction hands victory to the most over-optimistic estimate. Winning is bad news.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You outbid nine rivals for a house after fierce competition. Why might winning itself be bad news?",
+            "answer": "Everyone was estimating the same uncertain value, and you topped them all — evidence your estimate was the most inflated. That's the winner's curse; sophisticated bidders shade their bids to correct for it."
+          },
+          {
+            "type": "concept",
+            "title": "Mechanism Design: Games in Reverse",
+            "body": "Mechanism design flips game theory around. Instead of analyzing a game you're handed, start from the outcome you want — honesty, efficiency, fair division — and engineer rules so self-interested players produce it. Vickrey's auction is one mechanism; the childhood rule 'I cut, you choose' is another. Good rules do the moralizing for you.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Mechanism design is often called 'reverse game theory.' What exactly is reversed?",
+            "choices": [
+              "Players' payoffs are flipped so losers win",
+              "You start from the desired outcome and design rules that make selfish play deliver it",
+              "Players move in reverse order, last bidder first"
+            ],
+            "answer": 1,
+            "explain": "Analysis asks: given these rules, what happens? Design asks: given what I want to happen, which rules? Players stay selfish; the rules do the work — the cake-cutter slices evenly because the other child chooses."
+          },
+          {
+            "type": "example",
+            "title": "Auctioning the Airwaves",
+            "body": "In 1994 the FCC had to sell radio-spectrum licenses whose values interlocked — a winner's-curse minefield. Economists Paul Milgrom and Robert Wilson designed the simultaneous multiple-round auction: every license on offer at once, prices rising across open rounds, so bidders learn from rivals' bids before committing. The format spread worldwide.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The FCC's 1994 spectrum sale simply handed each license to the highest sealed bidder.",
+            "answer": false,
+            "explain": "Milgrom and Wilson ran all licenses simultaneously over open, rising rounds, letting bidders assemble sensible bundles and learn from rivals' bids — taming the winner's curse that sealed bids invite. The design earned them the 2020 Nobel Prize."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "First-price auctions force bluffing; Vickrey's second-price rule (1961) makes honesty the dominant strategy.",
+              "Winner's curse: with a common uncertain value, the top bid is the most over-optimistic — shade accordingly (Capen, Clapp & Campbell, 1971).",
+              "Mechanism design is reverse game theory: pick the outcome, then engineer the rules.",
+              "Milgrom and Wilson's spectrum-auction design won the 2020 Nobel — rule-craft moves billions.",
+              "Stuck in a bad game at work or home? Don't play harder — change the rules."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Vickrey (second-price) auction",
+            "back": "Winner pays the second-highest bid, so bidding your true value is the dominant strategy (Vickrey, 1961; Nobel 1996)."
+          },
+          {
+            "front": "Winner's curse",
+            "back": "When bidders estimate a common uncertain value, the winner is the most over-optimistic — shown in oil-lease bids by Capen, Clapp & Campbell (1971)."
+          },
+          {
+            "front": "Mechanism design",
+            "back": "Reverse game theory: start from the outcome you want and design rules so selfish players deliver it — e.g. 'I cut, you choose.'"
+          },
+          {
+            "front": "2020 Nobel in economics",
+            "back": "Paul Milgrom and Robert Wilson, for auction theory and the simultaneous multiple-round design behind the 1994 FCC spectrum auctions."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "brain-on-emotions",
+    "title": "Your Brain on Emotions",
+    "tagline": "How feelings are made — and how to change them",
+    "category": "Neuroscience",
+    "description": "What emotions actually are, how your brain assembles them, and the evidence-backed levers — reappraisal, labeling, better forecasting — for changing how you feel.",
+    "lessons": [
+      {
+        "id": "what-is-an-emotion",
+        "title": "What Is an Emotion?",
+        "summary": "From James's trembling body to Barrett's constructing brain — the century-long fight over what a feeling is.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A pounding heart in the dark",
+            "body": "It's 3 a.m. A crash downstairs. Your heart slams, palms sweat, muscles coil — and only then does 'I'm afraid' arrive. Which came first, the feeling or the body? Psychology has argued about that order for 140 years, and the answer changes what an emotion even is.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "James-Lange: the body goes first",
+            "body": "In 1884 William James — and, independently, Carl Lange — flipped common sense: you don't tremble because you're afraid, you feel afraid because you tremble. The emotion is your mind reading your body's reaction. Strip away the racing heart and tensed muscles, James argued, and nothing of the fear remains.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "We feel sorry because we cry, angry because we strike, afraid because we tremble, and not that we cry, strike, or tremble, because we are sorry, angry, or fearful.",
+            "by": "William James"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to James-Lange, why do you feel afraid when a car swerves toward you?",
+            "choices": [
+              "Your brain generates fear first, which then triggers the body's reaction",
+              "Your body reacts first, and the feeling of fear is your reading of that reaction",
+              "Fear and the bodily reaction are independent events that happen to co-occur",
+              "You feel fear only if you learned to fear cars from watching others"
+            ],
+            "answer": 1,
+            "explain": "James-Lange reverses the intuitive order: the bodily response comes first, and the emotion is your perception of it. As James put it, we feel afraid because we tremble."
+          },
+          {
+            "type": "concept",
+            "title": "Cannon's objections",
+            "body": "Physiologist Walter Cannon pushed back in 1927. Visceral responses are too slow — organs take seconds to react, yet emotions can flash up instantly. And they're too similar: fear, rage, even fever all bring a racing heart, so how would the body alone tell them apart? Injecting adrenaline stirred people's bodies without producing genuine emotion.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Cannon argued that bodily changes are too slow and too similar across emotions for the body's feedback alone to explain what you feel.",
+            "answer": true,
+            "explain": "That was the core of his 1927 critique: a pounding heart accompanies fear, rage, and even fever, and visceral changes lag behind the feeling itself. Something beyond raw bodily feedback must shape emotion."
+          },
+          {
+            "type": "example",
+            "title": "The adrenaline experiment",
+            "body": "In 1962 Stanley Schachter and Jerome Singer injected volunteers with adrenaline, warning some about side effects and leaving others in the dark. Each waited with an actor playing either giddy or furious. The uninformed — hearts racing with no explanation — caught the actor's mood, reporting euphoria or anger. The informed just felt the drug.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Schachter and Singer's study, what turned the same adrenaline surge into euphoria for some people and anger for others?",
+            "choices": [
+              "Different doses of adrenaline",
+              "The label people gave their arousal, borrowed from the situation around them",
+              "Stable personality differences between the groups",
+              "The informed group never became physiologically aroused"
+            ],
+            "answer": 1,
+            "explain": "Everyone got the same dose and the same arousal. What differed was the explanation available: with no account of their pounding heart, people interpreted it through the actor's behavior. Emotion = arousal + label."
+          },
+          {
+            "type": "concept",
+            "title": "Ekman's universal faces",
+            "body": "In the late 1960s Paul Ekman visited the Fore people of Papua New Guinea, largely isolated from Western media. Asked to match emotion stories to photographs of faces, they mostly chose the same faces Americans did. Ekman concluded some emotions — happiness, sadness, anger, fear, disgust, surprise — are basic: evolved programs with universal expressions.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "Barrett: emotions are constructed",
+            "body": "Lisa Feldman Barrett argues nothing so tidy is wired in. Her lab found the matching results weaken when people label faces freely instead of picking from a short list of words. In her theory of constructed emotion, the brain builds each instance on the fly — predicting from body signals, context, and the emotion concepts your culture taught you.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Basic or constructed, both camps accept one lesson from the adrenaline study. What can a single bodily surge become — and what decides it?",
+            "answer": "The same surge of arousal can become euphoria, anger, or fear. What decides it is interpretation: the label your brain assigns using context. Arousal supplies the heat; meaning-making picks the emotion."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "James-Lange (1884): the body reacts first; the feeling is your reading of that reaction.",
+              "Cannon (1927): visceral changes are too slow and too similar to explain distinct emotions alone.",
+              "Schachter and Singer (1962): same adrenaline, different label, different emotion.",
+              "The live debate: Ekman's universal basic emotions vs Barrett's constructed emotions. Not settled.",
+              "Usable now: when a surge hits, remember the label is part of the feeling — and labels can be chosen."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "James-Lange theory (1884)",
+            "back": "Body first: you feel afraid because you tremble and run. The emotion is your mind's reading of your body's reaction."
+          },
+          {
+            "front": "Cannon's 1927 objections",
+            "back": "Visceral changes are too slow and too similar across emotions — a racing heart accompanies fear, rage, even fever."
+          },
+          {
+            "front": "Schachter & Singer (1962)",
+            "back": "Same adrenaline arousal became euphoria or anger depending on context. Emotion = arousal + cognitive label."
+          },
+          {
+            "front": "Basic vs constructed emotion",
+            "back": "Ekman: evolved universal expressions. Barrett: brain constructs emotions from arousal, context, and learned concepts. Still a live debate."
+          }
+        ]
+      },
+      {
+        "id": "fear-and-the-amygdala",
+        "title": "Fear and the Amygdala",
+        "summary": "Two roads to the brain's alarm, a fearless patient, and why 'fear center' is the wrong name.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The coiled hose",
+            "body": "You're walking at dusk. Something coiled waits in the grass — and you've leapt back before the word 'snake' forms. A heartbeat later you see it clearly: garden hose. That jump wasn't a decision. An almond-sized structure raised the alarm before the rest of your brain got a vote. Meet the amygdala.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "The low road",
+            "body": "Joseph LeDoux traced a shortcut: sensory signals run from the thalamus straight to the amygdala, skipping the cortex entirely. In rats the trip takes roughly 12 milliseconds — about twice as fast as the full route. The picture it carries is crude, just rough shape and motion. But when the shape might be a snake, crude and fast wins.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "The high road",
+            "body": "The same signal also travels the long way: thalamus to sensory cortex to amygdala. This road is slower but carries a detailed, analyzed picture — coiled object, rubber texture, no head: hose. The high road confirms or cancels the low road's alarm, which is why you jump first and relax a second later, slightly embarrassed.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why would evolution keep the low road when it constantly triggers false alarms about garden hoses?",
+            "choices": [
+              "The false alarms are a design flaw evolution hasn't fixed yet",
+              "Fast, crude detection is cheap insurance: jumping at a hose costs little, missing a snake can cost everything",
+              "The low road is actually more accurate than the cortex",
+              "The low road only fires for genuine threats"
+            ],
+            "answer": 1,
+            "explain": "LeDoux called it quick-and-dirty processing. A false alarm wastes a startle; a missed snake can end the line. Natural selection favors detectors biased toward jumping."
+          },
+          {
+            "type": "concept",
+            "title": "Not a fear center",
+            "body": "Here's the twist: LeDoux himself now warns against calling the amygdala the fear center. In later work he argues it runs nonconscious threat detection — he renamed the circuitry 'defensive survival circuits.' Detecting danger and consciously feeling afraid are different processes; the feeling is assembled by cortical networks interpreting the moment.",
+            "art": "shield"
+          },
+          {
+            "type": "truefalse",
+            "statement": "According to LeDoux's own later view, the amygdala produces the conscious feeling of fear.",
+            "answer": false,
+            "explain": "He argues the opposite: the amygdala handles rapid, nonconscious threat detection, while the conscious experience of fear is constructed by higher cortical processes. That's why he stopped calling it a fear center."
+          },
+          {
+            "type": "example",
+            "title": "The woman with no amygdala",
+            "body": "A rare condition, Urbach-Wiethe disease, calcified both of patient S.M.'s amygdalae. Researchers handed her snakes and spiders, walked her through a haunted house, played horror films: nothing. Held up at knifepoint, she stayed eerily calm. For decades she seemed to be living proof that no amygdala means no fear.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The gas that broke the rule",
+            "body": "In 2013 Justin Feinstein's team had S.M. inhale air with 35% carbon dioxide — a harmless mix that makes the body scream suffocation. She had a full panic attack and reported intense fear, the first of her life. Threats arising inside the body can reach panic circuits through pathways that don't need the amygdala at all.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "S.M. fears no snake and no knife, yet CO2 terrified her. What does that pair of facts say about where fear lives?",
+            "answer": "Fear has no single address. The amygdala detects external threats, but the feeling of fear can arise without it — S.M.'s panic came from internal suffocation signals using other pathways. The amygdala is one threat detector, not the seat of fear."
+          },
+          {
+            "type": "concept",
+            "title": "Fight, flight — and freeze",
+            "body": "The alarm has a repertoire. Amygdala outputs can mobilize you to fight or flee, but often the first response is freezing — rodents hold dead-still, and humans in emergencies frequently do too. Freezing buys the brain a moment to assess, and stillness hides you from predators tuned to motion. It's built-in biology, not cowardice.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In an emergency, a bystander goes rigid and does nothing. What's the most accurate reading?",
+            "choices": [
+              "They consciously chose not to help",
+              "Their amygdala must be damaged",
+              "Freezing is a built-in defensive response, often the body's first move",
+              "Freezing only happens in rodents, never in humans"
+            ],
+            "answer": 2,
+            "explain": "Freezing is part of the normal defensive repertoire — frequently the first reaction while the brain assesses. Reading it as a choice mistakes automatic biology for character."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Two roads to the amygdala: thalamus direct (fast, crude) vs via cortex (slow, detailed).",
+              "LeDoux's caveat: the amygdala runs threat detection — the conscious feeling of fear is built elsewhere.",
+              "Patient S.M., amygdala-less, feared no external threat, yet 35% CO2 triggered panic (Feinstein 2013).",
+              "Freeze is a defensive response, often the first one — not cowardice.",
+              "Next time you jump at a shadow, thank the low road: cheap insurance from an alarm built to overreact."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Low road vs high road (LeDoux)",
+            "back": "Thalamus to amygdala: fast, crude alarm. Thalamus to cortex to amygdala: slower, detailed check. Speed first, accuracy second."
+          },
+          {
+            "front": "LeDoux's caveat",
+            "back": "The amygdala runs nonconscious threat detection — 'defensive survival circuits' — not the conscious feeling of fear. It isn't a 'fear center.'"
+          },
+          {
+            "front": "Patient S.M.",
+            "back": "Urbach-Wiethe destroyed both amygdalae. Fearless with snakes, knives, horror films — yet 35% CO2 triggered full panic (Feinstein 2013)."
+          },
+          {
+            "front": "Freeze response",
+            "back": "Freezing is a built-in defensive reaction, often the first one: stillness buys assessment time and hides you from motion-tuned predators."
+          }
+        ]
+      },
+      {
+        "id": "changing-how-you-feel",
+        "title": "Changing How You Feel",
+        "summary": "Reappraisal, labeling, and the shaky-bridge trick — tools that actually shift a feeling.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Feelings have a timeline",
+            "body": "An emotion isn't a lightning strike — it unfolds. A situation grabs attention, gets interpreted, and builds into a full-body response. Stanford psychologist James Gross mapped this timeline and found something practical: you can intervene at every stage, and where you step in changes how much the intervention costs.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Gross's process model",
+            "body": "The process model names the intervention points: pick your situations, modify them, steer your attention, change your interpretation, or — last resort — manage the response itself. The rule of thumb Gross's research supports: earlier is cheaper. Redirecting a feeling as it forms takes less effort than wrestling one at full strength.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Reappraisal: edit the story",
+            "body": "Reappraisal means changing what a situation means before the emotion crests: the interview becomes a conversation, turbulence becomes a bumpy road, a racing heart becomes readiness. In Gross's lab studies, reappraisers reported milder negative emotion without extra physiological cost — the body stays calm while the story changes.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In Gross's model, intervening early in an emotion's timeline usually takes less effort than fighting the emotion at full strength.",
+            "answer": true,
+            "explain": "That's the model's core practical claim: early strategies like choosing situations or reappraising beat late-stage response management, which is like braking at the bottom of the hill."
+          },
+          {
+            "type": "concept",
+            "title": "The cost of the poker face",
+            "body": "Suppression — feeling the emotion but hiding the expression — is the late-stage option, and it bills you twice. In Gross and Levenson's studies, people who masked disgust or sadness showed higher sympathetic arousal than those who let it show. And Richards and Gross found suppressors remembered less of what happened while they held the mask.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You keep a perfect poker face through an upsetting meeting. Based on Gross and Levenson's research, what's happening inside?",
+            "choices": [
+              "Your body calms down because the expression is gone",
+              "Your physiological arousal runs higher than if you'd let it show, and your memory of the meeting suffers",
+              "Suppression works just like reappraisal — same feeling, same cost",
+              "The emotion is eliminated at its source"
+            ],
+            "answer": 1,
+            "explain": "Hiding the expression doesn't erase the emotion — it adds a second job. Sympathetic arousal rises, and memory for the event worsens while your resources go to holding the mask."
+          },
+          {
+            "type": "concept",
+            "title": "Name it to tame it",
+            "body": "In 2007 Matthew Lieberman's fMRI studies showed that simply labeling a feeling — viewing an angry face and choosing the word 'angry' — increased activity in the right ventrolateral prefrontal cortex and dampened the amygdala's response. Putting feelings into words isn't wallowing; clinicians call the trick 'name it to tame it.'",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Saying 'I'm feeling anxious' out loud actually turns the volume down. What's happening in the brain when you do it?",
+            "answer": "Labeling recruits the right ventrolateral prefrontal cortex, a regulatory region, and its activity comes with a reduced amygdala response (Lieberman 2007). The word works like a brake pedal wired to the alarm."
+          },
+          {
+            "type": "example",
+            "title": "The shaky-bridge study",
+            "body": "In 1974 Donald Dutton and Arthur Aron stationed an attractive interviewer on the Capilano Canyon suspension bridge — 70 meters of wobble — and on a low, solid bridge nearby. Men interviewed mid-wobble wrote stories with more romantic imagery and called her far more often afterward. Hearts pounding from the drop, they read it as attraction.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "Choose the label",
+            "body": "The bridge men show that your arousal labels are guesses — which means they're editable. Anxiety and excitement are nearly identical bodies with different stories attached. Alison Wood Brooks (2014) found people who said 'I am excited' before public speaking or math tests outperformed those who tried to calm down. Same arousal, better label.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Once your body is aroused, which emotion you'll feel is already locked in.",
+            "answer": false,
+            "explain": "The bridge study — like Schachter and Singer's — points the other way: arousal is raw material, and the label (fear, attraction, excitement) comes from interpretation. That gap between surge and story is where regulation works."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Emotions unfold over time (Gross): intervene early — situation, attention, interpretation — for more effect at less cost.",
+              "Suppression backfires: sympathetic arousal climbs and memory suffers. Reappraisal shifts the feeling without the bill.",
+              "Affect labeling works: naming the feeling engages prefrontal control and quiets the amygdala (Lieberman 2007).",
+              "Arousal labels are guesses (Dutton & Aron 1974) — so before a big moment, try 'I'm excited' instead of 'calm down.'"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Process model (Gross)",
+            "back": "Emotions unfold over time; the earlier you intervene — situation, attention, interpretation — the less effort regulation takes."
+          },
+          {
+            "front": "Suppression's hidden costs",
+            "back": "Hiding the expression raises sympathetic arousal (Gross & Levenson) and impairs memory of the event (Richards & Gross)."
+          },
+          {
+            "front": "Affect labeling (Lieberman 2007)",
+            "back": "Naming a feeling boosts right ventrolateral prefrontal activity and dampens the amygdala. Name it to tame it."
+          },
+          {
+            "front": "Misattribution of arousal",
+            "back": "Dutton & Aron 1974: men read bridge-fear arousal as attraction. Labels are guesses — 'I'm excited' can replace 'calm down.'"
+          }
+        ]
+      },
+      {
+        "id": "mispredicting-your-feelings",
+        "title": "Why You Mispredict Your Feelings",
+        "summary": "The impact bias, lottery winners, immune neglect, and the illusion that one thing changes everything.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Your inner forecaster",
+            "body": "Get the job and you'll be happy for years; lose the relationship and you'll never recover — so says the forecaster in your head. Daniel Gilbert and Timothy Wilson call these predictions affective forecasts, and their research shows the forecaster is wrong in one consistent, correctable direction.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "The impact bias",
+            "body": "Gilbert and Wilson found you're decent at predicting which way you'll feel — the promotion will feel good, the breakup bad. What you systematically overestimate is intensity and duration: how hard the feeling will hit and how long it will last. This impact bias shows up for exam grades, elections, breakups, and football games alike.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What exactly does the impact bias claim you get wrong about future feelings?",
+            "choices": [
+              "The direction — you expect joy where you'll actually feel pain",
+              "The intensity and duration — feelings hit softer and fade faster than predicted",
+              "Only negative events — positive ones we predict perfectly",
+              "Nothing systematic — forecasting errors are random"
+            ],
+            "answer": 1,
+            "explain": "Direction is the part you mostly get right. It's magnitude and staying power that get inflated — for both good and bad events, from breakups to championships."
+          },
+          {
+            "type": "example",
+            "title": "Winners and accident victims",
+            "body": "In 1978 Philip Brickman's team interviewed 22 Illinois lottery winners and 29 people paralyzed in accidents. The famous result: winners rated everyday pleasures — breakfast, a chat, a magazine — lower than controls did, and their overall happiness wasn't much higher. Accident victims were less happy than controls, but far less devastated than predicted.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "The modern nuance",
+            "body": "Treat 1978 as a signpost, not scripture: 22 winners is a tiny sample. A 2020 Swedish study of thousands of winners (Lindqvist, Östling, and Cesarini) found large wins do buy a modest, lasting rise in life satisfaction. And disability does lower well-being, with partial recovery. The durable lesson isn't 'nothing matters' — it's that you adapt more than you predict.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Research has settled that winning the lottery has no lasting effect on happiness.",
+            "answer": false,
+            "explain": "The tiny 1978 study suggested surprisingly little effect, but the large 2020 Swedish study found a modest, durable boost in life satisfaction. What survives is the adaptation lesson: real effects, far smaller than forecast."
+          },
+          {
+            "type": "concept",
+            "title": "Your psychological immune system",
+            "body": "Why do bad events fade faster than forecast? Gilbert and Wilson's answer: a psychological immune system. After a blow, you rationalize, reframe, find silver linings and meaning — mostly without noticing. Forecasts fail because you forget to include it, an error they call immune neglect. You predict the wound but not the healing.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You're dreading a rejection you're sure will wreck you for months. What will actually cut the recovery time — and why don't you see it coming?",
+            "answer": "Your psychological immune system: rationalizing, reframing, finding meaning. It works largely outside awareness, so your forecasts leave it out — that's immune neglect. You predict the wound but not the healing."
+          },
+          {
+            "type": "concept",
+            "title": "The focusing illusion",
+            "body": "Kahneman and Schkade asked whether Californians are happier than Midwesterners. Everyone assumes yes — the weather! Measured life satisfaction: essentially the same. Comparing lives forces climate into focus, but daily happiness runs on commutes, marriages, and deadlines, where climate barely registers. Whatever you attend to swells in importance.",
+            "art": "lens"
+          },
+          {
+            "type": "quote",
+            "text": "Nothing in life is as important as you think it is, while you are thinking about it.",
+            "by": "Daniel Kahneman"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You're tempted to move across the country mostly for the sunshine. What warning do this lesson's findings raise?",
+            "choices": [
+              "Don't move — location can never affect happiness",
+              "While weather fills your attention it feels decisive, but daily well-being will mostly ride on commute, work, and relationships",
+              "The move will make you even happier than you predict",
+              "Sunshine produces large, permanent happiness gains"
+            ],
+            "answer": 1,
+            "explain": "That's the focusing illusion. The compared attribute dominates the decision but not the life. Widen the frame: forecast an ordinary Tuesday in the new city, not a beach day."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Affective forecasts get direction right but inflate intensity and duration — the impact bias (Gilbert & Wilson).",
+              "Brickman 1978: winners and accident victims both adapted more than expected — but n=22; big modern studies show modest lasting gains from wealth.",
+              "Immune neglect: you forecast the wound and forget the healing your mind quietly performs.",
+              "Focusing illusion: whatever you're comparing feels decisive, but a life isn't lived inside one attribute.",
+              "Practical upshot: shrink your forecasts, trust your resilience, and judge big choices by an ordinary Tuesday."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Impact bias (Gilbert & Wilson)",
+            "back": "Affective forecasts get direction right but overestimate intensity and duration of future feelings — for good and bad events alike."
+          },
+          {
+            "front": "Brickman 1978 — with nuance",
+            "back": "Winners and accident victims adapted more than predicted. But n=22; the 2020 Swedish lottery study found a modest, lasting satisfaction boost."
+          },
+          {
+            "front": "Immune neglect",
+            "back": "You rationalize, reframe, and find meaning after blows — a psychological immune system your forecasts forget to include."
+          },
+          {
+            "front": "Focusing illusion (Kahneman)",
+            "back": "'Nothing in life is as important as you think it is, while you are thinking about it.' Whatever you compare on swells in importance."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "eastern-philosophy",
+    "title": "Ancient Wisdom of the East",
+    "tagline": "Buddha, Laozi, Confucius — three answers to how to live.",
+    "category": "Philosophy",
+    "description": "Buddhism, Taoism, and Confucianism taken seriously as philosophy: the Buddha's diagnosis of craving, the Taoist art of unforced action, and Confucius's lifelong craft of becoming good — presented straight, with the genuine uncertainties marked.",
+    "lessons": [
+      {
+        "id": "buddhas-diagnosis",
+        "title": "The Buddha's Diagnosis",
+        "summary": "Why life keeps disappointing us, and what to do about it: dukkha, tanha, and the Four Noble Truths as a treatment plan rather than a creed.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Comfortable Prince",
+            "body": "Siddhartha Gautama was born to privilege in the India–Nepal borderlands around the 5th century BCE — his exact dates are genuinely uncertain. Tradition says his father walled him off from everything ugly, until three sights broke through: an old man, a sick man, a corpse. He walked out of a comfortable life to answer one question: why does life keep disappointing us?",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Dukkha: The Off-Center Wheel",
+            "body": "The Buddha's first claim: life is marked by dukkha. It's usually translated 'suffering,' but that overshoots. One old etymology evokes a wheel with a badly fitted axle — a ride that grinds. 'Unsatisfactoriness' is closer: even good moments wobble, fade, or arrive slightly wrong. The claim isn't that life is misery — just that nothing you grab holds still long enough to satisfy.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The Buddha taught that life is nothing but misery.",
+            "answer": false,
+            "explain": "Dukkha is broader and subtler than misery — closer to 'unsatisfactoriness.' Pleasant moments count too: they shift, fade, and end. The diagnosis is that nothing holds still long enough to satisfy, not that everything hurts."
+          },
+          {
+            "type": "concept",
+            "title": "Tanha: The Engine",
+            "body": "The second truth names the engine: tanha, literally 'thirst.' You feel it as the itch behind experience — craving for pleasure to stay, for pain to vanish, for the self to be shored up. Notice the move: the Buddha locates the problem not in the world but in the grasping. The world changes either way; thirst is what turns that change into grinding.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to the Buddha's diagnosis, where does dukkha come from?",
+            "choices": [
+              "The world being fundamentally evil",
+              "Tanha — the thirst for things to be other than they are",
+              "Bad karma from past lives that must be paid off",
+              "Failing to honor the right gods"
+            ],
+            "answer": 1,
+            "explain": "The second Noble Truth points at tanha, thirst. The world changes on its own schedule regardless; craving that it be otherwise is what makes the change grind. The Buddha's diagnosis needs no cosmic evil, debt ledger, or gods."
+          },
+          {
+            "type": "concept",
+            "title": "A Doctor's Four Truths",
+            "body": "Scholars note the Four Noble Truths follow the format of ancient Indian medicine: symptom (dukkha), cause (tanha), prognosis (the condition is treatable — craving can end, and that cessation is called nirvana), and prescription (the Eightfold Path). The framing matters. This is a treatment plan offered for testing, not a creed demanding belief.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The third Noble Truth is the prognosis. What exactly does the Buddha claim can end — the world's constant change, or something else?",
+            "answer": "The craving. The world keeps changing regardless — but tanha can be unlearned, and when the thirst goes, dukkha loses its engine. That release is nirvana: literally, a fire 'blowing out.'"
+          },
+          {
+            "type": "concept",
+            "title": "A Path, Not Commandments",
+            "body": "The prescription is the Eightfold Path: right view, intention, speech, action, livelihood, effort, mindfulness, concentration. 'Right' means skillful — well-aimed — not righteous. Nothing is commanded and no deity punishes lapses. The eight are training factors practiced together, like a physical therapy program, grouped into wisdom, ethical conduct, and mental discipline.",
+            "art": "compass"
+          },
+          {
+            "type": "quote",
+            "text": "You yourselves must strive. The Buddhas only point the way.",
+            "by": "The Dhammapada"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The Eightfold Path is a set of commandments the Buddha ordered his followers to obey.",
+            "answer": false,
+            "explain": "It's a prescription, not a legal code — eight training factors to practice and test, the way you'd follow a physio regimen. As the Dhammapada puts it, the Buddhas 'only point the way'; the striving is yours."
+          },
+          {
+            "type": "example",
+            "title": "The Second Arrow",
+            "body": "One early discourse offers a usable test. When pain hits, it's like being struck by an arrow. Then most of us fire a second arrow into the same spot: resenting the pain, craving it gone, spinning stories about it. The first arrow is unavoidable; the second is optional — and it's the one the path trains you to stop shooting. Next time something stings, look for arrow number two.",
+            "art": "target"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Siddhartha Gautama taught around the 5th century BCE; his exact dates are uncertain",
+              "Dukkha means unsatisfactoriness — even good things wobble and fade — not constant misery",
+              "Tanha, the thirst for things to be otherwise, is dukkha's engine — and it can be unlearned",
+              "The Eightfold Path is a prescription to test, not commandments to obey",
+              "Pain is the first arrow; craving-driven resistance is the second, and you fire that one yourself"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Dukkha — why is 'suffering' a misleading translation?",
+            "back": "'Unsatisfactoriness' is closer: not constant misery, but the wobble in everything — even good moments shift, fade, or arrive slightly wrong."
+          },
+          {
+            "front": "Tanha",
+            "back": "Literally 'thirst' — craving for things to be otherwise. The second Noble Truth names it as dukkha's engine, and it can be unlearned."
+          },
+          {
+            "front": "What format do the Four Noble Truths follow?",
+            "back": "Ancient medical diagnosis: symptom (dukkha), cause (tanha), prognosis (cessation is possible — nirvana), prescription (the Eightfold Path)."
+          },
+          {
+            "front": "How should the Eightfold Path be understood?",
+            "back": "As a prescription, not commandments — eight training factors in wisdom, ethics, and mental discipline, offered to be practiced and tested."
+          }
+        ]
+      },
+      {
+        "id": "impermanence-non-self",
+        "title": "Impermanence and Non-Self",
+        "summary": "Anicca, anatta, and the chariot argument: why 'you' is a label for a process — and why that is the opposite of nihilism.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Nothing Holds Still",
+            "body": "The Buddha kept pointing at one blunt fact: everything you can point to is in motion. Bodies age cell by cell, moods turn over by the hour, mountains erode on longer clocks. Buddhists call this anicca — impermanence — and treat it not as poetry but as data: the observation everything else is built on. This lesson follows it to a startling conclusion: it applies to you.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Anicca: Why Change Grinds",
+            "body": "Anicca is the first of three 'marks of existence,' alongside dukkha and anatta. The logic: whatever is assembled from parts and conditions changes as those conditions change. Grasping at changing things as if they were stable is exactly where dukkha comes from. That's why the Buddha wanted impermanence seen firsthand, not just agreed with: seeing it loosens the grip.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does anicca (impermanence) matter so much to the Buddhist diagnosis?",
+            "choices": [
+              "It proves the material world is an illusion",
+              "Grasping changing things as if they were stable is what makes them grind",
+              "It shows that nothing is worth caring about",
+              "It means change is evil and should be resisted"
+            ],
+            "answer": 1,
+            "explain": "The world is not called illusory or worthless — it's called impermanent. Dukkha arises when you clutch changing things as if they'd hold still. Seeing anicca clearly is what loosens that grip."
+          },
+          {
+            "type": "concept",
+            "title": "Anatta: The Missing Owner",
+            "body": "Now aim anicca at yourself. Search for the self and you find only processes: body, feelings, perceptions, mental habits, consciousness — the five 'aggregates,' each in flux. Anatta, non-self, says there is no unchanging owner standing behind them, no untouched essence riding the stream. Not 'you don't exist' — rather: what you call 'I' is a process, not a thing.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "The Chariot Argument",
+            "body": "In the Milinda Panha, a Buddhist dialogue dated roughly 100 BCE–200 CE, the monk Nagasena questions King Milinda. Is the chariot the wheels? The axle? The frame? No single part is the chariot, and there's no chariot apart from the parts — 'chariot' is a label for parts working in relation. Then the turn: 'Nagasena' is also such a label. So is 'Milinda.' So is 'you.'",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the chariot dialogue, Nagasena concludes that since no single part is the chariot, chariots don't really exist.",
+            "answer": false,
+            "explain": "The chariot exists — as parts in working relation. 'Chariot' is a convenient label for that arrangement, not the name of some extra hidden essence. The self, Nagasena argues, works exactly the same way."
+          },
+          {
+            "type": "concept",
+            "title": "Why This Isn't Nihilism",
+            "body": "The Buddha explicitly rejected annihilationism — the view that nothing continues and nothing matters. A flame passed from candle to candle is neither the same flame nor a different one; it's a continuing process. You are like that: real enough to act, train, and be responsible — just not a frozen essence. If anything the stakes rise: what you repeatedly do is what you become.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A friend says: 'Buddhism teaches the self doesn't exist, so nothing you do matters.' What did they get wrong?",
+            "choices": [
+              "Nothing — that is the doctrine of anatta",
+              "Anatta denies an unchanging essence, not the working process your actions continuously shape",
+              "The Buddha actually taught that the self is an immortal soul",
+              "Anatta applies only to other people, never to yourself"
+            ],
+            "answer": 1,
+            "explain": "Anatta targets the frozen essence, not existence or responsibility. Like the candle-to-candle flame, you continue as a process — which makes what you repeatedly do matter more, not less."
+          },
+          {
+            "type": "quote",
+            "text": "All conditioned things are impermanent. When one sees this with wisdom, one turns away from suffering.",
+            "by": "The Dhammapada"
+          },
+          {
+            "type": "concept",
+            "title": "Mindfulness, Before the App",
+            "body": "This is where mindfulness comes from. Sati is close, steady attention, trained to catch anicca and anatta in the act: sensations arising and dissolving, no fixed watcher behind them. The modern secular version — stress relief, sharper focus — borrows the technique and drops the aim: at home, sati was one limb of the Eightfold Path, pointed at liberation, not productivity.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A practical test: when a mood like anger feels like 'the real you,' what would Nagasena have you do?",
+            "answer": "Unbundle it. Find the parts: heat in the chest, a story on loop, an urge to act. 'Anger' — like 'chariot' — is a label for parts in relation, and parts in relation are already changing. Watched closely, it tends to dissolve on its own."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Anicca: everything assembled from conditions changes — one of three marks of existence",
+              "Anatta denies an unchanging essence, not your existence as a working process",
+              "The chariot argument: 'self,' like 'chariot,' is a label for parts in relation",
+              "This is not nihilism — a process-self makes what you repeatedly do matter more",
+              "Mindfulness (sati) was built to observe anicca firsthand; the secular version keeps the tool, drops the aim"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Anicca",
+            "back": "Impermanence: whatever is assembled from parts and conditions changes as they do — the first of Buddhism's three marks of existence."
+          },
+          {
+            "front": "Anatta",
+            "back": "Non-self: no unchanging essence behind experience. 'You' are five aggregates in process — real as a process, not as a frozen thing."
+          },
+          {
+            "front": "The chariot argument (Milinda Panha)",
+            "back": "Nagasena to King Milinda: no single part is the chariot; 'chariot' labels parts in relation. 'Self' works the same way."
+          },
+          {
+            "front": "How does anatta differ from nihilism?",
+            "back": "It denies a fixed essence, not existence or responsibility. Like a flame passed candle to candle, you continue as a process your actions shape."
+          }
+        ]
+      },
+      {
+        "id": "tao-and-wu-wei",
+        "title": "The Tao and Wu Wei",
+        "summary": "The Tao Te Ching's unforced action, water as strategy, and two Zhuangzi stories about what mastery looks like when the effort disappears.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Book With No Certain Author",
+            "body": "The Tao Te Ching — 81 brief chapters of paradox-loving verse — is attributed to Laozi, the 'Old Master,' an archivist said to have written it in one sitting before vanishing west. Scholars doubt nearly all of that: the text was likely compiled from oral tradition around the 4th century BCE, and 'Laozi' may not be one person at all. The ideas were built to stand on their own.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "The Way That Can't Be Named",
+            "body": "Tao means 'way' — how things move and unfold when nothing interferes: water downhill, seasons turning, grain in wood. The book's famous opening warns that the tao that can be spoken of is not the eternal Tao: every definition is a map, and the map is not the terrain. So the text teaches sideways, in images and paradox — a pattern you verify by watching, not defining.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Scholars have established that a sage named Laozi personally wrote the Tao Te Ching in the 6th century BCE.",
+            "answer": false,
+            "explain": "Authorship and dating are genuinely uncertain. The text was likely compiled from oral tradition around the 4th century BCE, and 'Laozi' — the 'Old Master' — may be a legend rather than a single historical author."
+          },
+          {
+            "type": "concept",
+            "title": "Wu Wei: Unforced, Not Idle",
+            "body": "Wu wei is literally 'non-doing' — a phrase that has misled readers for two millennia. It means unforced action, not inaction: moving with a situation's own grain rather than muscling against it. A good swimmer does less than a panicked one and goes further. Some things — falling asleep, being charming, throwing a ball — fail when forced. Wu wei is the skill of not forcing them.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your friend reads about wu wei and announces he's quitting everything to 'do nothing, like the Taoists.' What has he missed?",
+            "choices": [
+              "Nothing — wu wei really does mean total passivity",
+              "Wu wei is unforced action: doing things with the grain, not refusing to do them",
+              "Wu wei means working harder while hiding the effort",
+              "Wu wei applies only to emperors and sages"
+            ],
+            "answer": 1,
+            "explain": "Wu wei is non-forcing, not non-doing. The swimmer still swims — she just stops fighting the water. Total passivity is one classic misreading; concealed strain is another. The action continues, minus the struggle."
+          },
+          {
+            "type": "concept",
+            "title": "Water: The Master Image",
+            "body": "The Tao Te Ching's favorite teacher is water. It seeks the low places everyone else avoids, takes the shape of any container without losing itself, and — the punchline — outlasts everything hard: given time, it carves rock. Softness here isn't weakness but strategy: yield at each moment, stay relentless over time. The text keeps asking you to notice that the 'weak' thing wins.",
+            "art": "wave"
+          },
+          {
+            "type": "quote",
+            "text": "Nothing in the world is softer and weaker than water, yet nothing is better at attacking the hard and strong.",
+            "by": "Tao Te Ching"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Zhuangzi, the tradition's other great voice, dreamed vividly that he was a butterfly. What question did he ask on waking?",
+            "answer": "Am I Zhuang Zhou who dreamed he was a butterfly — or a butterfly now dreaming he is Zhuang Zhou? The point isn't that life is fake; it's that the labels you're most certain of, starting with 'me,' are more fluid than they feel."
+          },
+          {
+            "type": "example",
+            "title": "Cook Ding's Blade",
+            "body": "The Zhuangzi tells of a cook carving an ox for a lord. His blade has stayed sharp nineteen years because he never hacks: he has studied oxen until he sees the seams, and the knife slips through openings already there. The lord's verdict: watching him carve has taught him how to live. That is wu wei as skill — mastery so thorough the effort disappears.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Cook Ding's blade stays sharp because he strikes with tremendous force at precisely the right moments.",
+            "answer": false,
+            "explain": "The opposite. Nineteen years of study let him find the seams already present in the ox, so the blade slips through openings instead of fighting bone. His effortlessness is the far side of mastery, not a shortcut around it."
+          },
+          {
+            "type": "concept",
+            "title": "Finding the Grain",
+            "body": "Wu wei scales down to ordinary days. Where are you forcing — a conversation, a habit, a project pushed against its own timing? The Taoist move isn't surrender but study — Cook Ding's kind — until the openings show themselves. Ask of any stuck thing: what is the grain here, and what am I doing against it? Often the harder you push, the more the wood splits wrong.",
+            "art": "lens"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The Tao Te Ching's authorship and dating are genuinely uncertain — likely compiled around the 4th century BCE",
+              "The Tao is how things unfold on their own; every definition is a map, not the terrain",
+              "Wu wei means unforced action — moving with the grain — not passivity",
+              "Water is the master image: softest thing there is, yet best at wearing down the hard",
+              "Cook Ding shows effortlessness as earned mastery: study until the openings appear"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Who wrote the Tao Te Ching, and when?",
+            "back": "Genuinely uncertain. Attributed to Laozi ('Old Master'), who may be legendary; likely compiled from oral tradition around the 4th century BCE."
+          },
+          {
+            "front": "Wu wei",
+            "back": "Unforced action — moving with a situation's grain instead of muscling against it. Not passivity: the swimmer still swims, she just stops fighting the water."
+          },
+          {
+            "front": "The water metaphor (Tao Te Ching)",
+            "back": "Nothing is softer than water, yet nothing better at overcoming the hard. Yielding at each moment, relentless over time — the 'weak' thing wins."
+          },
+          {
+            "front": "Cook Ding's ox-carving (Zhuangzi)",
+            "back": "His blade stayed sharp nineteen years: he found the seams already in the ox instead of hacking. Effortlessness as the far side of mastery."
+          }
+        ]
+      },
+      {
+        "id": "confucius-becoming-good",
+        "title": "Confucius on Becoming Good",
+        "summary": "Ren, li, the negative golden rule, and the junzi: goodness as a daily craft, from a teacher whose political career flopped.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Teacher Who Failed at Politics",
+            "body": "Kongzi — latinized as Confucius — lived 551–479 BCE, while his home state of Lu slid into disorder. He wanted a government post to put his ideas to work; his political career mostly flopped, so he taught. After his death, students and their students compiled his sayings into the Analects — not a treatise he wrote, but a record of a teacher at work, assembled over generations.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Ren: Humaneness as a Craft",
+            "body": "The center of Confucius's teaching is ren — humaneness, goodness toward others. Pressed to define it, he refused a formula and answered each student differently: for one, self-restraint; for another, 'loving people.' The dodge is the point. Ren isn't a belief you adopt but a capacity you build, the way you build strength — in daily conduct with actual people, starting at home.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Who actually wrote the Analects?",
+            "choices": [
+              "Confucius, as an old man summing up his philosophy",
+              "Students and later followers, compiling his sayings over generations after his death",
+              "A single court scribe commissioned by the state of Lu",
+              "Han dynasty officials, centuries later, inventing it from scratch"
+            ],
+            "answer": 1,
+            "explain": "Confucius wrote no book of his own teachings. The Analects is a compiled record — sayings and exchanges collected by students and their students across generations, which is why it reads as fragments of a teacher at work."
+          },
+          {
+            "type": "concept",
+            "title": "Li: Ritual That Builds Feeling",
+            "body": "Li covers ritual propriety — from mourning rites down to how you greet and phrase a request. It's easy to hear 'empty etiquette.' Confucius meant the reverse: forms practiced sincerely train the feelings they express. Standing for a funeral rehearses reverence; letting an elder speak first rehearses deference until it becomes real. Ren without li has no body to live in.",
+            "art": "bell"
+          },
+          {
+            "type": "truefalse",
+            "statement": "For Confucius, li (ritual propriety) is valuable as polished etiquette that displays your social rank.",
+            "answer": false,
+            "explain": "He scorned hollow performance — ritual without reverence, he said, was unbearable to look at. Li matters as practice: sincere forms train the feelings they express, which is the opposite of etiquette for show."
+          },
+          {
+            "type": "concept",
+            "title": "One Word for a Lifetime",
+            "body": "A student asked whether a single word could guide an entire life. Confucius offered shu — reciprocity — and unpacked it: do not impose on others what you yourself do not desire (Analects 15.24). Note the negative form. The restraint is deliberate: it asks you to check your impact, not to assume your preferences map onto everyone else.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "Do not impose on others what you yourself do not desire.",
+            "by": "The Analects"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The positive Golden Rule says: treat others as you'd like to be treated. What does Confucius's negative version guard against that the positive one doesn't?",
+            "answer": "Projecting your tastes. The positive rule can license inflicting whatever you happen to enjoy. The negative rule asks only restraint: you don't need to know what's good for another person to avoid doing what you yourself would hate."
+          },
+          {
+            "type": "concept",
+            "title": "The Junzi: Nobility, Redefined",
+            "body": "Junzi originally meant 'lord's son' — nobility by birth. Confucius re-engineered the word: his junzi is an exemplary person made by cultivation, not bloodline — someone who keeps practicing ren and li under pressure and seeks the fault in himself, not in others. The move was radical: moral status became something anyone could earn, and rank something no one could hide behind.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the Analects, what makes someone a junzi?",
+            "choices": [
+              "Noble birth — the word means 'lord's son'",
+              "Wealth and high official position",
+              "Sustained self-cultivation — practicing ren and li until character holds under pressure",
+              "Withdrawing from society to perfect oneself alone"
+            ],
+            "answer": 2,
+            "explain": "Confucius took a birthright word and made it an achievement open to anyone. Rank and wealth don't qualify you, and neither does retreat: for Confucius, cultivation happens in relationships and public life, not apart from them."
+          },
+          {
+            "type": "concept",
+            "title": "Call Things What They Are",
+            "body": "Asked what he'd do first if handed a government, Confucius answered: rectify names. When a 'ruler' doesn't actually rule for the people, when words like 'friend' or 'fair' stretch to cover their opposites, speech detaches from reality — and cooperation fails downstream. The usable discipline: match words to facts — in promises, titles, excuses — and much straightens by itself.",
+            "art": "anchor"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Kongzi (551–479 BCE) taught in person; students compiled the Analects across generations after his death",
+              "Ren, humaneness, is a capacity built through daily practice, not a belief adopted",
+              "Li: sincere ritual forms train the feelings they express — never etiquette for show",
+              "Shu, the negative golden rule: do not impose what you yourself do not desire",
+              "The junzi is made by cultivation, not birth — and rectifying names keeps words matched to reality"
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Ren",
+            "back": "Humaneness, the core Confucian virtue — a capacity built through daily practice with actual people. Confucius defined it differently for each student."
+          },
+          {
+            "front": "Li",
+            "back": "Ritual propriety, from rites to greetings. Practiced sincerely, forms train the feelings they express; Confucius scorned hollow performance."
+          },
+          {
+            "front": "Shu — Analects 15.24",
+            "back": "'Do not impose on others what you yourself do not desire.' The negative golden rule: restraint that avoids projecting your own tastes onto others."
+          },
+          {
+            "front": "Junzi",
+            "back": "Originally 'lord's son.' Confucius redefined it as the exemplary person: moral status earned by self-cultivation, open to anyone, owed to no bloodline."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "great-experiments",
+    "title": "Experiments That Changed Everything",
+    "tagline": "Genius setups that pried loose nature's biggest secrets",
+    "category": "Science History",
+    "description": "How history's most ingenious experiments answered enormous questions with almost nothing — a well, a shed, a flask, a blender. Twenty-two centuries of asking nature exactly the right question.",
+    "lessons": [
+      {
+        "id": "shadows-and-lead",
+        "title": "Measuring the World with Shadows and Lead",
+        "summary": "Eratosthenes sizes the Earth with a shadow, Cavendish weighs it in a shed, and Foucault makes it visibly spin.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Three Measurements of a Planet",
+            "body": "How big is the Earth? How heavy? Does it really spin? Today you could answer with satellites. Three experimenters answered first with a well, a wire in a shed, and a very long pendulum. This lesson is about the art of turning a planet-sized question into a measurement you can make with your own hands.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "A Well in Syene",
+            "body": "Around 240 BCE, Eratosthenes, head librarian at Alexandria, heard a report worth pausing on: at noon on the summer solstice, sunlight lit the very bottom of a deep well at Syene, far to the south — the sun stood dead overhead. At that same moment in Alexandria, an upright obelisk still cast a shadow. Two cities, one sun, two different angles.",
+            "art": "pyramid"
+          },
+          {
+            "type": "example",
+            "title": "One Angle, One Distance",
+            "body": "Eratosthenes measured Alexandria's noon shadow: about 7.2 degrees — exactly 1/50 of a full circle. So the arc from Syene to Alexandria, some 5,000 stadia paced out by trained surveyors, must be 1/50 of Earth's circumference. Multiply by 50: 250,000 stadia. Depending on which stadion he used, that lands within a few percent of the true 40,008 km.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Eratosthenes actually need to measure to size up the whole planet?",
+            "choices": [
+              "The height of the Great Pyramid and its shadow",
+              "One shadow angle plus the distance between two cities",
+              "The sun's exact distance from the Earth",
+              "How long a ship took to vanish over the horizon"
+            ],
+            "answer": 1,
+            "explain": "One angle (7.2 degrees, or 1/50 of a circle) and one distance (Syene to Alexandria) were enough. Geometry did the rest — no telescope, no travel, no view from space."
+          },
+          {
+            "type": "concept",
+            "title": "Weighing the World in a Shed",
+            "body": "In 1798 Henry Cavendish set out to weigh the Earth. Inside a sealed shed on his London estate, a six-foot rod with a small lead ball at each end hung from a thin wire; two 158 kg lead spheres sat close by. Gravity's tug between each ball and its giant neighbor — tens of millions of times weaker than the ball's own weight — twisted the wire through a barely visible arc.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The force was so tiny that Cavendish never entered the room during a measurement. How did he take his readings?",
+            "answer": "Through telescopes aimed through holes in the shed's walls, working lamps and pulleys from outside. Even his own body heat would have stirred air currents strong enough to swamp the faint gravitational tug he was trying to detect."
+          },
+          {
+            "type": "example",
+            "title": "Within One Percent",
+            "body": "Cavendish's answer: Earth is about 5.45 times as dense as water — within roughly 1% of today's value of 5.51. From that one number you can get the planet's mass, about six trillion trillion kilograms, and, in modern terms, Newton's constant G. It took science nearly a century to improve meaningfully on measurements made by one quiet man in a garden shed.",
+            "art": "anchor"
+          },
+          {
+            "type": "truefalse",
+            "statement": "From Cavendish's shed measurement you can compute the mass of the entire Earth.",
+            "answer": true,
+            "explain": "The twist of the wire gave the strength of gravity between known masses; combined with Earth's size — thanks, Eratosthenes — that yields its density and mass: about six trillion trillion kilograms."
+          },
+          {
+            "type": "concept",
+            "title": "A Pendulum in the Panthéon",
+            "body": "In 1851 Léon Foucault hung a 28-kilogram bob on a 67-meter wire from the dome of the Panthéon in Paris. A free pendulum's swing plane holds steady while the Earth rotates underneath it, so hour after hour the bob's path crept around the floor — about 11 degrees per hour at Paris's latitude, recorded by a stylus tracing a ring of sand. You could stand there and watch the planet turn.",
+            "art": "clock"
+          },
+          {
+            "type": "quote",
+            "text": "You are invited to come and see the Earth turn.",
+            "by": "Léon Foucault, invitation to his 1851 demonstration"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does a Foucault pendulum's swing plane appear to rotate over the day?",
+            "choices": [
+              "Air currents in the dome slowly push the bob sideways",
+              "The wire gradually twists and steers the swing",
+              "The swing plane stays put while the Earth rotates beneath it",
+              "Magnetic fields in the building deflect the bob"
+            ],
+            "answer": 2,
+            "explain": "The pendulum isn't turning — you are. The floor, the building, and the whole planet rotate under the swing, at a rate set by your latitude: fastest at the poles, zero at the equator."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Eratosthenes sized the Earth around 240 BCE with one shadow angle and one distance — within a few percent.",
+              "Cavendish (1798) measured the feeble gravity between lead balls in a shed and got Earth's density right to about 1%.",
+              "Foucault (1851) made Earth's rotation visible to anyone standing in the Panthéon.",
+              "The shared trick: turn an unreachable question into a small, local measurement."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How did Eratosthenes measure Earth's circumference (~240 BCE)?",
+            "back": "The 7.2° shadow angle meant Alexandria–Syene was 1/50 of the circle; 50 × 5,000 stadia = 250,000 — within a few percent of the truth."
+          },
+          {
+            "front": "What did Cavendish's 1798 torsion balance measure?",
+            "back": "The tiny gravitational pull between lead spheres, giving Earth's density — 5.45× water, within about 1% of today's value."
+          },
+          {
+            "front": "What did Foucault's 1851 pendulum demonstrate?",
+            "back": "Earth's rotation, made visible: the swing plane holds steady while the planet turns beneath it — about 11° per hour in Paris."
+          },
+          {
+            "front": "What trick do all three planet-measuring experiments share?",
+            "back": "They converted a planet-sized question into a small local measurement: a shadow, a twist of wire, a drifting swing."
+          }
+        ]
+      },
+      {
+        "id": "the-invisible-killers",
+        "title": "The Invisible Killers",
+        "summary": "Semmelweis, Pasteur, and Fleming corner an enemy no one can see — and only some of them live to be believed.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "An Enemy No One Could See",
+            "body": "For most of history the deadliest killers on Earth were invisible, and medicine fought them blind. This lesson follows three experiments that dragged microbes into the light: a doctor counting deaths on two maternity wards, a chemist with strangely shaped flasks, and a contaminated dish in a London lab.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Two Doors, Two Death Rates",
+            "body": "Vienna General Hospital in the 1840s ran two maternity clinics side by side. In the First, staffed by doctors and medical students, roughly one new mother in ten died of childbed fever; in the midwife-run Second, closer to one in twenty-five. Women begged not to be assigned to the First — some gave birth in the street instead. Ignaz Semmelweis demanded to know why.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "The Clue in the Morgue",
+            "body": "In 1847 Semmelweis's friend Jakob Kolletschka nicked his finger during an autopsy and died — with symptoms identical to childbed fever. The pieces snapped together: doctors went straight from dissecting corpses to delivering babies. Blaming 'cadaverous particles' carried on their hands, Semmelweis ordered scrubbing in chlorinated lime. Deaths on the doctors' ward plummeted toward the midwives' rate.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Semmelweis conclude was killing the mothers?",
+            "choices": [
+              "Bad air rising from the hospital's drains",
+              "Particles from cadavers, carried on doctors' hands",
+              "A contagion the mothers brought in from the city",
+              "Exhaustion from difficult deliveries"
+            ],
+            "answer": 1,
+            "explain": "The First Clinic's doctors came straight from the autopsy room; the midwives never touched corpses. Handwashing in chlorinated lime slashed the death rate — evidence decades ahead of the germ theory that would explain it."
+          },
+          {
+            "type": "concept",
+            "title": "Ridiculed to Death",
+            "body": "His reward was ridicule. Many doctors took offense at the charge that their own hands carried death, and Semmelweis made a poor diplomat, branding critics murderers in print. Pushed out of Vienna and increasingly erratic, he was lured into an asylum in 1865 and died there two weeks later, at 47, of an infected wound. He never knew he would be vindicated.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Semmelweis lived to see germ theory prove his handwashing rule right.",
+            "answer": false,
+            "explain": "He died in an asylum in 1865, rejected by the medical establishment. Pasteur's germ theory and Lister's antisepsis vindicated him only in the decades after his death."
+          },
+          {
+            "type": "concept",
+            "title": "The Swan-Neck Flasks",
+            "body": "Meanwhile a grander question loomed: does life arise spontaneously — could microbes simply spring from broth itself? From 1859 to 1861 Louis Pasteur boiled broth in flasks whose necks he drew out into long S-shaped swan curves. Fresh air flowed in freely, but dust — and the microbes riding it — settled in the bend and never reached the liquid. The broth stayed clear for months.",
+            "art": "flame"
+          },
+          {
+            "type": "quote",
+            "text": "Never will the doctrine of spontaneous generation recover from the mortal blow struck by this simple experiment.",
+            "by": "Louis Pasteur, Sorbonne lecture, 1864"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Skeptics could claim boiling had destroyed some 'vital force' needed for life. How did Pasteur answer them with a single tilt of the flask?",
+            "answer": "Tilt the flask so the broth touched the dust caught in the bend, and within days it teemed with life. Same broth, same air all along — the only new ingredient was the trapped dust. Some of Pasteur's original flasks remain sterile to this day."
+          },
+          {
+            "type": "concept",
+            "title": "The Dish Fleming Didn't Wash",
+            "body": "September 1928, St Mary's Hospital, London. Back from holiday, Alexander Fleming was sorting old staphylococcus plates when one stopped him: a stray mold had landed there, and around it the bacteria were dissolving in a clear ring. He cultured the mold — a Penicillium — and named the substance it oozed penicillin. But he couldn't purify or stabilize it, and interest drained away.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Forgotten Half of the Story",
+            "body": "Penicillin sat in the literature for a decade until Howard Florey, Ernst Chain, and Norman Heatley's Oxford team purified it. In 1940 it protected infected mice; in 1941 it hauled a dying policeman, Albert Alexander, back from the brink — until the supply ran out and he died. Scaled up in American factories, it was saving soldiers by D-Day. The 1945 Nobel went to Fleming, Florey, and Chain together.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Penicillin became a usable drug mainly because of…",
+            "choices": [
+              "Fleming's own decade of purification work",
+              "The Oxford team of Florey, Chain, and Heatley",
+              "A crash program run by the British Army",
+              "Pasteur's institute in Paris"
+            ],
+            "answer": 1,
+            "explain": "Fleming discovered it but couldn't isolate it. The Oxford group turned a moldy dish into a tested, mass-produced medicine — which is why Florey and Chain shared the 1945 Nobel with Fleming."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Semmelweis (1847) proved handwashing stopped childbed fever — and was ridiculed to death before germ theory backed him.",
+              "Pasteur's swan-neck flasks (1859–61) showed microbes fall in from the air; nothing springs from broth by itself.",
+              "Fleming's contaminated plate (1928) revealed penicillin; Florey, Chain, and Heatley made it a medicine.",
+              "Data can win an argument long before theory explains it — but only if people are willing to listen."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Semmelweis's 1847 experiment and its result?",
+            "back": "Chlorinated-lime handwashing on the doctors' maternity ward; childbed-fever deaths collapsed from about 1 in 10 toward the midwives' far lower rate."
+          },
+          {
+            "front": "How did Pasteur kill spontaneous generation (1859–61)?",
+            "back": "Swan-neck flasks: air entered freely but dust stuck in the bend, so boiled broth stayed sterile — until tilted into the dust, when life bloomed."
+          },
+          {
+            "front": "Who made penicillin a real medicine?",
+            "back": "Fleming found it (1928) but couldn't purify it; Florey, Chain, and Heatley's Oxford team did (1940–41). The 1945 Nobel honored Fleming, Florey, and Chain."
+          },
+          {
+            "front": "The human lesson of the invisible killers?",
+            "back": "Being right isn't enough: Semmelweis died ridiculed and penicillin waited a decade. Evidence needs champions and follow-through."
+          }
+        ]
+      },
+      {
+        "id": "inside-the-atom",
+        "title": "Inside the Atom",
+        "summary": "A bounced particle, a floating oil drop, and a mystery ray map the atom's hidden anatomy in barely a generation.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Anatomy of the Invisible",
+            "body": "By 1900 atoms were respectable science, but their insides were guesswork — the popular 'plum pudding' model pictured electrons dotted through a diffuse ball of positive charge. In barely a generation, three tabletop experiments found the nucleus, counted the electron's charge, and caught the neutron. Each began with a result that looked like a mistake.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "Firing at Gold Leaf",
+            "body": "At Manchester in 1909, Hans Geiger and 20-year-old Ernest Marsden, at Ernest Rutherford's suggestion, fired alpha particles at vanishingly thin gold foil and counted the faint flashes where they struck a screen. If atoms were soft puddings of spread-out charge, every particle should punch straight through, deflected by a fraction of a degree at most.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "One in 8,000 Came Back",
+            "body": "Almost every alpha particle sailed through as expected. But about 1 in 8,000 ricocheted through more than 90 degrees — some bounced nearly straight back. From a sheet of atoms supposedly made of diffuse pudding, that was as impossible as a bullet rebounding off fog. Something small, heavy, and intensely charged had to be hiding inside the atom.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did the rare, violent bounces force Rutherford to conclude?",
+            "choices": [
+              "Atoms are solid spheres packed edge to edge",
+              "Alpha particles carry a negative charge",
+              "An atom's positive charge and nearly all its mass sit in a tiny central nucleus",
+              "Gold atoms are unusually heavy, so only gold foil would do this"
+            ],
+            "answer": 2,
+            "explain": "Only a minuscule, dense, charged core could turn an alpha particle around. Rutherford published the nuclear model in 1911: the atom is almost entirely empty space."
+          },
+          {
+            "type": "quote",
+            "text": "It was almost as incredible as if you fired a 15-inch shell at a piece of tissue paper and it came back and hit you.",
+            "by": "Ernest Rutherford, recalling the gold-foil result"
+          },
+          {
+            "type": "concept",
+            "title": "Mostly Nothing",
+            "body": "Rutherford's 1911 interpretation redrew matter itself: virtually all of an atom's mass and all of its positive charge crowd into a nucleus roughly ten thousand times smaller than the atom — a fly in a cathedral. Everything you have ever touched is overwhelmingly empty space, held rigid by electric forces. The plum pudding was dead; nuclear physics began here.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "Balancing an Oil Drop",
+            "body": "From 1909 to 1913 Robert Millikan and graduate student Harvey Fletcher watched single oil droplets drift between charged metal plates, tuning the voltage until the electric pull exactly balanced gravity. Every droplet's charge came out a whole-number multiple of one tiny value — about 1.6 × 10⁻¹⁹ coulombs, the charge of a single electron.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Millikan first tried water droplets and failed. Why did switching to oil crack the problem?",
+            "answer": "Water evaporated in mid-measurement, changing a drop's weight as he watched; oil drops lasted for hours and could be balanced and re-measured dozens of times. Fletcher later said switching to oil was his idea — yet Millikan published the crucial paper under his name alone."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Millikan's droplets carried charges in exact whole-number multiples of a single tiny unit.",
+            "answer": true,
+            "explain": "Every drop's charge was an integer multiple of about 1.6 × 10⁻¹⁹ coulombs. Electric charge is grainy, not smooth — and that grain is the electron's charge."
+          },
+          {
+            "type": "concept",
+            "title": "The Particle With No Charge",
+            "body": "By 1932 a mystery was loose: beryllium struck by alpha particles emitted something neutral yet penetrating that hammered protons out of paraffin wax. The Joliot-Curies called it gamma radiation, but the energies made no sense. James Chadwick, who had heard Rutherford predict a neutral particle back in 1920, proved in about two intense weeks that it was the neutron — a chargeless partner to the proton.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why couldn't the beryllium ray be gamma radiation, as the Joliot-Curies thought?",
+            "choices": [
+              "Gamma rays cannot pass through paraffin wax",
+              "Massless radiation couldn't kick heavy protons that hard — the energies didn't add up",
+              "The ray bent in a magnetic field, so it had to be charged",
+              "Beryllium is too light an element to emit gamma rays"
+            ],
+            "answer": 1,
+            "explain": "Chadwick showed only a neutral particle about as massive as the proton could deliver that punch. The neutron explained isotopes, enabled fission — and won him the 1935 Nobel."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Gold foil (1909–11): rare violent ricochets revealed the tiny, dense nucleus — the atom is mostly empty space.",
+              "Oil drops (1909–13): charge comes in exact multiples of one unit, the electron's 1.6 × 10⁻¹⁹ coulombs.",
+              "Beryllium rays (1932): Chadwick's two-week sprint bagged the neutron and completed the atom's parts list.",
+              "When a result looks impossible, chase it — the 1-in-8,000 events held the discovery."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did the gold-foil experiment (1909–11) reveal?",
+            "back": "About 1 in 8,000 alpha particles bounced back: an atom's mass and positive charge sit in a tiny nucleus surrounded by empty space."
+          },
+          {
+            "front": "What did Millikan's oil-drop experiment establish?",
+            "back": "Electric charge is quantized: every droplet carried a whole-number multiple of e ≈ 1.6 × 10⁻¹⁹ C, the electron's charge (1909–13)."
+          },
+          {
+            "front": "How did Chadwick find the neutron (1932)?",
+            "back": "He showed beryllium's mystery ray couldn't be gamma: only a neutral, proton-mass particle could knock protons out of paraffin that hard."
+          },
+          {
+            "front": "Rutherford's '15-inch shell at tissue paper' line described…",
+            "back": "Alpha particles rebounding from gold foil — a result so shocking it forced the nuclear model of the atom in 1911."
+          }
+        ]
+      },
+      {
+        "id": "cracking-lifes-code",
+        "title": "Cracking Life's Code",
+        "summary": "From Mendel's pea garden to Photo 51: the century-long hunt for the molecule of heredity — and who got the credit.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Molecule of Heredity",
+            "body": "Children resemble their parents — but what, physically, carries the resemblance? For most of a century the smart money was on proteins, with DNA dismissed as dull structural filler. This lesson follows the experiments, from a monastery garden to a kitchen blender to an X-ray photograph, that cracked the question — and the tangled story of who got the credit.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Counting Peas",
+            "body": "From 1856 to 1863, in his monastery garden in Brno, the friar Gregor Mendel grew and tallied some 28,000 pea plants, tracking seven crisp traits like tall vs. short. Crossing purebred tall with short gave all tall offspring — but crossing those hybrids with each other gave three tall for every one short. The 'lost' trait hadn't blended away. It was hiding, intact.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Mendel crossed his tall–short hybrids with each other. What did the next generation look like?",
+            "choices": [
+              "All medium height — the traits blended",
+              "Three tall for every one short — the short trait returned intact",
+              "Half tall, half short",
+              "Completely unpredictable"
+            ],
+            "answer": 1,
+            "explain": "That stubborn 3:1 ratio told Mendel heredity travels in discrete units — later named genes — that can hide for a generation and re-emerge unchanged, not blend like paint."
+          },
+          {
+            "type": "concept",
+            "title": "Thirty-Five Years of Silence",
+            "body": "Mendel presented his results in 1865 and published in 1866 — in the proceedings of a provincial natural history society. Almost nobody grasped what they meant, and the paper was cited barely a handful of times. Elected abbot, he was buried in administration and died in 1884, unknown to science. In 1900 three botanists independently rediscovered his laws — and found he had beaten them by 35 years.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Mendel died celebrated as the founder of genetics.",
+            "answer": false,
+            "explain": "He died in 1884 with his work all but uncited. Only the 1900 rediscovery by de Vries, Correns, and Tschermak revealed that genetics had a 35-year-old founding paper."
+          },
+          {
+            "type": "concept",
+            "title": "The Mouse That Shouldn't Have Died",
+            "body": "In 1928 British pathologist Frederick Griffith mixed two strains of pneumonia bacteria: a smooth lethal strain, heat-killed, and a rough harmless one, alive. Neither alone hurt a mouse. Together they killed it — and the mouse's blood swarmed with living smooth bacteria. Something in the dead cells had transformed the live ones, and the change bred true. He called it the transforming principle.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Process of Elimination",
+            "body": "In 1944 Oswald Avery, Colin MacLeod, and Maclyn McCarty purified Griffith's transforming principle and attacked it with enzymes. Destroy its proteins: transformation continued. Destroy its RNA: it continued. Destroy its DNA: transformation stopped dead. The 'boring' molecule was the genetic material — a claim so unfashionable that many biologists simply refused to believe it.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "1952: Hershey and Chase tagged a virus's protein coat with radioactive sulfur and its DNA with radioactive phosphorus, let it infect bacteria — then ran the mix in a kitchen blender. What ended up inside the cells?",
+            "answer": "The phosphorus — the DNA. The sulfur-tagged protein coats were sheared off outside the cells and spun away. Whatever a virus injects to commandeer a cell must be its genetic program, so the program is written in DNA. The last serious doubts about Avery's claim collapsed."
+          },
+          {
+            "type": "concept",
+            "title": "Photo 51",
+            "body": "At King's College London, Rosalind Franklin — a master of X-ray crystallography — and doctoral student Raymond Gosling captured Photo 51 in May 1952: DNA's diffraction pattern as a stark black X, the unmistakable signature of a helix. Her measurements pinned down the molecule's width and repeat distances. Franklin, rigorous and cautious, was still working through the analysis.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Race and the Credit",
+            "body": "In January 1953 Maurice Wilkins showed Photo 51 to James Watson without Franklin's knowledge; her precise measurements also reached Watson and Francis Crick through an internal report. Weeks later they had the double helix, published in April 1953. Franklin died in 1958, at 37, never told how directly her data had fed the model; the 1962 Nobel went to Watson, Crick, and Wilkins.",
+            "art": "ladder"
+          },
+          {
+            "type": "quote",
+            "text": "It has not escaped our notice that the specific pairing we have postulated immediately suggests a possible copying mechanism for the genetic material.",
+            "by": "James Watson and Francis Crick, Nature, April 1953"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How did Franklin's Photo 51 reach Watson and Crick?",
+            "choices": [
+              "Franklin presented it to them and proposed collaborating",
+              "Wilkins showed it to Watson without her knowledge, and her data arrived via an internal report",
+              "They took an identical photograph themselves at Cambridge",
+              "It had already been published, so anyone could use it"
+            ],
+            "answer": 1,
+            "explain": "Franklin never consented and was never told during her lifetime how central her work had been. Crick later acknowledged her data was crucial — the credit story remains science's classic cautionary tale."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Mendel's 28,000 pea plants (1856–63) showed heredity moves in discrete units — then the world ignored him for 35 years.",
+              "Griffith's dead-plus-live bacteria (1928) revealed a transforming principle; Avery's team (1944) proved it was DNA.",
+              "Hershey and Chase's blender (1952): viruses inject DNA, not protein. The debate ended.",
+              "Franklin's Photo 51 and measurements underpinned Watson and Crick's 1953 double helix — used without her knowledge.",
+              "Credit in science is a human story: keep score honestly, especially for those who can no longer speak."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do Mendel's 3:1 pea ratios matter?",
+            "back": "They showed heredity moves in discrete units — genes — that hide and re-emerge intact rather than blending. Published 1866, ignored until 1900."
+          },
+          {
+            "front": "Griffith 1928 to Avery 1944: what chain of proof?",
+            "back": "Dead smooth + live rough bacteria transformed and killed mice; Avery's enzyme elimination showed the transforming principle was DNA, not protein."
+          },
+          {
+            "front": "What did the Hershey–Chase blender experiment show?",
+            "back": "Radio-labeled phage DNA (32P) entered bacteria while protein coats (35S) stayed outside: genes are made of DNA (1952)."
+          },
+          {
+            "front": "What was Photo 51, and why is its story contested?",
+            "back": "Franklin and Gosling's 1952 X-ray of DNA's helix. Shown to Watson without her consent, it fed the 1953 double-helix model; she died before the Nobel."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "how-economies-work",
+    "title": "How Economies Work",
+    "tagline": "The four ideas that explain most of what economies do.",
+    "category": "Economics",
+    "description": "Four ideas that explain most of what economies do: prices that carry knowledge, money that can die, central banks that steer with one number, and trade that enriches nations while bruising particular towns.",
+    "lessons": [
+      {
+        "id": "prices-as-information",
+        "title": "Prices as Information",
+        "summary": "Why prices exist, what shortages and surpluses are telling you, and what happens when governments cap the signal.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Who Feeds Paris?",
+            "body": "In the 1840s, the French economist Frederic Bastiat marveled that Paris got fed every day — millions of mouths, thousands of farms and shops, and nobody in charge of any of it. No ministry plans your city's bread supply either. This lesson is about the invisible coordinator that does: prices, and the information packed inside them.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Tug-of-War Behind Every Price",
+            "body": "A price is where two pressures meet. When buyers want more than sellers offer, they bid the price up; when goods pile up unsold, sellers cut it. The price that balances the two is the market-clearing price. Push the price below it and you get a shortage; hold it above and you get a surplus. Remember that pair — it explains the rest of this lesson.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A late frost destroys half of Florida's orange crop. What happens in the orange market?",
+            "choices": [
+              "Prices rise, nudging buyers to cut back and growers elsewhere to ship more",
+              "Prices fall, because sellers now have less to sell",
+              "Nothing changes until the government sets a new price",
+              "Prices rise only if orange sellers collude"
+            ],
+            "answer": 0,
+            "explain": "Less supply at the old price means buyers want more oranges than exist — a shortage. The rising price does two useful things at once: it rations oranges to those who value them most and pulls in supply from elsewhere. No coordinator needed."
+          },
+          {
+            "type": "concept",
+            "title": "Hayek's Knowledge Problem",
+            "body": "Why not skip the tug-of-war and let experts set prices? In 1945, Friedrich Hayek's 'The Use of Knowledge in Society' raised the killer objection: the knowledge needed — which field flooded, which factory idles, who needs what most — is scattered across millions of minds, in fragments no planner can collect. Prices compress those fragments into one number anyone can act on.",
+            "art": "network"
+          },
+          {
+            "type": "quote",
+            "text": "The most significant fact about this system is the economy of knowledge with which it operates, or how little the individual participants need to know in order to be able to take the right action.",
+            "by": "Friedrich Hayek, 'The Use of Knowledge in Society' (1945)"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Hayek's own example: the price of tin suddenly jumps. What do the world's tin users need to know to respond correctly?",
+            "answer": "Only the price. Maybe a mine flooded, maybe demand surged — it doesn't matter. The higher number alone tells thousands of strangers to use less tin and seek substitutes, exactly as if they knew the whole story."
+          },
+          {
+            "type": "concept",
+            "title": "Shortages and Surpluses Are Messages",
+            "body": "Empty shelves and long lines mean the price is too low to clear the market — demand outruns supply at that number. Unsold inventory and discount racks mean it is too high. Neither is a moral failing; both are signals mid-correction. A rising price is the market shouting 'bring more of this here'; a falling one says 'enough already.'",
+            "art": "bell"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Warehouses full of unsold goods are a sign the price is set too low.",
+            "answer": false,
+            "explain": "It's the opposite. Unsold surpluses mean the price sits above what buyers will pay, so sellers must cut it. Shortages — queues and empty shelves — are the signature of a price held too low."
+          },
+          {
+            "type": "concept",
+            "title": "Capping the Messenger",
+            "body": "Price controls outlaw the signal instead of the scarcity. Cap a price below market-clearing and demand swells while supply shrinks — the shortage deepens, and goods get rationed by luck and queueing instead of price, with black markets filling the gap. The scarcity doesn't disappear when the number does; it just finds another way to hurt.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "The Gas Lines of the 1970s",
+            "body": "When oil prices exploded in 1973, US price controls held gasoline below the market rate. The result wasn't cheap gas — it was no gas: mile-long lines, odd-even license-plate rationing, stations dry by noon. Drivers paid in hours instead of dollars. Where pump prices were free to rise, people grumbled and conserved — but they didn't queue.",
+            "art": "clock"
+          },
+          {
+            "type": "example",
+            "title": "Rent Control, Stated Fairly",
+            "body": "Rent control genuinely helps the tenants it covers: a 2019 study of San Francisco by Rebecca Diamond and coauthors found covered tenants about 20% more likely to stay in their homes. But landlords converted and sold units, shrinking rental supply about 15% and pushing rents up citywide. Most economists conclude it shields insiders while making housing scarcer for everyone else.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Based on the research, who does rent control tend to help, and who pays?",
+            "choices": [
+              "Covered tenants gain stability; future renters pay through scarcer, pricier housing",
+              "It lowers rents for everyone in the city",
+              "No one benefits — the studies found zero upside",
+              "Landlords quietly benefit the most"
+            ],
+            "answer": 0,
+            "explain": "Both halves are real. The San Francisco study found covered tenants gained stability worth real money — and rental supply fell about 15%, raising rents citywide. The policy debate is about how to weigh those two facts, not whether they exist."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Prices balance supply and demand; shortages mean a price is too low, surpluses mean it is too high.",
+              "Hayek (1945): prices compress knowledge scattered across millions of people into one actionable number.",
+              "Price controls don't remove scarcity — they reroute it into queues, black markets, and quality cuts.",
+              "Rent control helps covered tenants stay put but shrinks rental supply; insiders gain, future renters pay.",
+              "When a price jumps, ask what it is telling you before asking who to blame."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does a shortage signal?",
+            "back": "The price is below market-clearing: buyers want more than sellers offer. A rising price rations the scarce good and pulls in new supply."
+          },
+          {
+            "front": "Hayek's knowledge problem (1945)",
+            "back": "No planner can gather the dispersed, local knowledge millions of people hold. Prices compress it into one number everyone can act on."
+          },
+          {
+            "front": "What does a binding price ceiling cause?",
+            "back": "Shortages: queues, empty shelves, black markets, quality cuts. The US gas lines of the 1970s were the textbook case."
+          },
+          {
+            "front": "Rent control — the evidence in one line",
+            "back": "Covered tenants stay put and gain stability, but rental supply shrinks over time, raising rents citywide for everyone else."
+          }
+        ]
+      },
+      {
+        "id": "money-and-inflation",
+        "title": "Money and Inflation",
+        "summary": "What makes money money, how printing too much destroys it, and why central banks aim for 2% inflation instead of zero.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Cigarette Standard",
+            "body": "In World War II POW camps, prisoners with no coins invented money anyway: cigarettes. Rations were priced in them, non-smokers happily accepted them, and camps developed exchange rates and even inflation — economist R. A. Radford documented it all in 1945. Money isn't whatever governments decree. It's whatever solves a problem so old that prisoners re-solve it from scratch.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "Money's Three Jobs",
+            "body": "Money does three jobs. It's a medium of exchange — you trade work for money for bread, no barter needed. It's a unit of account — a common yardstick so prices can be compared. And it's a store of value — it should hold its worth until you spend it. Anything that does all three is money, cigarettes included. Inflation is what happens when the third job starts failing.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "POW camp menus listed bread at so many cigarettes, cheese at so many more. Which job of money is that?",
+            "choices": [
+              "Unit of account — a common yardstick for prices",
+              "Store of value",
+              "Medium of exchange",
+              "Legal tender"
+            ],
+            "answer": 0,
+            "explain": "Posting prices in cigarettes makes them the yardstick — the unit of account. Handing them over in trade is the medium of exchange; saving them for next week is the store of value. Legal tender is a legal status, not one of money's three jobs."
+          },
+          {
+            "type": "concept",
+            "title": "Too Much Money, Too Few Goods",
+            "body": "Inflation is a general rise in prices — equivalently, a fall in what each unit of money buys. The classic recipe: the money supply grows faster than the economy's output of goods and services. More money chasing the same stuff bids up prices across the board. One price rising is a signal about that good; all prices rising is a symptom of the money itself.",
+            "art": "wave"
+          },
+          {
+            "type": "quote",
+            "text": "Inflation is always and everywhere a monetary phenomenon.",
+            "by": "Milton Friedman, 'Inflation: Causes and Consequences' (1963)"
+          },
+          {
+            "type": "example",
+            "title": "Weimar, 1923",
+            "body": "After World War I, Germany printed money to cover its debts. By November 1923 a dollar bought 4.2 trillion marks and a loaf of bread cost about 200 billion. Workers were paid twice a day and raced to shops before evening price hikes; thieves stole a wheelbarrow and dumped the money; families burned banknotes in the stove — paper was worth more as fuel.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Zimbabwe, November 2008: monthly inflation hit an estimated 79.6 billion percent. What did the central bank print to keep up?",
+            "answer": "A one-hundred-trillion-dollar note — the largest denomination ever circulated. Prices were doubling roughly every day, and in 2009 Zimbabwe abandoned its own currency entirely for US dollars and South African rand."
+          },
+          {
+            "type": "concept",
+            "title": "Why 2%, Not 0%",
+            "body": "Why target 2% instead of zero? Because deflation — falling prices — is worse: shoppers delay purchases, debts grow heavier in real terms, and the spiral feeds itself. A 2% cushion keeps the economy clear of that trap, leaves room to cut rates in a recession, and lets wages adjust without outright cuts. New Zealand pioneered the target in 1990; the rich world followed.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Central banks aim for exactly 0% inflation, since their mandate is stable prices.",
+            "answer": false,
+            "explain": "Nearly all rich-country central banks target about 2%. Zero leaves no buffer against deflation, no room to cut real interest rates in a slump, and no grease for wage adjustment. 'Stable prices' in practice means slow, predictable inflation."
+          },
+          {
+            "type": "example",
+            "title": "The Volcker Disinflation",
+            "body": "US inflation neared 15% in 1980 after a decade of drift. Fed chair Paul Volcker attacked it with interest rates near 20% — mortgages topped 18%, indebted farmers blockaded Fed headquarters with tractors, and the 1981-82 recession pushed unemployment to 10.8%. By 1983 inflation was near 3%, and it stayed low for decades. Central banks learned that credibility is bought with pain.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was the price of ending America's double-digit inflation in the early 1980s?",
+            "choices": [
+              "A deep recession, with unemployment peaking at 10.8%",
+              "Nothing — inflation faded on its own once oil got cheaper",
+              "A default on US government debt",
+              "Permanent wage and price controls"
+            ],
+            "answer": 0,
+            "explain": "Volcker's near-20% rates triggered the harsh 1981-82 recession — the cost of the cure. Wage-price controls were the 1971 approach, and they failed. Inflation did not fade on its own; it was squeezed out, and the squeeze hurt."
+          },
+          {
+            "type": "concept",
+            "title": "Expectations Do the Heavy Lifting",
+            "body": "Inflation feeds on beliefs. If everyone expects 10% next year, workers demand 10% raises and firms pre-raise prices — delivering the inflation everyone expected. The Volcker episode mattered beyond the numbers: it convinced people the Fed would do whatever it took. Once expectations anchored near 2%, staying there got vastly cheaper. Watch expectations, not just prices.",
+            "art": "mirror"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Money is whatever does three jobs: medium of exchange, unit of account, store of value.",
+              "Sustained inflation comes from money growing faster than output — too much money chasing too few goods.",
+              "Hyperinflation kills the store-of-value job: Weimar 1923 and Zimbabwe 2008 show how fast money can die.",
+              "Central banks target about 2%, not 0%, as a buffer against deflation and room to cut rates in a slump.",
+              "Volcker's squeeze showed disinflation is expensive — anchored expectations are the cheapest anti-inflation tool."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "The three functions of money",
+            "back": "Medium of exchange, unit of account, store of value. Inflation attacks the store-of-value job first."
+          },
+          {
+            "front": "What causes sustained inflation?",
+            "back": "Money growing faster than output — too much money chasing too few goods. Friedman: 'always and everywhere a monetary phenomenon.'"
+          },
+          {
+            "front": "Why target ~2% inflation instead of 0%?",
+            "back": "A buffer against deflation spirals, room to cut real rates in recessions, and grease for wage adjustment. Zero leaves no margin for error."
+          },
+          {
+            "front": "The Volcker disinflation",
+            "back": "Rates near 20% cut US inflation from ~15% (1980) to ~3% (1983) — at the cost of a recession with 10.8% unemployment."
+          }
+        ]
+      },
+      {
+        "id": "central-banks",
+        "title": "What Central Banks Actually Do",
+        "summary": "The Fed's two jobs, how one overnight rate reaches your mortgage and your paycheck, and the crisis playbook from Bagehot to QE.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "One Number, Eight Meetings",
+            "body": "Eight times a year, twelve people meet in Washington and vote on one number: the federal funds rate, the interest banks charge each other on overnight loans. That vote moves your mortgage, your savings account, your boss's hiring plans, and currencies on the far side of the world. This lesson is about how one overnight rate steers an economy — and what the steering is for.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "The Dual Mandate",
+            "body": "Congress set the Federal Reserve's goals in a 1977 law: maximum employment and stable prices — the dual mandate. (The law names a third, moderate long-term interest rates, which mostly follows from the first two.) The goals can conflict: cooling inflation usually means cooling hiring too. Central banking is the art of trading them off with one blunt instrument.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which pair of goals is the Fed's dual mandate?",
+            "choices": [
+              "Stable prices and maximum employment",
+              "A strong dollar and a rising stock market",
+              "Low taxes and a balanced federal budget",
+              "Zero inflation and zero unemployment"
+            ],
+            "answer": 0,
+            "explain": "Congress assigned stable prices and maximum employment in 1977. The dollar and stocks react to Fed moves but aren't its goals; taxes and budgets belong to Congress; and zero inflation isn't the target — about 2% is."
+          },
+          {
+            "type": "concept",
+            "title": "The Ripple Machine",
+            "body": "The Fed doesn't set your mortgage rate — it doesn't have to. When the overnight rate rises, banks' funding costs rise, and that flows into every rate priced on top: mortgages, car loans, credit cards, business borrowing. Costlier loans mean fewer houses built, fewer factories expanded, fewer job postings. One overnight number ripples out to the whole job market.",
+            "art": "wave"
+          },
+          {
+            "type": "example",
+            "title": "2022: The Ripple in Action",
+            "body": "When inflation surged after the pandemic, the Fed raised its rate from near zero in March 2022 to 5.5% by July 2023 — the fastest climb in four decades. The 30-year mortgage, about 3% in 2021, hit 7.8% by October 2023. Home sales stalled, tech hiring froze, job openings fell — and inflation dropped from 9% to around 3% without the mass unemployment many had forecast.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The Fed hikes rates today. When does the full effect reach prices and paychecks?",
+            "answer": "In roughly a year or two. Milton Friedman called these the 'long and variable lags' of monetary policy — which is why central banks must act on forecasts, and why they can look like they're fighting a war that's already over."
+          },
+          {
+            "type": "concept",
+            "title": "Lender of Last Resort",
+            "body": "Banks borrow short and lend long, so even a healthy bank dies if everyone demands cash at once. Walter Bagehot's 1873 classic Lombard Street gave central banks the crisis playbook: lend freely to stop the panic, at a penalty rate so no one abuses the privilege, against good collateral so you rescue illiquid banks, not doomed ones. Modern bailouts are still judged by those three tests.",
+            "art": "shield"
+          },
+          {
+            "type": "quote",
+            "text": "A panic, in a word, is a species of neuralgia, and according to the rules of science you must not starve it.",
+            "by": "Walter Bagehot, Lombard Street (1873)"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Bagehot's dictum says the central bank should rescue insolvent banks during a panic.",
+            "answer": false,
+            "explain": "The dictum draws the opposite line: lend freely to illiquid banks — solvent ones facing a cash stampede — against good collateral, at a penalty rate. Banks that are truly broke, not just short of cash, are supposed to fail."
+          },
+          {
+            "type": "example",
+            "title": "2008 and QE, Honestly",
+            "body": "After Lehman Brothers failed in September 2008, the Fed cut rates to zero — out of conventional ammunition. So it created money to buy trillions in Treasury and mortgage bonds — quantitative easing — swelling its balance sheet from $900 billion to $4.5 trillion by 2015. The honest verdict: modestly lower long-term rates, calmer markets, none of the predicted hyperinflation — but no fast recovery either.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In 2009, with its policy rate already at zero, how did the Fed keep easing?",
+            "choices": [
+              "Buying long-term bonds to push down long-term rates — quantitative easing",
+              "Mailing newly printed cash directly to households",
+              "Ordering commercial banks to cut mortgage rates",
+              "Setting a negative rate on everyone's savings accounts"
+            ],
+            "answer": 0,
+            "explain": "QE swaps newly created reserves for long-term bonds, bidding up their prices and pushing down the long-term rates the Fed can't set directly. Mailing cash is fiscal policy, and the Fed can neither dictate banks' loan rates nor touch your savings account."
+          },
+          {
+            "type": "concept",
+            "title": "How to Read a Fed Headline",
+            "body": "When you see 'Fed raises rates,' translate: borrowing is about to get pricier, to cool spending and inflation — expect mortgages up soon and hiring slower within a year or two. 'Fed cuts' reverses the sentence. And if you see 'emergency lending,' apply Bagehot's tests: freely, at a penalty, against good collateral? That's the whole toolkit in one headline.",
+            "art": "eye"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The dual mandate: Congress tasked the Fed with maximum employment and stable prices (1977).",
+              "One overnight rate ripples into mortgages, business loans, and hiring — with lags of a year or more.",
+              "Bagehot (1873): in a panic, lend freely at a penalty rate against good collateral — save the illiquid, not the insolvent.",
+              "QE (2008): with rates at zero, the Fed bought long-term bonds to lower long-term rates — modest, debated effects, and no hyperinflation."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "The Fed's dual mandate",
+            "back": "Maximum employment and stable prices, assigned by Congress in 1977. In practice, 'stable prices' means about 2% inflation."
+          },
+          {
+            "front": "Bagehot's dictum (1873)",
+            "back": "In a panic, lend freely, at a penalty rate, against good collateral — rescue illiquid banks, let insolvent ones fail."
+          },
+          {
+            "front": "How does a rate hike reach jobs?",
+            "back": "Higher overnight rates raise mortgage, card, and business loan rates; spending and hiring cool over the next one to two years."
+          },
+          {
+            "front": "What was quantitative easing?",
+            "back": "With rates at zero after 2008, the Fed bought trillions in long-term bonds to push down long-term rates. Effects were modest and are still debated."
+          }
+        ]
+      },
+      {
+        "id": "trade-and-comparative-advantage",
+        "title": "Trade and Comparative Advantage",
+        "summary": "Ricardo's beautiful idea, the real but concentrated costs of open trade, and who actually pays for tariffs.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The World in Your Closet",
+            "body": "Check your shirt's label, your phone's fine print, your coffee's origin. Your morning is a quiet collaboration among millions of strangers on six continents, none of whom know you exist. Trade built that — and trade is also blamed for shuttered factories and hollowed-out towns. This lesson covers the strongest idea in economics, and the honest costs that come with it.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "The Puzzle Ricardo Solved",
+            "body": "In 1817, David Ricardo posed a puzzle with English cloth and Portuguese wine. In his numbers, Portugal could make both goods with less labor — flat-out better at everything. Common sense says Portugal gains nothing from trading with a clumsy partner. Ricardo proved common sense wrong: both countries end up with more cloth and more wine if each specializes and trades.",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "Comparative Advantage",
+            "body": "The key is opportunity cost: what you give up to make a thing. Every hour Portugal spends weaving is an hour not making wine, where its edge is enormous — so Portugal should pour itself into wine and buy cloth. England, worse at both, gives up little wine by weaving, so cloth is its calling. Specialize where your sacrifice is smallest: not where you're best, but where you're least costly.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Portugal makes both wine and cloth more cheaply than England. What did Ricardo conclude?",
+            "choices": [
+              "Both gain if Portugal specializes in wine — its biggest edge — and England in cloth",
+              "Portugal should make everything and sell to England",
+              "England must impose tariffs until it catches up",
+              "Only Portugal can gain; England trades at a loss"
+            ],
+            "answer": 0,
+            "explain": "Trade runs on comparative, not absolute, advantage. Portugal's edge is largest in wine, so weaving costs it dearly in wine forgone; England sacrifices little by weaving. Each specializing where its opportunity cost is lowest leaves both with more of both goods."
+          },
+          {
+            "type": "example",
+            "title": "The Lawyer and Her Assistant",
+            "body": "A star lawyer types faster than her assistant. Should she do her own typing? No — an hour of her typing costs a $500 hour of legal work; her assistant's hour costs the firm far less. She has the absolute advantage at typing; he has the comparative advantage. Delegating makes the firm richer — comparative advantage governs desks and households, not just nations.",
+            "art": "hourglass"
+          },
+          {
+            "type": "quote",
+            "text": "Under a system of perfectly free commerce, each country naturally devotes its capital and labour to such employments as are most beneficial to each.",
+            "by": "David Ricardo, On the Principles of Political Economy and Taxation (1817)"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Can a country that's worse than its trading partner at making everything still gain from trade?",
+            "answer": "Yes — that's Ricardo's punchline. Gains come from differences in opportunity cost, and every country sacrifices least somewhere. 'Uncompetitive at everything' is impossible in his framework: your smallest sacrifice is your export."
+          },
+          {
+            "type": "concept",
+            "title": "The Gains Are Real — and Diffuse",
+            "body": "Trade's winnings are everywhere and easy to miss: cheaper clothes, electronics, and food; more variety; export markets that let good firms grow huge. The gains land on hundreds of millions of consumers a few dollars at a time, which is why nobody marches to defend them. That diffuseness — huge in total, invisible per person — shapes all the politics of trade.",
+            "art": "seed"
+          },
+          {
+            "type": "example",
+            "title": "The China Shock",
+            "body": "David Autor, David Dorn, and Gordon Hanson studied the surge of Chinese imports after 1999: roughly a million US manufacturing jobs lost — over two million with ripple effects — concentrated in particular towns, where wages and employment stayed depressed more than a decade later. The gains from trade were real. So were losses that hit specific places far longer than textbooks predicted.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Because trade's total gains exceed its losses, the China shock research found no one was lastingly hurt.",
+            "answer": false,
+            "explain": "The research found the opposite: losses were concentrated in specific towns and persisted for over a decade — adjustment was far slower than theory assumed. Total gains being larger doesn't mean the losers get compensated; mostly, they weren't."
+          },
+          {
+            "type": "concept",
+            "title": "Who Pays for Tariffs",
+            "body": "A tariff is a tax on imports, and the check is written at customs by the importer — not the foreign exporter. Studies of the 2018-19 US tariffs found prices rose nearly one-for-one for American buyers. Washing machines were the cleanest case: prices jumped about 12%, roughly 1,800 factory jobs appeared, and the consumer cost came to about $815,000 per job per year.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to studies of the 2018 US tariffs, who mostly paid for them?",
+            "choices": [
+              "American firms and consumers, through higher prices",
+              "Foreign exporters, who cut their prices to absorb the tax",
+              "No one — the tariff revenue made them costless",
+              "Shipping companies, through lower freight rates"
+            ],
+            "answer": 0,
+            "explain": "Researchers found near-complete pass-through: US import prices rose by roughly the full tariff, so American buyers bore the cost. Exporters eating the tariff by cutting prices is the standard justification — the data showed it mostly didn't happen."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Comparative advantage (Ricardo, 1817): specialize where your opportunity cost is lowest, even against a partner who beats you at everything.",
+              "It scales down to desks: the lawyer who types fastest still gains by delegating the typing.",
+              "Gains from trade are huge but diffuse; the China shock showed losses can be concentrated and last a decade-plus.",
+              "Tariffs are paid at customs by importers — 2018 studies found the cost landed on American buyers, about $815,000 per job saved.",
+              "Honest trade policy weighs both ledgers: real widespread gains, real concentrated costs."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Comparative advantage in one line",
+            "back": "Specialize where your opportunity cost is lowest — even if your partner is better at everything. Ricardo, 1817."
+          },
+          {
+            "front": "The lawyer-and-assistant example",
+            "back": "She types faster, but her hour is worth more in court — delegating the typing makes both better off. Comparative advantage at a desk."
+          },
+          {
+            "front": "The China shock (Autor, Dorn & Hanson)",
+            "back": "Post-1999 import competition cost 1-2 million+ US jobs, concentrated in specific towns where harm persisted over a decade."
+          },
+          {
+            "front": "Who pays for tariffs?",
+            "back": "Importers pay at customs, and 2018 studies found near-complete pass-through: American buyers bore the cost through higher prices."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "negotiation",
+    "title": "Negotiation",
+    "tagline": "Claim value, create value — what the research says works.",
+    "category": "Business",
+    "description": "From Harvard's Getting to Yes to first-offer experiments, learn the moves that actually win negotiations: probe interests, build alternatives, set anchors, and grow the pie before you slice it.",
+    "lessons": [
+      {
+        "id": "interests-not-positions",
+        "title": "Interests, Not Positions",
+        "summary": "Fisher and Ury's Harvard method: dig beneath stated demands to the reasons underneath.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Book That Reframed Conflict",
+            "body": "In 1981, Roger Fisher and William Ury of the Harvard Negotiation Project published Getting to Yes, a slim book that replaced the image of negotiation as arm-wrestling with something sharper: joint problem-solving. Its central move — negotiate over interests, not positions — is where every serious course begins, including this one.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "Positions vs. Interests",
+            "body": "A position is what you say you want: 'I need $90,000.' An interest is why you want it: security, status, a fair match to the market. Positions are single points, so they collide head-on. Interests are broader, and two sets of interests often overlap in ways two positions never can. Fisher and Ury's rule: behind every position, hunt for the interest.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your landlord says: 'Rent is $2,400, take it or leave it.' Which of these is an interest, not a position?",
+            "choices": [
+              "The $2,400 figure itself",
+              "Wanting reliable income without vacancy gaps",
+              "Refusing to sign anything under two years",
+              "Insisting every offer be made in writing"
+            ],
+            "answer": 1,
+            "explain": "Positions are stated demands — numbers, terms, refusals. The interest is the reason underneath: steady, predictable income. Address that (say, a longer lease at slightly lower rent) and new deals appear."
+          },
+          {
+            "type": "example",
+            "title": "Two Sisters, One Orange",
+            "body": "Two sisters argue over the last orange and compromise: cut it in half. One squeezes her half for juice and tosses the peel; the other grates her half's peel into a cake and throws out the fruit. Each got 50% when each could have had 100%. Their positions — 'I want the orange' — clashed; their interests never did. Nobody asked why.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the orange story, the sisters' compromise failed because their underlying interests were actually in conflict.",
+            "answer": false,
+            "explain": "Their interests were perfectly compatible — juice for one, peel for the other. The 50/50 split failed because neither sister asked why the other wanted the orange."
+          },
+          {
+            "type": "concept",
+            "title": "Ask Why — and Why Not",
+            "body": "Fisher and Ury offer two diagnostic questions. Ask 'why?' to surface what the other side is trying to protect or gain. Ask 'why not?' about the deal they keep rejecting — walk through their choice as they see it and list what saying yes would cost them. The interests you can't see are usually the ones blocking agreement.",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A landlord flatly refuses your dog, citing a strict no-pets policy. Before arguing, you ask why. What interests might sit underneath?",
+            "answer": "Likely fears: scratched floors, noise complaints from other tenants, cleaning costs at move-out. Each becomes negotiable — a pet deposit, a trial month, a reference from your last landlord — once it's named."
+          },
+          {
+            "type": "concept",
+            "title": "People vs. Problem",
+            "body": "Every negotiation runs on two tracks: the substance and the relationship. Fisher and Ury's advice is to separate them — be soft on the people and hard on the problem. Attack the issue, never the person, and sit side by side facing the contract rather than across the table facing each other. Resentment disguised as a position kills deals.",
+            "art": "bridge"
+          },
+          {
+            "type": "quote",
+            "text": "Your position is something you have decided upon. Your interests are what caused you to so decide.",
+            "by": "Roger Fisher & William Ury, Getting to Yes (1981)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Fisher and Ury say to 'separate the people from the problem.' In practice, that means:",
+            "choices": [
+              "Keep relationships out of it by negotiating only in writing",
+              "Be firm on the issue while staying respectful toward the person",
+              "Hand anything emotional to a neutral third party",
+              "Concede on substance to protect the relationship"
+            ],
+            "answer": 1,
+            "explain": "The method runs on two tracks: defend your interests firmly while treating the person across from you as a partner facing a shared problem. It is not about going soft on substance."
+          },
+          {
+            "type": "example",
+            "title": "Camp David, 1978",
+            "body": "Egypt and Israel deadlocked over the Sinai: Egypt demanded every inch back, Israel insisted on keeping part. The positions were irreconcilable. The interests were not — Egypt cared about sovereignty, Israel about security. The accords returned the full Sinai to Egypt, demilitarized. No map line could split the difference; the interests underneath could both be met.",
+            "art": "map"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Positions are stated demands; interests are the reasons underneath — and interests are where deals live.",
+              "Ask 'why?' and 'why not?' to surface what the other side is really protecting.",
+              "The orange lesson: compatible interests go to waste when nobody asks the question.",
+              "Be soft on the people, hard on the problem — attack issues, not humans."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Positions vs. interests — what's the difference?",
+            "back": "A position is the stated demand; an interest is the reason underneath it. Interests can overlap where positions only collide."
+          },
+          {
+            "front": "What do the two sisters and the orange teach?",
+            "back": "They split it 50/50 — but one wanted juice, the other peel. Compatible interests get wasted when nobody asks why."
+          },
+          {
+            "front": "Fisher and Ury's two diagnostic questions?",
+            "back": "'Why?' — what is the other side protecting or seeking? 'Why not?' — what would saying yes to your proposal cost them?"
+          },
+          {
+            "front": "'Separate the people from the problem' means…",
+            "back": "Soft on the person, hard on the issue: sit side by side facing the problem instead of across the table facing each other."
+          }
+        ]
+      },
+      {
+        "id": "batna-and-power",
+        "title": "BATNA and Real Power",
+        "summary": "Power flows from your best alternative — build it, set your floor, map the zone.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Where Power Actually Comes From",
+            "body": "Negotiators love to look powerful: the hard stare, the take-it-or-leave-it. But the true source of leverage is quieter — what happens to you if this deal dies. Fisher and Ury named it your BATNA: Best Alternative To a Negotiated Agreement. The side that can walk away comfortably holds the table, whatever their poker face says.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Your BATNA",
+            "body": "Your BATNA is your best real option if talks fail — the rival job offer, the other supplier, going to court, simply doing nothing. It is not a fantasy or a wish; it must be an alternative you could actually execute tomorrow. Measure every offer on the table against it: a deal only makes sense if it beats your BATNA.",
+            "art": "path"
+          },
+          {
+            "type": "quote",
+            "text": "The reason you negotiate is to produce something better than the results you can obtain without negotiating.",
+            "by": "Roger Fisher & William Ury, Getting to Yes (1981)"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The negotiator who acts the most aggressive and seems the least eager holds the most real power.",
+            "answer": false,
+            "explain": "Acting tough is theater. Real power is a strong BATNA — a genuinely good alternative if talks fail. A calm negotiator holding two other offers beats a table-pounder holding none."
+          },
+          {
+            "type": "concept",
+            "title": "Your Reservation Point",
+            "body": "Translate your BATNA into a number: your reservation point, the worst deal you would still accept. If your fallback job pays $85,000, no offer below roughly that — adjusted for benefits, commute, upside — deserves a yes. Set the number before you walk in; floors decided in the heat of the moment have a way of melting.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You earn $80,000, and a rival firm has offered you $88,000 in writing. A recruiter asks your expectations. What is your BATNA, and what floor does it set?",
+            "answer": "Your BATNA is the $88,000 offer — real and executable, so it replaces your current salary as the benchmark. Your reservation point sits near it, adjusted for fit and benefits. Anything that doesn't beat it earns a polite no."
+          },
+          {
+            "type": "concept",
+            "title": "The ZOPA",
+            "body": "Each side has a reservation point, and the space between them is the ZOPA — the zone of possible agreement. If a seller will take no less than $8,000 and a buyer will pay up to $10,000, every deal between those numbers beats both sides' alternatives; bargaining decides where in the zone you land. If the points don't overlap, no charm can conjure a deal.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A seller's floor is $8,000; a buyer's ceiling is $10,000. What is the ZOPA?",
+            "choices": [
+              "$0 to $8,000",
+              "$8,000 to $10,000",
+              "$10,000 and above",
+              "There is no ZOPA here"
+            ],
+            "answer": 1,
+            "explain": "The ZOPA is the overlap between reservation points: every price from $8,000 to $10,000 beats both sides' alternatives. Where you land inside that zone is what the bargaining decides."
+          },
+          {
+            "type": "concept",
+            "title": "Improve, Don't Bluff",
+            "body": "Since power is alternatives, the highest-return move happens before the meeting: make your BATNA better. Interview elsewhere, collect a second quote, line up another buyer. Bluffing about options you don't have is fragile — one calm 'go ahead, then' collapses it. An hour spent improving your BATNA beats a week spent rehearsing a tough face.",
+            "art": "ladder"
+          },
+          {
+            "type": "example",
+            "title": "Three Quotes on the Table",
+            "body": "Before renovating her kitchen, a homeowner collects three written bids: $42,000, $38,500, and $36,900. Meeting the middle bidder, she never raises her voice — she simply mentions the field. He trims eight percent and throws in the backsplash. Nothing about her changed except her alternatives, and everyone in the room could feel it.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If the best offer on the table is still worse than your BATNA, you should accept it anyway rather than leave empty-handed.",
+            "answer": false,
+            "explain": "Never accept a deal worse than your BATNA — walking away and executing your alternative IS the better outcome. You aren't leaving empty-handed; you're leaving with your best alternative."
+          },
+          {
+            "type": "concept",
+            "title": "Know Their BATNA Too",
+            "body": "Their power has the same source as yours. Estimate their alternatives: how many other buyers exist, how idle their factory sits, what no-deal day costs them. Their BATNA sets their reservation point, and thus the far edge of the ZOPA. Research it before you meet, and probe gently while you talk: 'What happens for you if we can't work this out?'",
+            "art": "eye"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Your BATNA — Best Alternative To a Negotiated Agreement — is your real source of power.",
+              "Turn it into a reservation point before you sit down, and never accept less.",
+              "The ZOPA is the overlap between the two sides' floors; deals live only inside it.",
+              "Improving your BATNA beats bluffing — and their BATNA matters as much as yours."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does BATNA stand for, and what is it?",
+            "back": "Best Alternative To a Negotiated Agreement — your best real option if talks fail. Coined by Fisher and Ury in Getting to Yes."
+          },
+          {
+            "front": "What is a reservation point?",
+            "back": "The worst deal you would still accept — your BATNA translated into a number, fixed before the negotiation starts."
+          },
+          {
+            "front": "What is the ZOPA?",
+            "back": "The zone of possible agreement: the overlap between both sides' reservation points. No overlap means no deal is possible."
+          },
+          {
+            "front": "What beats bluffing toughness?",
+            "back": "Actually improving your BATNA — real alternatives create real power, while one called bluff destroys your credibility."
+          }
+        ]
+      },
+      {
+        "id": "the-first-offer",
+        "title": "The First-Offer Question",
+        "summary": "Anchoring research settles negotiation's oldest debate: who should name a number first?",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Who Names a Number First?",
+            "body": "Old-school advice is unanimous: never make the first offer — you'll only tip your hand. Then psychologists took the question into the lab and found the opposite is usually true. The first number spoken doesn't just start the haggling; it bends the entire negotiation toward itself. This lesson is about when to seize that power, and when to pass.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "The Anchor Drops",
+            "body": "Anchoring — documented by Tversky and Kahneman in 1974 — means judgments drift toward the first number in view, even an arbitrary one. Adam Galinsky and Thomas Mussweiler (2001) showed it rules negotiation too: in their experiments, the party who made the first offer walked away with better terms, and final prices tracked opening numbers.",
+            "art": "anchor"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Laboratory research confirms the classic advice: always let the other side make the first offer.",
+            "answer": false,
+            "explain": "Galinsky and Mussweiler (2001) found the opposite: first offers anchor the negotiation, and the side that makes one generally captures more value — provided they know the plausible range."
+          },
+          {
+            "type": "example",
+            "title": "Selling the Plant",
+            "body": "In Galinsky and Mussweiler's experiment, pairs of MBA students negotiated the sale of a pharmaceutical plant. Sometimes the buyer opened, sometimes the seller. Role barely mattered — whoever spoke the first number ended up with the better price, and final agreements tracked that opening figure. The anchor, not the argument, did most of the work.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Precise Numbers Bite Harder",
+            "body": "Malia Mason and colleagues (2013) compared round and precise first offers. A $4,985 offer outperformed $5,000: counterparts adjusted less from the precise number and conceded more ground. Precision signals homework — a figure like $4,985 implies you calculated it, so pushing back on it starts to feel like arguing with the math.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You're selling a used car worth about $5,000. Per Mason et al. (2013), which opening price anchors your buyer hardest?",
+            "choices": [
+              "$5,000 — clean and confident",
+              "$4,985 — precise, signaling you did the math",
+              "'Around $5,000 — make me an offer'",
+              "None: let the buyer open, then counter high"
+            ],
+            "answer": 1,
+            "explain": "Precise offers like $4,985 beat round ones — buyers counter them less aggressively because precision implies calculation. Vagueness and waiting both surrender the anchor entirely."
+          },
+          {
+            "type": "concept",
+            "title": "Aggressive but Justifiable",
+            "body": "The ideal first offer is ambitious enough to anchor high but backed by a rationale you can say out loud — comparable sales, market data, cost breakdowns. An extreme number with no story invites offense or a walkout; a bold number with a defensible 'because' shifts the midpoint your way while keeping the other side at the table.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Salary data says roles like yours pay $70,000 to $82,000, and you would happily take $78,000. Design your opening ask.",
+            "answer": "Open above your target, precise and justified: 'Given the top-quartile market data for this role, I'm at $84,500.' Aggressive but defensible, oddly exact — and it leaves you room to concede gracefully down to $78,000."
+          },
+          {
+            "type": "concept",
+            "title": "When Not to Go First",
+            "body": "The first-mover advantage assumes you know the plausible range. When the other side holds far better information — you're selling a curio of unknown value, or entering a market you can't price — your anchor can land below what they would have offered, capping your own deal. Under a severe information disadvantage, ask questions and let them speak first.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "You inherited a painting and have no idea what it's worth; a dealer wants to talk price. You should still rush to make the first offer.",
+            "answer": false,
+            "explain": "This is the exception: at a severe information disadvantage, your anchor may land far below the painting's real value. Let the informed party speak first — or get an appraisal and fix the disadvantage."
+          },
+          {
+            "type": "concept",
+            "title": "Defusing Their Anchor",
+            "body": "If they open first, don't haggle against their number — that accepts the anchor's frame. Galinsky's counter-advice: before responding, deliberately refocus on your own target and BATNA, then re-anchor with a counteroffer built from your data. Say their figure is too far from market to be a useful starting point — then name yours.",
+            "art": "compass"
+          },
+          {
+            "type": "quote",
+            "text": "In business as in life, you don't get what you deserve, you get what you negotiate.",
+            "by": "Chester L. Karrass"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "First offers anchor: Galinsky and Mussweiler (2001) found first movers capture more value.",
+              "Precise beats round — a $4,985 ask outperforms $5,000 (Mason et al., 2013).",
+              "Open aggressive but justifiable: a bold number carried by a defensible story.",
+              "Only pass on going first under severe information disadvantage — and re-anchor if their number lands first."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Should you make the first offer?",
+            "back": "Usually yes — first offers anchor outcomes in your favor (Galinsky & Mussweiler, 2001) — unless you face a severe information disadvantage."
+          },
+          {
+            "front": "Why does $4,985 beat $5,000 as an opener?",
+            "back": "Precision anchors harder: Mason et al. (2013) found precise offers draw smaller counteroffers because they signal calculation."
+          },
+          {
+            "front": "What makes a first offer 'aggressive but justifiable'?",
+            "back": "Ambitious enough to anchor high, yet carried by a rationale — market data, comparables — you can defend out loud."
+          },
+          {
+            "front": "The other side anchors first. Your move?",
+            "back": "Don't bargain against their number. Refocus on your target and BATNA, set their figure aside as off-market, and re-anchor with your own."
+          }
+        ]
+      },
+      {
+        "id": "creating-value",
+        "title": "Creating Value, Not Just Claiming It",
+        "summary": "Escape the fixed-pie trap: logroll, bet on differences, offer menus, play the long game.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Pie Is Not Fixed",
+            "body": "Most people walk into a negotiation assuming a tug-of-war: every dollar I win, you lose. Sometimes that's true — but treating every deal that way leaves enormous value on the table. The best negotiators do two jobs at once: they claim value, and before that they create it, growing the pie before it gets sliced. This lesson is the toolkit for job two.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Fixed-Pie Bias",
+            "body": "Northwestern's Leigh Thompson has spent decades studying this error. In her studies, negotiators assumed the other side's priorities were the mirror image of their own — and roughly half failed to notice issues where both parties wanted the very same thing, sometimes striking lose-lose deals. The fixed-pie assumption isn't just costly; it's usually wrong.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If an issue matters a lot to you, it must matter to the other side in the opposite direction.",
+            "answer": false,
+            "explain": "That's the fixed-pie bias. Thompson's research shows the two sides often weight issues differently — or even want the same outcome — which is exactly what makes creating value possible."
+          },
+          {
+            "type": "concept",
+            "title": "Logrolling",
+            "body": "Sides rarely value every issue equally — and that difference is tradable. Logrolling means conceding on issues cheap to you but precious to them, in exchange for the reverse. A candidate who cares most about remote work trades flexibility on salary for it. So bundle the issues and trade across them; settling one issue at a time destroys the trades.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You're negotiating a job: the employer is rigid on salary but flexible on start date; you care most about a late start. What's the logroll?",
+            "choices": [
+              "Split the difference on both issues",
+              "Accept their salary figure in exchange for the start date you want",
+              "Push hardest on salary, since it clearly matters to them",
+              "Settle the salary first, then discuss dates separately"
+            ],
+            "answer": 1,
+            "explain": "Trade issues you value differently: the late start costs them little and matters most to you, and salary is the reverse. Issue-by-issue settling and mechanical splitting both destroy that trade."
+          },
+          {
+            "type": "concept",
+            "title": "Contingency Contracts",
+            "body": "When you and they predict the future differently, stop arguing — bet on it. An author certain her book will sell big meets a skeptical publisher: rather than fight over the advance, they agree on a modest one plus royalties that escalate with sales. Each side believes it is winning the bet, both sign happily, and reality settles who was right.",
+            "art": "hourglass"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A vendor swears their software will cut your support costs 20%; you'd bet on 5%. Price talks are stuck. What deal structure breaks the deadlock?",
+            "answer": "A contingency contract: a lower base price plus a bonus tied to measured savings. If they're right, they earn the premium; if you're right, you're protected. The disagreement itself becomes the deal."
+          },
+          {
+            "type": "example",
+            "title": "The Earnout",
+            "body": "Acquisitions deadlock the same way: a founder insists her startup will double its revenue; the buyer doubts it. Dealmakers bridge the gap with an earnout — part of the price is paid only if the targets are actually hit. The founder who believes her own forecast accepts gladly, and the buyer pays extra only in the world where it was worth it.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "MESOs: Offer a Menu",
+            "body": "A MESO — multiple equivalent simultaneous offers — means presenting two or three packages you'd be equally happy to sign, differing in mix: one heavier on price, another on timeline, a third on scope. Whichever one they favor reveals their true priorities without a single probing question, and choosing among your offers feels collaborative rather than coercive.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why present three equivalent packages instead of one polished offer?",
+            "choices": [
+              "More offers overwhelm the other side into deciding faster",
+              "Their preference among the three reveals what they truly value",
+              "It conceals which package you actually want",
+              "Multiple offers make you look eager to close"
+            ],
+            "answer": 1,
+            "explain": "A MESO is an instrument: because the packages are equal in your eyes, their pick maps their priorities — intelligence you can use to logroll the final deal. It's diagnosis, not pressure."
+          },
+          {
+            "type": "concept",
+            "title": "The Long Game",
+            "body": "Most negotiations aren't one-shot. Squeeze every dollar from a counterpart and word travels: pure value-claimers meet guarded counterparts, thin information, and zero benefit of the doubt. Negotiators known for creating value get shown real priorities and offered the first call. Reputation is a compounding asset — price it into every move you make.",
+            "art": "network"
+          },
+          {
+            "type": "quote",
+            "text": "Let us never negotiate out of fear. But let us never fear to negotiate.",
+            "by": "John F. Kennedy, inaugural address (1961)"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The fixed pie is a bias — Thompson found negotiators miss fully compatible interests about half the time.",
+              "Logroll: bundle the issues, then trade what's cheap for you but precious to them.",
+              "Disagree about the future? Sign a contingency contract and let reality decide.",
+              "MESOs reveal the other side's priorities while feeling collaborative.",
+              "Reputation compounds — create value today and the next table treats you better."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the fixed-pie bias?",
+            "back": "Assuming their interests directly oppose yours. Thompson's studies: about half of negotiators miss issues where both sides want the same thing."
+          },
+          {
+            "front": "What is logrolling?",
+            "back": "Trading across issues the two sides value differently: concede what's cheap to you and precious to them, and take the reverse."
+          },
+          {
+            "front": "When does a contingency contract shine?",
+            "back": "When the sides predict the future differently — tie payment to the outcome and let reality settle the argument."
+          },
+          {
+            "front": "What is a MESO, and why use one?",
+            "back": "Multiple equivalent simultaneous offers: 2-3 packages you value equally. Their choice reveals priorities — and it feels collaborative."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "probability-and-luck",
+    "title": "Probability and Luck",
+    "tagline": "The math of chance your intuition gets wrong",
+    "category": "Mathematics",
+    "description": "Roulette wheels, courtrooms, and game shows keep proving that human intuition about chance is broken. Learn the small toolkit — independence, base rates, enumeration, expected value — that makes randomness readable.",
+    "lessons": [
+      {
+        "id": "randomness-doesnt-remember",
+        "title": "Randomness Doesn't Remember",
+        "summary": "The gambler's fallacy at Monte Carlo, Bernoulli's law of large numbers, and why streaks in random data fool almost everyone — including scientists.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Night Black Went Mad",
+            "body": "Monte Carlo casino, August 18, 1913. Black comes up on the roulette wheel once, twice, ten times, fifteen times. Gamblers stampede to bet red — surely it's 'due.' Black hits 26 times in a row, and the casino collects millions of francs from players who believed the wheel owed them something. It didn't. This lesson is about why.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Independence: No Memory, No Debts",
+            "body": "Each spin of a fair wheel is independent: the probability resets every time, no matter what came before. Black's chance is 18/37 on every single spin — after zero blacks or after twenty-five. A run of 26 blacks is astonishing in advance (about 1 in 137 million), but the 26th spin itself was never special. Randomness keeps no ledger and pays no debts.",
+            "art": "coin"
+          },
+          {
+            "type": "quote",
+            "text": "The roulette wheel has neither conscience nor memory.",
+            "by": "Joseph Bertrand, French mathematician"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A fair coin has landed heads five times in a row. What is the probability the next flip is heads?",
+            "choices": [
+              "Less than 1/2 — tails is overdue",
+              "More than 1/2 — heads is on a streak",
+              "Exactly 1/2 — the coin has no memory"
+            ],
+            "answer": 2,
+            "explain": "Flips are independent, so past results cannot shift future odds. Betting on 'due' is the gambler's fallacy; betting on 'hot' is its mirror image. Both lost fortunes at Monte Carlo."
+          },
+          {
+            "type": "concept",
+            "title": "The Law of Large Numbers",
+            "body": "Jacob Bernoulli proved it around 1690: as trials pile up, the proportion of heads homes in on 1/2. But note how. If you fluke 100 heads in your first 100 tosses, the law doesn't send extra tails to fix it. The next million flips simply run near 50/50, and your freak start shrinks to a rounding error. Averages converge by swamping the past, not by correcting it.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "After a long run of heads, the law of large numbers makes tails slightly more likely, to pull the average back toward 1/2.",
+            "answer": false,
+            "explain": "The law says nothing about the next flip. Early flukes get diluted by the sheer volume of new, unbiased flips — drowned out, never paid back. Believing in payback is exactly the gambler's fallacy."
+          },
+          {
+            "type": "concept",
+            "title": "The 'Law of Small Numbers'",
+            "body": "Psychologists Tversky and Kahneman coined this joke name in 1971 for a bias: we expect tiny samples to mirror the whole population. Ten spins should 'look random' — mixed, streak-free, balanced. So when a real sample shows six blacks straight, it feels rigged or meaningful. It isn't. Small samples are lawfully lumpy; only enormous ones smooth out.",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "Streaks Are What Random Looks Like",
+            "body": "Ask people to fake 100 coin flips and they alternate too much, rarely daring a run past four. Real chance is bolder: in 100 fair flips there is roughly an 80% chance of a streak of six or more identical results somewhere. If your 'random' data has no streaks, that is the suspicious part. Streaks are the signature of chance, not a violation of it.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In 1985, psychologists tested basketball's 'hot hand' — do players really shoot better mid-streak? What did they conclude?",
+            "answer": "Gilovich, Vallone and Tversky analyzed shooting records and found streaks no longer than chance predicts. The 'hot hand fallacy' became a textbook classic: fans, they said, were seeing patterns in noise. That verdict stood for thirty years."
+          },
+          {
+            "type": "example",
+            "title": "The Plot Twist",
+            "body": "In 2015, economists Joshua Miller and Adam Sanjurjo found a bug in that classic method. In any finite sequence of fair flips, the flips that follow a streak of heads average below 50% heads — a subtle selection bias. So players who merely matched 50% after streaks were actually beating the odds. Reanalyzed, the hot hand looks real. Even the experts on flukes got fooled by one.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Take thousands of separate 100-flip sequences. In each one, find the flips that follow three heads in a row and compute the share that landed heads; then average those shares. You get...",
+            "choices": [
+              "Exactly 50% — flips are independent",
+              "Above 50% — streaks tend to continue",
+              "Below 50% — a selection bias drags it down"
+            ],
+            "answer": 2,
+            "explain": "This is Miller and Sanjurjo's discovery: within a fixed-length sequence, streak-following flips are a biased sample, averaging under 50% (about 46% here). The 1985 study had compared players to 50% — the wrong bar."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Independent events have no memory: past outcomes never change the next one's odds.",
+              "The gambler's fallacy is betting that randomness owes you a correction. It doesn't.",
+              "The law of large numbers works by swamping old flukes with new data, not by balancing them out.",
+              "Small samples are lawfully streaky; expecting them to look 'mixed' is the law of small numbers.",
+              "The hot-hand saga shows even experts misread streaks — and that good science updates itself."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "The gambler's fallacy",
+            "back": "Believing past random outcomes change future odds. After 26 blacks at Monte Carlo (1913), red was still exactly as likely as ever."
+          },
+          {
+            "front": "Law of large numbers",
+            "back": "Bernoulli: proportions converge over many trials — flukes get swamped by new data, never 'corrected' by opposite results."
+          },
+          {
+            "front": "Law of small numbers",
+            "back": "Tversky & Kahneman's name for expecting tiny samples to mirror the population. Real small samples are lumpy and streaky."
+          },
+          {
+            "front": "The hot-hand saga",
+            "back": "1985: streaks dismissed as illusion. 2015: Miller & Sanjurjo exposed a selection bias in that method — the hot hand may be real after all."
+          }
+        ]
+      },
+      {
+        "id": "base-rates-and-bayes",
+        "title": "Base Rates and Bayes",
+        "summary": "A positive test that usually means you're healthy, a courtroom fallacy that jailed an innocent mother, and Bayes' recipe for honest updating.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A 99% Test You Shouldn't Trust",
+            "body": "Your screening test comes back positive. The disease strikes 1 person in 1,000, and the test is 99% accurate. Most people — including famous majorities of surveyed doctors — figure they're about 99% likely to be sick. The real answer is under 10%. The gap between those two numbers is this lesson, and it decides diagnoses, verdicts, and headlines.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Base Rates Come First",
+            "body": "The base rate is how common something is before you look at any evidence: 1 in 1,000 people has this disease. Rarity is powerful. When a condition is rare, even a sharp test spends almost all its time testing healthy people — so most of its alarms are false alarms. Ignoring that starting number is called base-rate neglect, and it flips answers upside down.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "Gigerenzer's Fix: Count People",
+            "body": "Psychologist Gerd Gigerenzer showed that percentages fog minds while plain counts clear them. So count: out of 1,000 people, 1 has the disease, and the test catches him. Of the 999 healthy, a 99%-accurate test still errs on 1% — about 10 false positives. Now 11 people hold positive results and only 1 is sick. Frame chance as 'out of 1,000 people...' and the fog lifts.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Out of 1,000 people, 1 has the disease. Testing everyone flags the 1 sick person plus about 10 healthy people by mistake. You are one of those who tested positive. Your chance of having the disease is closest to...",
+            "choices": [
+              "99%",
+              "50%",
+              "9%",
+              "1%"
+            ],
+            "answer": 2,
+            "explain": "About 11 people test positive and only 1 truly has the disease: 1 out of 11 is roughly 9%. The test is good — but the disease is so rare that false alarms outnumber true ones ten to one."
+          },
+          {
+            "type": "concept",
+            "title": "Bayes' Rule: Belief as Arithmetic",
+            "body": "Thomas Bayes, an 18th-century English minister, left behind the rule this lesson runs on: start from the base rate, then shift your belief by the strength of the evidence. Posterior odds equal prior odds times how much better the evidence fits one hypothesis than the other. Strong evidence moves you far — but a rare hypothesis starts you far away. Both halves count.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Because the test is 99% accurate, a positive result means a 99% chance you have the disease.",
+            "answer": false,
+            "explain": "That swaps two different conditionals. 99% is the chance of a positive result IF you are sick. The chance you are sick IF positive depends on the base rate — here, about 9%. The direction of an 'if' changes everything."
+          },
+          {
+            "type": "concept",
+            "title": "The Prosecutor's Fallacy",
+            "body": "Flip an 'if' in court and innocence looks impossible. 'If innocent, this evidence would be a one-in-a-million fluke' quietly becomes 'given this evidence, innocence is one in a million.' Those are different numbers, often wildly different — just as most positive tests came from healthy people. When a tiny probability is waved at a jury, ask: the chance of what, given what?",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "The Sally Clark Case",
+            "body": "In 1999 Sally Clark was convicted of murdering her two infant sons. Pediatrician Roy Meadow told the jury that two cot deaths in one family had odds of 1 in 73 million — he had squared 1 in 8,543, as if the deaths were independent. Shared genes and environment make that multiplication invalid, and the Royal Statistical Society protested. Her conviction was overturned in 2003.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Beyond the bad multiplication, what deeper error sat under the 1-in-73-million figure?",
+            "answer": "It answered the wrong question. Even a genuinely tiny chance of two natural cot deaths proves little by itself — double infant murder is rarer still. Bayes demands you compare the two unlikely explanations head to head; framed that way, the evidence favored Clark's innocence."
+          },
+          {
+            "type": "concept",
+            "title": "Updating Without End",
+            "body": "A positive result doesn't end the story — it sets a new starting point. You stand at 9%, so you order a second, independent test. Another positive multiplies the odds again and lifts you to roughly 90%; a negative would drop you back near zero. That is Bayes as a way of thinking: no single result settles anything, but each one honestly moves the needle.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "After your first positive (9% chance of disease), you take a second, independent, equally accurate test. It comes back positive too. Your chance of having the disease is now closest to...",
+            "choices": [
+              "Still 9% — repeating a test adds nothing",
+              "About 50%",
+              "About 90%",
+              "Exactly 99.9%"
+            ],
+            "answer": 2,
+            "explain": "Bayes runs again from the new starting point: prior odds of about 1 to 10, times the test's roughly 99-to-1 evidence strength, gives about 10 to 1 in favor of disease — roughly 90%. Updating compounds."
+          },
+          {
+            "type": "quote",
+            "text": "Probability theory is nothing but common sense reduced to calculation.",
+            "by": "Pierre-Simon Laplace"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Base rate first: how common is it before any evidence? Rare things stay unlikely even after a positive test.",
+              "Natural frequencies beat percentages: 'out of 1,000 people, 11 test positive and 1 is sick' — about 9%.",
+              "The prosecutor's fallacy flips a conditional: P(evidence if innocent) is not P(innocent given evidence).",
+              "Meadow's 1-in-73-million figure squared dependent events and helped convict an innocent mother.",
+              "Bayes is updating, not certainty: each result multiplies the odds and resets your starting point."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Base-rate neglect",
+            "back": "Judging by test accuracy alone while ignoring how rare the condition is. A 99% test for a 1-in-1,000 disease: a positive means only about 9%."
+          },
+          {
+            "front": "Natural frequencies",
+            "back": "Gigerenzer's fix: turn percentages into counts of people. Out of 1,000: 1 true positive, ~10 false — so a positive means about 1 in 11."
+          },
+          {
+            "front": "Prosecutor's fallacy",
+            "back": "Confusing the chance of the evidence given innocence with the chance of innocence given the evidence. It helped convict Sally Clark in 1999."
+          },
+          {
+            "front": "Bayesian updating",
+            "back": "Posterior odds = prior odds × strength of evidence. Two positive 99% tests move a 1-in-1,000 risk to roughly 90%."
+          }
+        ]
+      },
+      {
+        "id": "puzzles-that-break-brains",
+        "title": "Puzzles That Break Brains",
+        "summary": "Monty Hall's three doors, ten thousand angry letters, the birthday paradox, and the two tools — enumeration and simulation — that beat gut feeling.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Ten Thousand Angry Letters",
+            "body": "In 1990, Marilyn vos Savant answered a game-show puzzle in her Parade column: yes, you should switch doors. Roughly 10,000 letters poured in telling her she was wrong — about 1,000 signed by PhDs, some scolding her for damaging math literacy. She was right. This lesson is about the puzzle that fooled them, and the tools that would have saved them.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Monty Hall: Where the 2/3 Lives",
+            "body": "Three doors: one car, two goats. You pick a door. The host — who knows where the car is and always opens a goat door from the other two — reveals a goat, then offers a switch. Your first pick was right 1/3 of the time, and nothing the host did changed that. So the remaining 2/3 sits entirely on the one unopened door he left alone. That's the whole trick.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "The host has opened a goat door and offers you the switch. What should you do?",
+            "choices": [
+              "Stick — with two doors left, it's 50/50 either way",
+              "Switch — the other door wins 2/3 of the time",
+              "It makes no difference — the car never moves"
+            ],
+            "answer": 1,
+            "explain": "Your first pick captures the car 1/3 of the time, and the host's forced reveal cannot improve it. The remaining 2/3 is concentrated on the door he pointedly refused to open. Switchers win twice as often as stickers."
+          },
+          {
+            "type": "example",
+            "title": "Prove It in Three Rows",
+            "body": "Say you always pick door A and then switch. Car behind A: the host opens B or C, you switch away — lose. Car behind B: he must open C, you switch to B — win. Car behind C: he must open B, you switch to C — win. Three equally likely worlds; switching wins in two. Enumeration takes thirty seconds and settles an argument that ten thousand letters couldn't.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Host's Knowledge Is the Engine",
+            "body": "The 2/3 answer leans entirely on the host knowing. Because he can never reveal the car, his 'choice' is forced whenever your first pick is wrong — and that funnels information toward the last door. Imagine instead a clueless host opening one of the other doors at random: sometimes he'd expose the car by accident, and the game would change completely.",
+            "art": "eye"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If the host opens a door completely at random and it just happens to reveal a goat, switching still wins 2/3 of the time.",
+            "answer": false,
+            "explain": "With a clueless host, a goat reveal is partly luck — and that luck is evidence your first pick was right. Run the cases: given a random goat reveal, switching and sticking each win 1/2. Monty's knowledge, not the open door, creates the 2/3."
+          },
+          {
+            "type": "concept",
+            "title": "The Birthday Paradox",
+            "body": "How many people make a shared birthday a coin flip? Just 23. With 23 people there's a 50.7% chance two share a birthday, and with 57 it tops 99%. The trick: matches live between pairs, and pairs multiply fast — 23 people form 23 × 22 / 2 = 253 pairs, each a fresh chance at a match. You counted the people; the math counts the pairs.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Pair-counting explains the paradox. How many distinct pairs can 23 people form?",
+            "choices": [
+              "22",
+              "46",
+              "253"
+            ],
+            "answer": 2,
+            "explain": "Each of 23 people pairs with 22 others; divide by 2 so you don't count each pair twice: 23 × 22 / 2 = 253. Intuition tracks the 23 bodies in the room, but chance operates on the 253 pairs between them."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does 23 feel absurdly small — what is your intuition actually computing?",
+            "answer": "You silently answer a different question: 'will someone match MY birthday?' That really is unlikely — you'd need 253 people for even odds on it. But the puzzle asks whether ANY of the 253 pairs match. Intuition checks one lottery ticket; the math plays the whole book."
+          },
+          {
+            "type": "example",
+            "title": "When in Doubt, Simulate",
+            "body": "After the letters, vos Savant asked schools to play the game with paper cups, and math classes across America watched switching win about 2/3 of trials. Even the legendary mathematician Paul Erdős, by his biographer's account, only accepted the answer after seeing a computer simulation. That's the second tool: make randomness show its work a few thousand times.",
+            "art": "graph"
+          },
+          {
+            "type": "quote",
+            "text": "Our brains are just not wired to do probability problems very well.",
+            "by": "Persi Diaconis, Stanford statistician"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Monty Hall: switch. Your first pick wins 1/3; the host's forced reveal shifts the other 2/3 onto his unopened door.",
+              "The host's knowledge does the work — a random goat reveal would leave the two doors at 50/50.",
+              "Birthday paradox: 23 people means 253 pairs, and some pair matches just over half the time.",
+              "Your gut answers 'who matches me?'; the math asks 'does any pair match?' Different questions, wildly different odds.",
+              "When intuition and logic collide, enumerate the cases or simulate. Both are cheap; being wrong isn't."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Monty Hall problem",
+            "back": "Switch: your first pick wins 1/3; the knowing host's goat reveal leaves 2/3 on the other unopened door. Vos Savant was right; ~10,000 letters were wrong."
+          },
+          {
+            "front": "Ignorant-host variant",
+            "back": "If the host opens a random door and luckily shows a goat, the two doors become 50/50. The 2/3 comes from his knowledge, not from the open door."
+          },
+          {
+            "front": "Birthday paradox",
+            "back": "23 people give a 50.7% chance two share a birthday, because 253 pairs each get a shot. 57 people push it past 99%."
+          },
+          {
+            "front": "Enumerate or simulate",
+            "back": "List every equally likely case, or run the random experiment thousands of times. Both beat intuition on problems that break brains."
+          }
+        ]
+      },
+      {
+        "id": "skill-luck-and-the-long-run",
+        "title": "Skill, Luck, and the Long Run",
+        "summary": "Galton's regression to the mean, Kahneman's flight instructors, the Sports Illustrated jinx, and the expected-value math that pays casinos and insurers.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Instructor Who Stopped Praising",
+            "body": "Israeli Air Force, 1960s. A veteran flight instructor tells the young psychologist Daniel Kahneman he has it backwards: praise a cadet's perfect landing and the next one is worse; scream after a botched one and the next improves. The instructor's data was real. His conclusion — that punishment works and praise backfires — was a pure statistical illusion.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Regression to the Mean",
+            "body": "Francis Galton measured Victorian families and found that children of very tall parents were tall, but closer to average — he called it 'regression towards mediocrity.' The rule: any extreme outcome mixes skill with luck, and luck doesn't repeat on schedule. So an extreme performance is usually followed by a plainer one, with no cause required at all.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A cadet nails a once-in-a-month perfect landing. Statistically, what should you expect from the very next landing — whatever the instructor says or does?",
+            "choices": [
+              "Better — success builds confidence",
+              "About equally spectacular",
+              "Closer to the cadet's ordinary average"
+            ],
+            "answer": 2,
+            "explain": "A standout landing is skill plus a lucky draw, and the luck resets. The next attempt regresses toward the cadet's mean — so praise looks harmful and abuse looks effective. The instructor mistook regression for feedback."
+          },
+          {
+            "type": "example",
+            "title": "The Sports Illustrated 'Jinx'",
+            "body": "Athletes 'jinxed' by a Sports Illustrated cover slump so reliably afterward that the curse became legend. But you make the cover at your peak — a stretch when your skill and your luck both ran hot. The luck half was never yours to keep, so the slide back is scheduled by arithmetic. The cover doesn't cause the decline; it marks the summit where decline begins.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A batter who leads the league this season will probably finish closer to the pack next season, even if nothing about him changes.",
+            "answer": true,
+            "explain": "Leading the league almost always requires good luck stacked on top of skill. Next season the skill stays and the luck redraws, so the top performer usually drops toward his true level. That's regression — no jinx or slump story needed."
+          },
+          {
+            "type": "concept",
+            "title": "Expected Value: Price Tag of a Gamble",
+            "body": "Weigh every outcome by its probability and add them up: that's expected value, the long-run average per play. Bet $1 on red at American roulette and you win $1 with probability 18/38 and lose $1 with probability 20/38 — expected value minus 2/38, about −5.3 cents. Every casino game hides a small negative number like that, and it never gets tired.",
+            "art": "balance"
+          },
+          {
+            "type": "example",
+            "title": "Casinos and Insurers: Same Trade",
+            "body": "A casino keeps a few cents of edge per bet and lets the law of large numbers grind millions of bets into steady profit. An insurer prices your premium a bit above your expected loss and pools thousands of policies until total payouts become predictable. Same math, opposite costumes: both sell you the short run and keep the long run for themselves.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You bet $1 on red 100 times at American roulette (win $1 with probability 18/38, lose $1 with probability 20/38). Your expected total result is...",
+            "choices": [
+              "About break-even — red is nearly half",
+              "Losing about $5.26",
+              "Losing about $50"
+            ],
+            "answer": 1,
+            "explain": "Each bet's expected value is −2/38, about −5.26 cents, so 100 bets expect about $5.26 lost. You might well be ahead after 100 spins — but the average is a slow leak, and the casino plays millions of spins."
+          },
+          {
+            "type": "concept",
+            "title": "Variance: The Feel of the Ride",
+            "body": "Two bets can share an expected value and feel nothing alike. Variance measures the spread around that average — the size of the swings. In the short run variance dominates, which is why gamblers have great nights on losing games. In the long run the average takes over, which is why great nights don't add up. Casinos survive your variance; you can't survive their edge.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Kelly: Bet the Size of Your Edge",
+            "body": "In 1956, Bell Labs physicist John Kelly asked how much of a bankroll to stake when you truly do have an edge. His answer, in spirit: scale the bet to the advantage — a big edge earns a bold bet, a thin one a sliver, and no edge means bet nothing. Stake more than that and ruin finds you even with the odds in your favor. Bet sizing is a humility rule.",
+            "art": "seed"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Insurance has negative expected value for you — the premium exceeds your expected loss. Why is buying it still rational?",
+            "answer": "Because you don't live in the long run. The insurer pools thousands of policies, so the law of large numbers hands it the average; you get one house fire. You pay a small sure loss to cancel a ruinous rare one — and ruin is the one outcome you can't average away."
+          },
+          {
+            "type": "quote",
+            "text": "Success = talent + luck. Great success = a little more talent + a lot of luck.",
+            "by": "Daniel Kahneman, Thinking, Fast and Slow"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Extreme results mix skill and luck; the luck redraws, so extremes are usually followed by plainer results.",
+              "Before crediting praise, punishment, or jinxes, ask what regression to the mean alone would predict.",
+              "Expected value is the probability-weighted average: red at American roulette leaks about 5.3 cents per dollar, forever.",
+              "Casinos and insurers profit the same way: a small edge, an enormous number of trials, the law of large numbers.",
+              "Kelly's rule: scale bets to your edge — and when you have no edge, the right bet is zero."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Regression to the mean",
+            "back": "Extreme outcomes are part luck, and luck resets. Galton saw it in family heights; instructors and 'jinxes' rediscover it daily as a fake cause."
+          },
+          {
+            "front": "Kahneman's flight instructors",
+            "back": "Praise seemed to hurt and screaming seemed to help — but landings simply regressed to each cadet's mean. Feedback got credit that luck deserved."
+          },
+          {
+            "front": "Expected value",
+            "back": "Probability-weighted average per play. $1 on red (American wheel): win 18/38, lose 20/38 → −2/38 ≈ −5.3 cents per bet."
+          },
+          {
+            "front": "The Kelly idea",
+            "back": "Size bets by your edge: big edge, bigger bet; thin edge, a sliver; no edge, no bet. Overbetting even a real edge leads to ruin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "psychology-of-happiness",
+    "title": "The Science of Happiness",
+    "tagline": "What actually predicts happiness, and what actually works",
+    "category": "Well-being",
+    "description": "Eighty-five years of longitudinal data, the money-happiness debate told honestly, and the few interventions that survived replication. What science really says about building a happier life.",
+    "lessons": [
+      {
+        "id": "what-predicts-a-good-life",
+        "title": "What Predicts a Good Life",
+        "summary": "The Harvard Study's 85-year answer, and the money-happiness debate settled honestly.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Question of a Lifetime",
+            "body": "Ask people what would make life better and most say money, success, or fame. But when researchers followed real lives for decades, a different answer kept surfacing. This lesson looks at what the longest-running study of adult life found, and what the money-happiness data honestly shows when you read past the headlines.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "An 85-Year Experiment",
+            "body": "In 1938, Harvard researchers began tracking 724 men: sophomores and teenagers from Boston's poorest neighborhoods. The Harvard Study of Adult Development has now run for more than 85 years, expanding to spouses and over 1,300 descendants, with medical records, brain scans, blood work, and thousands of hours of interviews.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Relationships Beat Cholesterol",
+            "body": "The standout finding, says current director Robert Waldinger: the quality of your relationships. How satisfied the men were with their relationships at age 50 predicted their health at 80 better than their cholesterol levels did. Loneliness, meanwhile, proved as corrosive to health as smoking or heavy drinking.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the Harvard study, what best predicted the men's health at age 80?",
+            "choices": [
+              "Their cholesterol levels at age 50",
+              "How satisfied they were with their relationships at age 50",
+              "Their income and career success in midlife",
+              "How much they exercised in midlife"
+            ],
+            "answer": 1,
+            "explain": "Relationship satisfaction at 50 beat cholesterol as a predictor of health at 80. Warm connection protects both body and mind; chronic loneliness corrodes both."
+          },
+          {
+            "type": "quote",
+            "text": "The clearest message that we get from this 75-year study is this: good relationships keep us happier and healthier. Period.",
+            "by": "Robert Waldinger"
+          },
+          {
+            "type": "concept",
+            "title": "The $75,000 Plateau",
+            "body": "Money's turn. In 2010, Daniel Kahneman and Angus Deaton analyzed 450,000 Gallup responses. Day-to-day emotional well-being, meaning how much joy, stress, or sadness you felt yesterday, rose with income but leveled off around $75,000. Life evaluation, your overall rating of your life, kept climbing with no ceiling.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Kahneman and Deaton found that people's overall rating of their lives stopped improving at about $75,000.",
+            "answer": false,
+            "explain": "Only day-to-day feelings plateaued near $75k. Life evaluation, how you score your life when you step back and judge it, kept rising with income at every level they measured."
+          },
+          {
+            "type": "concept",
+            "title": "The Plateau That Wasn't",
+            "body": "In 2021, Matthew Killingsworth ran a stronger test: an app pinged 33,000 working adults at random moments, collecting 1.7 million in-the-moment happiness reports. Felt happiness kept rising with income well past $75,000, with no plateau anywhere in the data. Two careful studies, flatly contradicting each other.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two rigorous studies, opposite conclusions. How did Kahneman and Killingsworth settle it?",
+            "answer": "They ran a 2023 adversarial collaboration, refereed by Barbara Mellers. Reanalysis showed happiness rises with income for most people, but for the unhappiest 20 percent or so, the gains stall out above roughly $100,000."
+          },
+          {
+            "type": "concept",
+            "title": "What Money Honestly Buys",
+            "body": "The honest synthesis: rising income lifts most people's happiness, with no magic cutoff. But the effect runs on a log scale, so a jump from $30k to $60k buys far more feeling than $150k to $180k. And if you are wealthy and miserable, more money is the least likely fix, because the pain has other causes.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "According to the 2023 adversarial collaboration, who benefits least from earning more money?",
+            "choices": [
+              "Everyone benefits equally at every income level",
+              "People who are already unhappy despite high incomes",
+              "Young people early in their careers",
+              "People who grew up poor"
+            ],
+            "answer": 1,
+            "explain": "For most people, happiness keeps rising with income. But for the unhappiest fifth, gains flatten above about $100k. Their unhappiness has causes money cannot reach."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The 85-year Harvard study's standout predictor of health and happiness: quality of close relationships.",
+              "Kahneman and Deaton 2010: day-to-day feelings plateaued near $75k, but life evaluation kept rising.",
+              "Killingsworth 2021 found no plateau at all: felt happiness rose with log income across the range.",
+              "Their 2023 adversarial collaboration: money helps most people, and helps the already-unhappy rich least.",
+              "Invest in relationships first; treat money as a real but diminishing ingredient."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the 85-year Harvard Study of Adult Development say best predicts a long, happy life?",
+            "back": "Quality of close relationships. It beat cholesterol, wealth, and fame as a predictor of late-life health (Robert Waldinger, current director)."
+          },
+          {
+            "front": "Kahneman and Deaton 2010: what plateaus around $75,000, and what doesn't?",
+            "back": "Day-to-day emotional well-being plateaued near $75k; overall life evaluation kept rising with income."
+          },
+          {
+            "front": "What did Killingsworth's 2021 experience-sampling study find about income and happiness?",
+            "back": "No plateau: felt happiness kept rising with log income past $75k, across 1.7 million real-time reports from 33,000 adults."
+          },
+          {
+            "front": "How did the 2023 adversarial collaboration resolve the money-happiness dispute?",
+            "back": "More money lifts happiness for most people, but gains flatten above roughly $100k for the unhappiest 20 percent."
+          }
+        ]
+      },
+      {
+        "id": "the-hedonic-treadmill",
+        "title": "The Hedonic Treadmill",
+        "summary": "What the famous 1978 lottery study really found, why adaptation is incomplete, and how to slow it down.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Why the New Thing Stops Working",
+            "body": "Remember how badly you wanted the phone you now ignore? Psychologists call this hedonic adaptation: the emotional volume of any change fades as it becomes your new normal. This lesson covers the study that made the idea famous, including what it actually found, and which changes your mind never fully absorbs.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Winners and Accident Victims",
+            "body": "In 1978, Philip Brickman, Dan Coates, and Ronnie Janoff-Bulman interviewed 22 lottery winners, 29 people paralyzed in accidents, and 22 controls. The winners were, on average, no happier than the controls, and they rated everyday pleasures like breakfast or a good laugh as less enjoyable than everyone else did.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did the lottery winners in the 1978 study actually report?",
+            "choices": [
+              "They were dramatically happier than the controls",
+              "About the same happiness as controls, and less enjoyment of small pleasures",
+              "They were more miserable than the accident victims",
+              "Their happiness doubled at first, then crashed below where it started"
+            ],
+            "answer": 1,
+            "explain": "Winners' general happiness was statistically no higher than controls', and ordinary pleasures had lost their savor. A jackpot raises the bar everything else gets measured against."
+          },
+          {
+            "type": "concept",
+            "title": "The Fine Print",
+            "body": "Honest caveats: the samples were tiny and the interviews one-time. The accident victims were less happy than controls, though still above the scale midpoint, which is far happier than outsiders assume they would be. The pop version, that winners and victims end up identical, overstates a modest, noisy result.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The 1978 study proved that within a year, accident victims were exactly as happy as lottery winners.",
+            "answer": false,
+            "explain": "Victims scored lower than both winners and controls, but above the scale midpoint. The study suggests adaptation is powerful, not total, and its small samples cannot prove much alone."
+          },
+          {
+            "type": "concept",
+            "title": "Set Points and Sticky Wounds",
+            "body": "Later work found a genetic pull: twin studies by Lykken and Tellegen (1996) put the heritability of well-being near 50 percent. But the set point is not destiny. Tracking thousands of lives, Richard Lucas showed that unemployment, disability, and widowhood can depress happiness for years. Adaptation is real but incomplete.",
+            "art": "anchor"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two everyday burdens people largely fail to adapt to. Can you name them?",
+            "answer": "Commuting and noise. Stutzer and Frey's commuting paradox: people accept long drives for money or housing, yet the daily grind keeps subtracting well-being years later. Variable annoyances never fade into background."
+          },
+          {
+            "type": "concept",
+            "title": "Why Some Irritants Never Fade",
+            "body": "Adaptation runs on predictability. A constant hum disappears from awareness; stop-start traffic or an intermittent siren re-seizes your attention every single time. That is why a long, variable commute or a noisy street resists adaptation, while a smaller kitchen or an older car quietly stops mattering at all.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You can buy a bigger house 45 minutes from work, or a smaller one 10 minutes away. What does adaptation research predict?",
+            "choices": [
+              "You'll adapt to both, so take the bigger house",
+              "You'll adapt to house size but not the commute, so the closer house wins",
+              "You'll adapt to the commute but never stop missing the space",
+              "Neither change will affect you after a year"
+            ],
+            "answer": 1,
+            "explain": "House size is constant, so it fades into normal fast. A variable commute re-registers every day. Trading square footage for time is one of the best-supported swaps in the literature."
+          },
+          {
+            "type": "concept",
+            "title": "Slowing the Treadmill",
+            "body": "You cannot stop adaptation, but Sheldon and Lyubomirsky's work shows you can slow it: vary how you enjoy what you have, space pleasures out instead of making them routine, and savor deliberately. Describe the good thing to someone, replay it, notice it is still here. Attention is adaptation's off switch.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Hedonic adaptation is purely bad news for your happiness.",
+            "answer": false,
+            "explain": "The same machinery that dulls your new car is what lets accident victims, divorcees, and grievers climb back. Adaptation is a shock absorber: it flattens peaks but also softens valleys."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Brickman's 1978 study: lottery winners were no happier than controls and enjoyed daily pleasures less.",
+              "Accident victims sat below controls but above the scale midpoint. Adaptation is strong, not total.",
+              "Set points pull you back (heritability near 50%), yet job loss, disability, and grief can linger for years.",
+              "Commuting and noise resist adaptation because they are variable and unpredictable.",
+              "Slow the treadmill with variety, spacing, and deliberate savoring."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Brickman's 1978 lottery-winner study actually find?",
+            "back": "Winners were about as happy as controls, not happier, and enjoyed everyday pleasures less. Small samples; the real finding is more modest than the myth."
+          },
+          {
+            "front": "Did the accident victims in the 1978 study end up as happy as everyone else?",
+            "back": "No. They were less happy than controls but still above the scale midpoint, far happier than outsiders predicted."
+          },
+          {
+            "front": "Name two everyday conditions people largely fail to adapt to.",
+            "back": "Commuting and noise. Variable, unpredictable annoyances keep recapturing attention instead of fading (Stutzer and Frey's commuting paradox)."
+          },
+          {
+            "front": "What slows hedonic adaptation?",
+            "back": "Variety and savoring: novel, changing ways of enjoying things, plus deliberate attention, keep pleasures from becoming invisible background."
+          }
+        ]
+      },
+      {
+        "id": "interventions-that-hold-up",
+        "title": "Interventions That Hold Up",
+        "summary": "Five practices that survived scrutiny: gratitude, kindness, experiences, strangers, and giving.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Can You Train Happiness?",
+            "body": "Positive psychology promised a lot, and the replication crisis put its claims through the wringer. What survived is a short list of practices with small but genuine effects. This lesson walks through five that held up, with honest effect sizes, so you know what a gratitude list can and cannot do for you.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Counting Blessings, Not Burdens",
+            "body": "Robert Emmons and Michael McCullough (2003) had people write weekly lists: some recorded five things they were grateful for, others five hassles. After ten weeks, the gratitude group felt better about their lives and more optimistic. Real effects, but modest ones, and later meta-analyses shrank them further.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the honest summary of the gratitude journaling research?",
+            "choices": [
+              "It reliably transforms well-being; it is the strongest tool known",
+              "It produces small but real gains over listing hassles or neutral events",
+              "It has been fully debunked by replication failures",
+              "It only works for people who are already happy"
+            ],
+            "answer": 1,
+            "explain": "Emmons and McCullough found genuine gains, and the direction of the finding replicates, but the effects are small. A gratitude list is a nudge, not a cure. Nudges compound, though."
+          },
+          {
+            "type": "concept",
+            "title": "Five Kind Acts, One Day",
+            "body": "Sonja Lyubomirsky asked students to perform five acts of kindness a week for six weeks. Only one version boosted happiness: doing all five in a single day. Spread across the week, the acts dissolved into routine and did nothing. Concentration made kindness feel like an identity instead of a chore.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In Lyubomirsky's experiment, spreading five kind acts evenly across the week worked better than doing them all in one day.",
+            "answer": false,
+            "explain": "The one-day group got the happiness boost; the spread-out group did not differ from controls. Small good deeds vanish into routine unless they are distinct enough to notice."
+          },
+          {
+            "type": "concept",
+            "title": "Buy the Trip, Not the Thing",
+            "body": "Leaf Van Boven and Thomas Gilovich (2003) found that experiential purchases like trips, concerts, and meals out leave people happier than material purchases at the same price. Experiences improve in memory, resist side-by-side comparison, and usually involve other people. Objects just sit there, depreciating.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do experiences out-earn possessions in happiness per dollar?",
+            "answer": "They become part of your story and improve with retelling; they are hard to compare against a neighbor's version, so they dodge envy; and they are usually shared, which feeds the relationship effect that predicts well-being most."
+          },
+          {
+            "type": "concept",
+            "title": "The Stranger on the Train",
+            "body": "Nicholas Epley and Juliana Schroeder (2014) paid Chicago commuters to either talk to a stranger or sit in silence. Nearly everyone predicted conversation would make the ride worse. It made it better, for introverts and extraverts alike. Everyone wants to connect, and everyone assumes nobody else does.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Epley and Schroeder's train study, what happened when commuters were assigned to talk to a stranger?",
+            "choices": [
+              "As predicted, the conversations were awkward and unpleasant",
+              "They enjoyed the ride more; their predictions were exactly backwards",
+              "Only extraverts enjoyed it, while introverts were drained",
+              "Most people refused to attempt a conversation"
+            ],
+            "answer": 1,
+            "explain": "Commuters forecast the talking condition as the worst; it was rated the most pleasant, for introverts too. We routinely overestimate social risk, so we under-connect."
+          },
+          {
+            "type": "concept",
+            "title": "Spending Money on Others",
+            "body": "Elizabeth Dunn, Lara Aknin, and Michael Norton (2008) handed people $5 or $20 with orders to spend it on themselves or on someone else by evening. Prosocial spenders ended the day happier, and the amount made no difference. The effect replicates from Canada to Uganda, though it is modest, not miraculous.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In the Dunn study, people who spent $20 on themselves ended the day happier than those who spent $5 on someone else.",
+            "answer": false,
+            "explain": "Spending on others predicted end-of-day happiness, and the dollar amount did not matter at all. Even tiny generosity, a coffee or a small gift, moved the needle."
+          },
+          {
+            "type": "concept",
+            "title": "Fit Beats Force",
+            "body": "The meta-analytic truth: corrected for publication bias, these interventions average small effects. They work best when they fit you, what Lyubomirsky calls person-activity fit. Forced gratitude reads as homework; chosen kindness feels like you. Pick what feels natural, vary it, and expect a nudge, not a rebirth.",
+            "art": "puzzle"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Gratitude journaling (Emmons and McCullough 2003): small, real gains. A nudge, not a cure.",
+              "Kindness works concentrated: five acts in one day beat five spread thin (Lyubomirsky).",
+              "Experiences beat things (Van Boven and Gilovich 2003): they improve in memory and are shared.",
+              "We mispredict strangers: talking made commutes better, not worse (Epley and Schroeder 2014).",
+              "Spending on others beats spending on yourself, at any amount (Dunn, Aknin and Norton 2008)."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Emmons and McCullough (2003) find about gratitude journaling?",
+            "back": "Weekly gratitude lists modestly raised well-being versus listing hassles. Real but small effects, not a life transformation."
+          },
+          {
+            "front": "What made acts of kindness boost happiness in Lyubomirsky's study?",
+            "back": "Doing five kind acts in a single day worked; spreading them thinly across the week did not move the needle."
+          },
+          {
+            "front": "Epley and Schroeder 2014: what happened when commuters talked to strangers?",
+            "back": "They predicted it would be the worst commute; it was rated the most pleasant. We mispredict social contact, so we avoid it."
+          },
+          {
+            "front": "What did Dunn, Aknin and Norton (2008) find about spending?",
+            "back": "People assigned to spend $5 or $20 on others ended the day happier than those who spent on themselves. The amount did not matter."
+          }
+        ]
+      },
+      {
+        "id": "pleasure-vs-meaning",
+        "title": "Pleasure vs. Meaning",
+        "summary": "Hedonia and eudaimonia, PERMA, flow, time affluence, and why happiness is best approached sideways.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Flavors of a Good Life",
+            "body": "A beach day and a hard climb both feel like happiness, but they are different animals. The Greeks split them: hedonia, the pleasant life, and eudaimonia, the meaningful one. This final lesson maps that split, and explains why aiming straight at happiness is the one strategy that reliably fails.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Hedonia and Eudaimonia",
+            "body": "Hedonia is feeling good: pleasure, comfort, low stress. Eudaimonia, Aristotle's term, is living well: purpose, growth, mattering to others. They correlate but come apart. Raising a child or writing a thesis is often low-pleasure and high-meaning. Research finds the fullest lives draw deliberately on both.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is the most purely eudaimonic pursuit?",
+            "choices": [
+              "A weekend of great meals and massages",
+              "Mentoring a struggling newcomer at work",
+              "Bingeing a show you love",
+              "Winning a small lottery prize"
+            ],
+            "answer": 1,
+            "explain": "Mentoring is effortful and often unglamorous, but it delivers purpose, growth, and contribution: the eudaimonic trio. The others are pleasant, and that is fine. They are just hedonic."
+          },
+          {
+            "type": "concept",
+            "title": "Seligman's PERMA",
+            "body": "Martin Seligman's PERMA model (Flourish, 2011) names five pillars of well-being: Positive emotion, Engagement, Relationships, Meaning, and Accomplishment. It is a checklist, not an equation, and its value is diagnostic: people chronically chase the P while neglecting the other four, which the data favor more.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In Seligman's PERMA model, the E stands for Exercise.",
+            "answer": false,
+            "explain": "E is Engagement: deep absorption in what you are doing, the state Csikszentmihalyi called flow. Exercise lifts mood, but it is not one of PERMA's five pillars."
+          },
+          {
+            "type": "concept",
+            "title": "Flow: Where Challenge Meets Skill",
+            "body": "Mihaly Csikszentmihalyi spent decades studying moments when people are so absorbed that self-consciousness and clock time vanish. Flow arrives when a task's challenge sits just at the edge of your skill: too easy breeds boredom, too hard breeds anxiety. Surgeons, climbers, and coders all describe the same state.",
+            "art": "wave"
+          },
+          {
+            "type": "reveal",
+            "prompt": "What three conditions reliably invite flow?",
+            "answer": "Clear goals, immediate feedback, and a challenge matched to your skill, stretched just past comfortable. This is why hard hobbies beat passive leisure: TV rarely absorbs you, but a climbing wall or a tricky sonata can."
+          },
+          {
+            "type": "concept",
+            "title": "Time Affluence",
+            "body": "Ashley Whillans and colleagues (2017) surveyed over 6,000 adults: people who spent money to buy time, outsourcing cleaning, cooking, or errands, reported higher life satisfaction at every income level. In a field experiment, $40 spent on saving time beat $40 spent on material goods. Yet almost nobody chooses it.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Whillans's field experiment, which $40 purchase produced the bigger boost?",
+            "choices": [
+              "A material treat you get to keep",
+              "A time-saving purchase that erased a chore",
+              "They were equal; money is money",
+              "Neither, because $40 is too small to matter"
+            ],
+            "answer": 1,
+            "explain": "The time-saving $40 won. Time stress quietly corrodes well-being, and buying time relieves it. It is a swap most people undervalue, including the wealthy."
+          },
+          {
+            "type": "concept",
+            "title": "The Trap of Chasing It",
+            "body": "Iris Mauss (2011) found that people who most prize happiness tend to report less of it, and more loneliness. Constantly grading your own mood turns joy into a performance review. The reliable route is oblique: pursue relationships, mastery, and meaning, and let happiness arrive as a side effect.",
+            "art": "mirror"
+          },
+          {
+            "type": "quote",
+            "text": "For success, like happiness, cannot be pursued; it must ensue, and it only does so as the unintended side effect of one's personal dedication to a cause greater than oneself.",
+            "by": "Viktor Frankl, Man's Search for Meaning"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Hedonia is feeling good; eudaimonia is living well. The fullest lives use both.",
+              "PERMA: Positive emotion, Engagement, Relationships, Meaning, Accomplishment. A checklist, not a formula.",
+              "Flow needs clear goals, fast feedback, and challenge at the edge of skill (Csikszentmihalyi).",
+              "Buying time predicts well-being better than buying things (Whillans 2017).",
+              "Do not chase happiness head-on (Mauss 2011). Build connection, mastery, and meaning, and let it ensue."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Hedonia vs. eudaimonia: what is the difference?",
+            "back": "Hedonia is feeling good (pleasure, comfort); eudaimonia is living well (purpose, growth, contribution). A full life draws on both."
+          },
+          {
+            "front": "What are the five pillars of Seligman's PERMA model?",
+            "back": "Positive emotion, Engagement, Relationships, Meaning, Accomplishment (Flourish, 2011)."
+          },
+          {
+            "front": "When does flow occur, according to Csikszentmihalyi?",
+            "back": "When a clear-goal, fast-feedback challenge sits at the edge of your skill: hard enough to absorb you, not so hard it breeds anxiety."
+          },
+          {
+            "front": "Why can chasing happiness directly backfire?",
+            "back": "Valuing happiness too highly predicts feeling less of it (Mauss 2011). Aim at relationships, mastery, and meaning; happiness arrives sideways."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "science-of-sleep",
+    "title": "The Science of Sleep",
+    "tagline": "What happens in the third of your life you spend unconscious",
+    "category": "Health",
+    "description": "Four short lessons on the strange, busy science of sleep: the night's hidden architecture, what sleep actually does for your brain, the clock that times it, and how to get better at it.",
+    "lessons": [
+      {
+        "id": "architecture-of-the-night",
+        "title": "The Architecture of the Night",
+        "summary": "Sleep runs in 90-minute cycles with a hidden structure: deep sleep early, REM toward morning, and a paralysis switch that keeps your dreams inside your head.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Tonight, in 90-Minute Loops",
+            "body": "Tonight you will not sink into one long stretch of oblivion. You will ride four to six cycles, each about 90 minutes, looping through distinct stages with different brain waves, different chemistry, and different jobs. Sleep is not an off switch — it is a scheduled program, and this lesson is the program guide.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "The Staircase Down",
+            "body": "Each cycle begins with non-REM sleep. Stage N1 is the drifting doorway; in N2 the brain muffles the outside world with bursts called sleep spindles; N3 is slow-wave sleep — huge, synchronized waves rolling across the cortex. Wake someone from N3 and they surface groggy and confused. This is the deepest sleep you get.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How does a typical night of sleep unfold?",
+            "choices": [
+              "In cycles of roughly 90 minutes, four to six times a night",
+              "One long dive into deep sleep, gradually lightening until morning",
+              "Random switching between light and deep sleep with no pattern",
+              "Eight solid hours of a single state, unless something wakes you"
+            ],
+            "answer": 0,
+            "explain": "You loop through the sleep stages in roughly 90-minute cycles, typically four to six per night. The single long dive is a myth — the night has architecture."
+          },
+          {
+            "type": "concept",
+            "title": "A Front-Loaded Night",
+            "body": "The cycles are not identical. Early ones are packed with slow-wave deep sleep — your brain claims it first, as if it cannot wait. As the night wears on, deep sleep fades and REM periods stretch longer, so by early morning you are mostly alternating light sleep with long, vivid REM. Cut the night short and you do not lose a little of everything — you disproportionately lose REM.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "The Grad Student and His Sleeping Son",
+            "body": "In the early 1950s at the University of Chicago, graduate student Eugene Aserinsky wired his young son to an eye-tracking machine. The boy's eyes began darting beneath closed lids while his brain activity looked close to waking. Aserinsky and his advisor Nathaniel Kleitman published the discovery of REM sleep in 1953 — and people woken from it reported vivid dreams.",
+            "art": "eye"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Your brain essentially powers down through every stage of sleep.",
+            "answer": false,
+            "explain": "False. During REM the brain's electrical activity looks remarkably close to waking — exactly what startled Aserinsky and Kleitman in 1953. REM is sometimes called paradoxical sleep for that reason."
+          },
+          {
+            "type": "concept",
+            "title": "The Safety Lock",
+            "body": "In REM, your dreaming brain issues real commands — run, reach, speak — so the brainstem throws a switch. Inhibitory signals flood the spinal motor neurons, paralyzing nearly every muscle except your eyes and diaphragm. This paralysis is called atonia, and it is the reason you can sprint through a dream while your body lies still.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "When the Lock Fails",
+            "body": "In 1986, Minnesota researchers Carlos Schenck and Mark Mahowald described patients who punched, kicked, and leapt from bed while dreaming: REM sleep behavior disorder, in which atonia fails. It confirmed why the paralysis exists — and an ominous postscript: in long-term follow-up, most of these patients developed Parkinson's disease or a related brain disorder.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does your body become paralyzed during REM sleep?",
+            "choices": [
+              "To stop you from physically acting out your dreams",
+              "Because the brain is too inactive to drive the muscles",
+              "To conserve energy for the morning",
+              "Because blood flow to the limbs shuts down overnight"
+            ],
+            "answer": 0,
+            "explain": "Atonia is a brainstem safety lock: the dreaming brain issues motor commands, and muscle paralysis keeps you from performing them. When the lock fails — REM sleep behavior disorder — people act out their dreams."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your 6:30 alarm keeps tearing you out of a vivid dream. Why does that happen so often?",
+            "answer": "REM is concentrated in the final cycles of the night, so an early alarm lands right in your longest, most vivid dream periods. You are not dreaming more than other people — you are being interrupted where the dreams live."
+          },
+          {
+            "type": "quote",
+            "text": "Sleep that knits up the ravelled sleave of care... balm of hurt minds, great nature's second course, chief nourisher in life's feast.",
+            "by": "William Shakespeare, Macbeth"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Sleep runs in roughly 90-minute cycles, four to six per night.",
+              "Slow-wave deep sleep is front-loaded early; REM stretches out toward morning.",
+              "Eugene Aserinsky and Nathaniel Kleitman discovered REM in 1953 — its brain activity looks nearly awake.",
+              "Atonia paralyzes your muscles during REM so you cannot act out your dreams.",
+              "A shortened night does not trim evenly — it disproportionately cuts REM."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How long is one sleep cycle, and how many do you get per night?",
+            "back": "About 90 minutes per cycle; a typical night holds four to six cycles."
+          },
+          {
+            "front": "When in the night do deep sleep and REM each dominate?",
+            "back": "Slow-wave deep sleep is front-loaded into the early cycles; REM periods grow longer toward morning."
+          },
+          {
+            "front": "Who discovered REM sleep, and when?",
+            "back": "Eugene Aserinsky and Nathaniel Kleitman at the University of Chicago, published in 1953."
+          },
+          {
+            "front": "What is atonia?",
+            "back": "The near-total muscle paralysis during REM sleep that stops you from acting out your dreams."
+          }
+        ]
+      },
+      {
+        "id": "what-sleep-is-for",
+        "title": "What Sleep Is For",
+        "summary": "Your sleeping brain replays the day, files memories into storage, may flush out metabolic waste, and rebalances its own wiring — the leading theories of why you sleep at all.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Not Rest — Work",
+            "body": "Calling sleep rest is like calling a hospital a building where people lie down. While you are unconscious, your brain replays the day, files memories into long-term storage, rebalances trillions of connections, and may even run a rinse cycle. This lesson covers the leading answers to biology's strangest question: why spend a third of life offline?",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "Replay in the Maze",
+            "body": "In 1994, Matthew Wilson and Bruce McNaughton recorded rats' hippocampal place cells — neurons that fire at specific spots in a maze. During slow-wave sleep afterward, the same cells fired again in the same order, as if the rat were rerunning the maze. The sleeping brain was replaying the day's experience: the first direct evidence of memory rehearsal during sleep.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Wilson and McNaughton's 1994 rat study show?",
+            "choices": [
+              "Hippocampal neurons replayed the day's maze routes during slow-wave sleep",
+              "Rats can learn a brand-new maze while fully asleep",
+              "Dreaming rats moved their legs as if running",
+              "Sleep erased the rats' memory of the maze"
+            ],
+            "answer": 0,
+            "explain": "The same place cells that fired during maze-running fired again in the same sequence during slow-wave sleep — replay, the first direct evidence that sleeping brains rehearse recent experience."
+          },
+          {
+            "type": "concept",
+            "title": "From Sketchpad to Archive",
+            "body": "The hippocampus is fast storage — a sketchpad that captures the day. During deep sleep, replayed patterns are thought to train the neocortex, moving memories into durable long-term networks. The effect shows up in people: in a 2002 study by Matthew Walker's team, subjects who learned a finger-tapping sequence got about 20 percent faster overnight, with zero extra practice.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "It is a common experience that a problem difficult at night is resolved in the morning after the committee of sleep has worked on it.",
+            "by": "John Steinbeck"
+          },
+          {
+            "type": "truefalse",
+            "statement": "People who learn a motor skill and then sleep on it improve overnight, without any extra practice.",
+            "answer": true,
+            "explain": "True. In the 2002 finger-tapping study, participants tapped about 20 percent faster after a night of sleep — a gain that did not appear after an equal stretch of waking time."
+          },
+          {
+            "type": "concept",
+            "title": "The Rinse Cycle",
+            "body": "In 2013, Maiken Nedergaard's lab reported that in sleeping mice, channels around brain blood vessels widen and cerebrospinal fluid flushes through, clearing waste — including beta-amyloid, the protein that accumulates in Alzheimer's — roughly twice as fast as in waking. This glymphatic system is a promising lead, but how strongly it operates in humans is still being tested.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the fairest summary of the glymphatic system research?",
+            "choices": [
+              "In mice, sleep boosts a fluid flow that clears brain waste — promising, but not yet settled in humans",
+              "It proves that poor sleep causes Alzheimer's disease",
+              "It shows the brain shuts off its blood supply during sleep",
+              "It has been debunked and abandoned"
+            ],
+            "answer": 0,
+            "explain": "Nedergaard's 2013 mouse work showed sleep enhances a cerebrospinal-fluid flow that clears waste such as beta-amyloid. It is an exciting lead — but claiming it proves sleep loss causes Alzheimer's outruns the evidence."
+          },
+          {
+            "type": "concept",
+            "title": "Turning Down the Gain",
+            "body": "Giulio Tononi and Chiara Cirelli's synaptic homeostasis hypothesis: all day, learning strengthens synapses, which costs energy. Sleep — especially slow-wave sleep — dials most connections back down while sparing the strong, meaningful ones. In this view, sleep is the price of learning: keep the signal, trim the noise. One leading theory among several, not settled fact.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If sleep weakens synapses across the board, why don't you wake up with your memories erased?",
+            "answer": "Under the hypothesis, downscaling is proportional: strong, recently important connections stay strong relative to the rest, so signal-to-noise actually improves. Sleep would not delete the day — it would sharpen it."
+          },
+          {
+            "type": "example",
+            "title": "The All-Nighter Backfires",
+            "body": "Sleep matters before learning, too. In a 2007 study by Seung-Schik Yoo, Matthew Walker, and colleagues, people kept awake for one night showed about a 40 percent deficit in forming new memories the next day, with the hippocampus visibly underactive on brain scans. An all-nighter before an exam asks a flooded sketchpad to record more — the material has no bridge into storage.",
+            "art": "bridge"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Wilson and McNaughton (1994): the sleeping hippocampus replays the day's experience.",
+              "Sleep after learning consolidates memory — motor skills improved about 20 percent overnight in Walker's 2002 study.",
+              "The glymphatic system may flush brain waste during sleep (Nedergaard, 2013) — promising, not settled.",
+              "Synaptic homeostasis (Tononi and Cirelli): sleep may downscale synapses to keep learning affordable.",
+              "Sleep before learning matters too — deprivation cripples the brain's ability to encode."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is hippocampal replay?",
+            "back": "During slow-wave sleep, hippocampal neurons refire the day's activity patterns — first shown in rats by Wilson and McNaughton in 1994."
+          },
+          {
+            "front": "What does the glymphatic system appear to do during sleep?",
+            "back": "Flush cerebrospinal fluid through the brain, clearing waste like beta-amyloid — shown in mice (Nedergaard, 2013); still being tested in humans."
+          },
+          {
+            "front": "What is the synaptic homeostasis hypothesis?",
+            "back": "Tononi and Cirelli's proposal that sleep downscales synapses strengthened during waking, keeping learning affordable. One leading theory among several."
+          },
+          {
+            "front": "Why sleep after studying?",
+            "back": "Sleep consolidates fresh memories — in one 2002 study, a night of sleep improved a practiced motor skill about 20 percent with no extra practice."
+          }
+        ]
+      },
+      {
+        "id": "the-clock-inside-you",
+        "title": "The Clock Inside You",
+        "summary": "A 20,000-neuron clock in your hypothalamus times your whole biology, and light is its master signal — the science behind chronotypes, melatonin, jet lag, and a Nobel Prize.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Clock That Runs in the Dark",
+            "body": "Seal yourself in a cave with no daylight or clocks — as Frenchman Michel Siffre did in 1962 — and you will still sleep and wake on a roughly 24-hour rhythm. It is not habit; it is hardware. A clock inside you, running slightly longer than 24 hours, times your sleep, hormones, temperature, and mood. This lesson is about where it lives and how to set it.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Twenty Thousand Neurons",
+            "body": "The master clock is the suprachiasmatic nucleus, or SCN — about 20,000 neurons in the hypothalamus, sitting just above the point where your optic nerves cross. The location is no accident: dedicated light-sensing cells in the retina report straight to it. The SCN conducts the daily rhythms of nearly every organ, and it recalibrates using one signal above all others: light.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where is your body's master clock?",
+            "choices": [
+              "The suprachiasmatic nucleus, in the hypothalamus",
+              "The pineal gland, which makes melatonin",
+              "The heart, which sets the body's pace",
+              "Every cell equally — there is no master clock"
+            ],
+            "answer": 0,
+            "explain": "Many cells do keep their own time, but the SCN — about 20,000 hypothalamic neurons above the optic-nerve crossing — is the conductor that keeps them all synchronized."
+          },
+          {
+            "type": "concept",
+            "title": "The Master Zeitgeber",
+            "body": "The cues that set the clock are called zeitgebers — German for time-givers — and light outranks all others. Morning light is especially potent: bright light soon after waking nudges the clock earlier and steadies it. A sunny day delivers tens of thousands of lux; a well-lit indoor room manages a few hundred. Your clock listens through your eyes, and it listens best outdoors.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Melatonin, Misunderstood",
+            "body": "Melatonin is not a sedative — it is a signal. As evening light fades, the pineal gland releases it to announce biological darkness: night is starting, prepare for sleep. Taken as a pill it can shift the clock's timing, which is genuinely useful for jet lag, but its direct sleep-inducing punch is modest. Think starting gun for the night, not knockout drug.",
+            "art": "bell"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Melatonin supplements knock you out the way a sleeping pill does.",
+            "answer": false,
+            "explain": "False. Melatonin is the body's darkness signal — it tells the clock that night has begun. Supplements can shift sleep timing, which helps with jet lag, but their direct sedative effect is weak."
+          },
+          {
+            "type": "example",
+            "title": "A Nobel Prize for Fly Genes",
+            "body": "In 2017, Jeffrey Hall, Michael Rosbash, and Michael Young won the Nobel Prize in Medicine for working out how the circadian clock ticks — in fruit flies. They showed that a gene called period builds a protein that accumulates by night and degrades by day: a self-winding molecular feedback loop inside cells. The same core mechanism, it turned out, keeps time in you.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "The 2017 Nobel Prize in Medicine honored what discovery?",
+            "choices": [
+              "The genetic feedback loop driving circadian rhythms, worked out in fruit flies",
+              "The discovery of REM sleep",
+              "A cure for chronic insomnia",
+              "The invention of melatonin supplements"
+            ],
+            "answer": 0,
+            "explain": "Hall, Rosbash, and Young traced the circadian clock to a molecular loop built around the period gene in fruit flies — machinery so fundamental that versions of it tick in nearly all of your cells."
+          },
+          {
+            "type": "concept",
+            "title": "Larks, Owls, and Genes",
+            "body": "Whether you are an early lark or a night owl is your chronotype, and it is partly written in your genes — twin studies put heritability near 50 percent. Chronotype also drifts with age: teenagers genuinely run late, then clocks pull earlier through adulthood. An owl forced into 7 a.m. meetings is not lazy — they are living in the wrong time zone.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does flying east usually hit harder than flying west?",
+            "answer": "Your internal clock runs a bit longer than 24 hours, so it delays more easily than it advances. Flying west asks you to stay up later — easy. Flying east asks you to fall asleep before your clock is ready — much harder work."
+          },
+          {
+            "type": "example",
+            "title": "Working Against the Clock",
+            "body": "Night-shift workers live the clock conflict permanently: the SCN keeps taking its cues from the sun, so it never fully flips. They try to sleep at biological daytime and work at biological night; sleep runs shorter and shallower, and long-term shift work is linked to metabolic and cardiovascular problems. When shifts are unavoidable, light exposure is the main lever.",
+            "art": "balance"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The suprachiasmatic nucleus (SCN) in the hypothalamus is the body's master clock.",
+              "Light — especially bright morning light — is the dominant zeitgeber that sets it.",
+              "Melatonin is a darkness signal that times sleep; it is not a sedative.",
+              "Hall, Rosbash, and Young won the 2017 Nobel for the fly clock genes behind circadian rhythm.",
+              "Chronotype is partly genetic; jet lag and shift work are clock-versus-schedule conflicts."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What and where is the SCN?",
+            "back": "The suprachiasmatic nucleus: about 20,000 neurons in the hypothalamus above the optic-nerve crossing — the body's master circadian clock."
+          },
+          {
+            "front": "What is the most powerful zeitgeber, and when does it matter most?",
+            "back": "Light — with bright morning light the most potent cue for setting the SCN earlier and keeping it steady."
+          },
+          {
+            "front": "What does melatonin actually do?",
+            "back": "It signals biological darkness so the body prepares for sleep; it shifts sleep timing rather than sedating you."
+          },
+          {
+            "front": "Who won the 2017 Nobel Prize for circadian biology, and for what?",
+            "back": "Jeffrey Hall, Michael Rosbash, and Michael Young — for the clock-gene feedback loop discovered in fruit flies."
+          }
+        ]
+      },
+      {
+        "id": "running-on-empty",
+        "title": "Running on Empty",
+        "summary": "What sleep loss really does — including your inability to feel it — plus caffeine, alcohol, and the few sleep habits the evidence actually supports.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Debt You Can't Feel",
+            "body": "Cut sleep and you take out a loan against your own brain — and the cruelest term of the deal is that you stop noticing the interest. This lesson covers what deprivation actually does to you, the everyday chemicals quietly sabotaging your nights, and the short list of fixes the evidence genuinely supports. No products required.",
+            "art": "coin"
+          },
+          {
+            "type": "example",
+            "title": "Two Weeks of Six-Hour Nights",
+            "body": "In 2003, Hans Van Dongen and David Dinges restricted volunteers to six hours in bed for fourteen nights. By the end, their attention-test performance had degraded as much as that of people kept awake for one to two entire nights. The twist: their sleepiness ratings leveled off after a few days. Objectively they kept getting worse; subjectively, they felt basically fine.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was the most unsettling result of the 2003 Van Dongen study?",
+            "choices": [
+              "Performance kept falling while subjects rated themselves as fine",
+              "Six hours a night proved perfectly adequate for most adults",
+              "People fully adapted to short sleep within two weeks",
+              "Only reaction time suffered; memory was untouched"
+            ],
+            "answer": 0,
+            "explain": "After two weeks of six-hour nights, cognitive deficits matched one to two nights of total sleep deprivation — but self-rated sleepiness plateaued. Chronically short sleepers lose the ability to see their own impairment."
+          },
+          {
+            "type": "concept",
+            "title": "Drowsy Is Drunk",
+            "body": "In 1997, Drew Dawson and Kathryn Reid put wakefulness on the same scale as alcohol. After 17 to 19 hours awake, performance matched a blood alcohol level of 0.05 percent; after about 24 hours, roughly 0.10 — over the legal driving limit in most countries. A drowsy driver is not slightly dull. A drowsy driver is functionally drunk, without the slurred speech to warn anyone.",
+            "art": "path"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Staying awake for 24 hours straight impairs you about as much as being legally drunk.",
+            "answer": true,
+            "explain": "True. Dawson and Reid's 1997 comparison put 24 hours awake at roughly a 0.10 percent blood-alcohol equivalent — above the 0.08 legal driving limit in the United States."
+          },
+          {
+            "type": "concept",
+            "title": "Caffeine's Long Shadow",
+            "body": "Caffeine works by blocking adenosine, the molecule that builds up all day to create sleep pressure. But its half-life is about five to six hours: half of a 4 p.m. coffee is still circulating at 9 or 10 p.m., and a quarter after midnight. It does not erase sleep pressure — it hides it. And it can shave down deep sleep even when you do fall asleep on time.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You drink a double espresso at 4 p.m. Around 10 p.m., how much of its caffeine is still in your system?",
+            "choices": [
+              "About half",
+              "Almost none — it wears off within a couple of hours",
+              "Virtually all of it",
+              "None, as long as you no longer feel wired"
+            ],
+            "answer": 0,
+            "explain": "With a half-life of five to six hours, roughly half the caffeine from a 4 p.m. coffee is still active around 10 p.m. — quietly masking the sleep-pressure signal your brain needs to read."
+          },
+          {
+            "type": "concept",
+            "title": "The Nightcap Myth",
+            "body": "Alcohol does make you fall asleep faster — but it sedates you rather than ushering in natural sleep. As your body metabolizes it, the second half of the night fragments into brief awakenings you mostly will not remember, and REM sleep is suppressed. You traded a quicker start for a shallower, choppier, dream-poor night. That is the nightcap's real price.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A drink before bed improves your sleep, because it helps you fall asleep faster.",
+            "answer": false,
+            "explain": "False. Alcohol's quick knockout is sedation, not sleep. As it is metabolized it fragments the back half of the night and suppresses REM — you wake less restored, not more."
+          },
+          {
+            "type": "concept",
+            "title": "Anchor the Clock",
+            "body": "The least glamorous advice has the best evidence: keep a consistent schedule, especially your wake time — weekends included. A regular wake time anchors your circadian clock, and pairing it with 10 to 30 minutes of bright morning light locks the anchor in. Regularity beats heroic weekend catch-up sleep, which mostly shifts your clock later and makes Monday morning worse.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "Build a Cave",
+            "body": "Your core body temperature must drop about one degree Celsius to initiate sleep, which is why a cool room — around 18 C, or 65 F — beats a warm one. Darkness matters because evening light delays melatonin and pushes your clock later. Cool, dark, and quiet is not wellness folklore; it works with the two levers your clock actually uses, temperature and light.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "After a badly slept week, what does the evidence say actually helps — and what backfires?",
+            "answer": "Helps: hold your normal wake time, get bright morning light, and if you must nap, keep it short and early in the day. Backfires: sleeping until noon on Saturday — it un-anchors your clock and sets up another bad week."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Van Dongen (2003): two weeks of six-hour nights impaired people like one to two nights of total deprivation — while they felt fine.",
+              "17 to 19 hours awake impairs you like a 0.05 percent blood alcohol level; 24 hours is roughly 0.10.",
+              "Caffeine's five-to-six-hour half-life means afternoon coffee still occupies your evening.",
+              "Alcohol sedates you, then fragments the night and suppresses REM.",
+              "The evidence-backed basics: a consistent wake time, morning light, and a cool, dark room."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Van Dongen's 2003 sleep-restriction study find?",
+            "back": "Fourteen days of six-hour nights impaired cognition as much as one to two nights of total deprivation — while subjects rated themselves only mildly sleepy."
+          },
+          {
+            "front": "How does staying awake compare to drinking?",
+            "back": "Dawson and Reid (1997): 17 to 19 hours awake matches a 0.05 percent blood alcohol level; about 24 hours matches 0.10 — over the legal driving limit."
+          },
+          {
+            "front": "Why does afternoon coffee disturb sleep?",
+            "back": "Caffeine's half-life is about five to six hours, so half of a 4 p.m. dose is still blocking adenosine — your sleep-pressure signal — at 10 p.m."
+          },
+          {
+            "front": "What does alcohol really do to a night of sleep?",
+            "back": "It sedates you to sleep faster, then fragments the second half of the night and suppresses REM, leaving sleep shallower and less restorative."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "story-of-evolution",
+    "title": "The Story of Evolution",
+    "tagline": "Natural selection: the mechanism, the proof, the myths",
+    "category": "Biology",
+    "description": "Follow Darwin from the Beagle to the modern evidence — fossils found on prediction, bacteria evolving in flasks, finches measured with calipers — and unlearn the misconceptions that make evolution the most misunderstood idea in science.",
+    "lessons": [
+      {
+        "id": "darwins-dangerous-idea",
+        "title": "Darwin's Dangerous Idea",
+        "summary": "From the Beagle's cargo of puzzles to the book that sold out in a day.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Voyage That Changed Biology",
+            "body": "In December 1831, 22-year-old Charles Darwin sailed from Plymouth aboard HMS Beagle as the captain's companion and ship's naturalist. A two-year survey stretched to five. The crates of specimens he shipped home would quietly detonate beneath every settled idea about where living things come from — though even Darwin didn't know it yet.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "A Cargo of Puzzles",
+            "body": "Darwin returned in 1836 with notebooks and crates: fossil glyptodonts — giant extinct cousins of the armadillos still trotting the same Argentine plains — and mockingbirds that differed island by island across the Galapagos. Why would a creator scatter near-identical species across neighboring places, each with its own local twist?",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "The Finch Myth, Corrected",
+            "body": "The famous story — Darwin sees the finches, has an epiphany on the spot — is wrong. Aboard the Beagle he mislabeled them as wrens, blackbirds, and grosbeaks, often without noting which island. Back in London in early 1837, ornithologist John Gould examined the skins and delivered the shock: they were all finches, a dozen distinct species. The insight came after the voyage.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where did Darwin's famous 'finch insight' actually happen?",
+            "choices": [
+              "Aboard the Beagle, the moment he saw their beaks in the Galapagos",
+              "In London in 1837, after ornithologist John Gould identified his specimens as a dozen distinct finch species",
+              "He never studied the finches — the story is pure legend"
+            ],
+            "answer": 1,
+            "explain": "Darwin had mislabeled the birds at sea. Gould's identification turned a jumble of skins into evidence that one ancestral species had split, island by island, into many."
+          },
+          {
+            "type": "concept",
+            "title": "The Mechanism in Three Moves",
+            "body": "In 1838, reading Malthus on population, Darwin saw the engine. One: individuals vary. Two: some of that variation is heritable, passed to offspring. Three: far more are born than can survive, so variants that help their owners reproduce become more common each generation. No plan, no foresight — just a filter, repeated, compounding over deep time into new species.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Natural selection only works on variation that is heritable — a trait an animal acquires during its life but cannot pass on gives selection nothing to build with.",
+            "answer": true,
+            "explain": "Heritability is one of the three essential ingredients, alongside variation itself and differential reproduction. Without inheritance, every generation would start from scratch."
+          },
+          {
+            "type": "concept",
+            "title": "The Letter From Ternate",
+            "body": "Darwin sat on the idea for some twenty years, stockpiling evidence. Then in June 1858 a package arrived from Alfred Russel Wallace, a collector working in the Malay Archipelago: an essay laying out, independently, nearly the same mechanism. Friends arranged a joint reading of both men's work at the Linnean Society on July 1, 1858 — and Darwin finally wrote at speed.",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Darwin had sketched the full theory by 1844. What finally forced his hand fourteen years later?",
+            "answer": "Wallace's 1858 letter from the Malay Archipelago, containing an independent version of natural selection. Rather than be scooped, Darwin agreed to a joint Linnean Society reading and compressed his planned big book into On the Origin of Species."
+          },
+          {
+            "type": "example",
+            "title": "1,250 Copies, Gone in a Day",
+            "body": "On the Origin of Species appeared on November 24, 1859, and booksellers snapped up the entire first printing of 1,250 copies on the first day. Wary of scandal, Darwin said almost nothing about humans — a single sentence promised that 'light will be thrown on the origin of man.' Readers drew the conclusion anyway.",
+            "art": "book"
+          },
+          {
+            "type": "quote",
+            "text": "From so simple a beginning endless forms most beautiful and most wonderful have been, and are being, evolved.",
+            "by": "Charles Darwin, On the Origin of Species (1859)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these would break natural selection if it were missing?",
+            "choices": [
+              "A goal for evolution to aim at",
+              "Heritable variation plus differences in reproductive success",
+              "A species' inner drive to improve itself",
+              "Millions of years — selection can't act within one generation"
+            ],
+            "answer": 1,
+            "explain": "The mechanism needs only variation, inheritance, and differential reproduction. It has no goal and no inner drive — and as you'll see next lesson, its effects can be measured within a single generation."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The Beagle voyage (1831-36) supplied the puzzles; the finch insight came in 1837, after John Gould's identifications in London.",
+              "Natural selection = variation + heritability + differential reproduction, compounding over generations.",
+              "Wallace's 1858 letter forced the issue; both men's papers were read at the Linnean Society that July.",
+              "On the Origin of Species (1859) sold out its 1,250-copy first printing on day one."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What three ingredients does natural selection require?",
+            "back": "Variation among individuals, heritability of that variation, and differential reproduction — some variants leave more surviving offspring than others."
+          },
+          {
+            "front": "Who identified Darwin's Galapagos birds as distinct finch species, and when?",
+            "back": "Ornithologist John Gould, in early 1837 — after the voyage. Darwin's insight crystallized back in London, not aboard the Beagle."
+          },
+          {
+            "front": "What forced Darwin to finally publish?",
+            "back": "Wallace's 1858 letter describing the same mechanism. Joint papers were read at the Linnean Society that July; Origin followed in November 1859."
+          },
+          {
+            "front": "When was On the Origin of Species published, and how did it sell?",
+            "back": "November 24, 1859. Booksellers took the entire first printing of 1,250 copies on the first day."
+          }
+        ]
+      },
+      {
+        "id": "the-evidence",
+        "title": "The Evidence",
+        "summary": "Fossils found on prediction, shared bones, and evolution caught in the act.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Theory That Sticks Its Neck Out",
+            "body": "Good science makes risky predictions. If evolution is true, transitional creatures must have existed, living bodies should carry the marks of shared ancestry, and in fast-breeding organisms we should catch selection in the act. Each claim could have been sunk by a single stubborn fact. This lesson shows what turned up instead.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Tiktaalik: Found on Purpose",
+            "body": "Rocks older than 380 million years hold only fish; by 365 million years ago, clearly limbed animals appear. So Neil Shubin's team went hunting for the in-between in 375-million-year-old Devonian rock on Ellesmere Island in the Canadian Arctic. In 2004, after years of fruitless searching, they found Tiktaalik: a flat-headed fish with a neck and wrist bones inside its fins.",
+            "art": "bridge"
+          },
+          {
+            "type": "example",
+            "title": "Archaeopteryx: Right on Time",
+            "body": "Two years after Origin, quarry workers in Bavaria's Solnhofen limestone uncovered Archaeopteryx (1861): a crow-sized creature from roughly 150 million years ago with flight feathers on a dinosaur's chassis — teeth, clawed fingers, a long bony tail. Critics had demanded intermediates between major groups. The rocks answered almost immediately.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What made the 2004 discovery of Tiktaalik so persuasive?",
+            "choices": [
+              "Its DNA was sequenced and matched modern fish",
+              "Researchers predicted its form and age in advance, then found it in rocks of exactly that age",
+              "It proved that individual fish can turn into land animals within one lifetime",
+              "It was the final missing link, completing the fossil record"
+            ],
+            "answer": 1,
+            "explain": "Shubin's team used the theory to say what should exist, how old it should be, and where to dig. The third choice is the individuals-evolve myth, and there is no single 'missing link' waiting to complete anything."
+          },
+          {
+            "type": "concept",
+            "title": "One Arm, Many Costumes",
+            "body": "Roll up your sleeve: one upper-arm bone, two forearm bones, a cluster of wrist bones, then digits. Now X-ray a whale's flipper, a bat's wing, or a horse's front leg — the same set, in the same order, stretched or fused for swimming, flying, galloping. No engineer designing each from scratch would do this. Descent from a common ancestor explains it instantly.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A whale's flipper contains the same basic set of bones as your arm — one upper bone, two lower bones, wrist bones, digits — reshaped for swimming.",
+            "answer": true,
+            "explain": "This deep structural sameness is called homology, and it only makes sense as shared inheritance: one ancestral blueprint wearing different costumes."
+          },
+          {
+            "type": "concept",
+            "title": "Twelve Flasks, 75,000 Generations",
+            "body": "In 1988, Richard Lenski seeded twelve flasks with identical E. coli and began daily transfers into fresh broth — over 75,000 generations so far, with samples frozen every 500 generations as a revivable fossil record. All twelve lines adapted. Then, around generation 31,500, one population began eating citrate in the presence of oxygen — a thing E. coli famously cannot do.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "One of Lenski's twelve populations crossed a line around generation 31,500. What did it do, and how do we know how it happened?",
+            "answer": "It evolved to metabolize citrate aerobically. Because every ancestor sits in the freezer, the team replayed evolution from earlier snapshots and showed the trait required a chain of prior 'potentiating' mutations — a new ability, documented step by step."
+          },
+          {
+            "type": "example",
+            "title": "Selection, Measured With Calipers",
+            "body": "On the Galapagos islet Daphne Major, Peter and Rosemary Grant have measured medium ground finches since 1973. The 1977 drought wiped out soft seeds; only deep-beaked birds could crack the tough ones left, and most of the rest starved. The survivors' offspring averaged measurably deeper beaks. Natural selection, read straight off a pair of calipers, in one generation.",
+            "art": "balance"
+          },
+          {
+            "type": "example",
+            "title": "Evolution at the Hospital Door",
+            "body": "Antibiotic resistance is selection at lethal speed: the drug kills susceptible bacteria, and the rare resistant mutants inherit the ward. In 2016, Michael Baym and colleagues at Harvard filmed E. coli crossing a giant plate laced with ever-stronger antibiotic bands — evolving resistance to a 1,000-fold dose in about eleven days.",
+            "art": "shield"
+          },
+          {
+            "type": "quote",
+            "text": "Nothing in biology makes sense except in the light of evolution.",
+            "by": "Theodosius Dobzhansky (1973)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "During the 1977 Daphne Major drought, what actually changed?",
+            "choices": [
+              "Individual finches grew deeper beaks to crack the hard seeds",
+              "Finches learned seed-cracking techniques and taught their chicks",
+              "The population's average beak depth shifted, because deep-beaked birds survived to breed",
+              "Nothing — a single generation is far too short for evolution"
+            ],
+            "answer": 2,
+            "explain": "No bird's beak changed. Selection filtered who survived to reproduce, so the next generation's average moved. Populations evolve; individuals don't — the theme of the next lesson."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Tiktaalik (2004): a fish-tetrapod intermediate predicted for 375-million-year rocks, then found there; Archaeopteryx (1861) answered critics two years after Origin.",
+              "Homologous bones — your arm, a whale's flipper, a bat's wing — reveal one inherited blueprint.",
+              "Lenski's E. coli evolved aerobic citrate use around generation 31,500; the Grants measured beak-depth shifts within one generation.",
+              "Antibiotic resistance is natural selection you can watch — and pay for — in real time."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why was Tiktaalik such powerful evidence?",
+            "back": "Shubin's team predicted a fish-tetrapod intermediate in 375-million-year rocks, searched the Canadian Arctic, and found it in 2004. Prediction, then discovery."
+          },
+          {
+            "front": "What do your arm, a whale's flipper, and a bat's wing share?",
+            "back": "The same bones in the same order — one upper bone, two lower, wrists, digits — reshaped for different jobs. Homology: one blueprint, common ancestry."
+          },
+          {
+            "front": "What happened around generation 31,500 of Lenski's E. coli experiment?",
+            "back": "One of the twelve populations evolved to metabolize citrate in oxygen — a brand-new trait, traced mutation by mutation through frozen ancestors."
+          },
+          {
+            "front": "What did the Grants measure after the 1977 Daphne Major drought?",
+            "back": "Only deep-beaked finches could crack the remaining hard seeds; the survivors' offspring averaged measurably deeper beaks. Selection in one generation."
+          }
+        ]
+      },
+      {
+        "id": "what-evolution-is-not",
+        "title": "What Evolution Is Not",
+        "summary": "The four misconceptions that make people misunderstand the theory.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Strawman Problem",
+            "body": "Most objections to evolution attack a version no biologist holds: a ladder of progress, striving individuals, brute strength winning, humans born from chimps. This lesson takes the four biggest misconceptions apart — because you can't really understand what the theory says until you know what it doesn't.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Burn the Ladder",
+            "body": "The 'march of progress' — fish to ape to man, left to right — is the most reproduced and most wrong image in biology. Evolution is a branching bush, not a staircase. Every living lineage, from E. coli to blue whales, has been evolving for the same roughly four billion years. Bacteria aren't 'less evolved'; they are staggeringly good at being bacteria.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Are today's bacteria 'less evolved' than today's humans?",
+            "choices": [
+              "Yes — they sit on the lower rungs of the evolutionary ladder",
+              "Yes — simpler always means more primitive",
+              "No — every living lineage has been evolving for the same four billion years or so"
+            ],
+            "answer": 2,
+            "explain": "There are no rungs. Bacteria have had exactly as long as we have, and selection has tuned them relentlessly for their own way of life, not ours."
+          },
+          {
+            "type": "concept",
+            "title": "Populations Evolve. You Don't.",
+            "body": "A giraffe that strains upward all its life doesn't bequeath a longer neck — that was Lamarck's idea, and it's wrong. Individuals live and die with the genes they have. Evolution is a change in a population's mix of heritable traits across generations, as some variants out-reproduce others. The finch never deepened its beak; the flock's average moved.",
+            "art": "network"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When a hospital superbug emerges, it's because individual bacteria toughened themselves against the drug during their lifetimes.",
+            "answer": false,
+            "explain": "The drug kills susceptible cells; rare mutants that already resist it inherit the ward. The population shifts. No individual 'toughened up' — selection filtered."
+          },
+          {
+            "type": "concept",
+            "title": "Whose Phrase Was It, Anyway?",
+            "body": "'Survival of the fittest' wasn't Darwin's line. Philosopher Herbert Spencer coined it in 1864 after reading Origin, and Darwin adopted it only later, at Wallace's urging. It misleads, because fitness in biology means one thing: leaving descendants. An oak, an orchid, or a small sneaky male cuttlefish can be fitter than any bodybuilder.",
+            "art": "coin"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In evolutionary biology, what does 'fitness' actually measure?",
+            "answer": "Reproductive success: how many offspring an organism leaves that survive to reproduce in turn. Strength, speed, or size count only insofar as they raise that number — often the 'fittest' organism is simply the most prolific."
+          },
+          {
+            "type": "concept",
+            "title": "Cousins, Not Ancestors",
+            "body": "Humans did not descend from chimpanzees. Both species descend from a common ancestor — neither chimp nor human — that lived roughly six to seven million years ago. 'If we came from chimps, why are there still chimps?' dissolves once you see it: it's like asking how your cousins can exist when you do. You share grandparents; neither of you descends from the other.",
+            "art": "fork"
+          },
+          {
+            "type": "quote",
+            "text": "It is absurd to talk of one animal being higher than another.",
+            "by": "Charles Darwin, Notebook B (1837)"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the actual relationship between humans and chimpanzees?",
+            "choices": [
+              "Humans evolved from chimpanzees, which then stopped evolving",
+              "Chimpanzees are slowly turning into humans",
+              "Both descend from a common ancestor that lived roughly 6-7 million years ago",
+              "They are unrelated — the resemblance is coincidence"
+            ],
+            "answer": 2,
+            "explain": "Chimps are cousins, not ancestors, and they've been evolving along their own branch exactly as long as we've been evolving along ours."
+          },
+          {
+            "type": "concept",
+            "title": "No Destination",
+            "body": "Selection has no foresight and no finish line. It can't plan for next century; it only ranks what reproduces best right now, in this environment — and environments keep changing. That's why 'more evolved' is meaningless and why perfection never arrives. Evolution is a restless editor: endlessly revising, never finished, aiming at nothing.",
+            "art": "compass"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Evolution is a branching bush, not a ladder — bacteria have been evolving as long as we have.",
+              "Individuals don't evolve; populations do, as heritable traits shift across generations.",
+              "'Survival of the fittest' is Herbert Spencer's 1864 phrase; fitness means reproductive success, not strength.",
+              "Humans and chimps are cousins sharing a common ancestor roughly 6-7 million years ago.",
+              "Selection has no goals — it only ranks what reproduces best here and now."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Are bacteria 'less evolved' than humans?",
+            "back": "No. Every living lineage has been evolving for the same ~4 billion years. Evolution is a branching bush, not a ladder with humans on the top rung."
+          },
+          {
+            "front": "Do individuals evolve?",
+            "back": "No — populations do. Individuals live and die with the genes they have; what changes is the mix of heritable traits across generations."
+          },
+          {
+            "front": "Who coined 'survival of the fittest', and what does fitness really mean?",
+            "back": "Herbert Spencer, in 1864 — not Darwin. Fitness means reproductive success: descendants left, not strength or speed."
+          },
+          {
+            "front": "Did humans descend from chimpanzees?",
+            "back": "No. Humans and chimps are cousins sharing a common ancestor roughly 6-7 million years ago; both lineages have kept evolving ever since."
+          }
+        ]
+      },
+      {
+        "id": "peacocks-lucy-and-us",
+        "title": "Peacocks, Lucy, and Us",
+        "summary": "Why beauty evolves, and how walking upright made us human.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Tail That Troubled Darwin",
+            "body": "A peacock's train is heavy, conspicuous, and a liability in flight — everything natural selection should punish. The problem gnawed at Darwin so badly he confessed it made him ill. His answer, worked out in The Descent of Man (1871), was a second engine of evolution: one that trades survival for something it values even more.",
+            "art": "eye"
+          },
+          {
+            "type": "quote",
+            "text": "The sight of a feather in a peacock's tail, whenever I gaze at it, makes me sick!",
+            "by": "Charles Darwin, letter to Asa Gray (1860)"
+          },
+          {
+            "type": "concept",
+            "title": "The Second Engine",
+            "body": "Sexual selection favors traits that win matings, even at a cost to survival. It runs on two tracks: combat between males — antlers, tusks, sheer bulk — and choice, typically by females, of the most impressive displays. A gorgeous tail that shortens your life but doubles your matings can still spread, because fitness is counted in descendants, not in years survived.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why hasn't natural selection eliminated the peacock's costly train?",
+            "choices": [
+              "The train actually makes peacocks faster in flight",
+              "Sexual selection — peahens' mating preferences can outweigh the survival cost",
+              "Peacocks need it to frighten off predators",
+              "It's a useless leftover that evolution is unable to remove"
+            ],
+            "answer": 1,
+            "explain": "A trait that wins matings can spread even while hurting survival, because descendants are the currency. The train pays its way in offspring."
+          },
+          {
+            "type": "concept",
+            "title": "Honest Because It Hurts",
+            "body": "Why should a female trust the ad? Amotz Zahavi's handicap principle (1975): costly ornaments are honest precisely because they're expensive — only a parasite-free, well-fed male can afford the full display. Alan Grafen showed in 1990 that the logic can work mathematically. Hold it lightly, though: how broadly it applies, and how much peahens even use the train, remain debated.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "According to the handicap principle, an ornament can be a trustworthy signal precisely because it is expensive — a low-quality male couldn't afford to fake it.",
+            "answer": true,
+            "explain": "That's Zahavi's logic, later formalized by Grafen. Treat it as a powerful idea with live debates about its scope, not a settled law of nature."
+          },
+          {
+            "type": "concept",
+            "title": "Darwin's Boldest Prediction",
+            "body": "The Descent of Man did more than decode peacocks: it placed humans inside evolution and made a testable call. Since our closest relatives — gorillas and chimpanzees — live in Africa, Darwin reasoned, our early ancestors probably lived there too. In 1871 he had almost no fossils to go on. Every hominin discovery since has landed on his side.",
+            "art": "map"
+          },
+          {
+            "type": "example",
+            "title": "Lucy Walked First",
+            "body": "In 1974 at Hadar, Ethiopia, Donald Johanson's team uncovered about 40 percent of a 3.2-million-year-old skeleton: Australopithecus afarensis, nicknamed Lucy after the Beatles song playing in camp. Her angled knee and basin-shaped pelvis say upright walker; her skull held a roughly 420 cc brain, scarcely larger than a chimp's. Walking came first. Big brains were latecomers.",
+            "art": "path"
+          },
+          {
+            "type": "reveal",
+            "prompt": "For a century, scholars assumed big brains led the way and upright walking followed. What did Lucy's skeleton show?",
+            "answer": "The reverse: a fully bipedal body carrying a chimp-sized brain, 3.2 million years ago. Walking upright preceded serious brain growth by more than a million years — anatomy settled a question philosophy had argued over for decades."
+          },
+          {
+            "type": "concept",
+            "title": "The Brain That Tripled",
+            "body": "After Lucy's kind, brains roughly tripled — from about 450 cc in australopiths to about 1,350 cc in you. Homo habilis, 'handy man,' was flaking stone tools by around 2.4 million years ago; Homo erectus, from about 1.9 million years ago, evolved long striding legs, tamed fire, and spread as far as Java. Expensive brains had begun paying rent in tools, cooking, and cooperation.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "Everyone Comes From Africa",
+            "body": "Homo sapiens fossils reach back about 300,000 years, to Jebel Irhoud in Morocco. Small groups left Africa early, but the ancestors of most people outside Africa departed in a main wave roughly 60-70,000 years ago — and met relatives on the road. Most non-Africans carry about 1-2 percent Neanderthal DNA: evolution's paper trail, still legible in your own genome.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In the human story, which order is correct?",
+            "choices": [
+              "Big brains evolved first; upright walking came later",
+              "Upright walking came first; brains expanded more than a million years later",
+              "Brains and bipedalism appeared together in a single leap",
+              "We inherited upright walking directly from chimpanzees"
+            ],
+            "answer": 1,
+            "explain": "Lucy is the proof: fully bipedal at 3.2 million years ago with a chimp-sized brain. The last choice repeats the cousins-not-ancestors error — we never descended from chimps."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Sexual selection (The Descent of Man, 1871) explains costly ornaments: mating success can outweigh survival cost.",
+              "Zahavi's handicap principle — honest because expensive — is influential, formalized by Grafen in 1990, and still debated.",
+              "Lucy (Australopithecus afarensis, 3.2 Mya) proves walking came first; brains roughly tripled afterward.",
+              "Homo sapiens arose in Africa ~300,000 years ago; the main dispersal ~60-70,000 years ago left Neanderthal DNA in most non-African genomes."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why did the peacock's tail make Darwin 'sick', and what solved the problem?",
+            "back": "It hurts survival. Sexual selection (Descent of Man, 1871): traits that win matings can spread even at a survival cost — descendants are the currency."
+          },
+          {
+            "front": "What is the handicap principle?",
+            "back": "Zahavi (1975): a costly ornament can be an honest ad of quality, since only a fit male can afford it. Formalized by Grafen (1990); scope still debated."
+          },
+          {
+            "front": "What did Lucy prove about human evolution?",
+            "back": "A. afarensis, 3.2 Mya: an upright walker with a chimp-sized brain. Bipedalism came first; brain expansion followed over a million years later."
+          },
+          {
+            "front": "When did our brains triple, and when did humans leave Africa?",
+            "back": "Brains roughly tripled over the last ~3 million years; Homo sapiens arose in Africa ~300,000 years ago, with the main dispersal ~60-70,000 years ago."
+          }
+        ]
+      }
+    ]
   }
 ];
