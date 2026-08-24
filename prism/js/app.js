@@ -110,14 +110,21 @@
     }
   }
 
-  /* Award XP with goal-crossing celebration and badge evaluation. */
+  /* Award XP with goal-crossing and level-up celebrations, then badge evaluation. */
   function gainXP(n, anchor) {
     var goal = Store.state.settings.dailyGoal;
     var before = Store.todayXP();
+    var lvlBefore = Store.level().n;
     Store.addXP(n);
     if (anchor !== undefined) xpFloat(n, anchor);
     if (before < goal && Store.todayXP() >= goal) {
       toast('<span class="toast-emoji">🔥</span><span><b>Daily goal hit</b><br>Streak secured: ' + Store.streak() + ' day' + (Store.streak() === 1 ? '' : 's') + '</span>');
+    } else {
+      var lvl = Store.level();
+      if (lvl.n > lvlBefore) {
+        SFX.badge();
+        toast('<span class="toast-emoji">⬆️</span><span><b>Level ' + lvl.n + ' — ' + esc(lvl.title) + '</b><br>' + (lvl.span - lvl.into) + ' XP to the next level</span>');
+      }
     }
     checkBadges();
   }
@@ -546,8 +553,12 @@
         '<div class="stat"><b>' + acc + '%</b><span>accuracy</span></div>' +
         '<div class="stat"><b>' + (added ? '+' + added : '✓') + '</b><span>' + (added ? 'review cards' : 'in your deck') + '</span></div>' +
       '</div>' +
-      (goalNow ? '<p class="goal-note">Daily goal hit — streak: ' + Store.streak() + ' 🔥</p>'
-               : '<p class="goal-note dim">' + (Store.state.settings.dailyGoal - Store.todayXP()) + ' XP to today’s goal</p>') +
+      (function () {
+        var pr = Store.courseProgress(session.course);
+        if (pr.done === pr.total) return '<p class="goal-note">🎉 Course complete: ' + esc(session.course.title) + '</p>';
+        return goalNow ? '<p class="goal-note">Daily goal hit — streak: ' + Store.streak() + ' 🔥</p>'
+                       : '<p class="goal-note dim">' + (Store.state.settings.dailyGoal - Store.todayXP()) + ' XP to today’s goal</p>';
+      })() +
       missesHTML() +
       '</div></div>' +
       '<div class="player-foot col">' +
