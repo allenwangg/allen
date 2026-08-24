@@ -970,6 +970,8 @@
     var parts = h.replace(/^#\//, '').split('/');
     onkey = null;
     window.scrollTo(0, 0);
+    var floats = document.querySelectorAll('.xp-float');
+    for (var fi = 0; fi < floats.length; fi++) floats[fi].remove();
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
     else if (parts[0] === 'review') startReview();
