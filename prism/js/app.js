@@ -60,12 +60,13 @@
 
   /* Six browsable themes over the library's finer-grained categories. */
   var THEMES = [
-    { id: 'mind', label: 'Mind', cats: ['Psychology', 'Neuroscience', 'Behavior', 'Well-being'] },
+    { id: 'mind', label: 'Mind', cats: ['Psychology', 'Neuroscience', 'Behavior', 'Well-being', 'Philosophy of Mind'] },
     { id: 'thinking', label: 'Thinking', cats: ['Critical Thinking', 'Game Theory', 'Mathematics'] },
     { id: 'science', label: 'Science', cats: ['Science', 'Biology', 'Earth Science', 'Space', 'Science History'] },
     { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
     { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science'] },
-    { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology'] }
+    { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology'] },
+    { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] }
   ];
   var activeTheme = 'all';   // resets each load; filtering is a browsing aid, not a setting
 
@@ -94,7 +95,10 @@
     'how-internet-works': 'network', 'genius-of-language': 'book', 'money-in-history': 'pyramid',
     'immune-system': 'shield', 'music-and-brain': 'bell', 'ethics-big-three': 'compass',
     'climate-system': 'mountain', 'art-of-storytelling': 'map', 'nutrition-without-nonsense': 'layers',
-    'stock-market-explained': 'ladder', 'turning-points': 'clock', 'space-exploration': 'eye'
+    'stock-market-explained': 'ladder', 'turning-points': 'clock', 'space-exploration': 'eye',
+    'how-to-live-forever': 'hourglass', 'how-ai-works': 'brain', 'genes-and-editing': 'key',
+    'attention-age': 'target', 'microbiome': 'seed', 'how-things-spread': 'network',
+    'consciousness': 'mirror', 'world-in-data': 'graph'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
