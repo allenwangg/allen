@@ -410,6 +410,46 @@ console.log('\n  mobile (390x844)');
   await page.context().close();
 }
 
+/* ================================================ subpath deploy ========= */
+// GitHub Pages serves a project site under /<repo>/, not at the root. A
+// relative-path bug is invisible locally and obvious the moment it ships.
+console.log('\n  subpath deploy (/allen/)');
+{
+  const PREFIX = '/allen';
+  const sub = http.createServer((req, res) => {
+    const url = decodeURIComponent(req.url.split('?')[0]);
+    if (!url.startsWith(PREFIX)) { res.writeHead(404).end('outside the project path'); return; }
+    let file = path.join(SITE, url.slice(PREFIX.length));
+    if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
+    if (!file.startsWith(SITE) || !fs.existsSync(file)) { res.writeHead(404).end('404'); return; }
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
+    res.end(fs.readFileSync(file));
+  });
+  await new Promise((r) => sub.listen(PORT + 1, r));
+
+  const page = await newPage(1280, 900);
+  const bad = [];
+  page.on('response', (r) => { if (r.status() >= 400) bad.push(`${r.status()} ${r.url()}`); });
+  page.on('requestfailed', (r) => bad.push(`${r.url()} — ${r.failure()?.errorText}`));
+
+  await page.goto(`http://localhost:${PORT + 1}/allen/`, { waitUntil: 'networkidle' });
+  check('landing page loads under a subpath',
+    (await page.locator('h1').textContent()).includes('markup'));
+  check('its stylesheet resolves', await page.evaluate(() =>
+    getComputedStyle(document.querySelector('.btn.primary')).backgroundColor !== 'rgba(0, 0, 0, 0)'));
+
+  await page.locator('a.btn.primary').first().click();
+  await page.waitForTimeout(900);
+  check('the CTA reaches the app under a subpath',
+    page.url().includes('/allen/quoteforge'), `(at ${page.url()})`);
+  check('the ES modules resolve and the app boots',
+    (await page.locator('.items tbody tr').count()) > 5);
+  check('nothing 404s under a subpath', bad.length === 0, bad.join(' | '));
+
+  await page.context().close();
+  sub.close();
+}
+
 /* ========================================================= report ======== */
 console.log(`\n  browser suite: ${pass} passed, ${fail} failed`);
 if (errors.length) {

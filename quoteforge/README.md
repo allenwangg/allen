@@ -9,6 +9,7 @@ Every number this app produces is derived from explicit cost so the two figures 
 never quietly drift apart.
 
 Open `index.html` in a browser. There is no build step, no dependencies, and no server.
+To publish it, see [DEPLOY.md](../DEPLOY.md) — GitHub Pages takes about two minutes.
 
 ---
 
@@ -85,7 +86,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-106 unit assertions with no test framework and no install step, plus 101 browser
+106 unit assertions with no test framework and no install step, plus 110 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, and `test/security.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
