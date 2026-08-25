@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   try {
     const bids = await fetchBids(key);
     res.setHeader("cache-control", "public, s-maxage=15, stale-while-revalidate=120");
-    return res.status(200).json({ configured: true, bids });
+    return res.status(200).json({ configured: true, partial: bids.partial === true, bids });
   } catch (err) {
     // Never break the board on a Stripe hiccup: the page keeps the bids it has.
     res.setHeader("cache-control", "no-store");
