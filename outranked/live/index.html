@@ -196,6 +196,9 @@ dialog{margin:auto;border:1px solid var(--rule);border-radius:10px;background:va
 .d-cpc{background:color-mix(in srgb,var(--bill) 9%,var(--panel));border:1px solid color-mix(in srgb,var(--bill) 40%,var(--line));border-radius:10px;padding:11px 14px;font-size:13.5px;color:var(--muted);margin-bottom:14px}
 .d-cpc b{color:var(--bill)}
 .row{cursor:pointer}
+.decree{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:15px;color:var(--foil);margin-top:6px}
+.decree::before{content:"📜 “"}
+.decree::after{content:"”"}
 dialog::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
 .mbody{padding:22px}
 .mbody h2{font-family:"Fraunces",Georgia,serif;font-size:22px;margin-bottom:4px}
@@ -319,6 +322,7 @@ const BODY_HTML = `
     <div class="field"><label for="fName">Name</label><input id="fName" maxlength="30" placeholder="Your product, handle, or ego" autocomplete="off"></div>
     <div class="field"><label for="fUrl">Link</label><input id="fUrl" maxlength="80" placeholder="https://yoursite.com" autocomplete="off"></div>
     <div class="field"><label for="fAmt">Bid amount (USD)</label><input id="fAmt" type="number" min="1" step="1" placeholder="5"><p class="hint" id="amtHint"></p></div>
+    <div class="field"><label for="fDecree">Victory decree <span style="font-weight:400;color:var(--dim)">— shown on the crown if this bid crowns you</span></label><input id="fDecree" maxlength="80" placeholder="e.g. Come and take it." autocomplete="off"></div>
     <div class="defend">
       <input type="checkbox" id="fDefend" aria-label="Enable auto-defend">
       <div class="t"><b>Auto-defend this rank</b><span>If outbid, the board re-bids for you up to your budget:</span>
@@ -432,6 +436,7 @@ function rollover(){
       king.lastWin = state.lastDay;
       feed('🏆 <b>' + esc(king.name) + '</b> won ' + state.lastDay + ' with <span class="amt">' + fmt(king.todayTotal) + '</span> — engraved forever');
     }
+    delete state.todayDecree;
   }
   state.lastDay = todayStr();
 }
@@ -493,12 +498,14 @@ function render(){
   if (isToday){
     const king = list[0];
     const finalHour = msToMidnightUTC() < 3600000;
+    if (king && state.todayDecree && state.todayDecree.id !== king.id) delete state.todayDecree;
     $("#crown").innerHTML = king
       ? '<div class="crown-card' + (finalHour ? ' final' : '') + '">' +
         '<div class="crown-emoji">' + (finalHour ? '⏳' : '🔥') + '</div>' +
         '<div><div class="crown-name">' + esc(king.name) + '</div>' +
         '<div class="crown-sub"><span class="final-tag">FINAL HOUR — </span>King of Today · resets in <b class="num">' + dur(msToMidnightUTC()) + '</b></div>' +
-        '<div class="crown-sub">Win the day and enter the Hall of Fame forever</div></div>' +
+        '<div class="crown-sub">Win the day and enter the Hall of Fame forever</div>' +
+        (state.todayDecree ? '<div class="decree">' + esc(state.todayDecree.text) + '</div>' : '') + '</div>' +
         '<div class="crown-right"><div class="crown-amt num">' + fmt(king.todayTotal) + '</div>' +
         '<button class="take" data-take="' + king.id + '">Take today\'s crown — ' + fmt(king.todayTotal+1) + '<small>everyone starts even again at midnight</small></button></div></div>'
       : '<div class="crown-card">' +
@@ -513,7 +520,8 @@ function render(){
         '<div class="crown-emoji">👑</div>' +
         '<div><div class="crown-name">' + esc(top.name) + '</div>' +
         '<div class="crown-sub">' + esc(top.url) + ' · reigning <b class="num" id="reignClock">' + dur(Date.now()-state.crownedAt) + '</b></div>' +
-        '<div class="crown-sub">Longest reign ever: <b>' + esc(state.longestReign.name) + '</b> — ' + dur(state.longestReign.ms) + '</div></div>' +
+        '<div class="crown-sub">Longest reign ever: <b>' + esc(state.longestReign.name) + '</b> — ' + dur(state.longestReign.ms) + '</div>' +
+        (state.decree ? '<div class="decree">' + esc(state.decree.text) + '</div>' : '') + '</div>' +
         '<div class="crown-right"><div class="crown-amt num">' + fmt(top.total) + '</div>' +
         '<button class="take" data-take="' + top.id + '">Dethrone — ' + fmt(top.total+1) + ' total<small>top-ups only pay the difference</small></button>' +
         '<a class="dare" id="dareLink" href="' + tweetIntent("Someone paid " + fmt(top.total) + " to be #1 on OUTRANKED. It costs exactly " + fmt(top.total+1) + " to take it from them: " + SHARE_URL) + '" target="_blank" rel="noopener">📣 dare someone to dethrone them</a></div></div>';
@@ -601,6 +609,7 @@ function checkCrown(){
     if (reignMs > state.longestReign.ms && old) state.longestReign = { name: old.name, ms: reignMs };
     if (old) feed('👑 <b>' + esc(top.name) + '</b> DETHRONED <b>' + esc(old.name) + '</b> after a ' + dur(reignMs) + ' reign');
     award(top, "⚔️ Kingslayer");
+    delete state.decree;
     state.crownId = top.id;
     state.crownedAt = Date.now();
   }
@@ -655,20 +664,23 @@ function placeBid(name, url, amount, defendBudget){
 }
 
 /* ---------- watch mode ---------- */
-let watchOn = false;
+let watchOn = false, wBoard = "today";
+setInterval(() => { if (watchOn){ wBoard = wBoard === "today" ? "all" : "today"; renderWatch(); } }, 8000);
 function renderWatch(){
   if (!watchOn) return;
   const kToday = sortedToday()[0];
   const kAll = sorted()[0];
   const finalHour = msToMidnightUTC() < 3600000;
-  const king = kToday || kAll;
-  const isT = !!kToday;
+  const isT = wBoard === "today" && !!kToday;
+  const king = isT ? kToday : kAll;
+  const decree = isT ? state.todayDecree : state.decree;
   $("#wCrown").innerHTML =
     '<div class="lbl">' + (isT ? (finalHour ? "⏳ FINAL HOUR — king of today" : "🔥 King of today") : "👑 All-time champion") + '</div>' +
     '<div class="nm">' + esc(king.name) + '</div>' +
     '<div class="amt">' + fmt(isT ? king.todayTotal : king.total) + '</div>' +
     '<div class="sub">' + (isT ? "board resets in " + dur(msToMidnightUTC()) : "reigning " + dur(Date.now()-state.crownedAt)) +
-    ' · dethroning costs ' + fmt((isT ? king.todayTotal : king.total) + 1) + '</div>';
+    ' · dethroning costs ' + fmt((isT ? king.todayTotal : king.total) + 1) + '</div>' +
+    (decree ? '<div class="decree">' + esc(decree.text) + '</div>' : '');
   const raised = state.entries.reduce((s,e)=>s+e.total,0);
   $("#wStats").innerHTML =
     '<div class="w-stat"><b>' + fmt(raised) + '</b><span>Total raised</span></div>' +
@@ -768,6 +780,19 @@ $("#bidForm").addEventListener("submit", e => {
   if (!amount || amount < 1){ err.textContent = "Bid at least $1."; err.classList.add("show"); return; }
   const res = placeBid(name, url, amount, defendBudget);
   if (!res.ok){ err.textContent = res.msg; err.classList.add("show"); return; }
+  const decree = $("#fDecree").value.trim().slice(0,80);
+  if (decree){
+    if (state.crownId === res.entry.id){
+      state.decree = { text: decree, by: res.entry.name, id: res.entry.id };
+      feed('📜 King <b>' + esc(res.entry.name) + '</b> decrees: <b>“' + esc(decree) + '”</b>');
+    }
+    const kT = sortedToday()[0];
+    if (kT && kT.id === res.entry.id){
+      state.todayDecree = { text: decree, by: res.entry.name, id: res.entry.id };
+      if (state.crownId !== res.entry.id) feed('📜 Today\'s king <b>' + esc(res.entry.name) + '</b> decrees: <b>“' + esc(decree) + '”</b>');
+    }
+  }
+  $("#fDecree").value = "";
   modal.close();
   const brag = tweetIntent("I just paid " + fmt(amount) + " to make " + res.entry.name + " #" + res.rank + " on OUTRANKED 👑 Outbid me if you dare: " + SHARE_URL);
   commit("💸 Paid " + fmt(amount) + " — " + res.entry.name + " is #" + res.rank + (defendBudget ? " · 🛡 defending with " + fmt(defendBudget) : ""), brag);

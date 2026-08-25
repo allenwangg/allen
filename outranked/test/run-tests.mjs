@@ -305,6 +305,32 @@ await test("clicking a row opens the dossier with cost-per-click math", async ()
   await page.click("[data-close]");
 });
 
+await test("crowning bid with a decree shows the taunt on the crown card", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+  await page.click("[data-open-bid]");
+  await page.fill("#fName", "Usurper");         // already king from the Kingslayer test
+  await page.fill("#fAmt", "10");
+  await page.fill("#fDecree", "Come and take it.");
+  await page.click("#payBtn");
+  await page.waitForTimeout(600);
+  const crown = await page.locator(".crown-card").textContent();
+  assert(crown.includes("Come and take it."), "decree missing from crown card");
+  const feedText = await page.locator("#tickerInner").textContent();
+  assert(feedText.includes("decrees"), "decree missing from feed");
+});
+
+await test("dossier offers an embeddable rank badge with copyable HTML", async () => {
+  await page.click('.row[data-id="e2"] .who');  // Lovable
+  await page.waitForTimeout(150);
+  const body = await page.locator("#detailBody").innerHTML();
+  assert(body.includes("OUT") && body.includes("Copy embed"), "badge block missing");
+  const embed = await page.evaluate(() => badgeEmbed(state.entries.find(e => e.name === "Lovable")));
+  assert(embed.includes("<img") && embed.includes("data:image/svg+xml") && embed.includes("OUTRANKED"),
+    `bad embed snippet: ${embed.slice(0, 120)}`);
+  await page.click("[data-close-detail]");
+});
+
 await test("Today board ranks by today's bids, independent of all-time totals", async () => {
   await page.click("#tabToday");
   await page.waitForTimeout(100);

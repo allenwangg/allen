@@ -50,6 +50,36 @@ export default {
       });
     }
 
+    // Live rank badge — embeddable proof of rank, and a backlink from every
+    // bidder's own site: <img src="https://<worker>/badge?name=Acme">
+    if (req.method === "GET" && url.pathname === "/badge") {
+      const name = (url.searchParams.get("name") || "").slice(0, 30);
+      const bids = JSON.parse((await env.BOARD.get("bids")) || "[]");
+      const totals = {};
+      for (const b of bids) {
+        const n = String(b.ref || "").split("_")[0] || "Anonymous";
+        totals[n] = (totals[n] || 0) + (+b.amount || 0);
+      }
+      const ranked = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+      const idx = ranked.findIndex(([n]) => n.toLowerCase() === name.toLowerCase());
+      const rank = idx === -1 ? "—" : "#" + (idx + 1);
+      const total = idx === -1 ? "$0" : "$" + ranked[idx][1].toLocaleString("en-US");
+      const escXml = s => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="210" height="36" role="img" aria-label="OUTRANKED rank badge">` +
+        `<rect width="210" height="36" rx="6" fill="#0e120f" stroke="#d9a944"/>` +
+        `<text x="12" y="23" font-family="Georgia,serif" font-weight="900" font-size="13" fill="#ecefe6">OUT<tspan fill="#d9a944">RANKED</tspan></text>` +
+        `<text x="112" y="23" font-family="monospace" font-size="13" fill="#d9a944" font-weight="700">${escXml(rank)}</text>` +
+        `<text x="198" y="23" text-anchor="end" font-family="monospace" font-size="13" fill="#63c08e" font-weight="700">${escXml(total)}</text></svg>`;
+      return new Response(svg, {
+        headers: {
+          "content-type": "image/svg+xml",
+          "access-control-allow-origin": "*",
+          "cache-control": "public, max-age=300",
+        },
+      });
+    }
+
     // Stripe webhook receiver.
     if (req.method === "POST" && url.pathname === "/stripe") {
       const body = await req.text();

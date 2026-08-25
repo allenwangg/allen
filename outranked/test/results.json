@@ -105,6 +105,14 @@
       "pass": true
     },
     {
+      "name": "crowning bid with a decree shows the taunt on the crown card",
+      "pass": true
+    },
+    {
+      "name": "dossier offers an embeddable rank badge with copyable HTML",
+      "pass": true
+    },
+    {
       "name": "Today board ranks by today's bids, independent of all-time totals",
       "pass": true
     },
@@ -114,13 +122,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 92,
-    "medianDOMContentLoadedms": 65.3,
-    "medianLoadms": 12610.3,
+    "medianFCPms": 148,
+    "medianDOMContentLoadedms": 106.5,
+    "medianLoadms": 12683.2,
     "totalRequests": 2
   },
   "weight": {
-    "htmlBytes": 65191,
-    "gzipBytes": 19900
+    "htmlBytes": 69300,
+    "gzipBytes": 21120
   }
 }

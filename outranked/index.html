@@ -131,6 +131,14 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 8
 .crown-amt{font-size:26px;font-weight:800;color:var(--gold);letter-spacing:-1px}
 .reign{font-size:13px;color:var(--muted)}
 .reign b{color:var(--text)}
+.decree{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:15px;color:var(--gold);margin-top:6px}
+.decree::before{content:"📜 “"}
+.decree::after{content:"”"}
+
+/* first-load choreography */
+.boot .row{animation:rowin .45s both;animation-delay:calc(var(--i,0)*45ms)}
+@keyframes rowin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.boot .row{animation:none}}
 
 /* tabs + toolbar */
 .tabs{display:flex;gap:8px;margin:2px 0 10px}
@@ -258,7 +266,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
 /* sticky mobile CTA */
 .sticky-cta{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:50}
 .sticky-cta button{width:100%;background:var(--gold);color:#181203;font-weight:800;font-size:16px;padding:14px;border-radius:12px;box-shadow:var(--shadow)}
-@media (max-width:640px){.sticky-cta{display:block}body{padding-bottom:70px}}
+@media (max-width:640px){.sticky-cta{display:block}body{padding-bottom:70px}.toast{bottom:78px}.sharebar{bottom:132px}}
 
 /* demo ribbon + share bar + confetti */
 .ribbon{display:none;background:color-mix(in srgb,var(--gold) 14%,var(--panel));border:1px solid var(--gold);border-radius:10px;padding:9px 14px;font-size:13px;color:var(--muted);margin:0 0 4px;text-align:center}
@@ -377,6 +385,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
       <label for="fAmt">Bid amount (USD)</label>
       <input id="fAmt" type="number" min="1" step="1" placeholder="5">
       <p class="hint" id="amtHint"></p>
+    </div>
+    <div class="field">
+      <label for="fDecree">Victory decree <span style="font-weight:400;color:var(--dim)">— shown on the crown if this bid crowns you</span></label>
+      <input id="fDecree" maxlength="80" placeholder="e.g. Come and take it." autocomplete="off">
     </div>
     <div class="defend">
       <input type="checkbox" id="fDefend">
@@ -515,6 +527,7 @@ function rollover(){
       king.lastWin = state.lastDay;
       feed(`🏆 <b>${esc(king.name)}</b> won ${state.lastDay} with <span class="amt">${fmt(king.todayTotal)}</span> — engraved forever`);
     }
+    delete state.todayDecree;     /* decrees reset with the board */
   }
   state.lastDay = todayStr();
 }
@@ -579,6 +592,7 @@ function render(){
     const king = list[0];
     const finalHour = msToMidnightUTC() < 3600000;
     if (king){
+      if (state.todayDecree && state.todayDecree.id !== king.id) delete state.todayDecree;
       $("#crown").innerHTML = `
       <div class="crown-card${finalHour?" final":""}">
         <div class="crown-emoji">${finalHour?"⏳":"🔥"}</div>
@@ -586,6 +600,7 @@ function render(){
           <div class="crown-name">${esc(king.name)}</div>
           <div class="crown-sub"><span class="final-tag">FINAL HOUR — </span>King of Today · resets in <b class="num">${dur(msToMidnightUTC())}</b></div>
           <div class="crown-sub">Win the day and enter the Hall of Fame forever</div>
+          ${state.todayDecree ? `<div class="decree">${esc(state.todayDecree.text)}</div>` : ""}
         </div>
         <div class="crown-right">
           <div class="crown-amt num">${fmt(king.todayTotal)}</div>
@@ -613,6 +628,7 @@ function render(){
         <div class="crown-name">${esc(top.name)}</div>
         <div class="crown-sub">${esc(top.url)} · reigning <b class="num" id="reignClock">${dur(reignMs)}</b></div>
         <div class="crown-sub">Longest reign ever: <b>${esc(state.longestReign.name)}</b> — ${dur(state.longestReign.ms)}</div>
+        ${state.decree ? `<div class="decree">${esc(state.decree.text)}</div>` : ""}
       </div>
       <div class="crown-right">
         <div class="crown-amt num">${fmt(top.total)}</div>
@@ -642,7 +658,7 @@ function render(){
     const titles = (e.titles||[]).slice(0,2).map(t=>`<span class="badge title">${t}</span>`).join("");
     const more = (e.titles||[]).length>2 ? `<span class="badge title">+${e.titles.length-2}</span>` : "";
     return `
-    <div class="row" data-id="${e.id}" style="view-transition-name:r-${e.id}">
+    <div class="row" data-id="${e.id}" style="view-transition-name:r-${e.id};--i:${i}">
       <div class="rank num">${rank}${mv}</div>
       <div class="who" style="display:flex;gap:10px;align-items:center;min-width:0">
         ${medallion(e)}
@@ -719,7 +735,7 @@ const statPrev = {};
 function setStat(id, value, fmtFn){
   const el = document.getElementById(id);
   if (!el) return;
-  const from = statPrev[id] ?? value;
+  const from = statPrev[id] ?? Math.round(value * 0.6);   /* first paint counts up */
   statPrev[id] = value;
   if (from === value || matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent = fmtFn(value); return; }
   const t0 = performance.now(), dur = 550;
@@ -813,6 +829,7 @@ function checkCrown(mover){
     if (reignMs > state.longestReign.ms && old) state.longestReign = {name:old.name, ms:reignMs};
     if (old) feed(`👑 <b>${esc(top.name)}</b> DETHRONED <b>${esc(old.name)}</b> after a ${dur(reignMs)} reign`);
     award(top, "⚔️ Kingslayer");
+    delete state.decree;          /* the old king's words die with the reign */
     state.crownId = top.id; state.crownedAt = Date.now();
   }
 }
@@ -927,20 +944,23 @@ function flash(id){
 }
 
 /* ============ watch mode: the broadcast view ============ */
-let watchOn = false;
+let watchOn = false, wBoard = "today";
+setInterval(()=>{ if (watchOn){ wBoard = wBoard === "today" ? "all" : "today"; renderWatch(); } }, 8000);
 function renderWatch(){
   if (!watchOn) return;
   const kToday = sortedToday()[0];
   const kAll = sorted()[0];
   const finalHour = msToMidnightUTC() < 3600000;
-  const king = kToday || kAll;
-  const isToday2 = !!kToday;
+  const isToday2 = wBoard === "today" && !!kToday;
+  const king = isToday2 ? kToday : kAll;
+  const decree = isToday2 ? state.todayDecree : state.decree;
   $("#wCrown").innerHTML =
     `<div class="lbl">${isToday2 ? (finalHour ? "⏳ FINAL HOUR — king of today" : "🔥 King of today") : "👑 All-time champion"}</div>` +
     `<div class="nm">${esc(king.name)}</div>` +
     `<div class="amt num">${fmt(isToday2 ? king.todayTotal : king.total)}</div>` +
     `<div class="sub">${isToday2 ? "board resets in " + dur(msToMidnightUTC()) : "reigning " + dur(Date.now()-state.crownedAt)}` +
-    ` · dethroning costs ${fmt((isToday2 ? king.todayTotal : king.total) + 1)}</div>`;
+    ` · dethroning costs ${fmt((isToday2 ? king.todayTotal : king.total) + 1)}</div>` +
+    (decree ? `<div class="decree">${esc(decree.text)}</div>` : "");
   const raised = state.entries.reduce((s,e)=>s+e.total,0);
   $("#wStats").innerHTML =
     `<div class="w-stat"><b class="num">${fmt(raised)}</b><span>Total raised</span></div>` +
@@ -969,6 +989,23 @@ function sparkBig(hist){
   const end = pts[pts.length-1];
   return `<svg class="d-spark" viewBox="0 0 300 64" aria-hidden="true"><polygon class="fill" points="${line} 298,64 2,64"/><polyline points="${line}"/><circle class="dot" cx="${end[0].toFixed(1)}" cy="${end[1].toFixed(1)}" r="3"/></svg>`;
 }
+/* embeddable rank badge: every bidder becomes a backlink */
+function badgeSVG(e, rank){
+  const w = 210;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="36" role="img" aria-label="OUTRANKED rank badge">` +
+    `<rect width="${w}" height="36" rx="6" fill="#0e120f" stroke="#d9a944"/>` +
+    `<text x="12" y="23" font-family="Georgia,serif" font-weight="900" font-size="13" fill="#ecefe6">OUT<tspan fill="#d9a944">RANKED</tspan></text>` +
+    `<text x="112" y="23" font-family="monospace" font-size="13" fill="#d9a944" font-weight="700">#${rank}</text>` +
+    `<text x="${w-12}" y="23" text-anchor="end" font-family="monospace" font-size="13" fill="#63c08e" font-weight="700">${fmt(e.total)}</text></svg>`;
+}
+function badgeEmbed(e){
+  const rank = rankMap()[e.id];
+  const src = CONFIG.BOARD_FEED_URL
+    ? CONFIG.BOARD_FEED_URL.replace(/\/board\/?$/, "") + "/badge?name=" + encodeURIComponent(e.name)
+    : "data:image/svg+xml," + encodeURIComponent(badgeSVG(e, rank));
+  return `<a href="${CONFIG.SITE_URL}"><img src="${src}" alt="${e.name} is #${rank} on OUTRANKED" height="36"></a>`;
+}
+
 function openDetail(id){
   const e = state.entries.find(x=>x.id===id);
   if (!e) return;
@@ -1001,6 +1038,11 @@ function openDetail(id){
       <div class="d-cell"><b class="num">${cpc ? "$"+cpc.toFixed(2) : "—"}</b><span>Cost / click</span></div>
     </div>
     ${cpc ? `<div class="d-cpc">This spot has delivered clicks at <b>$${cpc.toFixed(2)} each</b> — typical search-ad CPCs for tech keywords run $2 and up. Rank is an ad that everyone screenshots.</div>` : ""}
+    <div class="d-cpc" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="display:inline-flex">${badgeSVG(e, rank)}</span>
+      <span style="flex:1;min-width:140px">Put your live rank on your own site.</span>
+      <button type="button" class="copybadge ghost" style="padding:8px 12px;font-size:12px" data-badge="${e.id}">Copy embed</button>
+    </div>
     <div class="mrow">
       <button type="button" class="ghost" data-close-detail>Close</button>
       <a class="ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener"
@@ -1016,6 +1058,14 @@ document.addEventListener("click", e=>{
   if (take) return openBid(take.dataset.take);
   const boost = e.target.closest("[data-boost]");
   if (boost){ detailModal.close(); return openBid(boost.dataset.boost); }
+  const bdg = e.target.closest("[data-badge]");
+  if (bdg){
+    const en = state.entries.find(x=>x.id===bdg.dataset.badge);
+    if (en) navigator.clipboard.writeText(badgeEmbed(en)).then(
+      ()=>{ bdg.textContent = "Copied!"; setTimeout(()=>bdg.textContent="Copy embed", 1800); },
+      ()=>{ bdg.textContent = "Copy failed"; });
+    return;
+  }
   if (e.target.closest("[data-close-detail]")) return detailModal.close();
   if (e.target.closest("[data-open-bid]")) return openBid(null);
   if (e.target.closest("[data-close]")) return modal.close();
@@ -1052,6 +1102,19 @@ $("#bidForm").addEventListener("submit", e=>{
   const res = placeBid({name,url,amount,defendBudget});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
   try { localStorage.setItem("outranked_name", name.trim()); } catch(e){}
+  const decree = $("#fDecree").value.trim().slice(0,80);
+  if (decree){
+    if (state.crownId === res.entry.id){
+      state.decree = { text: decree, by: res.entry.name, id: res.entry.id };
+      feed(`📜 King <b>${esc(res.entry.name)}</b> decrees: <b>“${esc(decree)}”</b>`);
+    }
+    const kT = sortedToday()[0];
+    if (kT && kT.id === res.entry.id){
+      state.todayDecree = { text: decree, by: res.entry.name, id: res.entry.id };
+      if (state.crownId !== res.entry.id) feed(`📜 Today's king <b>${esc(res.entry.name)}</b> decrees: <b>“${esc(decree)}”</b>`);
+    }
+  }
+  $("#fDecree").value = "";
   modal.close();
   if (CONFIG.STRIPE_PAYMENT_LINK){
     /* Real money: open Stripe checkout with the bid encoded in
@@ -1229,7 +1292,9 @@ function watching(){
   $("#statWatching").innerHTML = `<span class="live-dot"></span>${(base+Math.floor(Math.random()*90)).toLocaleString()}`;
 }
 
+document.body.classList.add("boot");
 render(); watching();
+setTimeout(()=>document.body.classList.remove("boot"), 1400);
 setInterval(()=>{ const el=$("#reignClock"); if(el) el.textContent = dur(Date.now()-state.crownedAt); }, 30000);
 setInterval(watching, 5000);
 setInterval(simulate, 4200);
