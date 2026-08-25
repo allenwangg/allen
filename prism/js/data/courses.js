@@ -24636,5 +24636,453 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "geology",
+    "title": "The Restless Earth",
+    "tagline": "Deep time, moving plates, a planet still running.",
+    "category": "Earth Science",
+    "description": "The ground under you is the slowest and largest machine you will ever stand on. Learn to read a landscape as a record of events rather than a backdrop.",
+    "lessons": [
+      {
+        "id": "deep-time",
+        "title": "Deep Time",
+        "summary": "How we learned the Earth is billions of years old, and why that number is so hard to feel.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Cliff That Broke Time",
+            "art": "hourglass",
+            "body": "In 1788 James Hutton sailed to Siccar Point on the Scottish coast and showed two friends a cliff where vertical rock layers sit beneath horizontal ones. Making that junction required an ocean of time. One companion wrote that the mind grew giddy looking so far into the abyss."
+          },
+          {
+            "type": "concept",
+            "title": "Younger Sits On Older",
+            "art": "layers",
+            "body": "Nicolas Steno set out the rule in the 1660s: in undisturbed layers, each one is younger than the layer beneath it. It sounds obvious. It is also the first tool that let anyone read a cliff face as a sequence of events rather than a wall of stone."
+          },
+          {
+            "type": "mcq",
+            "prompt": "You find a fossil in a rock layer sandwiched between two others. What does superposition alone tell you?",
+            "choices": [
+              "Its age relative to the layers above and below, but not in years",
+              "Its age in years, once you count the layers",
+              "Nothing, because layers can form in any order"
+            ],
+            "answer": 0,
+            "explain": "Superposition gives order, not dates. Turning that order into years took radioactivity, discovered more than two centuries after Steno."
+          },
+          {
+            "type": "concept",
+            "title": "Clocks Inside the Rock",
+            "art": "clock",
+            "body": "Some elements decay at rates nothing on Earth can alter. Measure how much of a parent element remains against the daughter it becomes, and the ratio reports elapsed time. Different pairs cover different spans, from thousands of years to billions."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Carbon dating is how we know the Earth is billions of years old.",
+            "answer": false,
+            "explain": "Carbon-14 has a half-life of about 5,730 years, so it is useless beyond roughly 50,000. Earth's age comes from uranium-lead dating, which runs on half-lives of hundreds of millions to billions of years."
+          },
+          {
+            "type": "example",
+            "title": "Weighing the Planet's Birthday",
+            "art": "graph",
+            "body": "In 1956 Clair Patterson dated fragments of the Canyon Diablo meteorite, reasoning that meteorites formed alongside Earth from the same cloud of material. He got 4.55 billion years. The modern figure, about 4.54 billion, has barely moved since."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Compress all 4.54 billion years into one calendar year, with Earth forming at midnight on 1 January. When do humans appear?",
+            "answer": "In the last half hour of 31 December. The dinosaurs die around 26 December. All of recorded history fits into the final thirty seconds before midnight."
+          },
+          {
+            "type": "concept",
+            "title": "The Gap You Can Touch",
+            "art": "mountain",
+            "body": "Hutton's cliff shows an unconformity, a surface where the record simply stops. Layers formed, tilted, eroded away for millions of years, then new layers settled on top. The missing time is invisible, and it is usually longer than the rock that survives."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why is deep time so much harder to grasp than deep space?",
+            "choices": [
+              "Nothing in ordinary life gives you a comparison for a million years",
+              "Because geologists disagree about the numbers",
+              "Because the dates are estimates with wide error bars"
+            ],
+            "answer": 0,
+            "explain": "You can at least see a distant star. You cannot see a million years, and no human experience scales to it, so the mind quietly rounds it to 'a long time'."
+          },
+          {
+            "type": "quote",
+            "text": "We find no vestige of a beginning, no prospect of an end.",
+            "by": "James Hutton, Theory of the Earth, 1788"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Most of Earth's history happened before anything with a backbone existed.",
+            "answer": true,
+            "explain": "Life spent roughly its first three billion years microscopic. Vertebrates arrive around 500 million years ago, in the planet's last ninth."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Superposition orders layers; radioactive decay converts that order into years.",
+              "Clair Patterson dated meteorites in 1956 and got about 4.55 billion years; today's figure is 4.54 billion.",
+              "Carbon dating reaches only about 50,000 years, so it plays no part in dating the planet.",
+              "An unconformity is a gap in the record, and the missing time usually exceeds the rock that remains.",
+              "Scaled to one year, humans arrive in the final half hour of 31 December."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the principle of superposition tell you?",
+            "back": "In undisturbed layers, each layer is younger than the one beneath it. It gives order, not dates in years."
+          },
+          {
+            "front": "How was Earth's age of about 4.54 billion years established?",
+            "back": "Clair Patterson dated meteorite fragments in 1956 using uranium-lead decay, reasoning meteorites formed alongside Earth."
+          },
+          {
+            "front": "Why can't carbon dating be used on ancient rocks?",
+            "back": "Carbon-14's half-life is about 5,730 years, so it is exhausted beyond roughly 50,000 years."
+          },
+          {
+            "front": "What is an unconformity?",
+            "back": "A gap in the rock record where layers eroded away before new ones formed. The missing time often exceeds the surviving rock."
+          }
+        ]
+      },
+      {
+        "id": "moving-plates",
+        "title": "Moving Plates",
+        "summary": "Why a rejected 1912 idea turned out to be the framework the whole science needed.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Idea Nobody Wanted",
+            "art": "map",
+            "body": "In 1912 Alfred Wegener pointed out that South America and Africa fit together, that matching fossils sit on both coasts, and that identical rock sequences continue across the ocean. Geologists agreed the evidence was odd and rejected his explanation anyway."
+          },
+          {
+            "type": "concept",
+            "title": "The Missing Engine",
+            "art": "puzzle",
+            "body": "The objection was fair. Wegener could not say what moved continents, and his suggested forces were far too weak to plough granite through ocean floor. Good evidence with no mechanism rarely wins. It waited half a century for one."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did geologists reject continental drift despite the matching coastlines and fossils?",
+            "choices": [
+              "Wegener had no plausible mechanism for moving continents",
+              "The fossil matches turned out to be mistaken",
+              "Nobody had noticed the coastlines fit"
+            ],
+            "answer": 0,
+            "explain": "The data were sound; the proposed force was not. Science treats an unexplained pattern differently from an explained one, which is usually healthy and occasionally slow."
+          },
+          {
+            "type": "concept",
+            "title": "The Seafloor Is a Conveyor",
+            "art": "wave",
+            "body": "Harry Hess proposed in the early 1960s that new ocean floor forms at mid-ocean ridges, spreads outward, and eventually sinks back into the mantle at deep trenches. Continents do not plough through the seafloor. They ride on it."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Some of the rock beneath the deep ocean is as old as the oldest continental rock.",
+            "answer": false,
+            "explain": "Ocean floor is recycled. Nothing much older than 200 million years survives, while continental cores exceed 4 billion. The oceans are the young part of the planet's surface."
+          },
+          {
+            "type": "example",
+            "title": "Stripes That Settled It",
+            "art": "graph",
+            "body": "Earth's magnetic field flips at irregular intervals, and cooling lava locks in whichever direction held at the time. In 1963 Fred Vine and Drummond Matthews reported that these magnetic bands run in mirror-image pairs on either side of a ridge, exactly as a spreading conveyor would print them."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why were the symmetrical magnetic stripes such decisive evidence?",
+            "answer": "They are a recording. The seafloor wrote down the field's flips as it formed, and the identical sequence appearing on both sides of a ridge is very hard to explain by anything except spreading outward from it."
+          },
+          {
+            "type": "concept",
+            "title": "Three Ways Plates Meet",
+            "art": "bridge",
+            "body": "Plates pull apart at divergent boundaries, where new crust forms, as along the Mid-Atlantic Ridge through Iceland. They collide at convergent boundaries, raising the Andes and the Himalaya. They grind past each other at transform boundaries, such as California's San Andreas fault."
+          },
+          {
+            "type": "mcq",
+            "prompt": "India is still pushing north into Asia. What does that tell you about the Himalaya?",
+            "choices": [
+              "The range is still being built and is still rising",
+              "The range finished forming and is only eroding now",
+              "Collision stops once mountains reach a certain height"
+            ],
+            "answer": 0,
+            "explain": "India converges by roughly five centimetres a year and the peaks keep rising, though erosion removes much of the gain. The Himalaya is an ongoing event, not a finished monument."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Plate tectonics explains earthquakes, volcanoes and mountain ranges within a single framework.",
+            "answer": true,
+            "explain": "That unifying reach is why it took over so completely after 1965. Before it, each phenomenon had its own local story."
+          },
+          {
+            "type": "concept",
+            "title": "What Drives It",
+            "art": "orbit",
+            "body": "Heat escaping the interior drives slow convection in the mantle, but the largest single force is simpler. At a trench, the cold dense edge of a plate sinks and pulls the rest of the plate along behind it. Gravity does much of the work."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Wegener had the pattern in 1912 but no mechanism, so the idea stalled for fifty years.",
+              "Seafloor spreading supplied the mechanism: crust forms at ridges and returns to the mantle at trenches.",
+              "Vine and Matthews's mirrored magnetic stripes, published in 1963, made the case decisive.",
+              "Boundaries come in three kinds: divergent, convergent and transform.",
+              "Ocean floor is younger than about 200 million years; continental cores are billions of years old."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why was Wegener's continental drift rejected in 1912?",
+            "back": "His evidence was good but he had no plausible mechanism, and his proposed forces were far too weak to move continents."
+          },
+          {
+            "front": "What did Vine and Matthews find in 1963?",
+            "back": "Magnetic stripes in the seafloor running in mirror-image pairs either side of mid-ocean ridges, recording field reversals as the floor spread."
+          },
+          {
+            "front": "Why is ocean floor never much older than 200 million years?",
+            "back": "It is continuously recycled: made at ridges and destroyed at trenches, unlike continental rock which can persist for billions of years."
+          },
+          {
+            "front": "Name the three plate boundary types with an example of each.",
+            "back": "Divergent (Mid-Atlantic Ridge), convergent (the Himalaya), transform (the San Andreas fault)."
+          }
+        ]
+      },
+      {
+        "id": "how-ground-moves",
+        "title": "How the Ground Moves",
+        "summary": "Stored strain, sudden slip, and why a scale everyone quotes is widely misunderstood.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Stuck, Then Not",
+            "art": "anchor",
+            "body": "Two plates grinding past each other do not slide smoothly. Friction locks them while the rock behind keeps moving, bending and storing strain like a drawn bow. When friction finally loses, the rock snaps back to its unstrained shape in seconds."
+          },
+          {
+            "type": "concept",
+            "title": "Elastic Rebound",
+            "art": "wave",
+            "body": "Harry Fielding Reid worked this out after San Francisco's 1906 earthquake, comparing survey lines measured before and after. The ground either side of the fault had bent for decades, then released. The energy of that release radiates outward as seismic waves."
+          },
+          {
+            "type": "mcq",
+            "prompt": "A fault in an active region has not moved in a long time. What does that most likely mean?",
+            "choices": [
+              "Strain has been accumulating and has not yet been released",
+              "The fault has become permanently locked and is now safe",
+              "The plates on either side have stopped moving"
+            ],
+            "answer": 0,
+            "explain": "Quiet on an active fault is loading, not safety. The plates keep moving whether or not the fault does, and the strain has to go somewhere eventually."
+          },
+          {
+            "type": "concept",
+            "title": "A Scale That Multiplies",
+            "art": "graph",
+            "body": "Moment magnitude is logarithmic. One whole step up means about ten times the ground shaking and roughly 32 times the energy released. A magnitude 7 is not slightly worse than a 6. It releases about as much energy as 32 of them."
+          },
+          {
+            "type": "truefalse",
+            "statement": "The magnitude scale runs from 1 to 10, with 10 as the maximum possible.",
+            "answer": false,
+            "explain": "The scale has no upper bound. What limits real events is rock strength and fault length: you need an enormous fault to host an enormous rupture, which is why the largest recorded events occur at subduction zones."
+          },
+          {
+            "type": "reveal",
+            "prompt": "A magnitude 8 is two whole steps above a magnitude 6. How much more energy is that?",
+            "answer": "About a thousand times. Each step multiplies energy by roughly 32, so two steps is 32 times 32. A small numerical difference in a news report is never a small difference on the ground."
+          },
+          {
+            "type": "concept",
+            "title": "Forecast, Not Prediction",
+            "art": "target",
+            "body": "Scientists can state that a region has a given probability of a large event over the next few decades, using fault length, slip rate and history. Naming the day remains out of reach, because nothing observable reliably announces which locked patch will fail next."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which statement matches what seismology can actually deliver today?",
+            "choices": [
+              "Probabilities over decades for a region, plus seconds of warning once shaking starts",
+              "The date and magnitude of the next major event in a region",
+              "Neither forecasts nor warnings are currently possible"
+            ],
+            "answer": 0,
+            "explain": "Early-warning systems detect the first fast waves and race a message ahead of the slower, damaging ones. That is detection, not prediction, and it buys seconds."
+          },
+          {
+            "type": "concept",
+            "title": "Thick Magma, Thin Magma",
+            "art": "flame",
+            "body": "Silica makes magma sticky. Sticky magma traps gas until pressure wins, which is why silica-rich volcanoes erupt explosively. Runny basaltic magma lets gas escape steadily, producing the flowing lava of Hawaii that people can sometimes stand near and watch."
+          },
+          {
+            "type": "truefalse",
+            "statement": "The Pacific rim concentrates so much volcanic and seismic activity because of the plate boundaries ringing it.",
+            "answer": true,
+            "explain": "Subduction zones encircle much of the Pacific, and subduction generates both deep earthquakes and the water-rich magmas that build explosive volcanoes."
+          },
+          {
+            "type": "example",
+            "title": "Reading a Volcano's Mood",
+            "art": "bell",
+            "body": "Before an eruption, magma moving upward tends to swell the ground, shift the pattern of small quakes, and change the gases escaping from vents. Monitoring all three gives useful days-to-weeks warning, which is why volcano forecasting outperforms earthquake forecasting."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Faults lock, store strain for years, then release it suddenly. That release is the earthquake.",
+              "Magnitude is logarithmic: one step is about 10 times the shaking and 32 times the energy.",
+              "The scale has no upper limit; fault size limits real events.",
+              "Regional probabilities are possible; naming the day is not, though early warning buys seconds.",
+              "Silica-rich magma traps gas and erupts explosively; basaltic magma flows."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is elastic rebound?",
+            "back": "Rock either side of a locked fault bends and stores strain for years, then snaps back when friction gives way. That release is the earthquake."
+          },
+          {
+            "front": "What does one whole step on the magnitude scale mean?",
+            "back": "About ten times the ground shaking and roughly 32 times the energy released."
+          },
+          {
+            "front": "Does the magnitude scale stop at 10?",
+            "back": "No, it has no upper bound. Real events are limited by fault length and rock strength, which is why the largest occur at subduction zones."
+          },
+          {
+            "front": "Why does silica-rich magma erupt explosively?",
+            "back": "Silica makes magma viscous, trapping gas until pressure overcomes the rock. Runny basaltic magma lets gas escape steadily instead."
+          }
+        ]
+      },
+      {
+        "id": "rock-cycle",
+        "title": "The Rock Cycle",
+        "summary": "Three kinds of rock, the routes between them, and why your city is where it is.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Nothing Is Permanent",
+            "art": "layers",
+            "body": "A granite peak erodes to sand, the sand becomes sandstone on a seabed, burial and heat turn that into quartzite, and deeper still it melts and starts again as magma. Rock is not a category. It is a stage in a loop with no beginning."
+          },
+          {
+            "type": "concept",
+            "title": "Three Families",
+            "art": "flame",
+            "body": "Igneous rock cools from melt, at the surface or at depth. Sedimentary rock is compacted debris or precipitated minerals, and it is where fossils live. Metamorphic rock is any rock rebuilt by heat and pressure without melting, its minerals regrown into new alignments."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Marble is limestone that has been heated and squeezed underground. Which family does it belong to?",
+            "choices": [
+              "Metamorphic",
+              "Igneous",
+              "Sedimentary still, because it began as limestone"
+            ],
+            "answer": 0,
+            "explain": "Metamorphism reorganises minerals in the solid state. Limestone's fine grains recrystallise into the interlocking crystals that give marble its glow, and any fossils it held are usually destroyed."
+          },
+          {
+            "type": "concept",
+            "title": "Rising and Vanishing at Once",
+            "art": "mountain",
+            "body": "Mountains rise and erode simultaneously, and the rates are comparable. The Himalaya gains several millimetres a year and loses much of it to rivers. A range's height is a balance between the two, not a total of the uplift."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Most organisms that have ever lived left a fossil somewhere.",
+            "answer": false,
+            "explain": "Fossilisation needs an unusual sequence: rapid burial, protection from scavengers and oxygen, hard parts helping enormously, then survival of the rock itself. The fossil record is a thin and biased sample."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do fossil beds so often form in river deltas, lakes and shallow seas?",
+            "answer": "Those places bury things fast. Sediment rains down continuously, sealing remains away from scavengers and oxygen before decay finishes the job. Fossils record where burial was quick, not where life was abundant."
+          },
+          {
+            "type": "concept",
+            "title": "Where the Metals Came From",
+            "art": "coin",
+            "body": "Plate processes concentrate what is otherwise scattered. Water driven off a sinking plate carries metals upward, and much of the world's copper sits in old subduction zones. Ore bodies are not randomly placed. They mark where the machine ran."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did so many industrial towns grow along a fall line, where hard upland rock meets soft coastal sediment?",
+            "choices": [
+              "Rivers drop there, giving water power, and boats could go no further inland",
+              "The soil is more fertile along such boundaries",
+              "Fall lines mark the safest ground for building"
+            ],
+            "answer": 0,
+            "explain": "Geology set the terms: the last navigable point plus free water power is an excellent place for a mill, and mills gathered towns. Several cities on the US east coast sit on that line."
+          },
+          {
+            "type": "concept",
+            "title": "Slow Is Not Static",
+            "art": "hourglass",
+            "body": "A centimetre a year sounds like nothing. Over ten million years it is a hundred kilometres, enough to open an ocean or raise a range. Geology's characteristic move is taking a rate too small to notice and running it long enough to rearrange a continent."
+          },
+          {
+            "type": "truefalse",
+            "statement": "The rock cycle depends on plate tectonics to keep turning.",
+            "answer": true,
+            "explain": "Subduction supplies the burial, melting and uplift that close the loop. On a planet without plate motion, erosion would eventually flatten the surface and the cycle would run down."
+          },
+          {
+            "type": "example",
+            "title": "Reading a Roadcut",
+            "art": "path",
+            "body": "A fresh roadcut is a cross-section of events. Tilted layers mean deformation after deposition. A sharp surface with erosion beneath it is missing time. A pale intrusive sheet cutting the layers is younger than everything it cuts. The sequence is legible once you know the rules."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Igneous, sedimentary and metamorphic are stages in a loop, not fixed identities.",
+              "Mountains rise and erode at the same time; their height is the balance between the two.",
+              "Fossils require rapid burial, so the record samples burial conditions rather than life.",
+              "Plate processes concentrated the ore bodies industry depends on.",
+              "Anything cutting across a layer is younger than the layer it cuts."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Name the three rock families and what makes each.",
+            "back": "Igneous cools from melt; sedimentary is compacted debris or precipitate; metamorphic is rock rebuilt by heat and pressure without melting."
+          },
+          {
+            "front": "Why is the fossil record a biased sample?",
+            "back": "Fossilisation needs rapid burial away from oxygen and scavengers, plus hard parts, so it records burial conditions rather than abundance of life."
+          },
+          {
+            "front": "Why are ore bodies concentrated near old subduction zones?",
+            "back": "Water driven off a sinking plate carries metals upward and concentrates them, so plate processes gather what is otherwise scattered."
+          },
+          {
+            "front": "How do you tell which feature in a roadcut is youngest?",
+            "back": "Anything that cuts across another feature is younger than what it cuts."
+          }
+        ]
+      }
+    ]
   }
 ];
