@@ -444,11 +444,17 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
    Until then the site runs in clearly-labeled demo mode. */
 const CONFIG = {
   STRIPE_PAYMENT_LINK: "",                                // e.g. "https://buy.stripe.com/xxxxxxxx"
-  SITE_URL: "https://outranked.vercel.app/",
+  SITE_URL: "",                                           // blank = derive from the browser; set only to override
   X_HANDLE: "",                                           // optional, e.g. "yourhandle" — added to brag tweets
   BOARD_FEED_URL: "/api/board",                           // Stripe-backed live board (Vercel). Empty = demo only.
   GOATCOUNTER: "",                                        // optional free analytics, e.g. "https://outranked.goatcounter.com/count"
 };
+
+/* The site works out its own address, so share links, badge embeds and brag
+   cards are correct on any domain with nothing to configure. Only the static
+   og: meta tags in <head> need a real URL, and only for link previews. */
+const SITE = (CONFIG.SITE_URL || (location.origin + location.pathname.replace(/[^/]*$/, "")))
+  .replace(/\/?$/, "/");
 
 /* ============ state ============ */
 const $ = s => document.querySelector(s);
@@ -981,7 +987,7 @@ function renderWatch(){
     `<div class="w-stat"><b class="num">${state.stats.bids.toLocaleString()}</b><span>Bids</span></div>` +
     `<div class="w-stat"><b class="num">${fmt(state.stats.biggest)}</b><span>Biggest bid</span></div>`;
   $("#wFeed").innerHTML = state.feed.slice(0,9).map(f=>`<div class="ev">${f}</div>`).join("");
-  $("#wUrl").textContent = CONFIG.SITE_URL.replace(/^https?:\/\//,"").replace(/\/$/,"") + " — pay more, rank higher, stay on top";
+  $("#wUrl").textContent = SITE.replace(/^https?:\/\//,"").replace(/\/$/,"") + " — pay more, rank higher, stay on top";
 }
 function setWatch(on){
   watchOn = on;
@@ -1015,9 +1021,9 @@ function badgeSVG(e, rank){
 function badgeEmbed(e){
   const rank = rankMap()[e.id];
   const src = state.live
-    ? new URL("/api/badge?name=" + encodeURIComponent(e.name), CONFIG.SITE_URL).href
+    ? new URL("api/badge?name=" + encodeURIComponent(e.name), SITE).href
     : "data:image/svg+xml," + encodeURIComponent(badgeSVG(e, rank));
-  return `<a href="${CONFIG.SITE_URL}"><img src="${src}" alt="${e.name} is #${rank} on OUTRANKED" height="36"></a>`;
+  return `<a href="${SITE}"><img src="${src}" alt="${e.name} is #${rank} on OUTRANKED" height="36"></a>`;
 }
 
 function openDetail(id){
@@ -1167,7 +1173,7 @@ let toastTimer;
 function toast(html){ const el=$("#toast"); el.innerHTML=html; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3500); }
 
 /* ============ viral loops ============ */
-const SHARE_LINK = CONFIG.SITE_URL + "?r=x";              // tag shares so analytics shows what X drives
+const SHARE_LINK = SITE + "?r=x";              // tag shares so analytics shows what X drives
 function tweetIntent(text){
   return "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
 }
@@ -1212,7 +1218,7 @@ function bragCard(){
   c.fillStyle = "#93a094"; c.font = "40px Georgia, serif";
   c.fillText("Outbid me if you dare", 540, 890);
   c.fillStyle = "#5f6b60"; c.font = "32px ui-monospace, monospace";
-  c.fillText(CONFIG.SITE_URL.replace(/^https?:\/\//,"").replace(/\/$/,""), 540, 960);
+  c.fillText(SITE.replace(/^https?:\/\//,"").replace(/\/$/,""), 540, 960);
   const a = document.createElement("a");
   a.download = "outranked-" + lastBrag.rank + ".png";
   a.href = cv.toDataURL("image/png");
@@ -1221,8 +1227,8 @@ function bragCard(){
 $("#cardBtn").addEventListener("click", bragCard);
 $("#shareClose").addEventListener("click", ()=>$("#sharebar").classList.remove("show"));
 $("#copyBtn").addEventListener("click", async ()=>{
-  try { await navigator.clipboard.writeText(CONFIG.SITE_URL); $("#copyBtn").textContent = "Copied!"; }
-  catch(e){ $("#copyBtn").textContent = CONFIG.SITE_URL; }
+  try { await navigator.clipboard.writeText(SITE); $("#copyBtn").textContent = "Copied!"; }
+  catch(e){ $("#copyBtn").textContent = SITE; }
   setTimeout(()=>$("#copyBtn").textContent = "Copy link", 2000);
 });
 
