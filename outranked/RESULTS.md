@@ -28,8 +28,22 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 14 tests in repo |
+| Automated test suite | none public | ✅ 28 tests in repo |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
+
+Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
+product titles, public click counts):
+
+| Capability (current race) | outbid.lol now | OUTRANKED |
+|---|---|---|
+| Daily-reset board | ✅ separate /today page, added day 4 | ✅ the default view, with Final Hour endgame |
+| Public click counts | ✅ raw number | ✅ plus computed cost-per-click vs search ads |
+| Status progression (tiers, titles, streaks) | ❌ | ✅ nobility medallions, 4 earned titles, streaks |
+| Permanent record (Hall of Fame) | ❌ | ✅ midnight rollover engraves each day's king |
+| Rivalry/war detection | ❌ | ✅ tested |
+| 📺 Watch Mode broadcast view | ❌ | ✅ full-screen live board for streams and screen-recordings |
+| Per-listing dossier with ROI math | ❌ | ✅ tested |
+| Auto-defend proxy bidding | ❌ | ✅ tested |
 
 ## 2. Functional correctness — 14/14 passing
 

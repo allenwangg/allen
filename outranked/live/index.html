@@ -153,7 +153,49 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 9
 .take{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;white-space:nowrap}
 .take:hover{border-color:var(--foil);color:var(--foil)}
 .take small{display:block;font-weight:400;color:var(--muted);font-size:11px}
-dialog{border:1px solid var(--rule);border-radius:10px;background:var(--panel);color:var(--text);padding:0;max-width:430px;width:calc(100vw - 32px);box-shadow:var(--shadow)}
+dialog{margin:auto;border:1px solid var(--rule);border-radius:10px;background:var(--panel);color:var(--text);padding:0;max-width:430px;width:calc(100vw - 32px);box-shadow:var(--shadow)}
+.iconbtn{padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-size:15px}
+.iconbtn:hover{color:var(--text);border-color:var(--rule)}
+.watch{position:fixed;inset:0;z-index:80;background:var(--bg);display:none;flex-direction:column;padding:28px clamp(16px,4vw,60px);overflow-y:auto}
+.watch.on{display:flex}
+.w-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.w-live{color:var(--seal);font-weight:800;font-size:13px;letter-spacing:.14em;animation:blink 1.4s infinite}
+.w-close{margin-left:auto;border:1px solid var(--line);border-radius:10px;padding:8px 14px;color:var(--muted);font-weight:700}
+.w-close:hover{color:var(--text);border-color:var(--rule)}
+.w-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;flex:1;min-height:0}
+.w-main{display:flex;flex-direction:column;gap:14px}
+.w-crown{background:var(--panel);border:1px solid var(--foil);outline:3px double var(--foil);outline-offset:4px;border-radius:8px;padding:clamp(18px,3vw,36px);text-align:center;position:relative;overflow:hidden}
+.w-crown .lbl{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.w-crown .nm{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:clamp(30px,4.5vw,54px);margin:6px 0 2px}
+.w-crown .amt{font-family:"Spline Sans Mono",monospace;font-size:clamp(30px,4vw,50px);color:var(--foil);font-weight:700}
+.w-crown .sub{color:var(--muted);font-size:15px;margin-top:6px}
+.w-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.w-stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+.w-stat b{display:block;font-family:"Spline Sans Mono",monospace;font-size:clamp(20px,2.4vw,30px);color:var(--bill)}
+.w-stat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.w-feed{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;overflow:hidden}
+.w-feed .lbl{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--seal);font-weight:800;margin-bottom:10px}
+.w-feed .ev{padding:10px 2px;border-bottom:1px solid var(--line);font-size:15px;color:var(--muted);line-height:1.45}
+.w-feed .ev b{color:var(--text)}
+.w-feed .ev .amt{color:var(--bill);font-weight:700}
+.w-url{text-align:center;color:var(--dim);font-size:14px;padding-top:14px;letter-spacing:.04em}
+@media (max-width:820px){.w-grid{grid-template-columns:1fr}}
+.d-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.d-head .med{width:52px;height:52px;font-size:22px}
+.d-head .nm{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:24px;line-height:1.1}
+.d-head .t{color:var(--muted);font-size:13px}
+.d-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.d-spark{width:100%;height:64px;margin:4px 0 12px}
+.d-spark polyline{fill:none;stroke:var(--bill);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.d-spark .fill{fill:color-mix(in srgb,var(--bill) 14%,transparent);stroke:none}
+.d-spark .dot{fill:var(--bill)}
+.d-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.d-cell{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.d-cell b{display:block;font-family:"Spline Sans Mono",monospace;font-size:16px}
+.d-cell span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.d-cpc{background:color-mix(in srgb,var(--bill) 9%,var(--panel));border:1px solid color-mix(in srgb,var(--bill) 40%,var(--line));border-radius:10px;padding:11px 14px;font-size:13.5px;color:var(--muted);margin-bottom:14px}
+.d-cpc b{color:var(--bill)}
+.row{cursor:pointer}
 dialog::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
 .mbody{padding:22px}
 .mbody h2{font-family:"Fraunces",Georgia,serif;font-size:22px;margin-bottom:4px}
@@ -211,9 +253,26 @@ const BODY_HTML = `
   <div class="hrow">
     <div class="logo">OUT<span class="up">RANKED</span></div>
     <div class="spacer"></div>
+    <button class="iconbtn" id="watchBtn" aria-label="Watch mode" title="Watch mode — full-screen live board">📺</button>
     <button class="cta" data-open-bid>Claim a spot</button>
   </div>
 </header>
+<div class="watch" id="watch" role="dialog" aria-label="Watch mode">
+  <div class="w-head">
+    <div class="logo">OUT<span class="up">RANKED</span></div>
+    <span class="w-live">● LIVE</span>
+    <button class="w-close" id="watchClose">Exit ✕</button>
+  </div>
+  <div class="w-grid">
+    <div class="w-main">
+      <div class="w-crown" id="wCrown"></div>
+      <div class="w-stats" id="wStats"></div>
+    </div>
+    <div class="w-feed"><div class="lbl">The war feed</div><div id="wFeed"></div></div>
+  </div>
+  <div class="w-url" id="wUrl"></div>
+</div>
+<dialog id="detailModal"><div class="mbody" id="detailBody"></div></dialog>
 <main class="wrap">
   <section class="hero">
     <h1>Pay more. Rank higher.<br><em>Stay on top.</em></h1>
@@ -506,6 +565,7 @@ function render(){
     : "";
 
   if (!isToday) prevRanks = rankMap();
+  renderWatch();
 }
 
 /* ---------- bidding ---------- */
@@ -594,10 +654,92 @@ function placeBid(name, url, amount, defendBudget){
   return { ok:true, entry, rank: rankMap()[entry.id] };
 }
 
+/* ---------- watch mode ---------- */
+let watchOn = false;
+function renderWatch(){
+  if (!watchOn) return;
+  const kToday = sortedToday()[0];
+  const kAll = sorted()[0];
+  const finalHour = msToMidnightUTC() < 3600000;
+  const king = kToday || kAll;
+  const isT = !!kToday;
+  $("#wCrown").innerHTML =
+    '<div class="lbl">' + (isT ? (finalHour ? "⏳ FINAL HOUR — king of today" : "🔥 King of today") : "👑 All-time champion") + '</div>' +
+    '<div class="nm">' + esc(king.name) + '</div>' +
+    '<div class="amt">' + fmt(isT ? king.todayTotal : king.total) + '</div>' +
+    '<div class="sub">' + (isT ? "board resets in " + dur(msToMidnightUTC()) : "reigning " + dur(Date.now()-state.crownedAt)) +
+    ' · dethroning costs ' + fmt((isT ? king.todayTotal : king.total) + 1) + '</div>';
+  const raised = state.entries.reduce((s,e)=>s+e.total,0);
+  $("#wStats").innerHTML =
+    '<div class="w-stat"><b>' + fmt(raised) + '</b><span>Total raised</span></div>' +
+    '<div class="w-stat"><b>' + state.stats.bids.toLocaleString() + '</b><span>Bids</span></div>' +
+    '<div class="w-stat"><b>' + fmt(state.stats.biggest) + '</b><span>Biggest bid</span></div>';
+  $("#wFeed").innerHTML = state.feed.slice(0,9).map(f => '<div class="ev">' + f + '</div>').join("");
+  $("#wUrl").textContent = "Every viewer of this page bids on the same board — pay more, rank higher, stay on top";
+}
+function setWatch(on){
+  watchOn = on;
+  $("#watch").classList.toggle("on", on);
+  document.documentElement.style.overflow = on ? "hidden" : "";
+  if (on) renderWatch();
+}
+$("#watchBtn").addEventListener("click", () => setWatch(true));
+$("#watchClose").addEventListener("click", () => setWatch(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && watchOn) setWatch(false); });
+
+/* ---------- listing dossier ---------- */
+const detailModal = $("#detailModal");
+function sparkBig(hist){
+  const h = hist.slice(-24); if (h.length < 2) h.unshift(0);
+  const max = Math.max(...h), min = Math.min(...h), span = (max-min) || 1;
+  const pts = h.map((v,i) => [(i/(h.length-1))*296+2, 58-((v-min)/span)*48+3]);
+  const line = pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" ");
+  const end = pts[pts.length-1];
+  return '<svg class="d-spark" viewBox="0 0 300 64" aria-hidden="true"><polygon class="fill" points="' + line + ' 298,64 2,64"/><polyline points="' + line + '"/><circle class="dot" cx="' + end[0].toFixed(1) + '" cy="' + end[1].toFixed(1) + '" r="3"/></svg>';
+}
+function openDetail(id){
+  const e = state.entries.find(x => x.id === id);
+  if (!e) return;
+  ensureToday(e);
+  const t = tier(e);
+  const rank = rankMap()[e.id];
+  const avg = e.bids ? Math.round(e.total/e.bids) : e.total;
+  const badges = [
+    '<span class="badge title">' + t.name + '</span>',
+    ...(e.titles||[]).map(x => '<span class="badge title">' + x + '</span>'),
+    e.streak > 1 ? '<span class="badge title">👑 ' + e.streak + '-day streak</span>' : "",
+    e.defend > 0 ? '<span class="badge shield">🛡 defending with ' + fmt(e.defend) + '</span>' : "",
+  ].filter(Boolean).join("");
+  $("#detailBody").innerHTML =
+    '<div class="d-head">' + medallion(e) +
+      '<div><div class="nm">' + esc(e.name) + '</div>' +
+      '<div class="t">#' + rank + ' all-time · <a href="https://' + esc(e.url) + '" target="_blank" rel="noopener nofollow">' + esc(e.url) + '</a></div></div></div>' +
+    '<div class="d-badges">' + badges + '</div>' +
+    sparkBig(e.history) +
+    '<div class="d-grid">' +
+      '<div class="d-cell"><b>' + fmt(e.total) + '</b><span>All-time</span></div>' +
+      '<div class="d-cell"><b>' + fmt(e.todayTotal||0) + '</b><span>Today</span></div>' +
+      '<div class="d-cell"><b>' + e.bids + '</b><span>Bids</span></div>' +
+      '<div class="d-cell"><b>' + fmt(avg) + '</b><span>Avg bid</span></div>' +
+      '<div class="d-cell"><b>' + (e.titles||[]).length + '</b><span>Titles</span></div>' +
+      '<div class="d-cell"><b>' + fmt((view==="today" ? (e.todayTotal||0) : e.total) + 1) + '</b><span>To take</span></div>' +
+    '</div>' +
+    '<div class="mrow">' +
+      '<button type="button" class="ghost" data-close-detail>Close</button>' +
+      '<a class="ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="' +
+        tweetIntent(e.name + " sits at #" + rank + " on OUTRANKED with " + fmt(e.total) + ". Taking it costs " + fmt(e.total+1) + ": " + SHARE_URL) + '">Dare on 𝕏</a>' +
+      '<button type="button" class="cta" data-boost="' + e.id + '">Boost — ' + fmt((view==="today" ? (e.todayTotal||0) : e.total) + 1) + '</button>' +
+    '</div>';
+  detailModal.showModal();
+}
+
 /* ---------- wiring ---------- */
 document.addEventListener("click", e => {
   const take = e.target.closest("[data-take]");
   if (take) return openBid(take.dataset.take);
+  const boost = e.target.closest("[data-boost]");
+  if (boost){ detailModal.close(); return openBid(boost.dataset.boost); }
+  if (e.target.closest("[data-close-detail]")) return detailModal.close();
   if (e.target.closest("[data-open-bid]")) return openBid(null);
   if (e.target.closest("[data-close]")) return modal.close();
   const tab = e.target.closest(".tab[data-view]");
@@ -609,7 +751,11 @@ document.addEventListener("click", e => {
       t.setAttribute("aria-selected", on);
     });
     render();
+    return;
   }
+  if (e.target.closest("a.url")) return;
+  const row = e.target.closest("#board .row[data-id]");
+  if (row) openDetail(row.dataset.id);
 });
 $("#fDefend").addEventListener("change", e => { $("#fBudget").disabled = !e.target.checked; if (e.target.checked) $("#fBudget").focus(); });
 $("#bidForm").addEventListener("submit", e => {

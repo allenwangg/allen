@@ -97,6 +97,14 @@
       "pass": true
     },
     {
+      "name": "Watch Mode opens as a live broadcast view and closes on Escape",
+      "pass": true
+    },
+    {
+      "name": "clicking a row opens the dossier with cost-per-click math",
+      "pass": true
+    },
+    {
       "name": "Today board ranks by today's bids, independent of all-time totals",
       "pass": true
     },
@@ -106,13 +114,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 116,
-    "medianDOMContentLoadedms": 80.6,
-    "medianLoadms": 12642.1,
+    "medianFCPms": 92,
+    "medianDOMContentLoadedms": 65.3,
+    "medianLoadms": 12610.3,
     "totalRequests": 2
   },
   "weight": {
-    "htmlBytes": 55256,
-    "gzipBytes": 17705
+    "htmlBytes": 65191,
+    "gzipBytes": 19900
   }
 }

@@ -276,6 +276,35 @@ await test("Hall of Fame shelf and Your Empire chip render", async () => {
   assert(empire.includes("Usurper") && empire.includes("MAX RANK"), `empire chip wrong: ${empire}`);
 });
 
+await test("Watch Mode opens as a live broadcast view and closes on Escape", async () => {
+  await page.click("#watchBtn");
+  await page.waitForTimeout(150);
+  assert(await page.locator("#watch.on").isVisible(), "watch overlay not shown");
+  const crown = await page.locator("#wCrown").textContent();
+  assert(crown.includes("$") && /king|champion/i.test(crown), `watch crown wrong: ${crown.slice(0,80)}`);
+  assert((await page.locator("#wFeed .ev").count()) >= 3, "war feed empty in watch mode");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(150);
+  assert(!(await page.locator("#watch.on").count()), "Escape did not exit watch mode");
+});
+
+await test("clicking a row opens the dossier with cost-per-click math", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+  await page.click('.row[data-id="e1"] .who');    // ShipFast
+  await page.waitForTimeout(150);
+  const body = await page.locator("#detailBody").textContent();
+  assert(body.includes("ShipFast"), "dossier missing name");
+  assert(body.includes("Cost / click"), "dossier missing CPC cell");
+  const cpc = 9750 / 7500;                        // seeded: total / clicks
+  assert(body.includes("$" + cpc.toFixed(2)), `dossier CPC should be $${cpc.toFixed(2)}`);
+  await page.click("[data-boost]");               // boost → prefilled bid modal
+  await page.waitForTimeout(150);
+  const val = await page.inputValue("#fAmt");
+  assert(val === "9751", `boost should prefill 9751, got ${val}`);
+  await page.click("[data-close]");
+});
+
 await test("Today board ranks by today's bids, independent of all-time totals", async () => {
   await page.click("#tabToday");
   await page.waitForTimeout(100);
