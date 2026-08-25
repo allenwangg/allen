@@ -196,21 +196,29 @@ await test("crown card carries a dare-to-dethrone tweet intent", async () => {
   assert(text.includes("#1 on OUTRANKED") && text.includes("$"), `bad dare text: ${text}`);
 });
 
-await test("with a Stripe link configured, bidding opens checkout with client_reference_id", async () => {
+await test("with Stripe configured, checkout carries the bid and the board is NOT faked", async () => {
   const opened = [];
   await page.exposeFunction("__recordOpen", u => opened.push(u));
   await page.evaluate(() => {
     CONFIG.STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_abc123";
     window.open = u => { window.__recordOpen(u); return null; };
   });
+  const before = await page.evaluate(() => state.entries.length);
   await page.click("[data-open-bid]");
   await page.fill("#fName", "RealMoneyCo");
+  await page.fill("#fUrl", "realmoney.co");
   await page.fill("#fAmt", "50");
+  await page.fill("#fDecree", "Pay up.");
   await page.click("#payBtn");
   await page.waitForTimeout(200);
   assert(opened.length === 1, `expected 1 checkout open, got ${opened.length}`);
-  assert(opened[0].startsWith("https://buy.stripe.com/test_abc123?client_reference_id=RealMoneyCo_50_"),
-    `bad checkout URL: ${opened[0]}`);
+  const ref = new URL(opened[0]).searchParams.get("client_reference_id");
+  const decoded = await page.evaluate(r => decodeRef(r), ref);
+  assert(decoded.name === "RealMoneyCo" && decoded.url === "realmoney.co" && decoded.decree === "Pay up.",
+    `reference did not round-trip: ${JSON.stringify(decoded)}`);
+  // Critical: an unpaid bid must never appear on the board.
+  const after = await page.evaluate(() => state.entries.length);
+  assert(after === before, `board was mutated before payment cleared (${before} → ${after})`);
   const toastText = await page.locator("#toast").textContent();
   assert(toastText.includes("Stripe"), "toast missing payment instruction");
   await page.evaluate(() => { CONFIG.STRIPE_PAYMENT_LINK = ""; });
@@ -370,7 +378,74 @@ await test("outbound clicks are counted per listing (advertiser ROI proof)", asy
   assert(after === before + 1, `JONI clicks should go ${before}→${before + 1}, got ${after}`);
 });
 
+// Runs last: going live intentionally wipes the demo board.
+await test("live Stripe ledger takes over the board and clears the demo seeds", async () => {
+  const shape = await page.evaluate(async () => {
+    const bids = [
+      { id: "cs_live_1", ref: encodeRef("Ledger Co", "ledger.co", "All yours."), amount: 900, at: 1 },
+      { id: "cs_live_2", ref: encodeRef("Runner Up", "runnerup.io", ""), amount: 400, at: 2 },
+      { id: "cs_live_3", ref: encodeRef("Ledger Co", "ledger.co", ""), amount: 100, at: 3 },
+    ];
+    CONFIG.BOARD_FEED_URL = "stub://live";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids }) });
+    await mergeBoardFeed();
+    await mergeBoardFeed();                       // must be idempotent
+    return {
+      live: state.live,
+      seedsGone: !state.entries.some(e => /^[es]/.test(e.id)),
+      names: sorted().map(e => e.name),
+      leaderTotal: sorted()[0].total,
+      verified: sorted().every(e => e.verified),
+      decree: state.decree && state.decree.text,
+    };
+  });
+  assert(shape.live && shape.seedsGone, "demo seed board was not cleared when Stripe went live");
+  assert(shape.names[0] === "Ledger Co" && shape.leaderTotal === 1000,
+    `ledger should aggregate Ledger Co to $1,000, got ${shape.names[0]} $${shape.leaderTotal}`);
+  assert(shape.names.length === 2, `expected exactly the 2 paid listings, got ${shape.names.length}`);
+  assert(shape.verified, "ledger-sourced entries should all be VERIFIED");
+  assert(shape.decree === "All yours.", `decree should ride along the ledger, got ${shape.decree}`);
+});
+
+await test("simulated traffic never runs on a live board", async () => {
+  const stillLive = await page.evaluate(() => {
+    const before = state.entries.length;
+    for (let i = 0; i < 40; i++) simulate();
+    return { grew: state.entries.length !== before, live: state.live };
+  });
+  assert(stillLive.live && !stillLive.grew, "simulation mutated a live board");
+});
+
 await ctx.close();
+
+// ---------- Stripe ledger API (unit) ----------
+console.log("\nLedger API");
+const { decodeRef, rank } = require(join(root, "api", "_board.js"));
+const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+await test("API decodes both the encoded and legacy reference formats", () => {
+  const modern = decodeRef("b64." + b64("Acme Inc|acme.dev|We do not lose."));
+  assert(modern.name === "Acme Inc" && modern.url === "acme.dev" && modern.decree === "We do not lose.",
+    `modern ref wrong: ${JSON.stringify(modern)}`);
+  const legacy = decodeRef("OldCo_50_x9f");
+  assert(legacy.name === "OldCo", `legacy ref wrong: ${JSON.stringify(legacy)}`);
+  const junk = decodeRef("b64.!!!not-base64!!!");
+  assert(junk.name === "Anonymous", "malformed reference should degrade, not throw");
+});
+
+await test("API ranks by cumulative payment, breaking ties by who paid first", () => {
+  const board = rank([
+    { id: "a", ref: "b64." + b64("Alpha|alpha.io|"), amount: 300, at: 10 },
+    { id: "b", ref: "b64." + b64("Beta|beta.io|"), amount: 500, at: 20 },
+    { id: "c", ref: "b64." + b64("alpha|alpha.io|onward"), amount: 200, at: 30 },
+  ]);
+  assert(board.length === 2, `expected 2 listings, got ${board.length}`);
+  const alpha = board.find(e => e.name === "Alpha");
+  assert(alpha.total === 500 && alpha.bids === 2 && alpha.decree === "onward",
+    `Alpha's two bids should aggregate to $500 with its latest decree, got ${JSON.stringify(alpha)}`);
+  // Both sit at $500. Beta got there at t=20, Alpha only at t=30, so Beta holds the higher rank.
+  assert(board[0].name === "Beta", `tie should go to whoever reached the total first: ${board.map(e => e.name).join(",")}`);
+});
 
 // ---------- performance benchmark ----------
 console.log("\nPerformance benchmark (5 cold loads, headless Chromium)");
