@@ -73,6 +73,10 @@
       "pass": true
     },
     {
+      "name": "share links derive the live domain instead of a hardcoded one",
+      "pass": true
+    },
+    {
       "name": "crown card carries a dare-to-dethrone tweet intent",
       "pass": true
     },
@@ -150,13 +154,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 100,
-    "medianDOMContentLoadedms": 68.9,
-    "medianLoadms": 12491.3,
+    "medianFCPms": 104,
+    "medianDOMContentLoadedms": 73.7,
+    "medianLoadms": 12492.1,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 74990,
-    "gzipBytes": 22924
+    "htmlBytes": 75332,
+    "gzipBytes": 23133
   }
 }

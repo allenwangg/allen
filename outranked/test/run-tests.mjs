@@ -188,6 +188,15 @@ await test("brag share bar appears after a bid with rank and amount in the tweet
   assert(await page.locator("#sharebar.show").isVisible(), "share bar not shown");
 });
 
+await test("share links derive the live domain instead of a hardcoded one", async () => {
+  const origin = await page.evaluate(() => location.origin);
+  const brag = await page.locator("#bragBtn").getAttribute("href");
+  assert(decodeURIComponent(brag).includes(origin),
+    `brag link should point at the deployed origin ${origin}: ${decodeURIComponent(brag).slice(0, 120)}`);
+  const embed = await page.evaluate(() => badgeEmbed(state.entries[0]));
+  assert(embed.includes(`href="${origin}`), `badge embed should link to ${origin}: ${embed.slice(0, 120)}`);
+});
+
 await test("crown card carries a dare-to-dethrone tweet intent", async () => {
   await page.click("#tabAll");
   await page.waitForTimeout(100);
