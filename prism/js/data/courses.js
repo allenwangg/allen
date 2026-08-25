@@ -22729,5 +22729,1431 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "art-history",
+    "title": "How to Look at Art",
+    "tagline": "Walk into any museum and actually see what is there.",
+    "category": "Humanities",
+    "description": "The eyes and the vocabulary to stand in front of any painting and know what you are seeing — light, composition, perspective, materials, and the reasons styles changed. Plus how to read a wall label, and everything it leaves out.",
+    "lessons": [
+      {
+        "id": "looking-before-knowing",
+        "title": "Looking Before Knowing",
+        "summary": "What a few unhurried minutes with one painting reveal — how artists steer your eye with line, light, depth, scale and the cost of their materials.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Seventeen Seconds",
+            "body": "In 2001, Jeffrey and Lisa Smith stood in the Metropolitan Museum of Art with stopwatches and timed how long visitors spent in front of paintings by Rembrandt, Vermeer and others. The median stop lasted 17 seconds — just long enough to glance, read the label, and move on. Almost everything a painting can give you arrives after that.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Slow Looking",
+            "body": "Slow looking is a plain discipline: pick one work, stay several minutes, and describe what is physically there before deciding what it means. The Harvard art historian Jennifer Roberts sends her students to sit with a single object for three full hours. What surfaces in minute forty is invisible in second seventeen.",
+            "art": "eye"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You have five minutes with a painting you have never seen. What should you do with the first minute?",
+            "answer": "Inventory, not interpretation. Name what is literally there: how many figures, where the light enters, what is nearest to you, what the largest shape is. Meaning arrives faster when you stop reaching for it and let the picture report itself first."
+          },
+          {
+            "type": "concept",
+            "title": "Where the Artist Sends Your Eye",
+            "body": "Nothing in a painting sits where it does by accident. Artists steer your gaze with line, edge and repetition: a diagonal accelerates it, a strong vertical stops it, a glance from inside the picture hands it along. In Leonardo's The Last Supper (about 1495–98), every receding line of the painted room runs to one point — Christ's head. You look where you were sent.",
+            "art": "path"
+          },
+          {
+            "type": "example",
+            "title": "Caravaggio Turns Off the Lights",
+            "body": "In The Calling of Saint Matthew (1599–1600, still in the Roman chapel it was painted for), Caravaggio puts five men around a table counting coins in a gloomy room. One hard shaft of light enters high on the right, above Christ's pointing hand, and lands across their faces. The rest is darkness. That staging of light against dark is chiaroscuro, and it tells you who matters before you read a word.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A painter sinks most of a canvas into darkness and lets one shaft of light pick out a few faces. What is that called?",
+            "choices": [
+              "Chiaroscuro — modelling form and attention through strong light against dark",
+              "Sfumato — edges blurred into smoky, gradual transitions",
+              "Impasto — paint laid on thickly enough to hold the brushmark",
+              "Grisaille — a picture carried out entirely in greys"
+            ],
+            "answer": 0,
+            "explain": "Chiaroscuro is literally light-dark, and Caravaggio's extreme version has its own name: tenebrism. The others are real terms often confused with it — sfumato is Leonardo's edgeless smoky transition, impasto is thickness of paint, grisaille is monochrome grey."
+          },
+          {
+            "type": "concept",
+            "title": "The Picture Plane",
+            "body": "A painting is a flat surface pretending to be a space. The picture plane is that surface — the imaginary pane of glass between you and the depicted world. Every decision about depth is a decision about that pane: shove figures up against it, open a landscape far behind it, or refuse the illusion and let the paint stay flat.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Florence Gets a Recipe for Depth",
+            "body": "Around 1413, Filippo Brunelleschi painted the Florence Baptistery on a small panel, drilled a peephole through it, and had viewers look through the back while holding up a mirror. Painting and reflected building lined up exactly. In 1435 Leon Battista Alberti wrote the geometry down in his treatise On Painting, and depth became a construction anyone could learn.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Linear perspective is simply how the world looks, so a painting without it is mistaken about space.",
+            "answer": false,
+            "explain": "Perspective is a convention: one geometric system, demonstrated in Florence and codified by Alberti in 1435, for translating three dimensions onto a flat surface from a single fixed viewpoint. Byzantine icons and Chinese handscrolls organise space by other rules on purpose — and modern painters would later drop the system deliberately."
+          },
+          {
+            "type": "quote",
+            "text": "First I draw on the surface a rectangle, which I regard as an open window through which the subject to be painted is seen.",
+            "by": "Leon Battista Alberti, On Painting, 1435"
+          },
+          {
+            "type": "concept",
+            "title": "Size and Substance Are Arguments",
+            "body": "Two things you can read before you know anything else. Size: a wall-filling canvas was built to overwhelm a public room, while a portrait the size of your palm was made to be held and looked at alone. And material: ultramarine, ground from lapis lazuli hauled out of Afghanistan, cost more than gold, so contracts specified exactly where it went.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A fifteenth-century altarpiece contract requires ultramarine for the Virgin's robe. What is the patron chiefly buying?",
+            "choices": [
+              "A blue that dries faster than the other pigments",
+              "Visible expense — a pigment from lapis lazuli that cost more than gold",
+              "The only blue available to painters at the time",
+              "A colour the Church required for all sacred scenes"
+            ],
+            "answer": 1,
+            "explain": "Ultramarine was priced above gold, so contracts pinned down how much went where — the expense was meant to be seen. Cheaper blues existed and were used constantly, azurite above all. The patron was buying a public statement about what they had spent on the sacred."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The median museum stop is about 17 seconds; nearly everything a painting has to offer arrives later.",
+              "Describe before you interpret: light, line, scale, materials — meaning comes last, not first.",
+              "Chiaroscuro is light staged against dark; Caravaggio used it to tell you who matters.",
+              "Linear perspective is a learnable convention — Brunelleschi demonstrated it, Alberti wrote it down in 1435.",
+              "Size and pigment are content: what a work cost and how big it is were part of the message."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is slow looking?",
+            "back": "Staying with one work for minutes and describing what is there before judging it. Jennifer Roberts has students sit with a single object for three hours."
+          },
+          {
+            "front": "What is chiaroscuro?",
+            "back": "Strong light staged against deep dark to model form and direct attention — Caravaggio's Calling of Saint Matthew (1599–1600) is the extreme case."
+          },
+          {
+            "front": "Who formalised linear perspective, and when?",
+            "back": "Brunelleschi demonstrated it in Florence around 1413 with a panel, a peephole and a mirror; Alberti wrote the method down in On Painting, 1435."
+          },
+          {
+            "front": "What is the picture plane?",
+            "back": "The flat surface of the painting — the imaginary pane between you and the depicted world. Every decision about depth is a decision about it."
+          }
+        ]
+      },
+      {
+        "id": "why-styles-changed",
+        "title": "Why Styles Changed",
+        "summary": "Materials, machines and money: how oil paint, the camera, a metal tube and a new class of buyers redirected what painters made.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Tube of Paint",
+            "body": "In 1841 John Goffe Rand, an American portrait painter working in London, patented a collapsible metal tube with a screw cap. Until then oil paint was stored in pig bladders — punctured with a tack, leaky, useless once opened. Art history looks like a parade of geniuses. Often it is a parade of supply chains.",
+            "art": "seed"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Before the 1840s, painting a finished landscape outdoors in oil was mostly a matter of carrying your paints outside.",
+            "answer": false,
+            "explain": "Bladder-stored paint leaked, dried out and could not be resealed. Painters made drawings and small oil sketches outdoors, then built the finished picture in the studio from memory and notes. The sealable tube turned a full palette into something you could carry, use halfway, and cap."
+          },
+          {
+            "type": "example",
+            "title": "Van Eyck and the Slow Medium",
+            "body": "Egg tempera dries in minutes: colour goes on in tiny hatched strokes and stays exactly where it lands. Oil, bound in linseed or walnut, stays workable for days. In Jan van Eyck's Arnolfini Portrait (1434) that buys a brass chandelier with real weight, a dog whose hairs separate, and a convex mirror on the back wall reflecting two visitors in the doorway.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "What Oil Bought",
+            "body": "Slow drying bought painters time. You could work wet into wet, soften an edge an hour later, or glaze a transparent red over a warm underlayer so light travels through the film and bounces back. Oil also holds fine detail and survives being rolled and shipped. Northern workshops made it standard through the 1400s; Italy followed.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Vasari credited Jan van Eyck with inventing oil painting. What is the accurate version?",
+            "choices": [
+              "Van Eyck invented the oil binder but rarely used it himself",
+              "Oil painting began in Italy and reached the north through van Eyck",
+              "Oil binders long predate him; van Eyck refined the layered, glazed technique to an extraordinary degree"
+            ],
+            "answer": 2,
+            "explain": "Oil as a paint medium is documented centuries earlier — analysis of the Bamiyan cave murals in Afghanistan found oil-based paint from around the 7th century, and medieval European treatises describe oil binders. Vasari, writing in Florence in 1550, turned a northern refinement into a northern invention."
+          },
+          {
+            "type": "example",
+            "title": "The Camera Arrives",
+            "body": "In 1839 the French state bought Louis Daguerre's photographic process and published it. Within fifteen years a studio portrait cost a small fraction of a painted one. The job painting had held for four centuries — producing a convincing likeness — was suddenly being done faster and cheaper by a machine.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "Freed from Likeness",
+            "body": "The camera did not kill painting; it changed the assignment. If a machine could record how a thing looked, painting was free to chase what a machine could not: the sensation of a moment, colour as its own subject, the visible act of laying on paint. Painters used the new tool too — Delacroix and Degas both worked from photographs.",
+            "art": "key"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The Impressionists painted outdoors, in front of the subject. Name the ordinary technologies that made that practical.",
+            "answer": "Sealable metal paint tubes, patented by Rand in 1841, and the portable box easel — plus railways that put the coast and the countryside within a day of Paris. Painting from life in changing light needs a full palette you can carry, use in a hurry, and put away half-finished."
+          },
+          {
+            "type": "quote",
+            "text": "Without paints in tubes there would have been no Cézanne, no Monet, no Sisley or Pissarro, nothing of what the journalists were later to call Impressionism.",
+            "by": "Pierre-Auguste Renoir, as recalled by his son Jean Renoir"
+          },
+          {
+            "type": "concept",
+            "title": "Who Pays Decides What Exists",
+            "body": "For centuries a painting began as a contract: a church or a court named the subject, the size, the deadline and the pigments. In seventeenth-century Holland a merchant class bought finished pictures off a dealer's wall instead — so painters worked on speculation, made small landscapes, still lifes and kitchen scenes, and specialised until their style was recognisable.",
+            "art": "coin"
+          },
+          {
+            "type": "example",
+            "title": "Durand-Ruel Takes the Risk",
+            "body": "Paul Durand-Ruel bought Impressionist canvases in quantity while the Paris Salon still would not show them, gave the painters solo exhibitions, and in 1886 shipped about three hundred works to New York, where they sold. A dealer willing to hold unsellable stock for years let painters stop pleasing a jury.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What changed most when dealers and collectors replaced church and court as the main buyers?",
+            "choices": [
+              "Commissions disappeared completely after 1700",
+              "Painters increasingly made the work first and found the buyer after, so personal style became the selling point",
+              "Subject matter was set by the state instead of the Church",
+              "Painters no longer had to earn a living from their art"
+            ],
+            "answer": 1,
+            "explain": "Under commission, the subject arrived with the contract. On the open market the painter chose it and gambled — which is why Dutch painters specialised into recognisable brands, and why a dealer like Durand-Ruel, able to carry unsold canvases for years, mattered so much. Commissions never vanished; they stopped being the default."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Styles shift when three things shift: the technology, who is paying, and what a culture thinks pictures are for.",
+              "Oil's slow drying bought blending, soft edges and glazes — van Eyck's Arnolfini Portrait (1434) is the demonstration.",
+              "Photography (1839) took over likeness, and painting was freed to pursue something else.",
+              "Rand's paint tube (1841) made a portable palette, and therefore outdoor painting, practical.",
+              "Dealers and collectors replaced patrons, so painters made work first and sold it after."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did oil paint allow that egg tempera did not?",
+            "back": "Slow drying: blending wet into wet, softening edges later, and thin transparent glazes with real depth of colour — see van Eyck's Arnolfini Portrait, 1434."
+          },
+          {
+            "front": "How did photography change painting's job?",
+            "back": "Published in 1839, it took over the making of likenesses within a generation, freeing painting to pursue sensation, colour and the act of painting itself."
+          },
+          {
+            "front": "Why did paint in tubes matter?",
+            "back": "Rand's sealable metal tube (1841) replaced leaky pig bladders, making a full palette portable — a precondition for finishing pictures outdoors."
+          },
+          {
+            "front": "What replaced church and court patronage?",
+            "back": "A market of dealers and collectors. Work was made first and sold after, so style became a signature — Durand-Ruel carried Impressionist stock for years."
+          }
+        ]
+      },
+      {
+        "id": "the-modern-break",
+        "title": "The Modern Break",
+        "summary": "How a mocking review named Impressionism, and why the fifty years that followed moved art's central question from beauty to definition.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "An Insult That Stuck",
+            "body": "Paris, April 1874. Thirty artists, tired of the official Salon, rented the photographer Nadar's old studio and hung their own show. The critic Louis Leroy seized on one small canvas by Claude Monet — a harbour at dawn, an orange sun, water in loose grey-blue strokes, titled Impression, Sunrise — and mocked the whole group as the Impressionists. The name stuck. The painters kept it.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "What They Were Actually Doing",
+            "body": "Up close, an Impressionist canvas is unblended dabs; step back and they fuse. Shadows are blue and violet rather than black, because that is what shadows do in daylight. The brushmark stays visible on purpose, so the picture records not just a scene but a moment of seeing it, and the speed of the hand that caught it.",
+            "art": "eye"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where did the word Impressionism come from?",
+            "choices": [
+              "A manifesto the group published in 1874",
+              "A term Monet coined for his own technique",
+              "A hostile review that borrowed the title of a Monet painting",
+              "The name of the gallery where they first exhibited"
+            ],
+            "answer": 2,
+            "explain": "Louis Leroy's satirical piece in Le Charivari, 25 April 1874, took the title of Monet's Impression, Sunrise (painted at Le Havre in 1872) and aimed it at everyone in the room. The group had called itself the Société Anonyme; it adopted the insult officially by its third exhibition in 1877."
+          },
+          {
+            "type": "example",
+            "title": "Cézanne Rebuilds the World",
+            "body": "Cézanne thought Impressionism had dissolved the world into flicker, and he wanted the sensation and the solidity. He painted Mont Sainte-Victoire more than thirty times in oil, building the mountain from flat patches of colour laid like tiles, and tilted his tabletops so that a bowl and a jug each report from a slightly different angle.",
+            "art": "mountain"
+          },
+          {
+            "type": "example",
+            "title": "Van Gogh Presses Harder",
+            "body": "The other road out ran through feeling. In The Starry Night (June 1889), painted from a room in the asylum at Saint-Rémy, Van Gogh loads the sky with rolling coils of blue and yellow, sets outsized stars turning, and pushes a black cypress up through the frame. Instead of reproducing what he saw, he told his brother Theo, he used colour arbitrarily, to express himself more forcefully.",
+            "art": "flame"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Post-Impressionism names a single shared style that the Impressionists moved on to.",
+            "answer": false,
+            "explain": "The critic Roger Fry coined it for a London exhibition in 1910, after most of the artists were dead. It gathers painters who pushed past Impressionism in incompatible directions: Cézanne toward structure, Van Gogh toward expression, Seurat toward optical system, Gauguin toward flat symbolic colour. It is a label for divergence."
+          },
+          {
+            "type": "example",
+            "title": "Cubism Takes the Viewpoint Apart",
+            "body": "Between 1908 and 1914 Picasso and Braque worked so closely that they could barely tell their canvases apart. They broke a guitar, a bottle, a face into facets and showed several angles at once, in a dry palette of ochre, grey and brown. Alberti's single fixed eye had held for nearly five hundred years. Cubism proposed a picture built for a viewer who moves.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A Cubist painting can look like chaos. Which rule of picture-making is it actually breaking?",
+            "answer": "One viewer, in one spot, at one instant — the assumption underneath linear perspective ever since Alberti. Cubism paints an object as knowledge rather than as a snapshot: the front, the side and the top gathered onto the flat surface you are standing in front of."
+          },
+          {
+            "type": "example",
+            "title": "Fountain, 1917",
+            "body": "In April 1917 the Society of Independent Artists in New York promised to exhibit any work whose maker paid the fee. Someone submitted a porcelain urinal, laid on its back and signed R. Mutt 1917. The board hid it, and Marcel Duchamp, who sat on that board, resigned. The original vanished; a photograph by Alfred Stieglitz and later replicas are all that survive.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "The Question Changes",
+            "body": "The defence published in the little magazine The Blind Man made the case plainly: whether Mr Mutt made the object with his own hands is unimportant — he chose it, gave it a new title and viewpoint, and erased its usefulness. After 1917 the live question about a work is often not is this well made, but what is this claiming to be, and who gets to decide.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Abstraction Is a Destination",
+            "body": "Mondrian spent years painting trees, each version pressing the branches closer to a lattice, before he arrived at the grid. Malevich hung Black Square (1915) high in the corner of the room — the spot a Russian household keeps for its icon. Abstraction was somewhere these painters travelled to, deliberately, over years of work.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Painters generally turned to abstraction because they could not draw convincingly from life.",
+            "answer": false,
+            "explain": "Their own early work settles it: Mondrian's landscapes and Kandinsky's figurative paintings are conventionally accomplished, and Picasso's academic studies date from his teens. Abstraction was reached by subtraction, step by step, once recording appearances was no longer the point of the exercise."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Impressionism was named by a hostile 1874 review of Monet's Impression, Sunrise — the painters adopted the insult.",
+              "Post-Impressionism is a label for divergence: Cézanne toward structure, Van Gogh toward expression.",
+              "Cubism (Picasso and Braque, 1908–14) abandoned the single fixed viewpoint perspective had assumed since Alberti.",
+              "Duchamp's Fountain (1917) moved the question from is it beautiful to what makes it art, and who decides.",
+              "Abstraction was a destination reached deliberately, not a failure of skill."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Where does the name Impressionism come from?",
+            "back": "Louis Leroy's mocking review in Le Charivari, 25 April 1874, which took the title of Monet's Impression, Sunrise and aimed it at the whole exhibition."
+          },
+          {
+            "front": "What did Cézanne and Van Gogh each take from Impressionism?",
+            "back": "Cézanne kept the sensation but rebuilt structure from patches of colour; Van Gogh pushed colour and brushstroke toward expression rather than record."
+          },
+          {
+            "front": "What convention did Cubism break?",
+            "back": "The single fixed viewpoint behind linear perspective. Picasso and Braque (1908–14) folded several angles of an object into one flat image."
+          },
+          {
+            "front": "Why does Duchamp's Fountain (1917) matter?",
+            "back": "A urinal signed R. Mutt shifted the central question from is this beautiful to what makes something art, and who has the authority to decide."
+          }
+        ]
+      },
+      {
+        "id": "reading-a-museum",
+        "title": "Reading a Museum",
+        "summary": "Wall labels, provenance, restoration and the canon — how to use a museum's apparatus without letting it do your looking for you.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Line Nobody Reads",
+            "body": "Every wall label carries the same handful of facts: artist, their dates, title, date of the work, medium, size, and a credit line saying how the museum got it. That last line is the one visitors skip. It is often the most revealing thing on the wall — the record of how this object ended up in this building.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "What a Label Cannot Tell You",
+            "body": "A label is about fifty words written by a curator, often centuries after the fact. Titles are frequently not the artist's: the painting everyone calls Whistler's Mother was exhibited as Arrangement in Grey and Black No. 1 (1871). And the phrasing grades certainty — Attributed to, Workshop of, Circle of, After each mark a step further from the artist's own hand.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A label reads Workshop of Rembrandt. What is the museum telling you?",
+            "choices": [
+              "Rembrandt painted it and signed it himself",
+              "It was made in Rembrandt's studio under his supervision, but probably not by his hand",
+              "It was painted in Rembrandt's manner two centuries later",
+              "It is a known forgery the museum displays anyway"
+            ],
+            "answer": 1,
+            "explain": "The wording is a ladder of confidence. Rembrandt means by him; Workshop of means made in his studio under his eye; Circle of means a contemporary working nearby; After means a later copy of a known composition. The Rembrandt Research Project, founded in 1968, spent decades moving paintings up and down that ladder."
+          },
+          {
+            "type": "concept",
+            "title": "Provenance",
+            "body": "Provenance is the chain of ownership from the artist's studio to this wall. It matters three times over: it is the main evidence that a work is genuine, it establishes legal title, and it is a historical document in itself. A gap in the chain — especially one covering Europe between 1933 and 1945 — is a question the museum owes you an answer to.",
+            "art": "path"
+          },
+          {
+            "type": "example",
+            "title": "The Woman in Gold",
+            "body": "Gustav Klimt's Portrait of Adele Bloch-Bauer I (1907) is a face and two hands surfacing from a shimmering field of gold leaf and ornament. The Nazis seized it in Vienna in 1938, and Austria showed it for decades as a national treasure. Adele's niece Maria Altmann fought through American and Austrian proceedings and won it back in 2006.",
+            "art": "balance"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If a major museum has a work on display, its ownership history has been fully established.",
+            "answer": false,
+            "explain": "Museums acquired much of what they hold long before provenance standards existed, and many are still working through the gaps — particularly 1933 to 1945, and objects removed under colonial rule. Since the Washington Principles of 1998, many institutions publish their provenance research and negotiate restitution."
+          },
+          {
+            "type": "example",
+            "title": "The Ceiling Nobody Recognised",
+            "body": "Michelangelo's Sistine Chapel ceiling, painted 1508–12, was cleaned between 1980 and 1994. Under four centuries of candle soot and darkened glue varnish were acid pinks, apple greens and lemon yellows nobody expected. Some scholars protested that the restorers had scrubbed away his final shadows; most conservators concluded the removed layer was later grime and glue.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why is it fair to say you have never seen an old painting the way its maker saw it?",
+            "answer": "Pigments fade and shift — some reds vanish, the blue called smalt turns grey — and varnish yellows over decades. Add soot, later overpainting, cleaning, and electric light where there were candles. You are looking at a chemical record of time, not a fixed image."
+          },
+          {
+            "type": "concept",
+            "title": "The Canon Is a Set of Choices",
+            "body": "The list of great artists was assembled by particular people with particular views. Vasari's Lives of the Artists (1550) made the story Italian and Florence-shaped. Academies, national museums and textbooks hardened it: E. H. Gombrich's The Story of Art, the best-selling survey ever written, contained no women artists from 1950 until its sixteenth edition in 1995.",
+            "art": "pyramid"
+          },
+          {
+            "type": "example",
+            "title": "Nochlin Changes the Question",
+            "body": "In January 1971 the art historian Linda Nochlin published Why Have There Been No Great Women Artists? Her answer was not that women lacked genius, nor that lost geniuses were waiting to be found. It was that greatness is manufactured by institutions — and women were shut out of the life-drawing room, the apprenticeship and the academy.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What was Linda Nochlin's own answer to her 1971 question?",
+            "choices": [
+              "There were many great women artists whom history simply forgot",
+              "Greatness in art is a meaningless idea",
+              "Women artists chose domestic subjects that critics ranked lower",
+              "The institutions that manufactured great artists were closed to women"
+            ],
+            "answer": 3,
+            "explain": "Nochlin explicitly refused the rescue-mission answer. Recovering overlooked artists is worth doing — Artemisia Gentileschi has been thoroughly reassessed since — but her argument was structural: no access to drawing from the nude meant no history painting, and history painting was where greatness was defined. The fault, she wrote, lies not in our stars but in our institutions and our education."
+          },
+          {
+            "type": "concept",
+            "title": "Trust Your Eye, Keep It Curious",
+            "body": "You do not need permission to have a response. The label, the canon and the price are arguments, not verdicts. But your first reaction is data rather than a conclusion: stay long enough to find out what produced it. Two questions carry you a long way — what is this made of, and who wanted it made?",
+            "art": "eye"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A wall label is a short curatorial argument; its wording grades certainty, from Rembrandt down to After Rembrandt.",
+              "Provenance is the ownership chain — evidence of authenticity and title, and gaps between 1933 and 1945 matter.",
+              "The colours you see are altered by fading, varnish and cleaning; the Sistine restoration made that impossible to ignore.",
+              "The canon records access as much as talent; Nochlin's 1971 essay reframed the absence as institutional.",
+              "Your response is real evidence. Stay long enough to find out what caused it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the credit line on a wall label tell you?",
+            "back": "How the museum acquired the work — gift, bequest or purchase, and from whom. It is the visible end of the provenance chain."
+          },
+          {
+            "front": "What is provenance, and why does it matter?",
+            "back": "The chain of ownership from studio to wall. It evidences authenticity and legal title, and gaps — especially 1933 to 1945 — can signal looting."
+          },
+          {
+            "front": "Are the colours you see the colours as painted?",
+            "back": "No. Pigments fade and shift, varnish yellows, soot builds up. Cleaning the Sistine ceiling (1980–94) uncovered startlingly bright colour."
+          },
+          {
+            "front": "What did Linda Nochlin argue in 1971?",
+            "back": "That the absence of great women artists was institutional rather than a matter of talent: women were barred from life classes, apprenticeships and academies."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "computing",
+    "title": "How Computers Think",
+    "tagline": "From a single on-off switch to a running program.",
+    "category": "Technology",
+    "description": "Strip away the screen and a computer is nothing but switches that are either on or off. This course rebuilds the machine from there — bits and gates, the stored-program idea, the tower of abstractions above it, and the hard limits none of it can escape.",
+    "lessons": [
+      {
+        "id": "everything-is-switches",
+        "title": "Everything Is Switches",
+        "summary": "How on-off switches become numbers, letters, colours and arithmetic — and why two states beat ten in real hardware.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Nothing But Switches",
+            "body": "Open a computer and there is nothing clever inside: just switches, each either on or off. A modern processor holds tens of billions of them, flipping billions of times a second. Every photograph, song, message and spreadsheet you have ever seen was built out of that one stupid distinction.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Binary Is a Choice, Not a Law",
+            "body": "Nothing in mathematics demands base two. We count in tens because we have ten fingers, and machines could have been built to do the same — some early ones, including ENIAC, were. Engineers chose two because a switch is naturally a two-state thing: on or off. One such digit is called a bit.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "Why Two Beat Ten",
+            "body": "Voltage in a real wire is noisy — it sags, spikes and drifts. With ten voltage levels standing for ten digits, a small wobble turns a 6 into a 7. With two, anything below a threshold counts as 0 and anything above it as 1, so a signal can be badly mangled and still arrive perfectly. Binary buys enormous tolerance for error.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did engineers settle on base two rather than the base ten people already used?",
+            "choices": [
+              "Base two is mathematically more powerful than base ten",
+              "Binary numbers are shorter, so they take up less memory",
+              "A switch has two clean states, so electrical noise rarely changes a digit",
+              "Base ten was tried and turned out to be mathematically impossible"
+            ],
+            "answer": 2,
+            "explain": "This is a hardware decision, not a mathematical one. Ten voltage levels would sit close together and any wobble would corrupt a digit; two levels separated by a threshold survive a lot of abuse. Binary numbers are in fact longer than decimal ones, not shorter."
+          },
+          {
+            "type": "concept",
+            "title": "Counting in Powers of Two",
+            "body": "Base two works like base ten with different columns. Each place is worth twice the one to its right: 1, 2, 4, 8, 16. Thirteen is eight plus four plus one, so its switches read on, on, off, on. Eight bits give 256 combinations, which is why so many limits in computing are 256, 1024 or 65,536.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "From Numbers to Letters",
+            "body": "Bits mean nothing on their own; meaning comes from an agreed code. ASCII, standardised in 1963, defined 128 codes and gave each a character — capital A is 65. That covered English and little else, so Unicode now numbers every character in every script, from Greek to emoji, with UTF-8 storing each in one to four bytes.",
+            "art": "book"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A file counts as text or as an image because of the bits inside it.",
+            "answer": false,
+            "explain": "The same bits are a number, a letter or a shade of grey depending on the code you agree to read them with. The byte 01000001 is 65, the letter A in ASCII, or a dark grey — nothing in the bits themselves decides. That agreement lives in the software, not in the switches."
+          },
+          {
+            "type": "concept",
+            "title": "Colours Are Numbers Too",
+            "body": "A screen pixel is three tiny lights: red, green and blue. Give each one a byte and its brightness runs from 0 to 255, which makes 256 x 256 x 256, or about 16.7 million combinations. A photograph is millions of those triples in a row, plus a header saying how wide the rows are.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "An uncompressed photo has 12 million pixels. Roughly how much space does it need?",
+            "answer": "About 36 megabytes — three bytes per pixel, one for each of red, green and blue. That is why image formats compress: JPEG discards detail your eye barely notices, and PNG stores repeated patterns once instead of many times. The pixels are the same numbers either way."
+          },
+          {
+            "type": "concept",
+            "title": "Gates: Switches That Decide",
+            "body": "A transistor is a switch controlled by another electrical signal, and wiring a few together makes a logic gate. AND outputs 1 only when both inputs are 1. OR outputs 1 when either is. NOT flips its input. That is the entire vocabulary — every operation a processor performs is built from these three.",
+            "art": "fork"
+          },
+          {
+            "type": "example",
+            "title": "Building an Adder From Gates",
+            "body": "To add two bits: the sum is 1 when exactly one input is 1, which AND, OR and NOT can express between them, and a carry passes to the next column only when both inputs are 1, which is plain AND. Give each column a third input for the carry arriving from its right, chain 64 of them, and the machine adds 64-bit numbers.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where does a processor's ability to add numbers actually come from?",
+            "choices": [
+              "A stored table listing the answer to every possible sum",
+              "A circuit of logic gates whose outputs are the sum bit and the carry bit",
+              "Software loaded at startup that teaches the chip arithmetic",
+              "A tiny decimal calculator embedded in the chip"
+            ],
+            "answer": 1,
+            "explain": "Addition is wiring. AND, OR and NOT are arranged so that the sum and the carry simply appear as outputs, and 64 copies of that arrangement add 64-bit numbers. No table and no software are involved — arithmetic here is a shape of circuit."
+          },
+          {
+            "type": "recap",
+            "title": "Everything Is Switches",
+            "points": [
+              "Binary is an engineering choice, not a mathematical one: a switch has two clean states, so noise almost never flips a digit.",
+              "Bits mean whatever code you agree on — one byte is 65, the letter A in ASCII, or a shade of grey; Unicode extends that agreement to every script.",
+              "Colour is numbers as well: three bytes per pixel give about 16.7 million shades.",
+              "Transistors make AND, OR and NOT gates, and arranged in the right shape those gates produce sums and carries. Arithmetic falls out of the wiring."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do computers use base two rather than base ten?",
+            "back": "A switch has two clean states, so a threshold separates 0 from 1 and a noisy signal still arrives intact. Ten voltage levels would corrupt easily."
+          },
+          {
+            "front": "What is a bit?",
+            "back": "One binary digit — a single on-or-off answer. Eight bits make a byte, which has 256 possible combinations."
+          },
+          {
+            "front": "What do ASCII and Unicode actually do?",
+            "back": "They agree which number means which character. ASCII defined 128 codes, mostly English; Unicode numbers every script and emoji, encoded in bytes by UTF-8."
+          },
+          {
+            "front": "How does a chip add without knowing arithmetic?",
+            "back": "AND, OR and NOT gates are wired so the sum bit and carry bit appear as outputs. Chain 64 such circuits and it adds 64-bit numbers."
+          }
+        ]
+      },
+      {
+        "id": "the-stored-program-idea",
+        "title": "The Stored-Program Idea",
+        "summary": "From Babbage's unbuilt engine and Lovelace's notes to Turing's universal machine and the loop every processor still runs.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Machine That Was Never Built",
+            "body": "In 1837 Charles Babbage designed the Analytical Engine: a mechanical computer with a store for numbers, a mill to work on them, and punched cards to feed in instructions. It could loop and it could branch. It was never completed in his lifetime, and its ideas waited a century for hardware to catch up.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Lovelace's Notes",
+            "body": "In 1843 Ada Lovelace translated an Italian account of the Engine and appended notes three times longer than the paper itself. Note G sets out, step by step, how the machine would compute a sequence of Bernoulli numbers — widely described as the first algorithm published for a machine, though Babbage had drafted unpublished programs earlier.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "How is Ada Lovelace's 1843 work most accurately described?",
+            "choices": [
+              "A step-by-step method published for a machine, inside notes three times longer than the paper she translated",
+              "Building the first working computer",
+              "Inventing the first programming language",
+              "A faithful translation with no ideas of her own added"
+            ],
+            "answer": 0,
+            "explain": "Her notes ran three times the length of the paper and carried her own analysis, including Note G's Bernoulli-number method. She built nothing — the Engine was never completed — and she named no language. Dismissing the notes as mere translation and calling her the first programmer both miss what she actually did."
+          },
+          {
+            "type": "quote",
+            "text": "The Analytical Engine has no pretensions whatever to originate any thing. It can do whatever we know how to order it to perform.",
+            "by": "Ada Lovelace, 1843"
+          },
+          {
+            "type": "concept",
+            "title": "Beyond Arithmetic",
+            "body": "Lovelace's sharpest point was that the Engine's cards need not stand for quantities at all. If pitch and harmony could be expressed as symbols the machine manipulates, she wrote, it might compose music of any complexity. That is the leap from calculator to computer: numbers can represent anything.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Turing's Universal Machine",
+            "body": "In 1936 Alan Turing imagined a machine reading and writing symbols on an endless tape, following a table of rules. Then came the twist: one such machine can take another machine's rule table as input on its tape and imitate it exactly. A single general machine can be any machine, given the right description.",
+            "art": "path"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Turing built the first computer in 1936.",
+            "answer": false,
+            "explain": "The universal machine was a mathematical object in a paper about the limits of mathematics, not a device. Turing did work on real machines later — the wartime Bombe and the ACE design — but the 1936 machine existed only on paper, which is exactly why it applies to every computer built since."
+          },
+          {
+            "type": "concept",
+            "title": "One Memory for Both",
+            "body": "The 1945 EDVAC report, circulated under John von Neumann's name but resting on work by Eckert, Mauchly and their team, described a control unit, an arithmetic unit, memory and input-output — plus one decisive choice: instructions live in the same memory as data. That is still the shape of most computers.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does it matter that instructions sit in the same memory as data?",
+            "answer": "It turns programs into data. A new job becomes a new set of numbers to load rather than a rewiring job, and programs can read and write other programs — which is what compilers, operating systems and app stores all quietly depend on."
+          },
+          {
+            "type": "concept",
+            "title": "Fetch, Decode, Execute",
+            "body": "A register called the program counter holds the address of the next instruction. The processor fetches it from memory, decodes it into control signals, executes it, then moves on — unless the instruction says jump elsewhere. That loop, run billions of times a second, is everything a computer does.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A processor is running a game and a spreadsheet. Down at the fetch-decode-execute level, what separates them?",
+            "choices": [
+              "The processor loads a different instruction set for each kind of program",
+              "Games run in hardware; ordinary applications run in software",
+              "The processor recognises each program and applies rules made for it",
+              "Nothing — both are numbers in memory being fetched and decoded in turn"
+            ],
+            "answer": 3,
+            "explain": "A program is a pattern of numbers in memory that happens to decode into instructions. The processor has no idea what it is running; the difference between a game and a spreadsheet lies entirely in which numbers are there and in what order they get read."
+          },
+          {
+            "type": "example",
+            "title": "From Plugboards to Software",
+            "body": "ENIAC, unveiled in 1946, was programmed by setting switches and replugging cables — days of physical labour for each new problem. The Manchester Baby ran the first stored program in June 1948, and from then on a new job was a new set of numbers in memory. Software became something you write rather than build.",
+            "art": "key"
+          },
+          {
+            "type": "recap",
+            "title": "The Stored-Program Idea",
+            "points": [
+              "Babbage designed a general-purpose mechanical computer in the 1830s; Lovelace's 1843 notes published a step-by-step method for it and argued it could work on symbols, not only quantities.",
+              "Turing's 1936 universal machine was an abstraction, not a device: one machine that reads another machine's description and imitates it.",
+              "The von Neumann design put instructions and data in one memory, so programs became data you could load, generate and change.",
+              "Every processor still runs the same loop: fetch the next instruction, decode it, execute it, repeat."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Ada Lovelace actually contribute?",
+            "back": "Notes three times longer than the paper she translated, including Note G's Bernoulli-number method and the insight that the Engine could work on symbols."
+          },
+          {
+            "front": "What is Turing's universal machine?",
+            "back": "A 1936 abstraction: a machine that reads another machine's rule table as data and imitates it. One general machine can be any machine."
+          },
+          {
+            "front": "What is the von Neumann architecture?",
+            "back": "Control unit, arithmetic unit, memory and input-output — with instructions stored in the same memory as data, so programs are data you can load."
+          },
+          {
+            "front": "What is the fetch-decode-execute cycle?",
+            "back": "The program counter points at the next instruction; the processor fetches, decodes and executes it, then advances or jumps. Repeated billions of times a second."
+          }
+        ]
+      },
+      {
+        "id": "layers-of-abstraction",
+        "title": "Layers All the Way Down",
+        "summary": "Machine code, assembly, languages, compilers and the operating system — the tower of abstractions under every tap, and what it costs.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Tower Under a Tap",
+            "body": "Tapping an icon sets off a cascade: your tap becomes an event, handled by a framework, running on a language runtime, calling an operating system, driving a chip. Dozens of layers, each written by strangers, each hiding the one below it. Nobody alive understands all of them at once, and nobody needs to.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "The Only Language a Chip Knows",
+            "body": "A processor understands machine code: numbers in which some bits pick the operation and others pick where the data lives. Add these two registers. Copy this value to that address. Jump back if the result was zero. People wrote it by hand on early machines, and it was as miserable as it sounds.",
+            "art": "puzzle"
+          },
+          {
+            "type": "concept",
+            "title": "Assembly: Names Instead of Numbers",
+            "body": "Assembly language gives each machine instruction a short readable name and lets you label places in memory instead of counting addresses. A program called an assembler turns those names back into numbers, roughly one for one. Nothing new becomes possible; it just stops people making arithmetic errors all day.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does an assembler do?",
+            "choices": [
+              "Makes a program faster by rewriting its logic",
+              "Translates readable instruction names into the numbers the processor executes",
+              "Lets the processor understand ordinary English",
+              "Puts the physical parts of a computer together during manufacture"
+            ],
+            "answer": 1,
+            "explain": "Assembly is machine code with names instead of numbers, roughly one line per instruction, and the assembler performs that swap. It adds no cleverness and changes no logic — it removes bookkeeping."
+          },
+          {
+            "type": "concept",
+            "title": "Saying What, Not How",
+            "body": "A high-level language lets you write about customers, prices and dates instead of registers and addresses. A single line may become dozens of machine instructions. The same program can then be translated for a phone chip or a server chip, so the work outlives the hardware it was written on.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Translate Now or Translate Later",
+            "body": "A compiler translates the whole program ahead of time and produces machine code that runs on its own — fast, but tied to one kind of processor. An interpreter reads the program as it runs and acts on each piece — slower, but flexible and easy to move. Most modern systems do both, translating hot parts while running.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A compiler runs your program.",
+            "answer": false,
+            "explain": "A compiler is a translator. It reads your program once and writes out machine code; that output is what the processor runs later, often on a different computer entirely. An interpreter is the one that reads and acts at the same time."
+          },
+          {
+            "type": "concept",
+            "title": "The Manager You Never See",
+            "body": "The operating system owns the hardware. It decides which program gets the processor next, hands out memory and takes it back, talks to disks and networks through drivers, and stops programs reading each other's memory. Your app never touches the disk; it asks the operating system to.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You have twenty programs open on a four-core processor. How are they all running at once?",
+            "answer": "They are not. The operating system gives each one a slice of a core for a few milliseconds, saves its state, and swaps in the next — thousands of times a second. Only four are truly running at any instant; the rest is a fast and very convincing illusion."
+          },
+          {
+            "type": "concept",
+            "title": "Abstraction Is the Whole Trick",
+            "body": "Each layer offers the same deal: use what I do, ignore how I do it. That deal is why one person can build an app in a weekend on top of a century of other people's work, and why the floors below can be replaced — spinning disks swapped for flash — without a line above needing to change.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "What the Tower Costs",
+            "body": "Every layer adds work the machine did not strictly need to do, which is why carefully hand-tuned code can still beat a general solution by a wide margin. The subtler cost is understanding. Abstractions leak: when something breaks in a way the layer never anticipated, you must climb down into a floor you were promised you could ignore.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "An app stalls for reasons its framework's documentation does not explain. What does that illustrate?",
+            "choices": [
+              "Abstraction is a mistake that careful engineers avoid",
+              "The framework must be compiled rather than interpreted",
+              "Abstractions leak — when a layer's promise breaks down you need to understand what is under it",
+              "High-level languages cannot produce reliable programs"
+            ],
+            "answer": 2,
+            "explain": "A layer hides detail until something behaves in a way the hiding never accounted for — and then the detail is back and you need it. That is the price of the tower, not an argument against it: without abstraction nobody could build anything on top of anything."
+          },
+          {
+            "type": "recap",
+            "title": "Layers All the Way Down",
+            "points": [
+              "The chain runs machine code, assembly, high-level language: each rung trades some control for far more reach, and each is translated down into the one below.",
+              "Compilers translate the whole program ahead of time; interpreters read and act as they go; most real systems mix the two.",
+              "The operating system is the layer that owns the hardware — scheduling the processor, handing out memory, driving devices, isolating programs.",
+              "Abstraction is the discipline's central tool: use a layer without knowing how it works, and let the floors below change underneath you.",
+              "It is not free. Layers cost performance, and when they leak you have to understand the level below anyway."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Compiler versus interpreter?",
+            "back": "A compiler translates the whole program ahead of time into machine code that runs on its own; an interpreter reads and acts on the program as it runs."
+          },
+          {
+            "front": "What does an operating system do?",
+            "back": "Owns the hardware: schedules which program gets the processor, hands out memory, drives disks and networks, and keeps programs isolated from each other."
+          },
+          {
+            "front": "Why is abstraction computing's central tool?",
+            "back": "Each layer lets you use what it does without knowing how, so work builds on work and the level below can be replaced without breaking the level above."
+          },
+          {
+            "front": "What is a leaky abstraction?",
+            "back": "A layer that hides detail until something behaves unexpectedly — then you must climb down and understand the level you were promised you could ignore."
+          }
+        ]
+      },
+      {
+        "id": "limits-and-speed",
+        "title": "Limits and Speed",
+        "summary": "Why some methods collapse at scale, why chips grew sideways instead of faster, why caching makes machines feel quick — and what no computer can ever do.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Ways to Sort a List",
+            "body": "Give a computer a million names to sort. One method compares every name against every other — a trillion comparisons, hours of work. Another finishes the same list in under a second. Same machine, same data, same answer. The difference is not the hardware; it is how the work grows as the list gets longer.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "How Work Grows",
+            "body": "Complexity measures how the number of steps grows with the size of the input, not how many seconds it takes on today's machine. Double the input: a method that scans the list once does twice the work, while one that compares every pair does four times as much. On a million items that gap is a factor of fifty thousand.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A method takes 1 second on 1,000 items, and its work grows with the square of the item count. Roughly how long on 10,000 items?",
+            "choices": [
+              "About 10 seconds",
+              "About 100 seconds",
+              "About 1,000 seconds",
+              "About 1 second — modern hardware absorbs it"
+            ],
+            "answer": 1,
+            "explain": "Ten times the items means a hundred times the work when work grows with the square. That is the trap: the method looked fine on small test data and falls apart on real data. Faster hardware buys a constant factor; it never changes the shape of the growth."
+          },
+          {
+            "type": "concept",
+            "title": "Moore's Law Is an Observation",
+            "body": "In 1965 Gordon Moore noticed the number of components on a chip had been doubling roughly every year, and guessed the trend would hold a decade. In 1975 he revised it to about every two years. Nothing in physics required this. It held because an industry treated it as a schedule and planned billions of dollars around it.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Moore's law is a law of physics that guarantees computers keep getting faster.",
+            "answer": false,
+            "explain": "It was an observation about how many transistors fit economically on a chip, which then became a self-fulfilling industry roadmap — and it never promised speed. Transistor counts kept climbing long after clock speeds stopped rising in the mid-2000s."
+          },
+          {
+            "type": "quote",
+            "text": "The complexity for minimum component costs has increased at a rate of roughly a factor of two per year.",
+            "by": "Gordon Moore, 1965"
+          },
+          {
+            "type": "concept",
+            "title": "Why Chips Grew Sideways",
+            "body": "Dennard scaling, described in 1974, meant that as transistors shrank their power density stayed about constant, so clocks could run faster almost for free. Around 2005 it broke down: leakage and heat capped clock speeds at a few gigahertz. Makers stopped selling faster cores and started selling more of them.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Your laptop's clock speed is roughly what a desktop had in 2005. Why is it so much faster?",
+            "answer": "Because speed stopped coming from the clock. It now comes from several cores working at once, more instructions finished per tick, far larger caches, and specialised units for graphics and video. The catch: extra cores only help if the software can split the work up."
+          },
+          {
+            "type": "concept",
+            "title": "Caching, the Hidden Reason",
+            "body": "A core can finish several instructions in a nanosecond, but fetching a value from main memory takes roughly a hundred times longer. Caches — small fast memories beside the core — hold what was used recently and what sits next to it. Because real programs reuse the same data, most requests never reach main memory.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "If main memory is about a hundred times slower than the processor, why isn't a computer mostly sitting there waiting?",
+            "choices": [
+              "Main memory now runs at the same speed as the processor",
+              "The operating system rewrites programs so they avoid memory",
+              "Programs are written to keep everything in the processor's registers",
+              "Caches keep recently used and nearby data in fast memory beside the core"
+            ],
+            "answer": 3,
+            "explain": "Programs reuse a small working set, so a few levels of cache catch the overwhelming majority of requests. When a program's access pattern defeats the cache, the very same code can run many times slower with nothing else changed."
+          },
+          {
+            "type": "concept",
+            "title": "Some Things Cannot Be Computed",
+            "body": "In 1936 Turing proved that no program can decide, for every possible program and input, whether it eventually stops. Suppose one existed. You could build a program that asks it about itself and then does the opposite, halting precisely when it is told it will loop forever. The contradiction rules the whole idea out.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Would a computer a trillion times faster be able to solve the halting problem?",
+            "answer": "No. The obstacle is logical, not physical — the contradiction appears however fast the machine runs. Speed changes how long an answer takes, never whether one exists. It is why real program-checking tools prove narrower things, or are allowed to answer that they do not know."
+          },
+          {
+            "type": "recap",
+            "title": "Limits and Speed",
+            "points": [
+              "Complexity is about how work grows with input size: ten times the data can mean a hundred times the work, and no hardware fixes that shape.",
+              "Moore's law was an observation about transistor counts that became an industry schedule — not physics, and never a promise about speed.",
+              "When Dennard scaling ended in the mid-2000s, clock speeds plateaued and chips grew sideways into multiple cores.",
+              "Caching hides the gap between a fast core and slow memory, and is much of why a machine feels quick.",
+              "Turing's halting problem shows some questions have no computable answer at all, on any hardware, ever."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does algorithmic complexity describe?",
+            "back": "How the number of steps grows with input size. Ten times the items can mean a hundred times the work if work grows with the square."
+          },
+          {
+            "front": "Is Moore's law a law of nature?",
+            "back": "No. It was Moore's 1965 observation about transistor counts doubling, which became a self-fulfilling industry roadmap. It never promised speed."
+          },
+          {
+            "front": "Why did processors move to multiple cores?",
+            "back": "Dennard scaling ended around 2005: heat and leakage capped clock speeds, so makers added cores instead of megahertz."
+          },
+          {
+            "front": "What is the halting problem?",
+            "back": "Turing's 1936 proof that no program can decide, for every program and input, whether it stops. The limit is logical, so no hardware escapes it."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "conflict",
+    "title": "Handling Conflict",
+    "tagline": "What actually cools a fight down, and what feeds it.",
+    "category": "Psychology",
+    "description": "Why disagreements escalate, what a flooded body does to your judgment, and the specific moves that lower the temperature. Built on attribution research and John Gottman's lab findings, and closing on the most useful sentence you can learn to say.",
+    "lessons": [
+      {
+        "id": "why-it-escalates",
+        "title": "Why It Escalates",
+        "summary": "Attribution asymmetry, naive realism, and reactive devaluation — the three habits that turn a disagreement into a fight.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Same Facts, Two Films",
+            "art": "eye",
+            "body": "In 1985 Robert Vallone, Lee Ross and Mark Lepper showed pro-Israeli and pro-Arab students the identical television news coverage of the Beirut massacres. Both groups came away certain the coverage had been slanted — against their own side. One tape. Two different films."
+          },
+          {
+            "type": "concept",
+            "title": "You Had Reasons. They Have a Character.",
+            "art": "mirror",
+            "body": "Watch how you explain yourself: I snapped because I hadn't slept. Now watch how you explain them: they snapped because they're hostile. Your behaviour gets a situation; theirs gets a personality. Lee Ross named the second half of that the fundamental attribution error in 1977."
+          },
+          {
+            "type": "mcq",
+            "prompt": "A teammate misses a deadline. You missed one last month. What does attribution asymmetry predict you will conclude?",
+            "choices": [
+              "They are unreliable; you were overloaded",
+              "You were both overloaded",
+              "You are unreliable; they were overloaded",
+              "Nothing — a missed deadline is a fact, not a judgment"
+            ],
+            "answer": 0,
+            "explain": "We hand ourselves a circumstance and hand other people a character. Bertram Malle's 2006 meta-analysis found the asymmetry is weaker than textbooks claimed in general — but robust exactly where it does damage: negative events, and people we are close to."
+          },
+          {
+            "type": "concept",
+            "title": "Naive Realism",
+            "art": "lens",
+            "body": "Lee Ross and Andrew Ward described a belief almost nobody notices holding: I see things as they are. It carries a corollary — reasonable people given the same facts will agree with me — and a sting: those who don't must be uninformed, lazy, or biased. Disagreement stops being information and becomes a diagnosis."
+          },
+          {
+            "type": "example",
+            "title": "Reagan's Plan, Gorbachev's Plan",
+            "art": "balance",
+            "body": "In 1990 Constance Stillinger and colleagues, working with Lee Ross, handed Stanford students an arms-reduction proposal. Attributed to Reagan, around 90% judged it even-handed or good for the United States. The same words attributed to Gorbachev, and that share collapsed to well under half."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Reactive devaluation means rejecting a proposal after examining it and finding it weak.",
+            "answer": false,
+            "explain": "The students examined the same words either way. What changed was the letterhead. Reactive devaluation is a discount applied on arrival, before analysis — which is why a genuine concession from the other side so often reads as a trick."
+          },
+          {
+            "type": "concept",
+            "title": "The Ratchet",
+            "art": "ladder",
+            "body": "Escalation is assembled out of small reciprocated moves. Dean Pruitt and Jeffrey Rubin traced the pattern: issues multiply, the specific complaint turns general, tactics get heavier, and the goal drifts from doing well to winning to hurting. Each round makes the round before it look moderate."
+          },
+          {
+            "type": "reveal",
+            "prompt": "One partner shifts from 'you left the dishes' to 'you always do this.' What just changed?",
+            "answer": "The complaint has jumped from an act to a standing trait — Pruitt and Rubin's proliferation step. Dishes can be washed. 'Always' cannot be answered, only defended against, so the other person is now fighting about who they are."
+          },
+          {
+            "type": "quote",
+            "text": "All violence is the result of people tricking themselves into believing that their pain derives from other people and that consequently those people deserve to be punished.",
+            "by": "Marshall B. Rosenberg"
+          },
+          {
+            "type": "concept",
+            "title": "Negativity Reciprocates Harder",
+            "art": "wave",
+            "body": "In John Gottman's lab what distinguished distressed couples was not that they got angry — everyone did. It was the odds on the next move: given one barb, the chance of a barb back was far higher, and the chain ran longer before anyone broke it. Warmth reciprocates too, just less reliably."
+          },
+          {
+            "type": "example",
+            "title": "Two Accounts of One Fight",
+            "art": "dialog",
+            "body": "Ask two people in a stalled conflict to tell the story. The facts will nearly match; one thing will not, and it is who started it. Each begins the story a move later than the other — at the provocation received, never the one sent. Paul Watzlawick called this punctuation."
+          },
+          {
+            "type": "mcq",
+            "prompt": "A colleague rejects a plan you consider obviously right. Naive realism predicts your first explanation will be:",
+            "choices": [
+              "They must know something you don't",
+              "They are biased, lazy, or badly informed",
+              "The plan may be less obvious than it looks",
+              "You explained it badly"
+            ],
+            "answer": 1,
+            "explain": "The tenet runs: I see reality plainly, so anyone who disagrees is defective. Notice that all three of the explanations naive realism offers — uninformed, lazy, biased — are about them. The ones about the plan, or about you, arrive later if at all."
+          },
+          {
+            "type": "recap",
+            "title": "Why It Escalates",
+            "points": [
+              "You explain yourself with circumstances and other people with character. In conflict that asymmetry does most of the work.",
+              "Naive realism: I see it plainly, so you must be biased. Disagreement stops counting as information.",
+              "Reactive devaluation discounts a proposal for arriving from the wrong side, before anyone reads it.",
+              "Escalation ratchets through small reciprocated moves: 'the dishes' becomes 'you always', and the goal drifts from doing well to hurting.",
+              "Both people can honestly report that the other one started it. They are punctuating the same sequence differently."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is attribution asymmetry in a conflict?",
+            "back": "You explain your own behaviour by circumstance and theirs by character — Ross's fundamental attribution error, sharpest for negative events."
+          },
+          {
+            "front": "What are the tenets of naive realism?",
+            "back": "I see things objectively; reasonable people will agree with me; those who don't must be uninformed, lazy, or biased. Ross and Ward."
+          },
+          {
+            "front": "What is reactive devaluation?",
+            "back": "The same proposal rated worse for coming from the other side. Stillinger and Ross, 1990: fair under Reagan's name, unfair under Gorbachev's."
+          },
+          {
+            "front": "How does escalation ratchet?",
+            "back": "Small reciprocated moves: issues multiply, the specific becomes 'you always', tactics harden, and the aim drifts from doing well to hurting."
+          }
+        ]
+      },
+      {
+        "id": "flooded",
+        "title": "The Flooded Body",
+        "summary": "What happens to your reasoning past roughly 100 beats per minute — and why a twenty-minute break is not avoidance.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Equipment Needs Recalibrating",
+            "art": "clock",
+            "body": "In John Gottman's lab, couples argued while sensors tracked their hearts. In one study the researchers broke in, said the equipment needed recalibrating, and had them read magazines for half an hour. When the same argument resumed, their bodies had settled — and so had the conversation."
+          },
+          {
+            "type": "concept",
+            "title": "Diffuse Physiological Arousal",
+            "art": "flame",
+            "body": "Gottman's name for the fight state: heart rate climbing past roughly 100 beats per minute, adrenaline up, attention narrowed. Above that line people lose access to their best reasoning, stop absorbing anything new, and fall back on whatever is well rehearsed — attack, or shutdown."
+          },
+          {
+            "type": "truefalse",
+            "statement": "A flooded person can still take in a new fact if you explain it clearly enough.",
+            "answer": false,
+            "explain": "Intake is the first thing to go. Above that threshold new information does not land, humour disappears, and problem-solving is replaced by defence. Explaining harder at a flooded person is talking to their adrenaline."
+          },
+          {
+            "type": "concept",
+            "title": "Why 'Let's Finish This Now' Fails",
+            "art": "hourglass",
+            "body": "Finishing it tonight sounds like maturity. But almost nothing said in the next ten minutes will be heard, and all of it will be remembered. Two flooded people have only one gear. The body needs about twenty minutes to clear, and twenty is the floor, not the average."
+          },
+          {
+            "type": "example",
+            "title": "What You Do In The Break Matters",
+            "art": "path",
+            "body": "A break spent drafting your closing argument is not a break — you hold your own heart rate up and come back with sharper edges. Gottman's instruction is to do something genuinely distracting and self-soothing: walk, music, anything but the replay, for twenty minutes at least."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these counts as a real break, by the physiological standard?",
+            "choices": [
+              "Twenty minutes spent working out what to say next",
+              "Five minutes of silence in the same room",
+              "Twenty-five minutes walking, deliberately thinking about something else",
+              "Going quiet and letting them carry on talking"
+            ],
+            "answer": 2,
+            "explain": "Only one lets the body clear. Rehearsing keeps arousal high, five minutes is under the floor, and going quiet in place is stonewalling — the listener withdrawing while the conversation continues without them."
+          },
+          {
+            "type": "concept",
+            "title": "Flooding and Stonewalling",
+            "art": "shield",
+            "body": "Stonewalling is what flooding looks like from outside: the listener goes still, drops the nods and the mm-hms, turns to stone. It reads as contempt or indifference. Inside, it is usually overload. In Gottman's research on heterosexual couples, roughly 85% of stonewallers were men."
+          },
+          {
+            "type": "quote",
+            "text": "When angry, count ten before you speak; if very angry, a hundred.",
+            "by": "Thomas Jefferson"
+          },
+          {
+            "type": "concept",
+            "title": "A Break Is Not a Walkout",
+            "art": "anchor",
+            "body": "The same act reads two ways. Leaving without a word says you are gone and the problem is theirs. A break has three parts, said out loud: I am too worked up to do this well, I am not walking away from it, and I will be back at nine. Then be back at nine."
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does naming the time you will return do so much of the work?",
+            "answer": "To the person left in the room, an unexplained exit is abandonment, and abandonment escalates on its own. A time turns the silence into a plan. Keeping it is what makes the next break usable — one you never return from is a walkout with manners."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Stonewalling is best understood as a deliberate power move.",
+            "answer": false,
+            "explain": "Usually it is a flooded person's last resort — the body has hit shutdown. That does not make it harmless, because the other person reads stone as contempt. Which is exactly why the flooded one has to say the words: I need twenty minutes, and I am coming back."
+          },
+          {
+            "type": "example",
+            "title": "Find Your Own Number",
+            "art": "graph",
+            "body": "The threshold is a rule of thumb, not a law: well-conditioned people can flood nearer 80 beats per minute, and resting rates differ. The usable version is personal. Learn your own tells — the jaw, the rising volume, the urge to interrupt, the feeling of having already won."
+          },
+          {
+            "type": "recap",
+            "title": "The Flooded Body",
+            "points": [
+              "Past roughly 100 bpm you lose the reasoning the conversation needs. Nothing said above that line gets heard.",
+              "The body takes about twenty minutes to clear, and rehearsing your case during the break does not count.",
+              "Stonewalling is usually flooding seen from outside — but it reads as contempt, so say what is actually happening.",
+              "A break has three parts: I am too worked up, I am not leaving this, I will be back at nine. Then come back at nine.",
+              "'Let's finish this now' is the most reasonable-sounding way to make a fight worse."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is diffuse physiological arousal?",
+            "back": "Gottman's fight state: past roughly 100 bpm you stop taking in new information and fall back on rehearsed attack or shutdown."
+          },
+          {
+            "front": "How long is a real break, and what do you do in it?",
+            "back": "Twenty minutes at minimum, spent on something genuinely distracting. Rehearsing your argument keeps the heart rate up and does not count."
+          },
+          {
+            "front": "What is stonewalling?",
+            "back": "The listener shutting down — no nods, no response. Usually flooding, not indifference; about 85% of stonewallers in Gottman's couples were men."
+          },
+          {
+            "front": "How do you take a break without it being a walkout?",
+            "back": "Say all three parts: I am too worked up to do this well, I am not leaving this, I will be back at nine. Then come back at nine."
+          }
+        ]
+      },
+      {
+        "id": "de-escalation",
+        "title": "What Actually De-escalates",
+        "summary": "Soft start-ups, real 'I' statements, looping until they say 'yes, that's it', impact versus intent — and the repair attempt.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The First Three Minutes",
+            "art": "clock",
+            "body": "In 1999 Sybil Carrère and John Gottman coded only the opening three minutes of newlyweds' conflict conversations — and those three minutes tracked who was still married six years later. How a disagreement starts shapes almost everything that follows it."
+          },
+          {
+            "type": "concept",
+            "title": "About That Prediction Rate",
+            "art": "lens",
+            "body": "The headline accuracy figures deserve an asterisk. In 2001 Richard Heyman and Amy Slep showed the models had been fitted and tested on the same couples; asked to predict a fresh sample, accuracy fell sharply. The behavioural findings survived that. The crystal ball did not."
+          },
+          {
+            "type": "concept",
+            "title": "The Soft Start-Up",
+            "art": "seed",
+            "body": "A harsh start-up opens on the person: you never, you always, what is wrong with you. A soft start-up opens on the situation and on you — here is what happened, here is what it did to me, here is what I would like. Same complaint. Only the second one can be answered."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is a soft start-up?",
+            "choices": [
+              "'Why is it always me chasing you for this?'",
+              "'I'm not angry, I'm just disappointed in you.'",
+              "'The report landed after the client call. I looked unprepared and I hated that. Can we set an internal deadline?'",
+              "'We need to talk about your attitude to deadlines.'"
+            ],
+            "answer": 2,
+            "explain": "One event, one impact, one request, and no verdict on the person. The other three open on character, which leaves the listener nothing to do but defend themselves — and openings like those rarely soften later."
+          },
+          {
+            "type": "concept",
+            "title": "'I' Statements, Done Properly",
+            "art": "mirror",
+            "body": "Thomas Gordon's I-message is observation plus impact: when the meeting ran late, I missed my daughter's bedtime. The counterfeit smuggles a verdict inside — I feel that you are inconsiderate. If the word after 'I feel' is 'that' or 'you', it is an accusation in a disguise."
+          },
+          {
+            "type": "truefalse",
+            "statement": "'I feel like you don't respect my time' is a properly formed I-statement.",
+            "answer": false,
+            "explain": "It is a you-statement with one word of camouflage. The test: after 'I feel', can the next word be an emotion — hurt, worried, embarrassed? Here it is 'like you', which delivers a judgment. Edward Kubany's experiments found accusatory you-framing draws markedly more hostility than the same content framed as I."
+          },
+          {
+            "type": "example",
+            "title": "The Negotiator's Staircase",
+            "art": "ladder",
+            "body": "The FBI's Behavioral Change Stairway, set out by Vecchi, Van Hasselt and Romano in 2005, has five steps, and active listening is the bottom one — empathy, rapport, influence and change all stand on it. Nobody is ever talked down because the negotiator argued well."
+          },
+          {
+            "type": "reveal",
+            "prompt": "You have paraphrased what they said. How do you know it was enough?",
+            "answer": "When they say some version of 'yes, that's it' and the corrections stop — not when you feel you have got it. Daniel Dennett's rendering of Rapoport's rule sets the bar higher: restate their case so well that they wish they had put it that way."
+          },
+          {
+            "type": "quote",
+            "text": "Most people do not listen with the intent to understand; they listen with the intent to reply.",
+            "by": "Stephen R. Covey"
+          },
+          {
+            "type": "concept",
+            "title": "Impact Is Not Intent",
+            "art": "fork",
+            "body": "You know you meant no harm. They know what it felt like. Both are true, and arguing over which one counts is the trap. The Harvard team behind Difficult Conversations put it plainly: we judge ourselves by our intentions and others by their impact. Concede the impact — it costs you nothing you own."
+          },
+          {
+            "type": "concept",
+            "title": "The Repair Attempt",
+            "art": "bridge",
+            "body": "Gottman's term for any move that halts the slide: a joke, a hand on the arm, 'can I start that over?', 'that came out wrong.' They are usually clumsy, and clumsy works. Whether one lands depends less on its wording than on the goodwill already in the account."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Mid-argument, your partner says in a silly voice: 'permission to restart this conversation?' What is that?",
+            "choices": [
+              "Deflection — the real issue is being dodged",
+              "A repair attempt",
+              "Stonewalling",
+              "A soft start-up"
+            ],
+            "answer": 1,
+            "explain": "Repair attempts are small and often faintly ridiculous, which is why they get read as deflection and swatted away. Whether a couple makes them, and whether the other person takes them, tracks how the fight ends."
+          },
+          {
+            "type": "recap",
+            "title": "What Actually De-escalates",
+            "points": [
+              "The first three minutes shape the rest. Open on the situation and its impact, not on their character.",
+              "A real 'I' statement is observation plus impact. If 'I feel' is followed by 'that' or 'you', it is an accusation.",
+              "Loop back what you heard until they say 'yes, that's it.' Proving you understood lowers the temperature before any concession.",
+              "Concede impact without litigating intent: you know what you meant, they know what it felt like.",
+              "Repair attempts are the single most useful move. Making them matters; accepting one matters just as much."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is a soft start-up?",
+            "back": "Opening on the situation and its impact rather than the person's character. Carrère and Gottman: the first three minutes track how it ends."
+          },
+          {
+            "front": "What is wrong with 'I feel like you don't listen'?",
+            "back": "It is a you-statement in disguise. After 'I feel' the next word should be an emotion — hurt, worried — not 'that' or 'you'."
+          },
+          {
+            "front": "When have you paraphrased enough?",
+            "back": "When they say 'yes, that's it' and the corrections stop — not when you feel you got it. Feeling understood cools things before any concession."
+          },
+          {
+            "front": "What is a repair attempt?",
+            "back": "Any small move that halts the slide: a joke, 'can I start over?', a hand on the arm. Clumsy ones work; what matters is making and taking them."
+          }
+        ]
+      },
+      {
+        "id": "standing-your-ground",
+        "title": "Standing Your Ground",
+        "summary": "Assertive without contempt: boundaries as what you will do, apologies that land, and when a conversation — or a relationship — should end.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Three Ways to Handle a No",
+            "art": "compass",
+            "body": "Robert Alberti and Michael Emmons named the three settings in 1970. Passive spends your own interests to keep the peace. Aggressive spends theirs to get your way. Assertive states what you need and leaves their standing intact. Volume is never the difference — a whispered 'you're impossible' is not assertive."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which sentence is assertive rather than aggressive or passive?",
+            "choices": [
+              "'Do you ever think about anyone but yourself?'",
+              "'It's fine, honestly, do whatever works for you.'",
+              "'I can't take the Friday shift. I can do Tuesday.'",
+              "'Some of us actually have deadlines.'"
+            ],
+            "answer": 2,
+            "explain": "A clear no, a clear alternative, no verdict on them. The first and last spend the other person's standing; the second spends your own, and passive agreement tends to come back later as resentment."
+          },
+          {
+            "type": "concept",
+            "title": "A Boundary Is What You Will Do",
+            "art": "shield",
+            "body": "A demand tells someone else how to behave, and you cannot enforce it. A boundary states what you will do: if the shouting starts, I will step out and we can pick this up tomorrow. Nothing about them has to change for it to work, which is exactly why it holds."
+          },
+          {
+            "type": "reveal",
+            "prompt": "'Stop raising your voice at me' versus 'if the shouting starts, I'll step out.' Why does only the second one hold?",
+            "answer": "The first hands your peace to someone else's self-control, and when they carry on you are left with an ultimatum you cannot enforce. The second needs only something you can do. A boundary that requires their cooperation is really a request."
+          },
+          {
+            "type": "concept",
+            "title": "Contempt Is About Rank",
+            "art": "flame",
+            "body": "Gottman's four horsemen are criticism, defensiveness, stonewalling and contempt — and contempt is the one that best predicts a relationship ending. Sarcasm, mockery, name-calling, the eye-roll: every version says the same thing, which is that you are above the person you are talking to."
+          },
+          {
+            "type": "truefalse",
+            "statement": "You can hold your position hard, and say the other person is wrong, without any contempt.",
+            "answer": true,
+            "explain": "Disagreement is about the claim; contempt is about the rank. 'I think that is wrong, and here is why' can run for an hour without a single horseman. 'Obviously you'd think that' does the damage in four words."
+          },
+          {
+            "type": "quote",
+            "text": "Fight for the things that you care about, but do it in a way that will lead others to join you.",
+            "by": "Ruth Bader Ginsburg"
+          },
+          {
+            "type": "example",
+            "title": "What Makes an Apology Work",
+            "art": "key",
+            "body": "Roy Lewicki's team tested the components in 2016. The one that mattered most was acknowledging responsibility; offering to repair came second; asking for forgiveness ranked last. So: name the specific harm, say it was yours, say what you will do differently. Then stop talking."
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is a non-apology?",
+            "choices": [
+              "'I interrupted you three times in that meeting. That was mine, and I'll watch for it.'",
+              "'I'm sorry if you felt undermined — I was only trying to keep us on time.'",
+              "'I was wrong to send that message. I'm sorry.'",
+              "'I'm sorry. I don't have an excuse for it.'"
+            ],
+            "answer": 1,
+            "explain": "Two tells: the 'if', which makes the harm hypothetical and their reaction the questionable part, and the explanation bolted on, which turns an apology into a defence. Lewicki's ranking puts acknowledgement of responsibility first, and that sentence never arrives there."
+          },
+          {
+            "type": "reveal",
+            "prompt": "How do you know a conversation — or a relationship — has run out of road?",
+            "answer": "When the same fight has run twenty times unchanged; when nothing you concede is ever enough; when you have stopped talking to someone and started managing them. Ending a conversation is not losing it. Nor is leaving something that only works when you disappear."
+          },
+          {
+            "type": "concept",
+            "title": "Where This Stops Applying",
+            "art": "bell",
+            "body": "None of this is for abuse. If you are afraid of someone — threatened, coerced, controlled or hurt — the goal is not repair and the tools change: safety first, and outside help, a domestic violence line or the authorities. Gottman's own clinics screen for this and do not treat it as conflict. Do not stay to practise soft start-ups."
+          },
+          {
+            "type": "concept",
+            "title": "Repair, Not Victory",
+            "art": "bridge",
+            "body": "Every move in this course costs something up front: conceding impact, breaking off mid-fight, apologising with no explanation attached. What you buy is a relationship that outlives the disagreement. Winning the argument and losing the person is not a draw. It is the more expensive result."
+          },
+          {
+            "type": "recap",
+            "title": "Standing Your Ground",
+            "points": [
+              "Assertive states the need and leaves the other person's standing intact. Volume is not the variable.",
+              "Phrase a boundary as what you will do — the kind you can keep without their cooperation.",
+              "Contempt is the horseman that predicts dissolution. You can disagree hard without going near it.",
+              "An apology that lands: name the harm, own it, offer repair. No 'if', no explanation bolted on.",
+              "If you are afraid of someone, the goal is safety, not repair. Everywhere else, aim to repair rather than to win."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Assertive versus aggressive versus passive?",
+            "back": "All three state a want. Aggressive spends the other person's standing, passive spends your own, assertive spends neither. Volume is not the tell."
+          },
+          {
+            "front": "How should a boundary be phrased?",
+            "back": "As what you will do, not what they must: 'if the shouting starts, I'll step out.' One that needs their cooperation is only a request."
+          },
+          {
+            "front": "Why is contempt the worst of the four horsemen?",
+            "back": "It signals rank rather than disagreement — sarcasm, mockery, the eye-roll. In Gottman's work it is the strongest predictor of dissolution."
+          },
+          {
+            "front": "What makes an apology land?",
+            "back": "Name the specific harm, take responsibility, offer repair. No 'if', no explanation attached. Lewicki 2016 ranked responsibility first."
+          }
+        ]
+      }
+    ]
   }
 ];
