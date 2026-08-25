@@ -1,61 +1,87 @@
-# MONEY.md — turning the bids into your bank balance
+# MONEY.md — how the money works
 
-The app is fully wired for real payments. Two things stand between you and revenue,
-and **both legally require you** (Stripe's KYC verifies the account owner's identity —
-nobody can do it for you, and you should never give anyone your banking credentials
-to do it "for" you):
+## The architecture: there is no database
 
-## Step 1 — Stripe account + bank link (~10–15 minutes, one time)
+The leaderboard is computed **directly from your Stripe payment ledger**. Every time
+someone loads the page, `/api/board` asks Stripe for completed checkout sessions and
+rebuilds the rankings from them.
 
-1. Go to https://stripe.com and create an account.
-2. Complete the activation form: legal name, address, SSN/tax info (US), and **your
-   bank account** for payouts. This is the "link my bank account" step — it lives in
-   Stripe, not in the code, and that's what makes the money path trustworthy.
-3. Payouts land on Stripe's rolling schedule (typically 2 business days after each
-   charge).
-
-## Step 2 — create the Payment Link (~3 minutes)
-
-1. Stripe Dashboard → **Payment Links** → **+ New**.
-2. Create a product called `OUTRANKED bid` → price: **"Customer chooses price"**
-   (suggested amount $5, minimum $1).
-3. After-payment behavior: redirect to `https://allenwangg.github.io/allen/?paid=1`.
-4. Copy the link (`https://buy.stripe.com/...`).
-
-## Step 3 — flip the switch (~1 minute)
-
-In `outranked/index.html`, set:
-
-```js
-const CONFIG = {
-  STRIPE_PAYMENT_LINK: "https://buy.stripe.com/YOUR_LINK",
-  SITE_URL: "https://allenwangg.github.io/allen/",
-  X_HANDLE: "yourhandle",
-};
+```
+bidder clicks "Pay & rank"
+  → Stripe Checkout (bid encoded in client_reference_id)
+  → payment completes, money lands in YOUR Stripe balance
+  → /api/board reads the ledger  →  the board, ranked
+  → Stripe pays out to your bank
 ```
 
-Commit + push. The demo ribbon disappears, and every **Pay & rank** click opens real
-Stripe checkout with the bid encoded in `client_reference_id`
-(`<name>_<amount>_<nonce>`), so each charge in your dashboard reconciles to a listing.
+What this buys you, versus every other board in this category:
 
-## Verification tiers (start at 1, upgrade when volume justifies)
+- **One environment variable is the entire backend.** No database, no KV store, no
+  webhook endpoint to keep in sync, nothing to maintain or pay for.
+- **Nothing can appear on the board without money having moved.** The ranking is a
+  view of the payment ledger — an unpaid listing is not "unverified," it is
+  impossible.
+- **Nothing to lose.** Wipe the deployment, redeploy anywhere, and the board rebuilds
+  itself perfectly from Stripe. Your data lives in the most durable place it could.
 
-1. **Honor + reconcile (launch day, zero infra).** Bids appear on the board
-   optimistically; you check the Stripe dashboard and remove any listing whose charge
-   never arrived. This is the "3 hours, one page, a payment link" configuration that
-   made the original $100k+.
-2. **Auto-verified (~5 extra minutes).** Deploy `server/stripe-webhook-worker.js` to
-   Cloudflare Workers (instructions in the file header). Set `CONFIG.BOARD_FEED_URL`
-   to the worker's `/board` URL — the page then merges only webhook-confirmed bids,
-   marked ✔ VERIFIED, on every load.
+Until `STRIPE_SECRET_KEY` is set, `/api/board` reports `configured: false` and the site
+runs a clearly-labeled **demo mode** with a seeded board. The moment the key exists,
+the page wipes the demo data and shows only real, paid listings. No code change,
+no redeploy.
+
+## Turning it on
+
+Both steps happen on Stripe's own website — they legally require the account owner, and
+you should never give banking credentials to anyone (or any AI) to do them for you.
+
+### 1. Stripe account + bank link (~15 min, one time)
+
+1. [stripe.com](https://stripe.com) → Sign up.
+2. **Activate payments**: legal name, address, tax ID (SSN in the US), and **your bank
+   account** for payouts. That is the "link my bank" step.
+3. When asked what you sell, describe it as
+   **"leaderboard placement — digital advertising service."**
+   (Not an auction, not a raffle, not gambling — this wording matches what the product
+   actually is, and it is what keeps the account healthy.)
+
+### 2. The Payment Link (~3 min)
+
+1. Stripe Dashboard → **Payment Links** → **+ New**.
+2. Product: `OUTRANKED bid` → price: **"Customers choose what to pay"**, minimum $1,
+   suggested $5.
+3. After payment → redirect to `https://<your-domain>/?paid=1`.
+4. Copy the link.
+
+### 3. Two values into the deployment
+
+| Where | Name | Value |
+|---|---|---|
+| `index.html` → `CONFIG` | `STRIPE_PAYMENT_LINK` | your `https://buy.stripe.com/...` link |
+| Vercel → Settings → Environment Variables | `STRIPE_SECRET_KEY` | your Stripe key |
+
+The key is only ever read server-side inside `/api/board` — it is never sent to the
+browser, and the endpoint returns only public bid data (listing name, URL, amount,
+timestamp). No customer email, name, or payment details ever leave Stripe.
+
+**Recommended:** use a **restricted key** rather than the full secret key —
+Stripe Dashboard → Developers → API keys → **Create restricted key**, grant
+*Checkout Sessions: read* and nothing else. If it ever leaked, it could read your
+session list and do nothing else.
+
+## When the money reaches your bank
+
+- Charges appear in your Stripe balance **immediately**.
+- Stripe holds a new account's **first payout for 7–14 days** (an anti-fraud rule
+  nobody can waive), then pays out automatically every ~2 business days.
+- Stripe's cut: ~2.9% + 30¢ per bid. That is the only cost in the entire stack.
 
 ## Housekeeping that protects the revenue
 
-- **Refund policy on the page**: already there ("No refunds. Obviously.") — also add
-  it to the Payment Link's custom message so it's part of the checkout record.
-- **Disputes**: pay-for-placement is a legitimate digital service (advertising /
-  novelty), not gambling and not an auction of goods — describe it in Stripe as
-  "leaderboard placement (digital service)". Answer disputes with the public board
-  screenshot showing the placement was delivered.
-- **Taxes**: this is ordinary business income; Stripe issues a 1099-K past the
-  threshold. Keep the dashboard exports.
+- **Refunds:** the page says "No refunds. Obviously." Put the same line in the Payment
+  Link's description so it is part of the checkout record.
+- **Disputes:** answer with a screenshot of the board showing the placement was
+  delivered, plus the listing's public click count. Placement is a delivered service.
+- **Taxes:** ordinary business income; Stripe issues a 1099-K past the threshold.
+- **Have a backup processor in mind** (Lemon Squeezy, Paddle). outbid.lol was thrown
+  off its first payment provider mid-viral. Correct product wording is your best
+  protection; a backup is your insurance.

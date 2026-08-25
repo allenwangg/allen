@@ -7,7 +7,7 @@
 //   X_ACCESS_TOKEN, X_ACCESS_SECRET — same page, "Access token and secret" (Read and Write)
 // Optional repository variable:
 //   BOARD_FEED_URL — the Cloudflare worker /board URL; adds real revenue stats to posts
-//   SITE_URL       — defaults to https://allenwangg.github.io/allen/
+//   SITE_URL       — defaults to https://outranked.vercel.app/
 //
 // Modes (picked by UTC hour, matching the workflow's two cron entries):
 //   ~00:05 UTC → "the board just reset" post (evergreen, needs no stats)
@@ -17,7 +17,7 @@ import crypto from "node:crypto";
 
 const {
   X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET,
-  BOARD_FEED_URL, SITE_URL = "https://allenwangg.github.io/allen/",
+  BOARD_FEED_URL, SITE_URL = "https://outranked.vercel.app/",
 } = process.env;
 
 if (!X_API_KEY || !X_API_SECRET || !X_ACCESS_TOKEN || !X_ACCESS_SECRET) {

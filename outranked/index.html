@@ -8,13 +8,13 @@
 <meta property="og:title" content="OUTRANKED — pay more, rank higher, stay on top">
 <meta property="og:description" content="A leaderboard where your rank is exactly what you paid for it. Watch the crown change hands in real time — or take it yourself.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://allenwangg.github.io/allen/">
-<meta property="og:image" content="https://allenwangg.github.io/allen/og.png">
+<meta property="og:url" content="https://outranked.vercel.app/">
+<meta property="og:image" content="https://outranked.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="OUTRANKED — pay more, rank higher, stay on top">
 <meta name="twitter:description" content="A leaderboard where your rank is exactly what you paid for it. Someone is #1 right now. It costs exactly one dollar more than they paid to take it.">
-<meta name="twitter:image" content="https://allenwangg.github.io/allen/og.png">
-<link rel="canonical" href="https://allenwangg.github.io/allen/">
+<meta name="twitter:image" content="https://outranked.vercel.app/og.png">
+<link rel="canonical" href="https://outranked.vercel.app/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Libre+Franklin:wght@400;600;700;800&family=Spline+Sans+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
@@ -443,9 +443,9 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
    Until then the site runs in clearly-labeled demo mode. */
 const CONFIG = {
   STRIPE_PAYMENT_LINK: "",                                // e.g. "https://buy.stripe.com/xxxxxxxx"
-  SITE_URL: "https://allenwangg.github.io/allen/",
+  SITE_URL: "https://outranked.vercel.app/",
   X_HANDLE: "",                                           // optional, e.g. "yourhandle" — added to brag tweets
-  BOARD_FEED_URL: "",                                     // optional: webhook worker /board URL → ✔ VERIFIED bids
+  BOARD_FEED_URL: "/api/board",                           // Stripe-backed live board (Vercel). Empty = demo only.
   GOATCOUNTER: "",                                        // optional free analytics, e.g. "https://outranked.goatcounter.com/count"
 };
 
@@ -618,6 +618,16 @@ function render(){
         <div class="crown-right"><button class="take" data-open-bid>Take it — ${fmt(MIN_NEW)}</button></div>
       </div>`;
     }
+  } else if (!list.length){
+    $("#crown").innerHTML = `
+    <div class="crown-card">
+      <div class="crown-emoji">👑</div>
+      <div>
+        <div class="crown-name">The throne is empty</div>
+        <div class="crown-sub">No one has ever held this crown. ${fmt(MIN_NEW)} claims it, and the record starts with you.</div>
+      </div>
+      <div class="crown-right"><button class="take" data-open-bid>Claim the throne — ${fmt(MIN_NEW)}</button></div>
+    </div>`;
   } else {
     const top = list[0];
     const reignMs = Date.now() - state.crownedAt;
@@ -714,9 +724,10 @@ function render(){
     emp.classList.add("show");
   } else emp.classList.remove("show");
 
-  // ticker (duplicate content for seamless loop)
+  // ticker (duplicate content for seamless loop); hidden until there's news
   const items = state.feed.slice(0,12).map(f=>`<span class="tick">${f}</span>`).join("");
   $("#tickerInner").innerHTML = items + items;
+  $("#tickerInner").closest(".ticker").style.display = state.feed.length ? "" : "none";
 
   if (!isToday) prevRanks = rankMap();
 
@@ -823,6 +834,8 @@ function placeBid({name,url,amount,defendBudget}){
 
 function checkCrown(mover){
   const top = sorted()[0];
+  if (!top) return;
+  if (!state.crownId){ state.crownId = top.id; state.crownedAt = Date.now(); return; }
   if (top.id !== state.crownId){
     const reignMs = Date.now()-state.crownedAt;
     const old = state.entries.find(e=>e.id===state.crownId);
@@ -894,7 +907,7 @@ function runAutoDefend(aggressor){
 /* ============ demo simulation ============ */
 const NOSIM = location.search.includes("nosim");
 function simulate(){
-  if (document.hidden || NOSIM) return;
+  if (document.hidden || NOSIM || state.live) return;   /* never fake traffic on a live board */
   const list = sorted();
   const roll = Math.random();
   let name, target, amount;
@@ -1000,8 +1013,8 @@ function badgeSVG(e, rank){
 }
 function badgeEmbed(e){
   const rank = rankMap()[e.id];
-  const src = CONFIG.BOARD_FEED_URL
-    ? CONFIG.BOARD_FEED_URL.replace(/\/board\/?$/, "") + "/badge?name=" + encodeURIComponent(e.name)
+  const src = state.live
+    ? new URL("/api/badge?name=" + encodeURIComponent(e.name), CONFIG.SITE_URL).href
     : "data:image/svg+xml," + encodeURIComponent(badgeSVG(e, rank));
   return `<a href="${CONFIG.SITE_URL}"><img src="${src}" alt="${e.name} is #${rank} on OUTRANKED" height="36"></a>`;
 }
@@ -1099,10 +1112,30 @@ $("#bidForm").addEventListener("submit", e=>{
   const defendBudget = $("#fDefend").checked ? Math.max(0, Math.floor(+$("#fBudget").value||0)) : 0;
   if (!name.trim()){ err.textContent="A name is required — this is a leaderboard, not witness protection."; err.classList.add("show"); return; }
   if (!amount || amount<1){ err.textContent="Bid at least $1."; err.classList.add("show"); return; }
+  const decree = $("#fDecree").value.trim().slice(0,80);
+  try { localStorage.setItem("outranked_name", name.trim()); } catch(e){}
+
+  if (CONFIG.STRIPE_PAYMENT_LINK){
+    /* Real money: Stripe is the source of truth, so the board is NOT touched
+       here. The bid rides along in client_reference_id and appears — verified —
+       the moment /api/board sees the completed payment. */
+    const cleanName = name.trim(), cleanUrl = url.trim().replace(/^https?:\/\//,"");
+    const known = state.entries.some(x => x.name.toLowerCase() === cleanName.toLowerCase());
+    if (!known && amount < MIN_NEW){
+      err.textContent = `New listings start at ${fmt(MIN_NEW)}.`; err.classList.add("show"); return;
+    }
+    const ref = encodeRef(cleanName, cleanUrl, decree);
+    window.open(CONFIG.STRIPE_PAYMENT_LINK + (CONFIG.STRIPE_PAYMENT_LINK.includes("?") ? "&" : "?") +
+      "client_reference_id=" + encodeURIComponent(ref), "_blank", "noopener");
+    try { sessionStorage.setItem("outranked_pending", JSON.stringify({ name: cleanName, amount })); } catch(e){}
+    $("#fDecree").value = "";
+    modal.close();
+    toast(`🏦 Finish paying ${fmt(amount)} in the Stripe tab — ${esc(cleanName)} joins the board the moment it clears.`);
+    return;
+  }
+
   const res = placeBid({name,url,amount,defendBudget});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
-  try { localStorage.setItem("outranked_name", name.trim()); } catch(e){}
-  const decree = $("#fDecree").value.trim().slice(0,80);
   if (decree){
     if (state.crownId === res.entry.id){
       state.decree = { text: decree, by: res.entry.name, id: res.entry.id };
@@ -1116,17 +1149,7 @@ $("#bidForm").addEventListener("submit", e=>{
   }
   $("#fDecree").value = "";
   modal.close();
-  if (CONFIG.STRIPE_PAYMENT_LINK){
-    /* Real money: open Stripe checkout with the bid encoded in
-       client_reference_id so the payment reconciles to the listing. */
-    const ref = (res.entry.name + "_" + amount + "_" + Date.now().toString(36))
-      .replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 190);
-    window.open(CONFIG.STRIPE_PAYMENT_LINK + (CONFIG.STRIPE_PAYMENT_LINK.includes("?") ? "&" : "?") +
-      "client_reference_id=" + encodeURIComponent(ref), "_blank", "noopener");
-    toast(`🏦 Finish paying ${fmt(amount)} in the Stripe tab — ${esc(res.entry.name)} is provisionally #${res.rank}`);
-  } else {
-    toast(`💸 Paid ${fmt(amount)} — ${esc(res.entry.name)} is #${res.rank}${defendBudget?` · 🛡 defending with ${fmt(defendBudget)}`:""}`);
-  }
+  toast(`💸 Paid ${fmt(amount)} — ${esc(res.entry.name)} is #${res.rank}${defendBudget?` · 🛡 defending with ${fmt(defendBudget)}`:""}`);
   rerender(); flash(res.entry.id);
   confetti();
   showShareBar(res.entry, res.rank, amount);
@@ -1234,6 +1257,21 @@ if (location.search.includes("paid=1")){
   toast("🏦 Payment received — your bid is locked in. Screenshot your rank and brag.");
   confetti();
   history.replaceState(null, "", location.pathname);
+  let pending = null;
+  try {
+    const raw = sessionStorage.getItem("outranked_pending");
+    if (raw){ pending = JSON.parse(raw); sessionStorage.removeItem("outranked_pending"); }
+  } catch(e){}
+  /* Stripe confirms asynchronously — poll the ledger until the bid lands. */
+  let tries = 0;
+  const settle = setInterval(async ()=>{
+    await mergeBoardFeed();
+    const mine = pending && state.entries.find(x => x.name.toLowerCase() === pending.name.toLowerCase());
+    if (mine){
+      clearInterval(settle);
+      showShareBar(mine, rankMap()[mine.id], pending.amount);
+    } else if (++tries > 12) clearInterval(settle);
+  }, 2500);
 }
 
 /* optional free analytics (GoatCounter) — only loads when configured */
@@ -1244,36 +1282,87 @@ if (CONFIG.GOATCOUNTER){
   document.head.appendChild(s);
 }
 
-/* ============ verified-bids feed (webhook worker) ============ */
+/* ============ the board IS the Stripe ledger ============ */
+/* Bids are encoded into Stripe's client_reference_id, so /api/board can
+   rebuild the entire leaderboard from completed payments — no database. */
+function encodeRef(name, url, decree){
+  const raw = [name.slice(0,24), (url||"").slice(0,48), (decree||"").slice(0,48)]
+    .map(s => s.replace(/\|/g, "/")).join("|");
+  const b64 = btoa(unescape(encodeURIComponent(raw)))
+    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  return ("b64." + b64).slice(0, 200);
+}
+function decodeRef(ref){
+  if (!ref) return {name:"Anonymous", url:"", decree:""};
+  if (!/^b64\./.test(ref)) return {name: ref.split("_")[0] || "Anonymous", url:"", decree:""};
+  const body = ref.slice(4);
+  if (!/^[A-Za-z0-9\-_]+$/.test(body)) return {name:"Anonymous", url:"", decree:""};
+  try {
+    const raw = decodeURIComponent(escape(atob(body.replace(/-/g,"+").replace(/_/g,"/"))));
+    const [name,url,decree] = raw.split("|");
+    return {name:(name||"Anonymous").slice(0,30), url:(url||"").slice(0,60), decree:(decree||"").slice(0,60)};
+  } catch(e){ return {name:"Anonymous", url:"", decree:""}; }
+}
+
+/* Once Stripe is connected the ledger is the whole truth: the demo seed board
+   and its simulated traffic are cleared exactly once, and never come back. */
+function goLive(){
+  if (state.live) return;
+  state.live = true;
+  /* The ledger is the whole truth, so the board is rebuilt from it rather than
+     merged into: keeping any prior entry would double-count its bids. */
+  state.entries = [];
+  state.stats = { bids: 0, biggest: 0 };
+  state.feed = []; state.hall = []; state.applied = [];
+  delete state.decree; delete state.todayDecree;
+  state.crownId = null; state.crownedAt = Date.now();
+  state.longestReign = { name: "—", ms: 0 };
+  const ribbon = $("#demoRibbon");
+  if (ribbon) ribbon.classList.remove("show");
+}
+
 async function mergeBoardFeed(){
   if (!CONFIG.BOARD_FEED_URL) return;
-  try {
-    const res = await fetch(CONFIG.BOARD_FEED_URL);
-    const confirmed = await res.json();
-    if (!Array.isArray(confirmed)) return;
-    state.applied = state.applied || [];
-    let changed = false;
-    for (const c of confirmed){
-      if (!c || !c.id || state.applied.includes(c.id)) continue;
-      const name = String(c.ref || "").split("_")[0] || "Anonymous";
-      const amount = Math.floor(+c.amount || 0);
-      if (amount < 1) continue;
-      let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
-      if (entry){
-        entry.total += amount; entry.bids++; entry.history.push(entry.total);
-      } else {
-        entry = {id:"v"+c.id.slice(-10), name, url:"—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
-        state.entries.push(entry);
-      }
-      touchToday(entry, amount);
-      entry.verified = true;
-      state.applied.push(c.id);
-      state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
-      feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
-      changed = true;
+  let payload;
+  try { payload = await (await fetch(CONFIG.BOARD_FEED_URL)).json(); }
+  catch(e){ return; }                    /* not deployed or offline — keep local state */
+  const confirmed = Array.isArray(payload) ? payload : (payload && payload.bids);
+  if (!Array.isArray(confirmed)) return;
+  const wasDemo = !state.live;
+  if (!Array.isArray(payload) && payload.configured) goLive();
+  const wentLive = wasDemo && state.live;   /* an empty ledger still must repaint */
+
+  state.applied = state.applied || [];
+  let changed = false;
+  for (const c of confirmed){
+    if (!c || !c.id || state.applied.includes(c.id)) continue;
+    const { name, url, decree } = decodeRef(c.ref);
+    const amount = Math.floor(+c.amount || 0);
+    if (amount < 1) continue;
+    let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
+    if (entry){
+      entry.total += amount; entry.bids++; entry.history.push(entry.total);
+      if (url) entry.url = url;
+    } else {
+      entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
+      state.entries.push(entry);
     }
-    if (changed){ checkCrown(sorted()[0]); render(); }
-  } catch(e) { /* feed unreachable — board still works from local state */ }
+    touchToday(entry, amount);
+    if (amount >= 500) award(entry, "🐋 Whale");
+    entry.verified = true;
+    state.applied.push(c.id);
+    state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
+    feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
+    if (decree){
+      const top = sorted()[0];
+      if (top && top.id === entry.id) state.decree = { text: decree, by: entry.name, id: entry.id };
+      const kT = sortedToday()[0];
+      if (kT && kT.id === entry.id) state.todayDecree = { text: decree, by: entry.name, id: entry.id };
+    }
+    changed = true;
+  }
+  if (changed && state.entries.length) checkCrown(sorted()[0]);
+  if (changed || wentLive) render();
 }
 mergeBoardFeed();
 if (CONFIG.BOARD_FEED_URL) setInterval(mergeBoardFeed, 20000);

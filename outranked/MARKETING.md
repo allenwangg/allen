@@ -68,7 +68,7 @@ first reply; algorithm suppresses body links):
 > Link below 👇
 
 **First reply (the link post):**
-> Take the board: https://allenwangg.github.io/allen/
+> Take the board: https://outranked.vercel.app/
 > $5 claims a spot. #1 on the Today board costs whatever today's king paid, plus a dollar.
 
 **Then camp the thread for 48 hours.** Author replies carry outsized algorithmic

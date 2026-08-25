@@ -77,7 +77,7 @@
       "pass": true
     },
     {
-      "name": "with a Stripe link configured, bidding opens checkout with client_reference_id",
+      "name": "with Stripe configured, checkout carries the bid and the board is NOT faked",
       "pass": true
     },
     {
@@ -119,16 +119,32 @@
     {
       "name": "outbound clicks are counted per listing (advertiser ROI proof)",
       "pass": true
+    },
+    {
+      "name": "live Stripe ledger takes over the board and clears the demo seeds",
+      "pass": true
+    },
+    {
+      "name": "simulated traffic never runs on a live board",
+      "pass": true
+    },
+    {
+      "name": "API decodes both the encoded and legacy reference formats",
+      "pass": true
+    },
+    {
+      "name": "API ranks by cumulative payment, breaking ties by who paid first",
+      "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 148,
-    "medianDOMContentLoadedms": 106.5,
-    "medianLoadms": 12683.2,
-    "totalRequests": 2
+    "medianFCPms": 128,
+    "medianDOMContentLoadedms": 93.7,
+    "medianLoadms": 12602.6,
+    "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 69300,
-    "gzipBytes": 21120
+    "htmlBytes": 73577,
+    "gzipBytes": 22328
   }
 }
