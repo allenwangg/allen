@@ -8,8 +8,16 @@
 //
 // Setup is one environment variable in Vercel: STRIPE_SECRET_KEY.
 
-const STRIPE_API = "https://api.stripe.com/v1/checkout/sessions";
-const MAX_PAGES = 20; // 2,000 most recent sessions
+// STRIPE_API_BASE is overridable so the test suite can exercise this against a mock.
+const STRIPE_API = (process.env.STRIPE_API_BASE || "https://api.stripe.com") + "/v1/checkout/sessions";
+
+// Stripe lists newest-first, so truncation drops the OLDEST payments — which would
+// silently understate lifetime totals. We therefore page generously and, if we ever
+// do run out of room, say so (`partial`) rather than publishing a wrong board.
+// Ceiling: 5,000 paid sessions. Past that, add a cached aggregate (Vercel KV or a
+// nightly snapshot committed to the repo) and only page back to the snapshot.
+const MAX_PAGES = 50;
+const TIME_BUDGET_MS = 7000; // stay well inside the function timeout
 
 /**
  * Fetch completed checkout sessions and reduce them to public bid records.
@@ -20,8 +28,11 @@ const MAX_PAGES = 20; // 2,000 most recent sessions
 async function fetchBids(key) {
   const bids = [];
   let startingAfter = null;
+  let partial = false;
+  const deadline = Date.now() + TIME_BUDGET_MS;
 
   for (let page = 0; page < MAX_PAGES; page++) {
+    if (Date.now() > deadline) { partial = true; break; }
     const qs = new URLSearchParams({ limit: "100" });
     if (startingAfter) qs.set("starting_after", startingAfter);
 
@@ -45,9 +56,11 @@ async function fetchBids(key) {
     }
     if (!body.has_more || !rows.length) break;
     startingAfter = rows[rows.length - 1].id;
+    if (page === MAX_PAGES - 1) partial = true;
   }
 
   bids.sort((a, b) => a.at - b.at); // oldest first: ties go to the earlier bid
+  bids.partial = partial;
   return bids;
 }
 
@@ -72,18 +85,30 @@ function decodeRef(ref) {
   }
 }
 
-/** Aggregate bids into a ranked board. */
+/**
+ * Aggregate bids into a ranked board.
+ *
+ * Listings are keyed by name and nobody logs in, so a stranger can always pay
+ * INTO someone else's listing. Two rules keep that from being an attack:
+ *   - the URL is claimed by the first bid that sets one, so a later $1 bid can
+ *     never repoint an established listing's link at somewhere else;
+ *   - the decree belongs to the largest single bid on the listing, so nobody
+ *     can put cheap words in an expensive mouth.
+ * Either way the money still lands on the listing — griefing it costs you a
+ * donation to your target.
+ */
 function rank(bids) {
   const byName = new Map();
   for (const b of bids) {
     const { name, url, decree } = decodeRef(b.ref);
     const keyName = name.toLowerCase();
-    const e = byName.get(keyName) || { name, url: "", total: 0, bids: 0, decree: "", last: 0 };
+    const e = byName.get(keyName) || { name, url: "", total: 0, bids: 0, decree: "", last: 0, topBid: 0 };
     e.total += b.amount;
     e.bids += 1;
     e.last = b.at;
-    if (url) e.url = url;
-    if (decree) e.decree = decree;
+    if (url && !e.url) e.url = url;
+    if (decree && b.amount >= e.topBid) e.decree = decree;
+    if (b.amount > e.topBid) e.topBid = b.amount;
     byName.set(keyName, e);
   }
   return [...byName.values()].sort((a, b) => b.total - a.total || a.last - b.last);

@@ -350,14 +350,15 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--dim);fon
   <div class="hall" id="hall" aria-label="Hall of Fame"></div>
 
   <details class="rules">
-    <summary>Rules — all seven of them</summary>
+    <summary>Rules — all eight of them</summary>
     <ol>
       <li><b>Your rank = total dollars you've paid.</b> No votes, no algorithm, no editor. Money is the only judge.</li>
       <li><b>$5 minimum</b> to claim a new spot. <b>$1 increments</b> after that. Bids are cumulative and final.</li>
       <li><b>Take any rank instantly</b> — every row shows the exact price to pass it. No math required.</li>
       <li><b>Auto-defend:</b> set a budget and we re-bid +$1 automatically the moment you're outbid. Sleep while your money fights.</li>
       <li><b>The crown is timed.</b> #1 wears it and the reign clock runs. Longest reign goes in the record books forever.</li>
-      <li><b>Everything is public:</b> every bid, every overtake, every dethroning — streamed on the live feed.</li>
+      <li><b>Everything is public:</b> every bid, every overtake, every dethroning — streamed on the live feed. Every listing on this board is a completed payment; there is no other way onto it.</li>
+      <li><b>A listing's link is claimed by its first bid, and its decree belongs to its largest.</b> Anyone may pay into anyone's listing — but a cheap bid can't repoint your link or speak in your name. Attacking someone here just funds them.</li>
       <li><b>No refunds.</b> Obviously.</li>
     </ol>
   </details>
@@ -1306,6 +1307,15 @@ function decodeRef(ref){
 
 /* Once Stripe is connected the ledger is the whole truth: the demo seed board
    and its simulated traffic are cleared exactly once, and never come back. */
+/* If the ledger read had to stop early, say so rather than quietly showing
+   totals that understate what people actually paid. */
+function partialNotice(){
+  const r = $("#demoRibbon");
+  if (!r) return;
+  r.innerHTML = "<b>Partial ledger</b> — this board is showing the most recent payments only. Totals may understate lifetime spend until the operator enables a cached aggregate.";
+  r.classList.add("show");
+}
+
 function goLive(){
   if (state.live) return;
   state.live = true;
@@ -1328,37 +1338,46 @@ async function mergeBoardFeed(){
   catch(e){ return; }                    /* not deployed or offline — keep local state */
   const confirmed = Array.isArray(payload) ? payload : (payload && payload.bids);
   if (!Array.isArray(confirmed)) return;
+  if (payload && payload.partial) partialNotice();
   const wasDemo = !state.live;
   if (!Array.isArray(payload) && payload.configured) goLive();
   const wentLive = wasDemo && state.live;   /* an empty ledger still must repaint */
 
   state.applied = state.applied || [];
+  /* Set lookup, not Array.includes: the ledger is replayed in full on every
+     poll, so a linear scan here would go quadratic as the board grows. */
+  const seen = new Set(state.applied);
   let changed = false;
   for (const c of confirmed){
-    if (!c || !c.id || state.applied.includes(c.id)) continue;
+    if (!c || !c.id || seen.has(c.id)) continue;
     const { name, url, decree } = decodeRef(c.ref);
     const amount = Math.floor(+c.amount || 0);
     if (amount < 1) continue;
     let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
     if (entry){
       entry.total += amount; entry.bids++; entry.history.push(entry.total);
-      if (url) entry.url = url;
+      /* Anyone can pay into anyone's listing, so the link is claimed once and
+         never repointed by a later (possibly hostile) bid. */
+      if (url && (!entry.url || entry.url === "—")) entry.url = url;
     } else {
-      entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
+      entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, topBid:0};
       state.entries.push(entry);
     }
     touchToday(entry, amount);
     if (amount >= 500) award(entry, "🐋 Whale");
     entry.verified = true;
-    state.applied.push(c.id);
+    state.applied.push(c.id); seen.add(c.id);
     state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
     feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
-    if (decree){
+    /* The decree belongs to the biggest single bid on a listing — a $1 griefer
+       cannot put words in an expensive mouth. */
+    if (decree && amount >= (entry.topBid || 0)){
       const top = sorted()[0];
       if (top && top.id === entry.id) state.decree = { text: decree, by: entry.name, id: entry.id };
       const kT = sortedToday()[0];
       if (kT && kT.id === entry.id) state.todayDecree = { text: decree, by: entry.name, id: entry.id };
     }
+    if (amount > (entry.topBid || 0)) entry.topBid = amount;
     changed = true;
   }
   if (changed && state.entries.length) checkCrown(sorted()[0]);

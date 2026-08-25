@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 28 tests in repo |
+| Automated test suite | none public | ✅ 37 tests in repo |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -42,15 +42,21 @@ product titles, public click counts):
 | Permanent record (Hall of Fame) | ❌ | ✅ midnight rollover engraves each day's king |
 | Rivalry/war detection | ❌ | ✅ tested |
 | 📺 Watch Mode broadcast view | ❌ | ✅ full-screen live board for streams and screen-recordings |
+| Backend required to run it | a server + database | ✅ none — the board is computed from the Stripe ledger |
+| Can a listing exist without a completed payment? | yes (server-trusted) | ✅ no — ranking is a view of the ledger |
+| Hijack resistance (link/decree) | n/a | ✅ first-bid link, largest-bid decree, both tested |
 | Per-listing dossier with ROI math | ❌ | ✅ tested |
 | Auto-defend proxy bidding | ❌ | ✅ tested |
 
-## 2. Functional correctness — 14/14 passing
+## 2. Functional correctness — 37/37 passing
 
-`node test/run-tests.mjs` — real headless Chromium against the real page:
+`node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus the
+Stripe ledger reader exercised against a mock Stripe:
 
 ```
 PASS  page loads with correct title
+PASS  Today board is the default landing view (winnable fight first)
+PASS  take buttons prefill the exact amount to beat
 PASS  leaderboard renders all 18 seeded entries
 PASS  crown card shows the top-ranked entry with reign timer
 PASS  every row shows exact price-to-take (no math needed)
@@ -62,10 +68,31 @@ PASS  live activity feed records bids and overtakes
 PASS  search filters the board instantly
 PASS  dark/light theme toggle works
 PASS  state persists across reload (localStorage)
-PASS  zero external network requests (self-contained page)
+PASS  no third-party requests besides Google Fonts
 PASS  XSS in listing name is escaped
+PASS  demo ribbon is shown until a payment link is configured
+PASS  brag share bar appears after a bid with rank and amount in the tweet
+PASS  crown card carries a dare-to-dethrone tweet intent
+PASS  with Stripe configured, checkout carries the bid and the board is NOT faked
+PASS  webhook feed merges as VERIFIED bids, idempotently
+PASS  nobility tiers render with medallions and tier names
+PASS  dethroning #1 awards the Kingslayer title
+PASS  Hall of Fame shelf and Your Empire chip render
+PASS  Watch Mode opens as a live broadcast view and closes on Escape
+PASS  clicking a row opens the dossier with cost-per-click math
+PASS  crowning bid with a decree shows the taunt on the crown card
+PASS  dossier offers an embeddable rank badge with copyable HTML
+PASS  Today board ranks by today's bids, independent of all-time totals
+PASS  outbound clicks are counted per listing (advertiser ROI proof)
+PASS  live Stripe ledger takes over the board and clears the demo seeds
+PASS  simulated traffic never runs on a live board
+PASS  API decodes both the encoded and legacy reference formats
+PASS  API ranks by cumulative payment, breaking ties by who paid first
+PASS  a cheap bid cannot hijack an established listing's link or decree
+PASS  a genuinely larger bid does take over the decree
+PASS  ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII
 
-14/14 tests passed
+37/37 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -74,17 +101,16 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **84 ms** |
-| DOMContentLoaded | **54 ms** |
-| Full load | **56 ms** |
-| HTTP requests | **1** |
-| Page weight | **27.1 KB raw / 9.4 KB gzipped** |
-| External dependencies | **0** — no framework, no CDN, no fonts, no tracker |
+| First Contentful Paint | **104 ms** |
+| DOMContentLoaded | **66.6 ms** |
+| HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
+| Page weight | **73.2 KB raw / 22.4 KB gzipped** |
+| JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
+| Backend | **none** — the board is computed from the Stripe ledger |
 
-For scale: a typical Next.js + Tailwind + Stripe.js landing page (the stack the
-copycat wave used) ships hundreds of KB of JS across dozens of requests before first
-paint. This page is smaller than most sites' favicon pipeline and renders in under a
-tenth of a second.
+Fonts load asynchronously behind a system-font fallback, so first paint never waits on
+the network. For scale: a typical Next.js + Tailwind + Stripe.js page — the stack the
+copycat wave used — ships hundreds of KB across dozens of requests before first paint.
 
 ## 4. Live multi-user deployment — working now
 

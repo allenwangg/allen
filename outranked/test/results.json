@@ -135,16 +135,28 @@
     {
       "name": "API ranks by cumulative payment, breaking ties by who paid first",
       "pass": true
+    },
+    {
+      "name": "a cheap bid cannot hijack an established listing's link or decree",
+      "pass": true
+    },
+    {
+      "name": "a genuinely larger bid does take over the decree",
+      "pass": true
+    },
+    {
+      "name": "ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII",
+      "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 128,
-    "medianDOMContentLoadedms": 93.7,
-    "medianLoadms": 12602.6,
+    "medianFCPms": 100,
+    "medianDOMContentLoadedms": 68.9,
+    "medianLoadms": 12491.3,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 73577,
-    "gzipBytes": 22328
+    "htmlBytes": 74990,
+    "gzipBytes": 22924
   }
 }

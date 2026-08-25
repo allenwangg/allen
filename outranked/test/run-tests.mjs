@@ -437,14 +437,85 @@ await test("API ranks by cumulative payment, breaking ties by who paid first", (
   const board = rank([
     { id: "a", ref: "b64." + b64("Alpha|alpha.io|"), amount: 300, at: 10 },
     { id: "b", ref: "b64." + b64("Beta|beta.io|"), amount: 500, at: 20 },
-    { id: "c", ref: "b64." + b64("alpha|alpha.io|onward"), amount: 200, at: 30 },
+    { id: "c", ref: "b64." + b64("alpha|alpha.io|"), amount: 200, at: 30 },
   ]);
   assert(board.length === 2, `expected 2 listings, got ${board.length}`);
   const alpha = board.find(e => e.name === "Alpha");
-  assert(alpha.total === 500 && alpha.bids === 2 && alpha.decree === "onward",
-    `Alpha's two bids should aggregate to $500 with its latest decree, got ${JSON.stringify(alpha)}`);
+  assert(alpha.total === 500 && alpha.bids === 2,
+    `Alpha's two bids should aggregate to $500, got ${JSON.stringify(alpha)}`);
   // Both sit at $500. Beta got there at t=20, Alpha only at t=30, so Beta holds the higher rank.
   assert(board[0].name === "Beta", `tie should go to whoever reached the total first: ${board.map(e => e.name).join(",")}`);
+});
+
+await test("a cheap bid cannot hijack an established listing's link or decree", () => {
+  const [victim] = rank([
+    // The real owner establishes the listing with a large bid.
+    { id: "a", ref: "b64." + b64("Whale Co|whale.io|We do not lose."), amount: 5000, at: 10 },
+    // An attacker pays $1 under the same name, trying to repoint the link and reword the crown.
+    { id: "b", ref: "b64." + b64("whale co|evil-phish.example|Actually we surrender."), amount: 1, at: 20 },
+  ]);
+  assert(victim.url === "whale.io", `link was hijacked by a $1 bid: ${victim.url}`);
+  assert(victim.decree === "We do not lose.", `decree was hijacked by a $1 bid: ${victim.decree}`);
+  // The griefer's dollar still counts for the victim — attacking costs you a donation.
+  assert(victim.total === 5001, `hostile bid should still credit the listing, got ${victim.total}`);
+});
+
+await test("a genuinely larger bid does take over the decree", () => {
+  const [e] = rank([
+    { id: "a", ref: "b64." + b64("Duel|duel.io|First word."), amount: 100, at: 10 },
+    { id: "b", ref: "b64." + b64("Duel|duel.io|Last word."), amount: 900, at: 20 },
+  ]);
+  assert(e.decree === "Last word.", `largest bid should hold the decree, got ${e.decree}`);
+});
+
+await test("ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII", async () => {
+  // A mock Stripe: two pages, mixed payment states, cents-denominated amounts,
+  // and customer PII that must never survive the read.
+  const pages = {
+    first: {
+      has_more: true,
+      data: [
+        { id: "cs_a", payment_status: "paid", amount_total: 90000, created: 300,
+          client_reference_id: "b64." + b64("Whale Co|whale.io|"),
+          customer_details: { email: "buyer@example.com", name: "Real Person" } },
+        { id: "cs_b", payment_status: "unpaid", amount_total: 500000, created: 290,
+          client_reference_id: "b64." + b64("Deadbeat|nope.io|") },
+        { id: "cs_c", payment_status: "paid", amount_total: 0, created: 280, client_reference_id: "" },
+      ],
+    },
+    cs_c: {
+      has_more: false,
+      data: [
+        { id: "cs_d", payment_status: "paid", amount_total: 2500, created: 100,
+          client_reference_id: "b64." + b64("Minnow|minnow.io|") },
+      ],
+    },
+  };
+  const mock = createServer((req, res) => {
+    const after = new URL(req.url, "http://x").searchParams.get("starting_after");
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify(pages[after || "first"] || { has_more: false, data: [] }));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+
+  // Drop the cached module FIRST so it re-reads STRIPE_API_BASE at load time.
+  delete require.cache[require.resolve(join(root, "api", "_board.js"))];
+  const fresh = require(join(root, "api", "_board.js"));
+  const bids = await fresh.fetchBids("sk_test_x");
+  mock.close();
+  delete process.env.STRIPE_API_BASE;
+
+  assert(bids.length === 2, `expected 2 paid, non-zero bids across 2 pages, got ${bids.length}`);
+  assert(bids[0].id === "cs_d" && bids[1].id === "cs_a", `bids should be oldest-first: ${bids.map(b => b.id)}`);
+  assert(bids[1].amount === 900, `amount should convert cents to dollars, got ${bids[1].amount}`);
+  const serialized = JSON.stringify(bids);
+  assert(!/buyer@example\.com|Real Person|customer_details/.test(serialized),
+    "customer PII leaked out of the ledger reader");
+  assert(Object.keys(bids[0]).sort().join() === "amount,at,id,ref",
+    `unexpected fields exposed: ${Object.keys(bids[0])}`);
+  const board = fresh.rank(bids);
+  assert(board[0].name === "Whale Co" && board[0].total === 900, `ranking wrong: ${JSON.stringify(board[0])}`);
 });
 
 // ---------- performance benchmark ----------
