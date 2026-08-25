@@ -113,7 +113,10 @@
     'consciousness': 'mirror', 'world-in-data': 'graph',
     'creativity': 'lightbulb', 'leadership': 'compass', 'personal-finance': 'coin',
     'exercise-science': 'mountain', 'emotional-intelligence': 'dialog', 'writing-well': 'book',
-    'mythology': 'flame', 'design': 'layers'
+    'mythology': 'flame', 'design': 'layers',
+    'public-speaking': 'dialog', 'media-literacy': 'eye', 'chemistry': 'flame',
+    'art-history': 'lens', 'geology': 'mountain', 'conflict': 'bridge',
+    'computing': 'puzzle', 'decisions': 'fork'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
@@ -587,6 +590,13 @@
 
   function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
 
+  /* How many of a course's review cards are due right now. */
+  function courseDue(cid) {
+    var due = SRS.dueItems(Store.state.srs, Date.now()), n = 0;
+    for (var i = 0; i < due.length; i++) if (due[i].courseId === cid) n += 1;
+    return n;
+  }
+
   function renderPaths() {
     var h = headerHTML() + '<main class="page">' +
       '<a class="back" href="#/">‹ Library</a>' +
@@ -686,7 +696,10 @@
         '<p class="desc">' + esc(c.description) + '</p>' +
         '<div class="cover-meta wide"><div class="bar"><i style="width:' + (pr.total ? Math.round(100 * pr.done / pr.total) : 0) + '%"></i></div>' +
         '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div>' +
-        (pr.done ? '<a class="btn ghost small" href="#/practice/' + esc(c.id) + '">Practice this course</a>' : '') +
+        (pr.done ? '<div class="hero-btns">' +
+            '<a class="btn ghost small" href="#/practice/' + esc(c.id) + '">Practice this course</a>' +
+            (courseDue(c.id) ? '<a class="btn ghost small" href="#/review/' + esc(c.id) + '">Review ' + courseDue(c.id) + ' due</a>' : '') +
+          '</div>' : '') +
       '</div></section>';
 
     h += '<section class="lessons">';
@@ -1252,10 +1265,18 @@
 
   var rev = null;
 
-  function startReview() {
-    var due = SRS.dueItems(Store.state.srs, Date.now()).slice(0, 30);
+  function startReview(courseId) {
+    var all = SRS.dueItems(Store.state.srs, Date.now());
+    if (courseId) {
+      var only = [];
+      for (var i = 0; i < all.length; i++) if (all[i].courseId === courseId) only.push(all[i]);
+      all = only;
+    }
+    var cap = Store.state.settings.sessionSize || 20;
+    var due = all.slice(0, cap);
     if (!due.length) return renderReviewEmpty();
-    rev = { queue: due, i: 0, graded: 0, again: 0, xp: 0, flipped: false };
+    rev = { queue: due, i: 0, graded: 0, again: 0, xp: 0, flipped: false,
+            courseId: courseId || null, waiting: all.length - due.length };
     renderReviewCard();
   }
 
@@ -1341,7 +1362,9 @@
         '<div class="stat"><b>' + rev.graded + '</b><span>cards</span></div>' +
         '<div class="stat"><b>+' + rev.xp + '</b><span>XP</span></div>' +
         '<div class="stat"><b>' + (rev.graded ? Math.round(100 * (rev.graded - rev.again) / rev.graded) : 100) + '%</b><span>recalled</span></div>' +
-      '</div></div></div>' +
+      '</div>' +
+      (rev.waiting > 0 ? '<p class="goal-note dim">' + rev.waiting + ' more card' + (rev.waiting === 1 ? '' : 's') + ' still due — another round whenever you want.</p>' : '') +
+      '</div></div>' +
       '<div class="player-foot">' + (flow ? flowFooter('') : '<a class="btn primary" href="#/">Done</a>') + '</div></main>';
     $app.innerHTML = h;
     SFX.complete();
@@ -1574,6 +1597,11 @@
       '<label class="field">Daily goal<select id="set-goal">' +
         [30, 50, 100, 200].map(function (g) { return '<option value="' + g + '"' + (s.dailyGoal === g ? ' selected' : '') + '>' + g + ' XP — ' + { 30: 'casual', 50: 'steady', 100: 'serious', 200: 'obsessed' }[g] + '</option>'; }).join('') +
       '</select></label>' +
+      '<label class="field">Review session size<select id="set-size">' +
+        [10, 20, 30, 50].map(function (n) {
+          return '<option value="' + n + '"' + ((s.sessionSize || 20) === n ? ' selected' : '') + '>' + n + ' cards</option>';
+        }).join('') +
+      '</select></label>' +
       '<label class="field">Sound effects<select id="set-sound">' +
         '<option value="on"' + (s.sound !== false ? ' selected' : '') + '>On</option>' +
         '<option value="off"' + (s.sound === false ? ' selected' : '') + '>Off</option></select></label>' +
@@ -1599,6 +1627,7 @@
       Store.setSetting('dailyGoal', Number(document.getElementById('set-goal').value));
       Store.setSetting('sound', document.getElementById('set-sound').value === 'on');
       Store.setSetting('autoRead', document.getElementById('set-read').value === 'on');
+      Store.setSetting('sessionSize', Number(document.getElementById('set-size').value));
       applyTheme();
       close();
       route();
@@ -1674,7 +1703,7 @@
     if (flow && parts[0] !== 'review' && parts[0] !== 'lesson' && parts[0] !== 'practice' && parts[0] !== 'today') flow = null;
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
-    else if (parts[0] === 'review') startReview();
+    else if (parts[0] === 'review') startReview(parts[1] || null);
     else if (parts[0] === 'practice') startPractice(parts[1] || null);
     else if (parts[0] === 'today') renderToday();
     else if (parts[0] === 'paths') renderPaths();

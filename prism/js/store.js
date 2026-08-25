@@ -22,7 +22,7 @@
       lastActiveDay: null,    // day key of the last day XP was earned
       certificates: {},       // courseId -> earnedAt
       badges: {},             // badgeId -> earnedAt timestamp
-      settings: { theme: 'system', dailyGoal: 50, name: '', sound: true, autoRead: false },
+      settings: { theme: 'system', dailyGoal: 50, name: '', sound: true, autoRead: false, sessionSize: 20 },
       firstSeen: Date.now()
     };
   };

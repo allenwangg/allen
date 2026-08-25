@@ -835,3 +835,6 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
   :root:not([data-theme="light"]) .card-art .blob  { fill: hsl(var(--ah) 72% 60% / .17); }
   :root:not([data-theme="light"]) .card-art .blob2 { fill: hsl(calc(var(--ah) + 44) 72% 62% / .15); }
 }
+
+.hero-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.hero-btns .btn.small { margin-top: 0; }
