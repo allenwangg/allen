@@ -24155,5 +24155,486 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "decisions",
+    "title": "Making Better Decisions",
+    "tagline": "Judge the process, not the scoreboard.",
+    "category": "Critical Thinking",
+    "description": "Poker players, forecasters and mountain guides all decide under uncertainty for a living. Borrow their working tools: decision journals, calibrated odds, premortems, and kill criteria written before you need them.",
+    "lessons": [
+      {
+        "id": "decisions-vs-outcomes",
+        "title": "The Decision Is Not the Result",
+        "summary": "Resulting, outcome bias, and the two fixes that survive contact with hindsight: a decision journal written in advance, and sorting choices by whether the door swings both ways.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Twenty-Six Seconds From a Ring",
+            "body": "Super Bowl XLIX, February 2015. Seattle trails 28-24 with the ball on New England's one-yard line and 26 seconds left. Coach Pete Carroll calls a pass. Malcolm Butler intercepts it. Overnight, Carroll is the worst play-caller in football history. Passes from that spot were intercepted about 2% of the time.",
+            "art": "target"
+          },
+          {
+            "type": "concept",
+            "title": "Resulting",
+            "body": "Poker players have a word for grading a decision by how it turned out: resulting. Annie Duke carried it into the rest of life in Thinking in Bets. Where luck sits between your choice and your result, the result is one noisy sample of the world, not a verdict on your thinking.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Carroll's pass was intercepted, an outcome that arrives on roughly 2% of such throws. Which verdict avoids resulting?",
+            "choices": [
+              "The call was terrible, and the interception proves it",
+              "Judge the call on what Carroll knew and the odds he faced, then judge the outcome separately",
+              "The call was fine, because Seattle came within a yard of winning",
+              "Nothing can be judged, since luck decides everything"
+            ],
+            "answer": 1,
+            "explain": "Decision quality lives in the reasoning and the odds available at the time; the result is a single draw from those odds. Grading by the scoreboard in either direction is resulting, and shrugging that luck decides everything just abandons the process you can actually improve."
+          },
+          {
+            "type": "example",
+            "title": "The Surgery That Went Well",
+            "body": "In 1988 Jonathan Baron and John Hershey handed people a surgeon's decision to operate: same patient, same odds, same reasoning. Only the ending changed. When the patient survived, readers rated the decision smarter and the surgeon more competent. Nothing about the choice had moved except its luck.",
+            "art": "balance"
+          },
+          {
+            "type": "concept",
+            "title": "Two Scorecards",
+            "body": "Keep both, and keep them apart. The outcome scorecard records what happened. The process scorecard asks what you knew, which alternatives you weighed, what odds you gave, and what you said before the result arrived. Only one of the two is under your control, and only one improves with attention.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A run of good outcomes is proof that your decision process is sound.",
+            "answer": false,
+            "explain": "Over many repetitions of the same decision, results do accumulate signal. But in one-off, luck-heavy calls a sloppy process can be rewarded for years. That is exactly how bad habits survive: they keep getting paid."
+          },
+          {
+            "type": "concept",
+            "title": "The Decision Journal",
+            "body": "Michael Mauboussin's fix is a page written before you know anything. Record the decision, the alternatives, what you expect and how confident you are, and what would tell you that you were wrong. Date it, and set a date to reopen it. The page becomes a witness your memory cannot bribe.",
+            "art": "book"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why must the journal entry be written before the outcome, rather than reconstructed once you know?",
+            "answer": "Because hindsight rewrites memory. Before Nixon's 1972 trips to Peking and Moscow, Baruch Fischhoff and Ruth Beyth had students rate how likely various outcomes were. Afterwards most of them recalled giving the events that actually happened better odds than they really had."
+          },
+          {
+            "type": "concept",
+            "title": "One-Way and Two-Way Doors",
+            "body": "Jeff Bezos sorted decisions in his 2015 shareholder letter. Type 2 decisions are two-way doors: walk through, dislike the room, walk back out. Type 1 decisions are one-way and effectively permanent. Most decisions are type 2, and treating them like type 1 is how careful people seize up.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your team has spent three weeks debating which note-taking app to standardise on. Using Bezos's sort, what is the error?",
+            "choices": [
+              "They are treating a two-way door as if it were a one-way door",
+              "They do not yet have enough data to decide",
+              "They should escalate the choice to the most senior person",
+              "They should simply pick whichever app reviews best"
+            ],
+            "answer": 0,
+            "explain": "Switching apps again later costs an afternoon. When a door swings both ways, the cost of deliberating overtakes the cost of being wrong almost immediately, so decide fast and let reality vote. More data, escalation and review-chasing all spend more time on a decision that is cheap to undo."
+          },
+          {
+            "type": "quote",
+            "text": "What makes a decision great is not that it has a great outcome. A great decision is the result of a good process.",
+            "by": "Annie Duke"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You reopen your journal after a decision that ended badly. What are you actually looking for?",
+            "answer": "Not whether you were right, but whether you were reasoning well: did you name the alternatives, give honest odds, and state what would change your mind? A bad result on sound reasoning is a bill from luck. A good result on sloppy reasoning is a warning that you got away with it."
+          },
+          {
+            "type": "recap",
+            "title": "The Decision Is Not the Result",
+            "points": [
+              "Resulting is judging a decision by how it turned out. Where luck intervenes, the outcome is evidence, not a verdict.",
+              "Baron and Hershey (1988): the identical surgical decision was rated smarter when the patient happened to survive.",
+              "Keep two scorecards, outcome and process. Only the process is yours, and only the process improves.",
+              "Write the reasoning down before the result. Hindsight rewrote students' own predictions about Nixon's 1972 trips (Fischhoff and Beyth, 1975).",
+              "Sort by reversibility: two-way doors deserve speed, one-way doors deserve the slow, careful version."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is resulting?",
+            "back": "Judging a decision by its outcome. With luck in the loop, good decisions lose and bad ones win, so a single result cannot grade the process."
+          },
+          {
+            "front": "What did Baron and Hershey's outcome-bias study show?",
+            "back": "The same surgical decision was rated better when the patient survived. Only the ending changed, yet judgements of the decision moved with it."
+          },
+          {
+            "front": "What goes in a decision journal, and when?",
+            "back": "Before the result: the decision, the alternatives, what you expect, your confidence, what would prove you wrong, and a date to reopen it."
+          },
+          {
+            "front": "One-way versus two-way doors?",
+            "back": "Bezos's sort. Reversible decisions should be made fast and low in the organisation; irreversible ones earn slow, careful deliberation."
+          }
+        ]
+      },
+      {
+        "id": "thinking-in-bets",
+        "title": "Thinking in Bets",
+        "summary": "Trading true-or-false for percentages: calibration you can measure on yourself, base rates as the starting point, and the outside view that turned a two-year textbook into an eight-year one.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Years. It Took Eight.",
+            "body": "In the 1970s Daniel Kahneman's textbook team judged themselves about two years from a finished draft. Then he asked a colleague how long comparable teams had taken. Seven to ten years, came the answer, and roughly 40% never finished at all. The book took eight more years, and by then nobody wanted it.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Inside View, Outside View",
+            "body": "The inside view looks at your project: your plan, your people, your progress so far. The outside view ignores all of that and asks what happened to projects of this kind. The inside view feels informed and runs optimistic. The outside view feels crude and lands much closer to the truth.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Once a team hears the outside-view numbers, the estimate usually corrects itself.",
+            "answer": false,
+            "explain": "Kahneman's team heard seven to ten years and carried on with their own two-year plan. A vivid inside view beats a dull statistic every time it is merely mentioned. Correcting an estimate means starting from the reference class, then adjusting, not nodding at it and moving on."
+          },
+          {
+            "type": "concept",
+            "title": "Start From the Base Rate",
+            "body": "The base rate is what usually happens to things like this: how often renovations finish on budget, how often a hire like this works out, how often a pilot converts to a contract. Begin there, then adjust for differences you can name and evidence, rather than for how motivated the team feels today.",
+            "art": "pyramid"
+          },
+          {
+            "type": "example",
+            "title": "Nine Projects in Ten",
+            "body": "Bent Flyvbjerg's team studied 258 transport projects across 20 nations. Costs were underestimated in nine cases out of ten. Rail overran by 45% on average, bridges and tunnels by 34%, roads by 20%, and the error had not shrunk in decades. The reference class was stable; so was the optimism.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your team estimates six months for a migration. Comparable migrations in your industry take twelve to eighteen. What does reference-class forecasting say to do?",
+            "choices": [
+              "Start from the twelve-to-eighteen-month range, then adjust only for differences you can point to",
+              "Average the two figures, to be fair to both",
+              "Keep six months, since the outside data knows nothing about this team",
+              "Keep six months and add a 10% buffer"
+            ],
+            "answer": 0,
+            "explain": "The class is the starting point, not a tiebreaker or a mood. Splitting the difference and bolting on a buffer are both ways of keeping the original guess, and 'our team is different' is precisely what every team inside that reference class also believed."
+          },
+          {
+            "type": "concept",
+            "title": "Say It as a Number",
+            "body": "Replace 'this will work' with a percentage. 'I am 70% confident we ship by March' can be scored later; 'I'm confident' cannot. Numbers also make disagreement useful: two people at 60% and 25% have found an argument worth having, where 'likely' and 'maybe' would have hidden it.",
+            "art": "coin"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You said you were 70% sure. It didn't happen. Were you wrong?",
+            "answer": "Not necessarily. A 70% forecast is supposed to fail three times in ten, so one miss carries almost no information. Only the whole set of your 70% calls can convict you: if far fewer than seven in ten came true, the thing to fix is your confidence, not that one prediction."
+          },
+          {
+            "type": "concept",
+            "title": "Calibration",
+            "body": "You are calibrated when your confidence matches reality: things you call 70% likely happen about 70% of the time. Weather forecasters are the standard example. When American forecasters say a 70% chance of rain, it rains close to 70% of the time, because they are scored every single day.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "How to Score Yourself",
+            "body": "Write twenty predictions, each with a percentage and a resolution date: a hire works out, a deal closes, a launch slips. When they resolve, sort them into buckets, the 60s, the 70s, the 90s, and check the hit rate in each. Most people discover their 90% bucket behaves like a 70% one.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Over a year you log 40 predictions you called 90% likely. Twenty-eight of them came true. What is the honest read?",
+            "choices": [
+              "You are well calibrated, since most of them came true",
+              "You are overconfident: your 90s are behaving like 70s",
+              "You were unlucky, and the process is fine",
+              "Percentages do not work, so go back to words"
+            ],
+            "answer": 1,
+            "explain": "Twenty-eight out of forty is 70%, delivered where you promised 90%. Calibration is judged over sets, not single calls, so the repair is to widen your uncertainty. Blaming the draw or retreating to 'likely' just removes the scoreboard that showed the gap."
+          },
+          {
+            "type": "quote",
+            "text": "Forecast, measure, revise: it is the surest path to seeing better.",
+            "by": "Philip Tetlock"
+          },
+          {
+            "type": "recap",
+            "title": "Thinking in Bets",
+            "points": [
+              "Swap true-or-false for percentages. A number can be scored and argued with; 'likely' can only be remembered generously.",
+              "Calibration means your 70% calls come true about 70% of the time. Log twenty predictions with dates and check the buckets.",
+              "Start from the base rate, then adjust only for differences you can name and evidence.",
+              "The inside view is vivid and optimistic, the outside view dull and closer to right: Kahneman's two-year textbook took eight.",
+              "Flyvbjerg: nine transport projects in ten were underestimated, rail by 45% on average. Your project is in somebody's reference class."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does it mean to be calibrated?",
+            "back": "Your confidence matches reality: the things you call 70% likely happen about 70% of the time. Weather forecasters manage it because they are scored daily."
+          },
+          {
+            "front": "Inside view versus outside view?",
+            "back": "The inside view reasons from your own plan and progress. The outside view asks what happened to projects of this kind, and it is usually closer to right."
+          },
+          {
+            "front": "How does reference-class forecasting work?",
+            "back": "Pick the class of similar past cases, take its actual distribution as your starting point, then adjust only for differences you can evidence."
+          },
+          {
+            "front": "How do you measure your own calibration?",
+            "back": "Log twenty predictions with a percentage and a resolution date. Sort the resolved ones into confidence buckets and compare each bucket's hit rate to its label."
+          }
+        ]
+      },
+      {
+        "id": "decision-tools",
+        "title": "Tools That Actually Work",
+        "summary": "Four techniques you can run this week: the premortem, the disconfirming question, 10-10-10, and the two lists, plus a deadline that lets deliberation end.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Year From Now, It Failed",
+            "body": "Gary Klein's technique takes two minutes and inverts the usual meeting. Before the team commits, they are told: it is a year from now, the project has failed completely, and everyone knows it. Now write down why. Klein published the recipe in Harvard Business Review in 2007 and called it a premortem.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Why It Works",
+            "body": "Treating failure as settled rather than possible unlocks reasons: research on prospective hindsight found people generate roughly 30% more explanations for an event described as already certain. It also relabels dissent as an assignment, so the junior sceptic can speak without looking disloyal.",
+            "art": "eye"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is an actual premortem?",
+            "choices": [
+              "'Any concerns before we sign this off?' asked at the end of the meeting",
+              "'It is a year later and this failed completely. Everyone write down why, then we read them out.'",
+              "'Let's list what could go wrong, starting with what the director thinks'",
+              "'Let's schedule a review three months after launch to see what went wrong'"
+            ],
+            "answer": 1,
+            "explain": "A premortem fixes failure as a certainty and collects the reasons in writing before anyone speaks. Open questions at the end of a meeting invite silence, starting with the most senior view tells the room which answer is safe, and a review after launch arrives too late to change anything."
+          },
+          {
+            "type": "concept",
+            "title": "Run It Properly",
+            "body": "Two minutes of silent writing, then round the table, one reason each, with no debate until every reason is out. Take the strongest three and change something concrete: a milestone, an owner, a cheap test that would catch the failure early. A premortem that changes nothing in the plan was theatre.",
+            "art": "clock"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You are certain your plan is right. Which single question does the most work?",
+            "answer": "'What would change my mind?' Answer it now, and name something specific and observable: a metric, a date, a customer response. If nothing could change your mind, you are not holding a belief about the world, you are holding a position, and no evidence will ever reach it."
+          },
+          {
+            "type": "concept",
+            "title": "The One-Page Decision",
+            "body": "Five lines, written once: the decision, the two alternatives you rejected, what you expect and how confident you are as a number, what would change your mind, and the date you will reopen it. Anything shorter cannot be reviewed later. Anything longer will not actually get written.",
+            "art": "book"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If you cannot name any evidence that would change your mind, that is a sign your view is unusually well supported.",
+            "answer": false,
+            "explain": "It is a sign the view has stopped being about the world. A well-supported position can still say what would dent it: a missed number, a failed test, a customer doing the opposite. Confidence that nothing could touch is confidence that will never update."
+          },
+          {
+            "type": "concept",
+            "title": "10-10-10",
+            "body": "Suzy Welch's rule asks one question at three distances: how will I feel about this in 10 minutes, in 10 months, in 10 years? It works because the three answers usually disagree, and the disagreement is the data. Most decisions you regret won the 10-minute vote and lost the other two.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You are furious at an email and drafting a reply. What does 10-10-10 add?",
+            "choices": [
+              "It proves the reply you have drafted is factually wrong",
+              "It shows that sending wins the 10-minute vote and loses the 10-month and 10-year ones",
+              "It tells you to send it, because strong feelings are information",
+              "It replaces your judgement with a fixed rule about waiting 24 hours"
+            ],
+            "answer": 1,
+            "explain": "10-10-10 does not tell you what to want. It exposes which time horizon is casting the deciding vote, and when only the shortest one approves, the ten-minute version of you is running the decision. It is not a fact-check and not a waiting rule."
+          },
+          {
+            "type": "concept",
+            "title": "The Two Lists",
+            "body": "Write the 25 things you want. Circle the five that matter most. The move is what happens to the other 20: they are not a someday list, they are the avoid-at-all-costs list, because they are attractive enough to steal time from the five. The Buffett story attached to this is probably apocryphal. The arithmetic is not.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Give Deliberation a Deadline",
+            "body": "Decide when you will decide, and write down what you are waiting for. If the honest answer is 'more comfort' rather than a specific fact arriving by a specific date, the analysis finished a while ago and only the anxiety is still running. A late decision is still a decision, usually the default one.",
+            "art": "bell"
+          },
+          {
+            "type": "quote",
+            "text": "Most decisions should probably be made with somewhere around 70% of the information you wish you had. If you wait for 90%, in most cases, you're probably being slow.",
+            "by": "Jeff Bezos"
+          },
+          {
+            "type": "recap",
+            "title": "Tools That Actually Work",
+            "points": [
+              "Premortem: declare the project already failed a year from now, write reasons silently, then change the plan for the strongest three.",
+              "Ask 'what would change my mind?' before you need it, and name something observable. An unfalsifiable view is a position, not a belief.",
+              "10-10-10: how will I feel in 10 minutes, 10 months, 10 years? Regret usually lives where only the shortest horizon approved.",
+              "The two lists: your top five compete with the next twenty, which is why the twenty belong on an avoid list.",
+              "Set a decision deadline and name the fact you are waiting for, or the clock will decide by default."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How do you run a premortem?",
+            "back": "Say it is a year later and the project failed, have everyone write why in silence, read them out, then change the plan for the strongest three reasons."
+          },
+          {
+            "front": "What does the disconfirming question ask?",
+            "back": "'What would change my mind?' — answered in advance, with something specific and observable. If nothing would, the view is a position, not a belief."
+          },
+          {
+            "front": "What does 10-10-10 ask?",
+            "back": "How will I feel about this in 10 minutes, 10 months and 10 years? Choices you regret tend to win the first vote and lose the other two."
+          },
+          {
+            "front": "What belongs on a one-page decision record?",
+            "back": "The decision, the alternatives rejected, the expected outcome with a confidence number, what would change your mind, and a date to reopen it."
+          }
+        ]
+      },
+      {
+        "id": "deciding-together",
+        "title": "With Others, and With Yourself",
+        "summary": "Independent estimates before discussion, dissent as a real job, kill criteria set in advance, and why the people who search hardest for the best option end up least happy with it.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Crowd That Talked Itself Out",
+            "body": "In 2011 Jan Lorenz and colleagues at ETH Zurich asked 144 people factual questions about crime rates, distances and population figures. Guessing alone, the group's average was good. Once each person could see what the others had said, the estimates converged and confidence rose. Accuracy did not.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "Collect First, Discuss Second",
+            "body": "Independent judgements are the one resource a group has that an individual does not, and discussion spends it. So take them first: everyone writes a number and one line of reasoning before the meeting, all are revealed at once, and the conversation starts at the widest disagreement.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Talking a question through as a group before anyone commits to an answer improves the group's estimate.",
+            "answer": false,
+            "explain": "Lorenz's experiment found the opposite: seeing others' estimates narrowed the spread and raised everyone's confidence without improving accuracy. The diversity of independent guesses is what makes a crowd smart, and it is spent the moment people hear each other."
+          },
+          {
+            "type": "example",
+            "title": "The Devil's Advocate Had a Salary",
+            "body": "In 1587 Sixtus V created the Promoter of the Faith, the advocatus diaboli, whose paid job was to argue against every candidate for sainthood and pick holes in the miracles. John Paul II abolished the role in 1983. Around 300 people were canonised in the four centuries with it, and roughly 500 in the two decades after.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Your team wants better dissent. Which arrangement is most likely to produce it?",
+            "choices": [
+              "Ask at the end of each meeting whether anyone has concerns",
+              "Assign someone the job of arguing against the plan, with data and time to prepare",
+              "Remind everyone that all opinions are genuinely welcome here",
+              "Have the most senior person state their view first, then invite pushback"
+            ],
+            "answer": 1,
+            "explain": "Dissent has to be somebody's assignment rather than everybody's courage. Open questions collect silence, reassurance changes no incentives, and a senior view stated first tells the room which answer is safe to hold."
+          },
+          {
+            "type": "concept",
+            "title": "Make the Role Real",
+            "body": "Charlan Nemeth found a catch: people can tell when an objection is theatre, and role-played devil's advocacy persuades less than genuine dissent, sometimes leaving the majority more sure of itself for having rehearsed its answers. So give the role teeth: preparation time, access to the data, and a rule that the objection is answered on the record or the plan changes.",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "Two O'Clock on Everest",
+            "body": "Everest guides use a turnaround time: if you are not on the summit by roughly two in the afternoon, you go down, whatever the sky looks like. On 10 May 1996 several climbers pushed past it, one party summiting near four, and a storm caught them descending. Eight people died on the mountain.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You set a rule in advance, and now, in the moment, every reason to break it feels excellent. Why?",
+            "answer": "Because the moment is when you are least neutral. You have spent months getting here, the summit is close, and stopping converts that effort into an admitted loss. The rule was written by a version of you with no sunk costs, which is why it outranks the one standing in the snow."
+          },
+          {
+            "type": "concept",
+            "title": "Kill Criteria: States and Dates",
+            "body": "Annie Duke's formula is to decide in advance what you would have to see, and by when, to stop. 'If we do not have 50 paying customers by 31 March, we close it.' A state and a date, agreed before you are attached, turn quitting from a confession into a plan everyone already signed.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is a usable kill criterion for a struggling side project?",
+            "choices": [
+              "We will stop when it stops feeling worth it",
+              "We will reconsider once we have recovered what we have already spent",
+              "We will stop if we do not have 50 paying customers by 31 March",
+              "We will stop when the team runs out of energy"
+            ],
+            "answer": 2,
+            "explain": "A kill criterion needs an observable state and a date. Feelings drift, energy is elastic, and waiting to earn back what you have already spent is the sunk-cost trap in a business suit: that money is gone whichever way you choose."
+          },
+          {
+            "type": "concept",
+            "title": "Maximisers and Satisficers",
+            "body": "Herbert Simon's word for good enough is satisficing: set your standards, take the first option that clears them, stop looking. Maximisers keep searching for the best. Studying graduating students, Sheena Iyengar and Barry Schwartz found maximisers landed jobs paying about 20% more, and felt worse about them.",
+            "art": "balance"
+          },
+          {
+            "type": "example",
+            "title": "Twenty Thousand Coin Flips",
+            "body": "Steven Levitt let over 20,000 stuck people settle a decision with a virtual coin, heads for change. Those who got heads were more likely to act, and six months later reported being happier, most clearly on the big calls. If a choice is close enough to need a coin, the options are close and the delay is the real cost.",
+            "art": "coin"
+          },
+          {
+            "type": "recap",
+            "title": "With Others, and With Yourself",
+            "points": [
+              "Collect written estimates before discussion. Social influence narrowed the spread and raised confidence without improving accuracy (Lorenz, 2011).",
+              "Make dissent a job with time, data and a right of reply. Nemeth: role-played objection persuades less than the real thing, so give the role teeth.",
+              "Kill criteria are states and dates set before you are attached, which is the only moment you are neutral enough to write them.",
+              "Maximisers get measurably better outcomes and feel worse about them; satisficers set a standard, take the first thing that clears it, and move on.",
+              "Most choices do not deserve a decision. Sort by reversibility and stakes, spend your deliberation on the one-way doors, and let the rest go quickly."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why collect estimates before discussion?",
+            "back": "Independence is what makes a crowd accurate. Lorenz (2011): seeing others' guesses narrowed the spread and raised confidence, with no gain in accuracy."
+          },
+          {
+            "front": "How do you make a devil's advocate work?",
+            "back": "Assign it, give real prep time and data, and require a reply on the record. Nemeth: role-played dissent moves people less than authentic dissent."
+          },
+          {
+            "front": "What is a kill criterion?",
+            "back": "A state and a date agreed in advance — 'if not 50 customers by 31 March, we stop' — so quitting becomes a plan rather than an admission of failure."
+          },
+          {
+            "front": "Maximiser or satisficer?",
+            "back": "Maximisers search for the best option; satisficers take the first that clears their standards. Iyengar and Schwartz: maximisers got better jobs, felt worse."
+          }
+        ]
+      }
+    ]
   }
 ];
