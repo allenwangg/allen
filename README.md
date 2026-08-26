@@ -64,6 +64,7 @@ node test/run-tests.mjs
 
 - **[LAUNCH.md](LAUNCH.md)** — the $0 launch manual, one click to deploy.
 - **[MONEY.md](MONEY.md)** — Stripe setup, the ledger architecture, payout timing.
+- **[CAMPAIGN.md](CAMPAIGN.md)** — The Midnight Wave, the X campaign: waves, post bank, objection playbook.
 - **[MARKETING.md](MARKETING.md)** — the launch playbook, researched from outbid.lol's
   actual viral run, with ready-to-post copy.
 - **[RESULTS.md](RESULTS.md)** — measured evidence and the feature comparison.
