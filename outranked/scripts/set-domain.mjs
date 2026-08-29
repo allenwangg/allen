@@ -25,10 +25,13 @@ const files = ["index.html", "outbid-lol-alternative.html"];
 let changed = 0;
 for (const file of files) {
   const before = readFileSync(file, "utf8");
-  // Rewrite only absolute URLs that live inside meta/link tags.
+  // Rewrite only absolute URLs inside meta/link tags — and never third-party
+  // hosts. (An earlier version rewrote the Google Fonts stylesheet URL too,
+  // which silently broke typography on the deployed site.)
+  const KEEP = /^(fonts\.googleapis\.com|fonts\.gstatic\.com|gc\.zgo\.at)$/;
   const after = before.replace(
-    /(<(?:meta|link)\b[^>]*?(?:content|href)=")https?:\/\/[^"/]+(\/[^"]*)?"/g,
-    (m, head, path) => `${head}${origin}${path || "/"}"`
+    /(<(?:meta|link)\b[^>]*?(?:content|href)=")(https?:\/\/([^"/]+))(\/[^"]*)?"/g,
+    (m, head, full, host, path) => KEEP.test(host) ? m : `${head}${origin}${path || "/"}"`
   );
   if (after !== before) { writeFileSync(file, after); changed++; }
   console.log(`${after !== before ? "updated" : "unchanged"}  ${file}`);

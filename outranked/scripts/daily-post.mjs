@@ -20,7 +20,7 @@ import crypto from "node:crypto";
 
 const {
   X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET,
-  SITE_URL = "https://outranked.vercel.app/",
+  SITE_URL = "https://outranked-xyz.vercel.app/",
 } = process.env;
 
 const DRY_RUN = process.env.DRY_RUN === "1";   // preview the post without sending it
