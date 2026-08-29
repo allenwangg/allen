@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Spline+Sans+Mono:wght@700&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:675px;background:#FBF8F2;font-family:"Plus Jakarta Sans",sans-serif;color:#171A1F;display:grid;place-items:center;position:relative}
+.card{width:1000px;background:#fff;border:3px solid #F5A524;border-radius:26px;box-shadow:0 8px 0 #C8811A;padding:44px 52px;text-align:center;position:relative}
+.crown{font-size:64px}
+.kick{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#C8811A;font-weight:800;margin-top:6px}
+h1{font-size:64px;font-weight:800;letter-spacing:-.035em;margin-top:6px}
+.amt{font-family:"Spline Sans Mono",monospace;font-size:44px;font-weight:700;color:#C8811A;margin-top:2px;letter-spacing:-.03em}
+.sub{font-size:19px;color:#6C7079;font-weight:600;margin-top:12px}
+.sub b{color:#171A1F}
+.reset{display:inline-block;margin-top:20px;background:#E6F6ED;border:2px solid #0E9F5B;color:#0A7B45;border-radius:14px;padding:10px 22px;font-weight:800;font-size:18px}
+.logo{position:absolute;right:30px;bottom:20px;font-size:20px;font-weight:800}.logo span{color:#F5A524}
+</style></head><body>
+<div class="card">
+  <div class="crown">👑</div>
+  <div class="kick">Coronation · {DATE}</div>
+  <h1>{NAME}</h1>
+  <div class="amt">{AMOUNT}</div>
+  <div class="sub">Held the crown at midnight — engraved in the hall of fame forever.<br><b>{RUNNER_UP}</b> came <b>{DIFF}</b> short.</div>
+  <div class="reset">The board is empty again — today's crown: $5</div>
+  <div class="logo">OUT<span>RANKED</span></div>
+</div>
+</body></html>
