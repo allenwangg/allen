@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Spline+Sans+Mono:wght@500;700&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:675px;background:#FBF8F2;color:#171A1F;font-family:"Plus Jakarta Sans",sans-serif;padding:46px 56px 40px;position:relative}
+h1{font-size:38px;font-weight:800;letter-spacing:-.03em}
+.sub{font-size:17px;color:#6C7079;font-weight:600;margin-top:5px}
+.panels{display:flex;gap:26px;margin-top:26px}
+.panel{flex:1;background:#fff;border:2px solid #E8E2D6;border-radius:18px;padding:18px 20px 12px;box-shadow:0 4px 0 #E8E2D6}
+.phead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.phead b{font-size:17px;font-weight:800}
+.chip{font-size:11px;font-weight:800;letter-spacing:.06em;padding:4px 11px;border-radius:99px}
+.chip.dead{background:#FFEDEB;color:#D33F35}
+.chip.live{background:#E6F6ED;color:#0A7B45}
+svg text{font-family:"Spline Sans Mono",monospace;font-size:12px;fill:#9AA0AA;font-weight:500}
+svg .anno{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:14px}
+.foot{position:absolute;left:56px;right:56px;bottom:18px;font-size:12.5px;color:#9AA0AA;font-weight:600;display:flex;justify-content:space-between}
+</style></head><body>
+<h1>The price of being seen</h1>
+<div class="sub">Cost to take #1 on a pay-to-rank board, day by day</div>
+<div class="panels">
+  <div class="panel"><div class="phead"><b>Uncapped, all-time</b><span class="chip dead">FROZE</span></div><svg id="a" width="500" height="330"></svg></div>
+  <div class="panel"><div class="phead"><b>Daily reset</b><span class="chip live">WINNABLE EVERY NIGHT</span></div><svg id="b" width="500" height="330"></svg></div>
+</div>
+<div class="foot"><span>Left: outbid.lol's all-time board — #1 hit $14,013 in week one, then bidding stalled (founder-reported). Right: daily-reset mechanic, illustrative.</span><span style="color:#C8811A;font-weight:800">OUTRANKED</span></div>
+<script>
+const W=500,H=330,PL=64,PR=14,PT=16,PB=34;
+function frame(svg,ymax,yticks,fmt){
+  const x=d=>PL+(W-PL-PR)*d/7, y=v=>PT+(H-PT-PB)*(1-v/ymax);
+  let g="";
+  for(const t of yticks){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(t)}" y2="${y(t)}" stroke="#F0EBDF" stroke-width="1"/>`;
+    g+=`<text x="${PL-8}" y="${y(t)+4}" text-anchor="end">${fmt(t)}</text>`;
+  }
+  for(let d=1;d<=7;d++) g+=`<text x="${x(d-0.5)}" y="${H-12}" text-anchor="middle">Day ${d}</text>`;
+  g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(0)}" y2="${y(0)}" stroke="#D9D2C3" stroke-width="1.5"/>`;
+  svg.innerHTML=g; return {x,y};
+}
+// Panel A: staircase to $14,013, then a dead plateau.
+{
+  const svg=document.getElementById("a");
+  const {x,y}=frame(svg,15000,[0,5000,10000,15000],v=>v?("$"+v/1000+"k"):"$0");
+  const steps=[[0,5],[0.3,900],[0.8,2500],[1.4,6200],[2.0,10000],[2.6,14013],[7,14013]];
+  let pts=[];
+  for(let i=0;i<steps.length;i++){
+    const [d,v]=steps[i];
+    if(i>0) pts.push([x(d),y(steps[i-1][1])]);
+    pts.push([x(d),y(v)]);
+  }
+  svg.innerHTML+=`<polyline points="${pts.map(p=>p.map(n=>n.toFixed(1)).join(",")).join(" ")}" fill="none" stroke="#FF5A4E" stroke-width="3" stroke-linejoin="round"/>`;
+  const py=y(14013);
+  svg.innerHTML+=`<circle cx="${x(2.6)}" cy="${py}" r="5" fill="#FF5A4E" stroke="#fff" stroke-width="2"/>`;
+  svg.innerHTML+=`<text class="anno" x="${x(4.6)}" y="${py+26}" text-anchor="middle" fill="#D33F35">$14,013 — then nothing</text>`;
+}
+// Panel B: sawtooth — climbs all day, wiped to $5 at midnight.
+{
+  const svg=document.getElementById("b");
+  const {x,y}=frame(svg,500,[0,250,500],v=>"$"+v);
+  const peaks=[180,320,240,410,290,350,221];
+  let pts=[];
+  for(let d=0;d<7;d++){
+    const p=peaks[d];
+    pts.push([x(d),y(5)],[x(d+0.25),y(p*0.35)],[x(d+0.55),y(p*0.6)],[x(d+0.8),y(p*0.82)],[x(d+0.97),y(p)],[x(d+1),y(5)]);
+  }
+  svg.innerHTML+=`<polyline points="${pts.map(p=>p.map(n=>n.toFixed(1)).join(",")).join(" ")}" fill="none" stroke="#0E9F5B" stroke-width="3" stroke-linejoin="round"/>`;
+  const lp=peaks[6];
+  svg.innerHTML+=`<circle cx="${x(6.97)}" cy="${y(lp)}" r="5" fill="#0E9F5B" stroke="#fff" stroke-width="2"/>`;
+  svg.innerHTML+=`<text class="anno" x="${x(3.5)}" y="${y(470)}" text-anchor="middle" fill="#0A7B45">back to $5 every midnight</text>`;
+}
+</script></body></html>

@@ -33,6 +33,33 @@ Every post serves one. If a draft doesn't, it doesn't ship.
 5. **The Ledger** — build in public with numbers that come from Stripe, not vibes. One
    inflated number costs the whole campaign.
 
+## The press kit (`press/`)
+
+Rendered, on-brand 1200×675 images so the key posts never go out as bare text:
+
+- **`wall.png`** — the thesis chart: uncapped board (staircase to $14,013, then a dead
+  plateau) vs daily reset (a living sawtooth). Attach to tweet 1 of the Wave 0 thread.
+  Colour pair validated for colour-vision deficiency; identity is also carried by
+  panel, shape, and direct labels, never colour alone.
+- **`house-rules.png`** — the day-one accountability card, designed to *be* the screenshot.
+- **`coronation.html`** — fill `{NAME}` / `{AMOUNT}` / `{RUNNER_UP}` / `{DIFF}` / `{DATE}`,
+  then `node press/render.mjs coronation` for that night's card.
+- **`render.mjs`** — re-renders any template to PNG.
+
+## The robot now runs the engine
+
+Three rituals fire automatically from GitHub Actions, every day, $0 — with numbers
+read live from the Stripe ledger, and silence instead of invented milestones:
+
+| UTC | Post |
+|---|---|
+| 00:05 | 👑 **Coronation** — names the crowned king *and how close the runner-up came* |
+| 14:00 | 💰 **Morning ritual** — revenue, listings, both kings, price to take the crown |
+| 23:00 | ⏳ **Final Hour** — the snipe deadline (or "the crown is sitting there for $5" on a quiet day) |
+
+Preview any of them from the repo's Actions tab (Run workflow → mode + dry run), or
+locally: `DRY_RUN=1 MODE=final node scripts/daily-post.mjs`.
+
 ## The waves
 
 | Wave | When | Job |

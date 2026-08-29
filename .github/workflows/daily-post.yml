@@ -7,12 +7,13 @@ on:
   schedule:
     - cron: "5 0 * * *"    # 00:05 UTC — "the board just reset"
     - cron: "0 14 * * *"   # 14:00 UTC — the morning stats ritual
+    - cron: "0 23 * * *"   # 23:00 UTC — the Final Hour snipe alert
   workflow_dispatch:
     inputs:
       mode:
         description: "Which post to run"
         type: choice
-        options: [ritual, reset]
+        options: [ritual, reset, final]
         default: ritual
       dry_run:
         description: "Preview only — print the post instead of sending it"

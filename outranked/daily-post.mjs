@@ -110,28 +110,55 @@ async function board() {
     listings: all.size,
     king: allTime[0] && { name: allTime[0][0], total: allTime[0][1] },
     todayKing: todays[0] && { name: todays[0][0], total: todays[0][1] },
+    todayRunnerUp: todays[1] && { name: todays[1][0], total: todays[1][1] },
     todayBids: [...today.values()].length,
     todayRevenue: [...today.values()].reduce((s, v) => s + v, 0),
   };
 }
 
-/* ---------- the two rituals ---------- */
-// MODE=reset|ritual overrides the clock, so the workflow's manual "Run" button
-// (and DRY_RUN=1 locally) can preview either post on demand.
-const mode = process.env.MODE || (new Date().getUTCHours() < 7 ? "reset" : "ritual");
+/* ---------- the three rituals ---------- */
+// MODE=reset|ritual|final overrides the clock, so the workflow's manual "Run"
+// button (and DRY_RUN=1 locally) can preview any post on demand.
+// By the clock: 00:05 → reset (coronation), 14:00 → ritual, 23:00 → final hour.
+const hourNow = new Date().getUTCHours();
+const mode = process.env.MODE || (hourNow < 7 ? "reset" : hourNow >= 22 ? "final" : "ritual");
 const b = await board();
 
 if (mode === "reset") {
-  // Midnight reset. Naming yesterday's winner makes it a story, not an announcement.
-  const crowned = b && b.todayKing
-    ? `Yesterday ${b.todayKing.name} held it at ${usd(b.todayKing.total)}. That reign is over.\n\n`
-    : `Yesterday's king is history.\n\n`;
-  await post(
-    `🔥 The board just reset.\n\n` +
-    crowned +
-    `Today's crown starts at $5 and the first mover owns the top of the board until midnight.\n\n` +
-    `${site}?r=reset`
-  );
+  // The coronation. Naming the winner — and how close the runner-up came —
+  // turns an announcement into a story two people will repost.
+  const lines = [`👑 CORONATION — the board just reset.`, ``];
+  if (b && b.todayKing) {
+    lines.push(`${b.todayKing.name} held the crown at ${usd(b.todayKing.total)} and is engraved in the hall of fame forever.`);
+    if (b.todayRunnerUp) {
+      const diff = b.todayKing.total - b.todayRunnerUp.total;
+      lines.push(``, `${b.todayRunnerUp.name} came ${usd(diff)} short. Brutal.`);
+    }
+    lines.push(``);
+  } else {
+    lines.push(`Yesterday's king is history.`, ``);
+  }
+  lines.push(`The board is empty again. Today's crown starts at $5, and the first mover owns the top until midnight.`, ``, `${site}?r=reset`);
+  await post(lines.join("\n"));
+} else if (mode === "final") {
+  // The deadline post — the most reliable conversion event of the day.
+  // No king yet = a different, equally good story (a free crown).
+  if (b && b.todayKing) {
+    await post(
+      `⏳ FINAL HOUR.\n\n` +
+      `${b.todayKing.name} is sitting on today's crown at ${usd(b.todayKing.total)}.\n\n` +
+      `In about an hour they're in the hall of fame and the board wipes back to $5.\n\n` +
+      `If you were ever going to snipe someone, it's now.\n\n` +
+      `${site}?r=final`
+    );
+  } else {
+    await post(
+      `⏳ FINAL HOUR — and nobody has bid today.\n\n` +
+      `Today's crown, a permanent hall-of-fame entry, is sitting there for $5.\n\n` +
+      `Cheapest flex on the internet, one hour left.\n\n` +
+      `${site}?r=final`
+    );
+  }
 } else {
   if (!b) { console.log("Board empty or unreachable — staying quiet rather than posting a fake milestone."); process.exit(0); }
   const lines = [
