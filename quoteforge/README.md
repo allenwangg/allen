@@ -10,6 +10,7 @@ never quietly drift apart.
 
 Open `index.html` in a browser. There is no build step, no dependencies, and no server.
 To publish it, see [DEPLOY.md](../DEPLOY.md) — GitHub Pages takes about two minutes.
+To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.md).
 
 ---
 
