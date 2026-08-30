@@ -9,9 +9,11 @@ on:
   pull_request:
   workflow_dispatch:
 
-# push and pull_request both fire on a PR branch; keep only the newest run.
+# push and pull_request both fire for the same commit on a PR branch. Keying on
+# github.ref does NOT dedupe them (push sees refs/heads/..., the PR sees
+# refs/pull/N/merge), so key on the head commit itself — identical for both.
 concurrency:
-  group: tests-${{ github.ref }}
+  group: tests-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: true
 
 permissions:
