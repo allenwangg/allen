@@ -19,6 +19,11 @@ What you have is not revenue. It is the two things that are genuinely hard to bu
 3. **A second leak the tool now closes** — unsigned change orders. Mispricing loses money
    at the moment of the bid; unsigned changes lose it during the job, and unlike
    mispricing the contractor usually knows it is happening and does it anyway.
+4. **The third leak, closed end to end** — margin fade. The tool now tracks actual spend
+   against the estimate per trade, so "the job was 25% on paper and 14% at the end" stops
+   being a mystery. This matters commercially because it turns the product from a
+   bidding tool used for an hour per job into something opened every week the job runs —
+   and retention, not features, is what a paid tier would eventually rest on.
 
 Distribution is the part you do not have, and it is the part that decides the outcome.
 
@@ -112,7 +117,9 @@ If you only do one thing: **run five margin audits for actual contractors, free.
 Not to make money — to find out whether the gaps are real and painful in their books, or
 just true on a landing page. Ask each one two questions:
 
-1. What did you quote this job at, and what did it actually cost you?
+1. What did you quote this job at, and what did it actually cost you? (If they cannot
+   answer the second half — most cannot — that inability is itself the finding, and the
+   job-cost log is the fix you demonstrate.)
 2. What did you do on it that you never billed for?
 
 The second question is the one to watch. If contractors answer it quickly and with

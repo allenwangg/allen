@@ -962,28 +962,31 @@ function wireSignature() {
 /* ------------------------------------------------------------------ jobs -- */
 
 function renderJobs() {
-  // Every figure here is the CONTRACT value, not the original estimate. Once a
-  // change order is approved it is money the client owes; a dashboard that
-  // still reports the day-one number understates the business by exactly the
-  // amount the contractor worked hardest to capture.
-  const all = store.state.estimates.map((e) => ({
-    est: e,
-    contract: summarizeContract(e, store.state.settings),
-  }));
+  // Every figure here is the truth the rest of the app knows: the CONTRACT
+  // value (approved changes included), with profit and margin adjusted for
+  // cost overruns already logged against the job. A dashboard that reports
+  // the contract margin on a job that is bleeding on the Costs tab is just a
+  // slower way of finding out at the end.
+  const all = store.state.estimates.map((e) => {
+    const costed = compareActuals(e, store.state.settings);
+    return { est: e, contract: costed.contract, costed };
+  });
   const open = all.filter((r) => r.est.status !== 'declined');
   const won = all.filter((r) => r.est.status === 'accepted');
 
   const pipeline = open.reduce((a, r) => a + r.contract.contractTotalCents, 0);
   const wonValue = won.reduce((a, r) => a + r.contract.contractTotalCents, 0);
-  const wonProfit = won.reduce((a, r) => a + r.contract.contractProfitCents, 0);
+  const wonProfit = won.reduce((a, r) => a + r.costed.adjustedProfitCents, 0);
   const avgMargin = all.length
-    ? all.reduce((a, r) => a + r.contract.contractMargin, 0) / all.length : 0;
+    ? all.reduce((a, r) => a + r.costed.adjustedMargin, 0) / all.length : 0;
   const belowTarget = all.filter(
-    (r) => r.contract.contractMargin < store.state.settings.targetMargin).length;
+    (r) => r.costed.adjustedMargin < store.state.settings.targetMargin).length;
 
   const atRisk = all.reduce((a, r) => a + r.contract.atRiskCents, 0);
   const atRiskJobs = all.filter((r) => r.contract.unapprovedCount > 0).length;
   const changeValue = all.reduce((a, r) => a + r.contract.approvedTotalCents, 0);
+  const faded = all.reduce((a, r) => a + r.costed.overrunCents, 0);
+  const fadedJobs = all.filter((r) => r.costed.overrunCents > 0).length;
 
   $('#jobStats').innerHTML = `
     <div class="stat"><div class="k">Open pipeline</div><div class="v">${formatMoney(pipeline, { cents: false })}</div><div class="s">${open.length} job${open.length === 1 ? '' : 's'}</div></div>
@@ -997,9 +1000,15 @@ function renderJobs() {
       : `<div class="stat"><div class="k">Under target</div><div class="v">${belowTarget}</div><div class="s">of ${all.length} job${all.length === 1 ? '' : 's'}</div></div>`}
     ${changeValue
       ? `<div class="stat"><div class="k">Approved changes</div><div class="v">${formatMoney(changeValue, { cents: false })}</div><div class="s">already in the totals above</div></div>`
+      : ''}
+    ${faded
+      ? `<div class="stat" style="border-color:color-mix(in srgb,var(--bad) 40%,transparent)">
+           <div class="k">Margin faded</div>
+           <div class="v" style="color:var(--bad)">${formatMoney(faded, { cents: false })}</div>
+           <div class="s">overruns on ${fadedJobs} job${fadedJobs === 1 ? '' : 's'}</div></div>`
       : ''}`;
 
-  $('#estList').innerHTML = all.map(({ est, contract }) => `
+  $('#estList').innerHTML = all.map(({ est, contract, costed }) => `
     <div class="est-row${est.id === store.state.activeId ? ' active' : ''}" data-open="${esc(est.id)}">
       <span>
         <div class="t">${esc(est.title || 'Untitled')}</div>
@@ -1014,8 +1023,8 @@ function renderJobs() {
       </select>
       <span class="num right">
         ${formatMoney(contract.contractTotalCents, { cents: false })}
-        <div class="tiny" style="color:var(--${contract.contractMargin < store.state.settings.floorMargin ? 'bad' : contract.contractMargin < store.state.settings.targetMargin ? 'warn' : 'good'})">
-          ${formatPercent(contract.contractMargin)} margin${contract.approvedCount ? ` · ${contract.approvedCount} change${contract.approvedCount === 1 ? '' : 's'}` : ''}
+        <div class="tiny" style="color:var(--${costed.adjustedMargin < store.state.settings.floorMargin ? 'bad' : costed.adjustedMargin < store.state.settings.targetMargin ? 'warn' : 'good'})">
+          ${formatPercent(costed.adjustedMargin)} margin${costed.overrunCents ? ` · ${formatMoney(costed.overrunCents, { cents: false })} faded` : ''}${contract.approvedCount ? ` · ${contract.approvedCount} change${contract.approvedCount === 1 ? '' : 's'}` : ''}
         </div>
       </span>
       <span style="display:flex;gap:4px">
@@ -1886,4 +1895,11 @@ ${c.overrunCents ? `
 
 function wireCosts() {
   $('#btnAddActual').onclick = addActualRow;
+  $('#btnActualsCsv').onclick = () => {
+    const est = store.active();
+    if (!est) return;
+    const costed = compareActuals(est, store.state.settings);
+    download(`${est.number}-job-costs.csv`, store.exportActualsCSV(costed), 'text/csv');
+    toast('Job costs exported.');
+  };
 }

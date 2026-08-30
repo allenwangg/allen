@@ -407,6 +407,19 @@ console.log('\n  mobile (390x844)');
   await page.waitForTimeout(300);
   check('app renders its line grid on a phone', (await page.locator('.items tbody tr').count()) > 5);
   check('profit panel is reachable on a phone', await page.locator('#profitPanel').isVisible());
+
+  // The tabs added later must hold up on a phone too — a change order gets
+  // written standing in the room where the rot was found.
+  await page.locator('.tab[data-tab="changes"]').click();
+  await page.waitForTimeout(300);
+  check('changes tab renders on a phone', await page.locator('#coList').isVisible());
+  await page.locator('.tab[data-tab="costs"]').click();
+  await page.waitForTimeout(300);
+  check('costs tab renders on a phone', await page.locator('#budgetPanel').isVisible());
+  const hScrollApp = await page.evaluate(() =>
+    document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+  check('the app does not scroll sideways on a phone', !hScrollApp);
+
   await page.context().close();
 }
 

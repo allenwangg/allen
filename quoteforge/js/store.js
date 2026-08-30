@@ -763,3 +763,31 @@ Object.assign(Store.prototype, {
     }, { label: 'remove actual' });
   },
 });
+
+/* ----------------------------------------------------------- actuals CSV --- */
+
+/**
+ * Flat CSV of the actuals log with the budget comparison appended — the
+ * handoff to a bookkeeper or spreadsheet at the end of the job. Same escaping
+ * rules as the line-item export.
+ */
+Object.assign(Store.prototype, {
+  exportActualsCSV(costed) {
+    const rows = [['Date', 'Category', 'Description', 'Amount']];
+    for (const e of costed.entries) {
+      rows.push([e.date, e.category, e.description, ((e.amountCents || 0) / 100).toFixed(2)]);
+    }
+    rows.push([]);
+    rows.push(['Category', 'Budget', 'Spent', 'Over budget', '']);
+    for (const [cat, v] of Object.entries(costed.byCategory)) {
+      rows.push([
+        cat,
+        (v.budgetCents / 100).toFixed(2),
+        (v.spentCents / 100).toFixed(2),
+        (v.overrunCents / 100).toFixed(2),
+        '',
+      ]);
+    }
+    return rows.map((r) => r.map(csvCell).join(',')).join('\r\n');
+  },
+});

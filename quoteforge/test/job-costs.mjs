@@ -152,6 +152,17 @@ check('an approved change order raises the labor budget',
   overBefore && (!overAfter || parseFloat(overAfter.replace(/,/g, '')) < parseFloat(overBefore.replace(/,/g, ''))),
   `(over ${overBefore} -> ${overAfter || 'cleared'})`);
 
+/* --- the dashboard must tell the same truth as the Costs tab --- */
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(300);
+const stats = await page.locator('#jobStats').textContent();
+check('the dashboard surfaces faded margin as its own stat',
+  /Margin faded/i.test(stats), `(${stats.replace(/\s+/g,' ').slice(0,110)})`);
+check('the job row flags its faded amount',
+  /faded/i.test(await page.locator('.est-row').first().textContent()));
+await page.locator('.tab[data-tab="costs"]').click();
+await page.waitForTimeout(250);
+
 /* --- deleting an entry --- */
 const rows = await page.locator('tr[data-ac]').count();
 await page.locator('tr[data-ac]').first().hover();

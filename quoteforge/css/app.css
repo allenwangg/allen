@@ -103,6 +103,10 @@ a { color: var(--accent); }
 .app {
   display: grid;
   grid-template-rows: auto auto 1fr;
+  /* minmax(0,...) lets the column shrink below its content's min width; wide
+     tables then scroll inside their own containers instead of stretching the
+     whole app sideways on a phone. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -150,10 +154,24 @@ a { color: var(--accent); }
 }
 .estimate-picker select {
   max-width: 300px;
+  min-width: 0;
   padding: 5px 8px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-s);
   background: var(--surface-2);
+}
+
+/* On a phone the topbar cannot fit brand + picker + tools on one line: wrap,
+   and give the estimate picker the full second row. This bar overflowing is
+   what makes the whole app scroll sideways. */
+@media (max-width: 720px) {
+  .topbar { flex-wrap: wrap; row-gap: 8px; }
+  .card > header { flex-wrap: wrap; row-gap: 6px; }
+  .brand small { display: none; }
+  .estimate-picker { order: 10; flex: 1 1 100%; }
+  .estimate-picker select { flex: 1; max-width: none; }
+  .tabs { overflow-x: auto; }
+  .tab { white-space: nowrap; }
 }
 
 /* --------------------------------------------------------------- buttons - */
@@ -231,7 +249,9 @@ kbd {
   align-items: start;
 }
 @media (max-width: 1080px) {
-  .workspace { grid-template-columns: 1fr; }
+  /* Plain 1fr is minmax(auto,1fr) and will not shrink below its content's
+     min width — on a phone that stretches the page sideways. */
+  .workspace { grid-template-columns: minmax(0, 1fr); }
   .profit-rail { position: static !important; }
 }
 
@@ -256,6 +276,8 @@ kbd {
 .card .body { padding: 14px; }
 
 /* ------------------------------------------------------------ items grid - */
+
+#itemsWrap, #actualsWrap, #coEditor { overflow-x: auto; }
 
 .items {
   width: 100%;

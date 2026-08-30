@@ -588,6 +588,18 @@ t('actuals feed compareActuals end to end', () => {
   ok(c.adjustedProfitCents < c.estimatedProfitCents);
 });
 
+t('the actuals CSV carries entries, budget comparison, and escaping', () => {
+  const s = mkStore();
+  s.createEstimate();
+  s.addItem({ description: 'Labor', qty: 10, unitCost: 100, category: 'labor' });
+  s.addActual({ description: 'Payroll, "week 1"', category: 'labor', amount: 1300, date: '2026-08-10' });
+  const csv = s.exportActualsCSV(compareActuals(s.active(), s.state.settings));
+  ok(csv.includes('"Payroll, ""week 1"""'), `bad escaping:\n${csv}`);
+  ok(csv.includes('1300.00'), 'amount missing');
+  ok(/Category,Budget,Spent,Over budget/.test(csv), 'budget comparison section missing');
+  ok(/labor,1000\.00,1300\.00,300\.00/.test(csv), `budget row wrong:\n${csv}`);
+});
+
 
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }
