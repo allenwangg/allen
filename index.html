@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VitalArc</title>
+<meta name="description" content="A private notebook for working out what is actually affecting how you feel — and for turning that into something a doctor can use.">
+<meta name="theme-color" content="#1f6f5c" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1014" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231f6f5c'/><path d='M13 44c7-19 13-25 19-25s12 6 19 25' stroke='%23fff' stroke-width='6.5' fill='none' stroke-linecap='round'/></svg>">
+<link rel="stylesheet" href="./app/css/app.css">
+<style>
+  .lp { max-width: 720px; margin: 0 auto; padding: 0 20px 72px; }
+  .lp-nav { display:flex; align-items:center; gap:12px; padding:20px 0; }
+  .lp-hero { padding: 40px 0 26px; }
+  .lp-hero h1 { font-size: clamp(1.8rem, 4.4vw, 2.6rem); letter-spacing:-.03em; max-width: 20ch; margin: 0 0 .45em; }
+  .lp-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-2); max-width: 58ch; margin: 0 0 24px; }
+  .lp-section { padding: 26px 0; border-top: 1px solid var(--border); }
+  .lp-section h2 { font-size: 1.15rem; margin-bottom: .5em; }
+  .lp-section p { color: var(--text-2); max-width: 62ch; }
+  .lp-list { list-style: none; padding: 0; margin: 0; }
+  .lp-list li { padding: 10px 0 10px 26px; position: relative; color: var(--text-2); border-bottom: 1px solid var(--border); }
+  .lp-list li:last-child { border-bottom: 0; }
+  .lp-list li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+  .lp-list strong { color: var(--text); font-weight: 600; }
+  .lp-foot { border-top:1px solid var(--border); margin-top: 28px; padding-top: 20px; color: var(--text-3); font-size: .86rem; }
+</style>
+</head>
+<body>
+<div class="lp">
+
+  <nav class="lp-nav">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">V</span> VitalArc</div>
+    <div class="spacer" style="flex:1"></div>
+    <a class="btn btn-primary btn-sm" href="./app/">Open</a>
+  </nav>
+
+  <header class="lp-hero">
+    <h1>Work out what's actually affecting how you feel</h1>
+    <p class="lp-sub">
+      If something has been bothering you for months and nobody can tell you why, the missing
+      piece is usually evidence. This is a private notebook that collects it, tests it properly,
+      and turns it into one page you can hand to a doctor.
+    </p>
+    <a class="btn btn-primary" href="./app/">Start</a>
+  </header>
+
+  <section class="lp-section">
+    <h2>What it does</h2>
+    <ul class="lp-list">
+      <li><strong>Tracks the symptoms you actually have.</strong> You name them — not a fixed list
+        of somebody else's idea of wellness.</li>
+      <li><strong>Looks for what moves with them.</strong> Across your own log, at a one- and
+        two-day lag, with the statistics done properly rather than by eye.</li>
+      <li><strong>Runs real experiments.</strong> Pick one thing you suspect, vary it deliberately
+        for a few weeks, and get an honest answer instead of a hunch.</li>
+      <li><strong>Prints something a doctor can use.</strong> Dates, patterns, and what you have
+        already ruled out — on one page, in ten minutes of appointment time.</li>
+    </ul>
+  </section>
+
+  <section class="lp-section">
+    <h2>What it doesn't do</h2>
+    <p>
+      It can't diagnose you, treat you, or cure anything, and it will never tell you what
+      condition you have or what to take for it. It has no doctor in it. What it can do is stop
+      you guessing — and make the guessing that's left somebody qualified's job, with better
+      information in front of them.
+    </p>
+    <p>
+      It also won't invent patterns to keep you interested. On data with no real signal it says
+      so and shows you nothing, which is the whole reason to trust it when it does show you
+      something.
+    </p>
+  </section>
+
+  <section class="lp-section">
+    <h2>Where your data goes</h2>
+    <p>
+      Nowhere. Everything stays in your browser on this device — no account, no server, no
+      analytics, nothing uploaded. That also means nobody is backing it up for you, so the
+      export button matters.
+    </p>
+  </section>
+
+  <footer class="lp-foot">
+    <p><strong>VitalArc is a personal notebook, not a medical device.</strong> It does not
+    diagnose, treat, cure or prevent any disease, and nothing in it is medical advice. Patterns
+    it finds show what moves together in your log; they cannot prove one thing caused another.
+    If something about your health worries you, or if a symptom is severe, new, or getting
+    worse, please talk to a doctor rather than to this app.</p>
+  </footer>
+</div>
+</body>
+</html>

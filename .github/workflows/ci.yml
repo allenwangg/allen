@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The unit suite has no dependencies at all, so it runs before install.
+      # It also verifies every statistical claim made on the landing page and in
+      # docs/INSIGHTS.md — if those numbers drift, this fails.
+      - name: Unit tests
+        run: node tests/run.mjs
+
+      # The one product rule that is not a matter of taste.
+      - name: Copy never claims to diagnose, treat or cure
+        run: node tests/copy-guard.mjs
+
+      # A service worker only ships a new cache when its own bytes change. If
+      # VERSION goes stale, every existing installation is pinned to the old
+      # build forever with no way to push a fix — so this is a hard gate.
+      - name: Service worker version is current
+        run: node scripts/stamp-sw.mjs --check
+
+      - name: Install (Playwright only)
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start server
+        run: |
+          node scripts/serve.mjs &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/app/index.html > /dev/null && break
+            sleep 1
+          done
+
+      - name: Browser walkthrough
+        run: node tests/e2e.mjs
+        env:
+          BASE_URL: http://localhost:8080
+          SHOT_DIR: ./shots
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: shots/
+          if-no-files-found: ignore

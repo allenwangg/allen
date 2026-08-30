@@ -1,0 +1,5 @@
+*.png.tmp
+/shots/
+node_modules/
+package-lock.json
+shots/
