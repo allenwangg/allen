@@ -869,3 +869,107 @@ Object.assign(Store.prototype, {
     return rows.map((r) => r.map(csvCell).join(',')).join('\r\n');
   },
 });
+
+/* --------------------------------------------------- audit intake --------- */
+
+/**
+ * Build a complete, audit-ready job from a contractor's summary numbers.
+ *
+ * The margin audit is the one offer worth selling, and its cost is the hour
+ * spent rebuilding someone else's job line by line. A contractor cannot
+ * reconstruct that detail from memory anyway — but they can tell you what they
+ * quoted, roughly what they spent by trade, and what changed. That is enough
+ * to measure all three leaks, so this takes exactly those figures.
+ *
+ * The synthetic lines are honest fiction: one line per category carrying the
+ * whole budget for that trade. Quantities are meaningless and the report never
+ * shows them, but every total the audit depends on is exact.
+ *
+ * @param {object} input
+ * @param {string} input.title
+ * @param {string} [input.client]
+ * @param {number} input.quotedTotal      what the client was charged, pre-tax
+ * @param {object} input.budget           estimated cost by category, dollars
+ * @param {object} input.spent            actual cost by category, dollars
+ * @param {Array}  [input.changes]        {title, amount, signed}
+ */
+Object.assign(Store.prototype, {
+  createAuditJob(input) {
+    const cats = ['labor', 'material', 'subcontractor', 'equipment', 'other'];
+    const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+
+    const budget = input.budget || {};
+    const spent = input.spent || {};
+    const budgetTotal = cats.reduce((a, c) => a + num(budget[c]), 0);
+    const quoted = num(input.quotedTotal);
+
+    // Recover the markup the contractor actually used: the one that turns
+    // their real costs into the price they really charged. Everything the
+    // audit says about pricing follows from this, so it is derived from their
+    // two numbers rather than assumed.
+    const overhead = num(this.state.settings.overhead);
+    const burdened = budgetTotal * (1 + overhead);
+    const impliedMarkup = burdened > 0 ? (quoted - burdened) / burdened : 0;
+
+    const est = this.createEstimate({
+      title: input.title || 'Audited job',
+      status: 'accepted',
+      client: { name: input.client || '', email: '', phone: '', address: '' },
+      scopeSummary: 'Reconstructed from the contractor\'s own figures for a margin audit.',
+      // The audit reconstructs a job at exactly what was charged, so the job's
+      // own settings must not add anything on top: no contingency the client
+      // never paid, and no sales tax — the quoted figure the contractor gives
+      // is already the number on their invoice, and tax is collected and
+      // remitted rather than earned.
+      settings: { contingency: 0, taxMode: 'none', taxRate: 0 },
+    });
+
+    const items = cats
+      .filter((c) => num(budget[c]) > 0)
+      .map((c) => ({
+        description: `${CATEGORY_TITLES[c]} — as estimated`,
+        category: c,
+        unit: 'ls',
+        qty: 1,
+        unitCost: num(budget[c]),
+        markup: impliedMarkup,
+      }));
+    if (items.length) this.addItems(items);
+
+    for (const c of cats) {
+      if (num(spent[c]) === 0) continue;
+      this.addActual({
+        date: todayISO(),
+        category: c,
+        description: `${CATEGORY_TITLES[c]} — actually paid`,
+        amount: num(spent[c]),
+      });
+    }
+
+    for (const ch of input.changes || []) {
+      if (!num(ch.amount)) continue;
+      const co = this.addChangeOrder({ title: ch.title || 'Change', reason: ch.reason || '' });
+      // The figure the contractor gives is the PRICE of the change, not a cost
+      // to build up from. Overhead is divided back out so the pipeline's own
+      // overhead pass lands exactly on the amount they named — otherwise a
+      // \$2,400 change reconstructs as \$2,640 and the audit misquotes them
+      // back to themselves.
+      this.addChangeOrderItem(co.id, {
+        description: ch.title || 'Additional work',
+        category: 'labor',
+        unit: 'ls',
+        qty: 1,
+        unitCost: num(ch.amount) / (1 + overhead),
+        markup: 0,
+      });
+      if (ch.signed) this.setChangeOrderStatus(co.id, 'approved');
+    }
+
+    return { estimate: this.active(), impliedMarkup };
+  },
+});
+
+const CATEGORY_TITLES = {
+  labor: 'Labor', material: 'Materials', subcontractor: 'Subcontractors',
+  equipment: 'Equipment', other: 'Permits & fees',
+};

@@ -54,6 +54,7 @@ function boot() {
   wireProposal();
   wireChangeOrders();
   wireCosts();
+  wireAuditIntake();
   wireJobs();
   wireShortcuts();
 
@@ -2034,4 +2035,109 @@ function wireCosts() {
     download(`${est.number}-job-costs.csv`, store.exportActualsCSV(costed), 'text/csv');
     toast('Job costs exported.');
   };
+}
+
+/* ---------------------------------------------------------- audit intake -- */
+
+/**
+ * The intake screen for the margin audit service.
+ *
+ * Deliberately not a version of the estimator. A contractor being audited
+ * cannot reconstruct their own line items — asking them to would end the
+ * conversation — but they can tell you what they charged, roughly what they
+ * paid out by trade, and what changed. That is enough to measure all three
+ * leaks, and it turns an hour of rebuilding into a few minutes of typing.
+ */
+const INTAKE_CATEGORIES = [
+  ['labor', 'Labor / payroll'],
+  ['material', 'Materials'],
+  ['subcontractor', 'Subcontractors'],
+  ['equipment', 'Equipment & rentals'],
+  ['other', 'Permits & fees'],
+];
+
+function wireAuditIntake() {
+  const dlg = $('#dlgAudit');
+
+  $('#btnAudit').onclick = () => {
+    $('#aCostRows').innerHTML = INTAKE_CATEGORIES.map(([key, label]) => `
+      <tr>
+        <td>${label}</td>
+        <td style="width:150px"><input class="num" type="number" step="0.01" min="0"
+              data-budget="${key}" placeholder="0"></td>
+        <td style="width:150px"><input class="num" type="number" step="0.01" min="0"
+              data-spent="${key}" placeholder="0"></td>
+      </tr>`).join('');
+    $('#aChanges').innerHTML = '';
+    addChangeRow();
+    for (const id of ['#aTitle', '#aClient', '#aQuoted']) $(id).value = '';
+    dlg.showModal();
+    requestAnimationFrame(() => $('#aTitle').focus());
+  };
+
+  $('#btnAddChangeRow').onclick = addChangeRow;
+
+  $('#aChanges').onclick = (e) => {
+    const del = e.target.closest('[data-delchange]');
+    if (del) del.closest('.change-row').remove();
+  };
+
+  $('#btnBuildAudit').onclick = () => {
+    const quoted = Number($('#aQuoted').value) || 0;
+    if (quoted <= 0) {
+      toast('Enter what they charged for the job — everything else is measured against it.', { bad: true });
+      $('#aQuoted').focus();
+      return;
+    }
+
+    const read = (attr) => Object.fromEntries(
+      $$(`[data-${attr}]`).map((el) => [el.dataset[attr], Number(el.value) || 0]),
+    );
+    const budget = read('budget');
+    const budgetTotal = Object.values(budget).reduce((a, b) => a + b, 0);
+    if (budgetTotal <= 0) {
+      toast('Enter at least one estimated cost — with no costs there is no margin to measure.', { bad: true });
+      return;
+    }
+
+    const changes = $$('#aChanges .change-row').map((row) => ({
+      title: row.querySelector('[data-ctitle]').value.trim(),
+      amount: Number(row.querySelector('[data-camount]').value) || 0,
+      signed: row.querySelector('[data-csigned]').checked,
+    })).filter((c) => c.amount > 0);
+
+    const { impliedMarkup } = store.createAuditJob({
+      title: $('#aTitle').value.trim() || 'Audited job',
+      client: $('#aClient').value.trim(),
+      quotedTotal: quoted,
+      budget,
+      spent: read('spent'),
+      changes,
+    });
+
+    dlg.close();
+    ui.tab = 'costs';
+    render();
+
+    const c = compareActuals(store.active(), store.state.settings);
+    const found = Math.max(0, c.overrunCents) + c.contract.atRiskCents;
+    toast(
+      found > 0
+        ? `Built. They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)} — ${formatMoney(found)} found so far.`
+        : `Built. They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)}.`,
+      { ms: 7000 },
+    );
+  };
+}
+
+function addChangeRow() {
+  const row = document.createElement('div');
+  row.className = 'change-row';
+  row.innerHTML = `
+    <input data-ctitle placeholder="What changed — e.g. rot under the tub">
+    <input data-camount class="num" type="number" step="0.01" placeholder="Worth">
+    <label class="signed"><input type="checkbox" data-csigned> Signed</label>
+    <button class="btn sm icon ghost" data-delchange title="Remove">✕</button>`;
+  $('#aChanges').append(row);
+  requestAnimationFrame(() => row.querySelector('[data-ctitle]').focus());
 }

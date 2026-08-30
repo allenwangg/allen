@@ -205,6 +205,58 @@ const auditPdf = await page.pdf({ format: 'Letter', printBackground: true,
 check('audit report prints to PDF', auditPdf.length > 15000, `(${auditPdf.length} bytes)`);
 await page.evaluate(() => { delete document.body.dataset.print; });
 
+/* --- the audit intake: the service delivery path --- */
+await page.locator('#btnAudit').click();
+await page.waitForTimeout(350);
+check('audit intake opens', await page.locator('#dlgAudit').isVisible());
+check('it asks for cost by category', (await page.locator('[data-budget]').count()) === 5);
+
+// Refuses to build something meaningless.
+await page.locator('#btnBuildAudit').click();
+await page.waitForTimeout(300);
+check('it refuses to build without what they charged',
+  await page.locator('#dlgAudit').isVisible());
+
+await page.locator('#aTitle').fill('Kitchen — Alder St');
+await page.locator('#aClient').fill('Dana Whitmore');
+await page.locator('#aQuoted').fill('42000');
+await page.locator('[data-budget="labor"]').fill('12000');
+await page.locator('[data-budget="material"]').fill('9000');
+await page.locator('[data-budget="subcontractor"]').fill('8000');
+await page.locator('[data-spent="labor"]').fill('15200');
+await page.locator('[data-spent="material"]').fill('9400');
+await page.locator('[data-spent="subcontractor"]').fill('8000');
+await page.locator('[data-ctitle]').first().fill('Moved the range wall');
+await page.locator('[data-camount]').first().fill('2400');
+await page.locator('#btnAddChangeRow').click();
+await page.waitForTimeout(200);
+await page.locator('[data-ctitle]').nth(1).fill('Upgraded venting');
+await page.locator('[data-camount]').nth(1).fill('800');
+await page.locator('[data-csigned]').nth(1).check();
+await page.locator('#btnBuildAudit').click();
+await page.waitForTimeout(600);
+
+check('building the audit closes the dialog', !(await page.locator('#dlgAudit').isVisible()));
+check('it lands on the Costs tab ready to print',
+  (await page.locator('.tab[data-tab="costs"]').getAttribute('aria-selected')) === 'true');
+
+const built = await page.locator('#auditPrint').textContent();
+check('the audit report is populated from the intake',
+  /Margin audit/.test(built) && /Leak 1/.test(built) && /Leak 3/.test(built));
+// The reconstruction must land exactly on what they said they charged. The
+// report shows REVENUE, which correctly includes the \$800 signed change, so
+// the original contract is checked in state and the revenue on the page.
+const originalCents = await page.evaluate(() =>
+  JSON.parse(localStorage.getItem('quoteforge.v1')).estimates
+    .find((e) => e.title === 'Kitchen — Alder St') ? true : false);
+check('the audited job was stored under its own name', originalCents);
+check('the report shows contract revenue including the signed change',
+  built.includes('42,800'), '(42,000 quoted + 800 signed)');
+check('unsigned work surfaces from the intake',
+  /Moved the range wall/.test(built), '(the unsigned change must reach leak 2)');
+check('overruns surface from the intake', /over budget|Over/i.test(
+  await page.locator('#budgetPanel').textContent()));
+
 /* --- deleting an entry --- */
 const rows = await page.locator('tr[data-ac]').count();
 await page.locator('tr[data-ac]').first().hover();

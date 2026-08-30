@@ -49,10 +49,16 @@ set, so there is no state where a visitor hits a dead end.
 
 Before anyone pays you, run one audit on **your own** last job:
 
-1. New estimate in the app → enter the job as you quoted it.
-2. Changes tab → add what changed mid-job, mark what was actually signed.
-3. Costs tab → log what you actually paid from bank lines or receipts.
-4. Costs tab → **Audit report** → print to PDF.
+1. **Audit a job** in the toolbar → fill in the twelve fields.
+2. It lands on the Costs tab with the report already built → print to PDF.
+
+That is the whole delivery. The intake asks only for what a contractor can
+actually tell you on a phone call — what they charged, roughly what they paid
+out by trade, and what changed — because nobody can reconstruct their own line
+items from memory, and asking them to ends the conversation.
+
+If you want to build a job up properly instead (your own quotes, not an audit),
+the estimator, Changes and Costs tabs still do that line by line.
 
 If step 4's number surprises you, you have both rehearsed the product and acquired
 your first marketing story — yours, true, and specific.

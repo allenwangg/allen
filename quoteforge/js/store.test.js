@@ -6,7 +6,9 @@
  * estimates.
  */
 import { Store, migrate, newEstimate, uid, STORAGE_KEY } from './store.js';
-import { priceEstimate, defaultSettings, summarizeContract, compareActuals } from './pricing.js';
+import {
+  priceEstimate, defaultSettings, summarizeContract, compareActuals,
+} from './pricing.js';
 
 let passed = 0, failed = 0;
 const failures = [];
@@ -17,6 +19,9 @@ function eq(a, b, m = '') {
   if (a !== b) throw new Error(`${m} expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
 }
 function ok(c, m = 'assertion failed') { if (!c) throw new Error(m); }
+function near(a, b, tol = 1e-9, m = '') {
+  if (!(Math.abs(a - b) <= tol)) throw new Error(`${m} expected ~${b}, got ${a}`);
+}
 
 /** In-memory stand-in for localStorage. */
 function memStorage(seed = {}) {
@@ -705,6 +710,91 @@ t('change order numbers never repeat after a deletion', () => {
 
   const numbers = s.active().changeOrders.map((x) => x.number);
   eq(new Set(numbers).size, numbers.length, `duplicate numbers on the job: ${numbers}`);
+});
+
+/* ---------------------------------------------------- audit intake ------- */
+
+const AUDIT_INPUT = {
+  title: 'Kitchen — Alder St', client: 'Dana W',
+  quotedTotal: 42000,
+  budget: { labor: 12000, material: 9000, subcontractor: 8000, other: 900 },
+  spent:  { labor: 15200, material: 9400, subcontractor: 8000, other: 900 },
+  changes: [
+    { title: 'Moved the range wall', amount: 2400, signed: false },
+    { title: 'Upgraded venting', amount: 800, signed: true },
+  ],
+};
+
+t('an audited job reconstructs the quoted total exactly', () => {
+  for (const quotedTotal of [42000, 18500, 7250, 133400, 999]) {
+    const s = mkStore();
+    s.createAuditJob({ ...AUDIT_INPUT, quotedTotal });
+    const got = priceEstimate(s.active(), s.state.settings).totalCents;
+    ok(Math.abs(got - quotedTotal * 100) <= 2,
+      `contractor said ${quotedTotal}, reconstruction produced ${got / 100}`);
+  }
+});
+
+t('the implied markup is derived from their numbers, not assumed', () => {
+  const s = mkStore();
+  const { impliedMarkup } = s.createAuditJob(AUDIT_INPUT);
+  // Costs 29,900 burdened by 10% overhead = 32,890, sold at 42,000.
+  near(impliedMarkup, (42000 - 32890) / 32890, 1e-9);
+  ok(impliedMarkup > 0);
+});
+
+t('a job sold below its own cost yields a negative implied markup', () => {
+  const s = mkStore();
+  const { impliedMarkup } = s.createAuditJob({ ...AUDIT_INPUT, quotedTotal: 20000 });
+  ok(impliedMarkup < 0, 'underwater jobs must not be silently floored at zero');
+  ok(priceEstimate(s.active(), s.state.settings).grossProfitCents < 0);
+});
+
+t('spend, overruns and unsigned work all land in the audit', () => {
+  const s = mkStore();
+  s.createAuditJob(AUDIT_INPUT);
+  const c = compareActuals(s.active(), s.state.settings);
+
+  // Figures the contractor will personally recognise are asserted exactly.
+  eq(c.spentCents, 3350000, 'every category of actual spend should be logged:');
+  eq(c.contract.atRiskCents, 240000, 'the unsigned change is worth exactly what they said:');
+  eq(c.contract.unapprovedCount, 1, 'the unsigned change must be at risk:');
+  eq(c.contract.approvedCount, 1, 'the signed change must be in the contract:');
+
+  // The labor overrun depends on how the signed change's price is split into
+  // cost and overhead internally. Asserting it to the dollar would be false
+  // precision on an input the contractor gave as "about \$800", so assert the
+  // behaviour that matters: they overspent, and the signed change absorbed
+  // part of it.
+  const naive = 1520000 - 1200000;   // spend minus the original budget alone
+  ok(c.byCategory.labor.overrunCents > 0, 'overspending on labor must register');
+  ok(c.byCategory.labor.overrunCents < naive,
+    'an approved change should absorb part of the overrun, not none of it');
+  ok(c.adjustedMargin < c.estimatedMargin, 'overruns must show as fade');
+});
+
+t('a change order is worth what the contractor said, not marked up again', () => {
+  const s = mkStore();
+  s.createAuditJob({ ...AUDIT_INPUT, changes: [{ title: 'Extra', amount: 2400, signed: true }] });
+  const c = summarizeContract(s.active(), s.state.settings);
+  eq(c.approvedTotalCents, 240000,
+    'the figure they gave is the value of the work, not a cost to mark up:');
+});
+
+t('an audit job with no changes and no spend is still valid', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'Bare', quotedTotal: 5000, budget: { labor: 3000 }, spent: {} });
+  const c = compareActuals(s.active(), s.state.settings);
+  eq(c.spentCents, 0);
+  eq(c.overrunCents, 0);
+  ok(Number.isFinite(c.adjustedMargin));
+  eq(priceEstimate(s.active(), s.state.settings).totalCents, 500000);
+});
+
+t('zero-cost categories are not given empty lines', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'X', quotedTotal: 5000, budget: { labor: 3000, material: 0 }, spent: {} });
+  eq(s.active().items.length, 1, 'a category with no budget should not appear at all');
 });
 
 

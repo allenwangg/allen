@@ -22,6 +22,7 @@
     <div class="estimate-picker">
       <select id="estSelect" aria-label="Active estimate"></select>
       <button class="btn sm" id="btnNew" title="New estimate (N)">+ New</button>
+      <button class="btn sm" id="btnAudit" title="Audit a finished job">Audit a job</button>
     </div>
 
     <span class="spacer"></span>
@@ -410,6 +411,62 @@
     <button class="btn" id="btnSigClear">Clear</button>
     <button class="btn" data-close>Cancel</button>
     <button class="btn primary" id="btnSigSave">Accept &amp; save</button>
+  </footer>
+</dialog>
+
+<!-- ================================================= audit intake modal -->
+<dialog id="dlgAudit">
+  <header>
+    <h2>Audit a finished job</h2>
+    <span class="spacer"></span>
+    <span class="tiny faint">Their numbers, not yours — rough is fine</span>
+    <button class="btn sm ghost" data-close>✕</button>
+  </header>
+  <div class="body">
+    <p class="muted tiny" style="margin-top:0">
+      Everything a margin audit needs, from figures a contractor can give you over the phone.
+      You do not need their line items — they almost certainly cannot reconstruct those anyway.
+    </p>
+
+    <div class="grid-3">
+      <div class="field">
+        <label for="aTitle">Job</label>
+        <input id="aTitle" placeholder="Kitchen — Alder St">
+      </div>
+      <div class="field">
+        <label for="aClient">Contractor</label>
+        <input id="aClient" placeholder="Dana Whitmore">
+      </div>
+      <div class="field">
+        <label for="aQuoted">What they charged</label>
+        <input id="aQuoted" class="num" type="number" step="0.01" min="0" placeholder="42000">
+        <span class="hint">The contract total, before tax.</span>
+      </div>
+    </div>
+
+    <h3 class="intake-head">What they thought it would cost — and what it did</h3>
+    <table class="items intake-table">
+      <thead>
+        <tr><th>Category</th><th class="right">Estimated cost</th><th class="right">Actually paid</th></tr>
+      </thead>
+      <tbody id="aCostRows"></tbody>
+    </table>
+    <p class="hint" style="margin:6px 0 0">
+      Leave a row blank if it does not apply. "Actually paid" can come from bank lines — it does
+      not have to be exact to be useful.
+    </p>
+
+    <h3 class="intake-head">What changed along the way</h3>
+    <div id="aChanges"></div>
+    <button class="btn sm" id="btnAddChangeRow" style="margin-top:8px">+ Another change</button>
+    <p class="hint" style="margin:8px 0 0">
+      The amount is what the work was <em>worth</em>. Unticked means nobody signed for it — which
+      is usually where the money went.
+    </p>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="btnBuildAudit">Build the audit</button>
   </footer>
 </dialog>
 

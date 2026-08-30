@@ -829,3 +829,30 @@ table.pr-table tr.group-head td {
 .budget-fill.over { background: var(--bad); }
 .budget-bar .foot { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 .budget-bar .foot.over { color: var(--bad); font-weight: 600; }
+
+/* ---------------------------------------------------------- audit intake -- */
+
+.intake-head {
+  font-size: 13px; font-weight: 650;
+  letter-spacing: .02em; text-transform: uppercase;
+  color: var(--text-2);
+  margin: 22px 0 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.intake-table td { padding: 2px 4px; }
+.intake-table td:first-child {
+  padding-left: 8px; font-size: 13px; color: var(--text-2);
+}
+.change-row {
+  display: grid;
+  grid-template-columns: 1fr 110px auto auto;
+  gap: 8px; align-items: center; margin-bottom: 6px;
+}
+.change-row .signed {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--text-2); white-space: nowrap;
+}
+.change-row input[type="checkbox"] { width: auto; }
+@media (max-width: 620px) {
+  .change-row { grid-template-columns: 1fr 1fr; }
+}
