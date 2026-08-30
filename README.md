@@ -14,7 +14,7 @@ On pure noise, the insight engine reports nothing. That is the point.
 ```bash
 npm install      # only needed for the browser test
 npm run serve    # http://localhost:8080/app/
-npm test         # 82 unit tests, no dependencies
+npm test         # 96 unit tests, no dependencies
 npm run e2e      # full browser walkthrough (needs the server running)
 ```
 
@@ -35,6 +35,9 @@ There is no build step. The app is ES modules served as-is.
   before committing to it. It will tell you when a change would not help.
 - **Highest-leverage actions** — every candidate nudge simulated and ranked,
   rather than generic advice.
+- **Sample mode** — one tap loads a 90-day synthetic tour with genuinely
+  planted patterns, so every Pro view can be judged before logging a single
+  real day. Labelled on every screen, blocked from mixing with real data.
 - **Works offline**, installable as a PWA, and your data never leaves the device.
 
 ## Architecture
@@ -63,6 +66,21 @@ No frameworks and no runtime dependencies. The only dev dependency is Playwright
 for the browser test.
 
 ## The engineering worth reading
+
+An adversarial audit (parallel finder agents per dimension, findings verified
+by reproduction before fixing) later found and fixed a further class of
+problems, the worst being **weekday confounding**: habits that each follow
+their own day-of-week rhythm correlate through the shared weekday without any
+causal link, and the engine reported ~12 such findings per rhythm-only
+dataset. Day-of-week means are now conditionally removed exactly as the time
+trend is; measured false positives on rhythm-only data went from 20/20
+datasets to 0/20 with recall unchanged at 100%. The same audit surfaced a
+billing-portal IDOR (fixed with HMAC proof-of-ownership tokens), a simulator
+that averaged bedtimes across midnight to noon, and a save path that toasted
+"Day saved" over a swallowed quota error. docs/INSIGHTS.md records the full
+statistical history.
+
+### The original three
 
 Three bugs found during validation, all of the kind that ship silently:
 
