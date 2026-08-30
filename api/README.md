@@ -8,6 +8,7 @@ is plain Node and ports to Express or Workers with a different signature.
 | `POST /create-checkout-session` | Starts a Stripe Checkout session for a plan |
 | `GET  /verify-session` | Exchanges a returned session id for entitlement |
 | `POST /create-portal-session` | Opens Stripe's billing portal (cancel, update card) |
+| `GET  /entitlement` | Re-checks a device's subscription state (see below) |
 | `POST /webhook` | Receives subscription lifecycle events from Stripe |
 
 ## Why a backend at all, for a local-first app
@@ -31,6 +32,12 @@ Two properties the endpoints enforce that are easy to lose in a rewrite:
   verify-session. Stripe customer ids are not secrets (they appear in receipts
   and support email); without the proof this endpoint is an IDOR that opens any
   customer's billing portal to anyone who has seen their id.
+- **entitlement** exists because the client writes its subscription record
+  exactly once, at checkout, and Stripe renews silently thereafter. Without a
+  way to re-check, a paying subscriber's local record goes stale after one
+  period. It takes the same HMAC token as the portal endpoint. Critically, the
+  client treats a failed call as "unknown", never as cancellation — only an
+  explicit `{status: "canceled"}` may remove Pro.
 
 ## Setup
 

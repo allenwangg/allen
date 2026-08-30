@@ -134,6 +134,47 @@ export async function restoreFromReceipt() {
  * requires it — an earlier version of this function omitted it and every
  * "Manage billing" click would have failed with a 400.
  */
+/**
+ * Re-check a stored subscription against the server.
+ *
+ * Returns a patch to merge into the stored entitlement, or null when we simply
+ * could not reach the server (offline, demo mode, network error). A null must
+ * NEVER be treated as cancellation: the whole point of this call is that only
+ * an explicit server answer may take Pro away from someone who is paying.
+ */
+export async function refreshEntitlement(customerId, portalToken) {
+  if (!customerId || !portalToken) return null;
+  const cfg = await loadConfig();
+  if (isDemoMode(cfg)) return null;
+
+  try {
+    const res = await fetch(
+      `${cfg.apiBase}/entitlement?customerId=${encodeURIComponent(customerId)}&portalToken=${encodeURIComponent(portalToken)}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    if (data.status === 'canceled') {
+      return { status: 'canceled', tier: 'free', canceledAt: Date.now() };
+    }
+    if (data.status === 'active') {
+      return {
+        status: 'active',
+        tier: 'pro',
+        plan: data.plan,
+        periodEnd: data.periodEnd,
+        pastDue: !!data.pastDue,
+        cancelAtPeriodEnd: !!data.cancelAtPeriodEnd,
+        refreshedAt: Date.now(),
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function openBillingPortal(customerId, portalToken) {
   const cfg = await loadConfig();
   if (isDemoMode(cfg)) {

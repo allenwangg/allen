@@ -69,18 +69,40 @@ export const TRIAL_DAYS = 7;
 export function resolveEntitlement(stored, now = Date.now()) {
   const s = stored || {};
 
+  // An explicit cancellation, written only by a server response. This is the
+  // ONLY way a paid subscription loses Pro.
+  if (s.status === 'canceled') {
+    return { tier: 'free', source: 'canceled', status: 'canceled', canceledAt: s.canceledAt || null };
+  }
+
   if (s.status === 'active' && s.tier === 'pro') {
-    // A paid subscription. `periodEnd` comes from the billing webhook; we allow
-    // a grace window so a failed renewal does not lock someone out mid-week.
-    const GRACE_MS = 3 * 86400000;
-    if (!s.periodEnd || now < s.periodEnd + GRACE_MS) {
-      return {
-        tier: 'pro', source: 'subscription', status: 'active',
-        inGrace: !!(s.periodEnd && now > s.periodEnd),
-        renewsAt: s.periodEnd || null,
-      };
-    }
-    return { tier: 'free', source: 'expired', status: 'lapsed', lapsedAt: s.periodEnd };
+    // A paid subscription.
+    //
+    // A PASSED periodEnd DOES NOT MEAN THE SUBSCRIPTION ENDED. It means this
+    // device has not heard from the billing server since the last period —
+    // and for a renewing subscriber in good standing that is the normal case,
+    // because Stripe renews silently and the client's copy is written exactly
+    // once, at checkout.
+    //
+    // Treating it as expiry was catastrophic: every monthly subscriber was
+    // warned "we couldn't process your renewal" on day 30 and hard-lapsed to
+    // Free on day 33 — shown the pricing page and asked to buy again — while
+    // their card was being charged perfectly well. Verified against this
+    // module: day 29 pro, day 31 pro+inGrace, day 34 free/lapsed.
+    //
+    // So a stale record asks for revalidation and keeps Pro meanwhile. The
+    // client cache was never a security boundary (see billing.js); erring
+    // toward serving a paying customer is both the honest failure direction
+    // and the cheap one, since nothing behind the paywall costs us to serve.
+    const stale = !!(s.periodEnd && now >= s.periodEnd);
+    return {
+      tier: 'pro', source: 'subscription', status: 'active',
+      renewsAt: s.periodEnd || null,
+      // Asks boot() to re-check with the server; never gates access by itself.
+      needsRefresh: stale,
+      // Only set once the server has actually reported a payment problem.
+      inGrace: s.pastDue === true,
+    };
   }
 
   if (s.status === 'trialing' && s.trialStartedAt) {
@@ -113,10 +135,25 @@ export function historyLimit(entitlement) {
  * and later resubscribes gets their full history back. Deleting paid-for data
  * on downgrade is the kind of thing that generates chargebacks.
  */
-export function visibleEntries(entries, entitlement) {
+export function visibleEntries(entries, entitlement, today = null) {
   const limit = historyLimit(entitlement);
   if (!Number.isFinite(limit)) return entries;
-  return entries.slice(-limit);
+  // Trim by DATE, not by entry count. Slicing the last N entries meant the
+  // Free tier's "last 14 days" was really "your last 14 logged days": someone
+  // logging twice a week saw a 46-day window under a label promising 14.
+  // The label is a promise about the calendar, so the code must be too.
+  const end = today || (entries.length ? entries[entries.length - 1].date : null);
+  if (!end) return entries;
+  const cutoff = shiftDate(end, -(limit - 1));
+  return entries.filter((e) => e.date >= cutoff);
+}
+
+/** Local-time date arithmetic on a YYYY-MM-DD key. */
+function shiftDate(key, days) {
+  const [y, m, d] = key.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
 }
 
 export function startTrial(stored, now = Date.now()) {

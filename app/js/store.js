@@ -220,6 +220,24 @@ export const store = {
       if (Number.isFinite(weightKg) && weightKg >= 25 && weightKg <= 300) profile.weightKg = weightKg;
       if (Object.keys(profile).length) await this.setMeta('profile', profile);
     }
+    // Backups export the entitlement, so restoring one must not silently drop
+    // it: a paying user who restored a backup used to land on Free with no
+    // recovery path, and a free user could export/wipe/import to re-arm the
+    // trial indefinitely. Shape-validated like everything else from a file.
+    if (payload.entitlement && typeof payload.entitlement === 'object') {
+      const src = payload.entitlement;
+      const ent = {};
+      if (['active', 'trialing', 'canceled'].includes(src.status)) ent.status = src.status;
+      if (src.tier === 'pro' || src.tier === 'free') ent.tier = src.tier;
+      if (src.plan === 'monthly' || src.plan === 'annual') ent.plan = src.plan;
+      if (typeof src.customerId === 'string' && /^cus_[A-Za-z0-9]+$/.test(src.customerId)) ent.customerId = src.customerId;
+      if (typeof src.portalToken === 'string' && /^[0-9a-f]{64}$/.test(src.portalToken)) ent.portalToken = src.portalToken;
+      for (const k of ['periodEnd', 'trialStartedAt', 'startedAt', 'canceledAt']) {
+        if (Number.isFinite(Number(src[k]))) ent[k] = Number(src[k]);
+      }
+      if (typeof src.pastDue === 'boolean') ent.pastDue = src.pastDue;
+      if (ent.status) await this.setMeta('entitlement', ent);
+    }
     return { imported: good.length, problems };
   },
 

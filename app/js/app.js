@@ -12,7 +12,7 @@ import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { store } from './store.js';
 import { resolveEntitlement, visibleEntries, startTrial, can } from './entitlements.js';
 import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
-import { beginCheckout, openBillingPortal, restoreFromReceipt } from './billing.js';
+import { beginCheckout, openBillingPortal, restoreFromReceipt, refreshEntitlement } from './billing.js';
 import * as views from './ui.js';
 
 const VIEWS = {
@@ -87,7 +87,7 @@ function recompute() {
   state.entitlement = state.sampleMode
     ? { tier: 'pro', source: 'sample', status: 'sample-tour' }
     : resolveEntitlement(state.entitlementRaw);
-  state.visible = visibleEntries(state.entries, state.entitlement);
+  state.visible = visibleEntries(state.entries, state.entitlement, dateKey());
 
   const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
   state.report = buildReport(state.visible, ctx);
@@ -243,6 +243,9 @@ const actions = {
     if (next.error) { toast(next.error); return; }
     state.entitlementRaw = next;
     await store.setMeta('entitlement', next);
+    // Same reason as checkout: a trial started during the tour must be visible
+    // rather than masked by the sample override.
+    if (state.sampleMode) await exitSampleMode();
     recompute();
     render();
     toast('Pro trial started — enjoy');
@@ -258,6 +261,10 @@ const actions = {
       if (result.simulated) {
         state.entitlementRaw = result.entitlement;
         await store.setMeta('entitlement', result.entitlement);
+        // Buying during the sample tour must surface the real entitlement.
+        // Left in sample mode, the override hid the purchase: the upgrade page
+        // kept selling and Settings offered no Manage-billing button.
+        if (state.sampleMode) await exitSampleMode();
         recompute(); render();
         toast('Pro activated (demo mode)');
         return;
@@ -320,14 +327,20 @@ const actions = {
   },
 
   'clear-sample': async () => {
+    // Preserve any real entitlement across the clear. clearAll() wipes the
+    // meta store, and a user who bought Pro (or started a trial) during the
+    // tour would otherwise have that purchase destroyed by the tour's own
+    // exit button — with the receipt link already consumed, leaving them no
+    // way back.
+    const keepEntitlement = state.entitlementRaw;
     await store.clearAll();
     state.entries = [];
     state.entriesRev++;
     state.sampleMode = false;
     state.profile = { age: 35, weightKg: 75 };
-    state.entitlementRaw = null;
     state.draft = emptyEntry();
     state.dirty = false;
+    if (keepEntitlement) await store.setMeta('entitlement', keepEntitlement);
     recompute();
     go('log');
     toast('Sample cleared — this log is yours now');
@@ -405,6 +418,24 @@ async function saveDraft() {
 }
 
 async function persistDraftIfDirty() { if (state.dirty) await saveDraft(); }
+
+/**
+ * Leave the sample tour, discarding the synthetic days but keeping whatever
+ * the user has actually acquired. Used when a purchase or trial starts during
+ * the tour, so the entitlement they just gained is not masked by the tour's
+ * Pro override.
+ */
+async function exitSampleMode() {
+  const keepEntitlement = state.entitlementRaw;
+  await store.clearAll();
+  if (keepEntitlement) await store.setMeta('entitlement', keepEntitlement);
+  state.entries = [];
+  state.entriesRev++;
+  state.sampleMode = false;
+  state.profile = { age: 35, weightKg: 75 };
+  state.draft = emptyEntry();
+  state.dirty = false;
+}
 
 /* ------------------------------------------------------------------ *
  * Event wiring — all delegated, so re-rendering never breaks handlers.
@@ -598,6 +629,23 @@ async function boot() {
   if (restored) {
     state.entitlementRaw = restored;
     await store.setMeta('entitlement', restored);
+  }
+
+  // A subscription whose stored period has elapsed needs re-checking against
+  // the server — Stripe renews silently and this device would otherwise never
+  // learn the new period end. Access is NOT gated on the outcome: the request
+  // may fail (offline, demo mode) and Pro is kept regardless. Only an explicit
+  // "canceled" answer takes it away.
+  const resolvedAtBoot = resolveEntitlement(state.entitlementRaw);
+  if (resolvedAtBoot.needsRefresh) {
+    const patch = await refreshEntitlement(
+      state.entitlementRaw?.customerId,
+      state.entitlementRaw?.portalToken
+    );
+    if (patch) {
+      state.entitlementRaw = { ...state.entitlementRaw, ...patch };
+      await store.setMeta('entitlement', state.entitlementRaw);
+    }
   }
 
   await loadDraft(dateKey());
