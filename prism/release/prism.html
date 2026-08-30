@@ -1085,6 +1085,18 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
     { id: 'modern-tech', title: 'The Modern Frontier', art: 'network',
       blurb: 'The technologies rewriting this decade, explained without hype.',
       courses: ['how-internet-works', 'how-ai-works', 'genes-and-editing', 'how-things-spread'] },
+    { id: 'live-forever', title: 'How to Live Forever', art: 'hourglass',
+      blurb: 'Why bodies age, what genuinely extends life, and whether you should want it to.',
+      courses: ['how-to-live-forever', 'biology-of-aging', 'immortal-animals', 'longevity-trials', 'healthspan-playbook', 'radical-life-extension', 'ethics-of-immortality'] },
+    { id: 'arts-and-ear', title: 'Music and the Arts', art: 'bell',
+      blurb: 'How music, film, poetry and pictures actually do what they do.',
+      courses: ['music-theory', 'western-music-history', 'world-music', 'film', 'poetry', 'photography', 'art-history', 'design'] },
+    { id: 'big-questions', title: 'The Big Questions', art: 'mirror',
+      blurb: 'Knowledge, freedom, justice, meaning — the arguments that never close.',
+      courses: ['epistemology', 'free-will', 'existentialism', 'ethics-big-three', 'political-philosophy', 'consciousness'] },
+    { id: 'natural-world', title: 'The Natural World', art: 'seed',
+      blurb: 'From the first cell to the deep ocean and the night sky.',
+      courses: ['origin-of-life', 'story-of-evolution', 'ecology', 'oceans', 'geology', 'astronomy', 'senses'] },
     { id: 'world-traditions', title: 'The Wider World', art: 'map',
       blurb: 'Civilisations, ideas and art from beyond the usual syllabus.',
       courses: ['islamic-golden-age', 'imperial-china', 'african-kingdoms', 'india-legacy', 'indigenous-knowledge', 'latin-america'] },
@@ -26793,7 +26805,7 @@ window.COURSES = [
     { id: 'thinking', label: 'Thinking', cats: ['Critical Thinking', 'Game Theory', 'Mathematics'] },
     { id: 'science', label: 'Science', cats: ['Science', 'Biology', 'Earth Science', 'Space', 'Science History'] },
     { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
-    { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities'] },
+    { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities', 'Music', 'Literature'] },
     { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology', 'Creativity', 'Design'] },
     { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] },
     { id: 'world', label: 'World', cats: ['Anthropology', 'Literature', 'Society'] }
@@ -26851,7 +26863,13 @@ window.COURSES = [
     'india-legacy': 'lightbulb', 'indigenous-knowledge': 'compass', 'latin-america': 'mountain',
     'russian-literature': 'book', 'japan-aesthetics': 'wave', 'architecture': 'bridge',
     'how-doctors-think': 'lens', 'statistics': 'graph', 'ecology': 'seed',
-    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network'
+    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network',
+    'biology-of-aging': 'hourglass', 'longevity-trials': 'target', 'radical-life-extension': 'ladder',
+    'ethics-of-immortality': 'balance', 'immortal-animals': 'seed', 'healthspan-playbook': 'shield',
+    'origin-of-life': 'seed', 'senses': 'eye', 'oceans': 'wave', 'materials': 'layers',
+    'music-theory': 'bell', 'western-music-history': 'book', 'world-music': 'network',
+    'film': 'lens', 'poetry': 'book', 'photography': 'eye',
+    'existentialism': 'fork', 'epistemology': 'lens', 'political-philosophy': 'balance', 'free-will': 'path'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 

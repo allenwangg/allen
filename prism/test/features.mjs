@@ -47,9 +47,10 @@ ok(steps0>=1, `today builds a plan (${steps0} steps)`);
 
 // run the session end to end
 await page.locator('#today-go').click();
-let guard=0, sawFlowBtn=false;
-while(guard++<200){
+let guard=0, sawFlowBtn=false, idle=0;
+while(guard++<250){
   if (await page.locator('.done-card').count() && await page.locator('.player-foot a[href="#/"]').count() && !(await page.locator('#flow-next').count())) break;
+  let acted = true;
   if (await page.locator('#flow-next').count()) { sawFlowBtn=true; await page.locator('#flow-next').click(); }
   else if (await page.locator('#btn-flip').count()) await page.locator('#btn-flip').click();
   else if (await page.locator('.grade.g2').count()) await page.locator('.grade.g2').click();
@@ -57,8 +58,11 @@ while(guard++<200){
   else if (await page.locator('.choice:not(:disabled)').count()) await page.locator('.choice').first().click();
   else if (await page.locator('#btn-next').count()) await page.locator('#btn-next').click();
   else if (await page.locator('#btn-match').count()) break;
-  else break;
-  await page.waitForTimeout(40);
+  else acted = false;
+  // The DOM is briefly empty between renders (focus + announce are async), so a
+  // single quiet poll is not the end of the session — only give up after several.
+  if (!acted) { if (++idle > 5) break; } else { idle = 0; }
+  await page.waitForTimeout(90);
 }
 ok(sawFlowBtn, 'session chains between steps with a Next button');
 const doneTxt = await page.locator('.done-card h2').textContent().catch(()=>'');

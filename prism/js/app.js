@@ -64,7 +64,7 @@
     { id: 'thinking', label: 'Thinking', cats: ['Critical Thinking', 'Game Theory', 'Mathematics'] },
     { id: 'science', label: 'Science', cats: ['Science', 'Biology', 'Earth Science', 'Space', 'Science History'] },
     { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
-    { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities'] },
+    { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities', 'Music', 'Literature'] },
     { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology', 'Creativity', 'Design'] },
     { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] },
     { id: 'world', label: 'World', cats: ['Anthropology', 'Literature', 'Society'] }
@@ -122,7 +122,13 @@
     'india-legacy': 'lightbulb', 'indigenous-knowledge': 'compass', 'latin-america': 'mountain',
     'russian-literature': 'book', 'japan-aesthetics': 'wave', 'architecture': 'bridge',
     'how-doctors-think': 'lens', 'statistics': 'graph', 'ecology': 'seed',
-    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network'
+    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network',
+    'biology-of-aging': 'hourglass', 'longevity-trials': 'target', 'radical-life-extension': 'ladder',
+    'ethics-of-immortality': 'balance', 'immortal-animals': 'seed', 'healthspan-playbook': 'shield',
+    'origin-of-life': 'seed', 'senses': 'eye', 'oceans': 'wave', 'materials': 'layers',
+    'music-theory': 'bell', 'western-music-history': 'book', 'world-music': 'network',
+    'film': 'lens', 'poetry': 'book', 'photography': 'eye',
+    'existentialism': 'fork', 'epistemology': 'lens', 'political-philosophy': 'balance', 'free-will': 'path'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
