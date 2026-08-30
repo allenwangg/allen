@@ -115,6 +115,9 @@ export async function restoreFromReceipt() {
       plan: data.plan,
       source: 'subscription',
       customerId: data.customerId,
+      // Proof-of-ownership for the billing portal; minted server-side and
+      // meaningless to anyone who is not this customer.
+      portalToken: data.portalToken || null,
       periodEnd: data.periodEnd,
       startedAt: Date.now(),
     };
@@ -131,7 +134,7 @@ export async function restoreFromReceipt() {
  * requires it — an earlier version of this function omitted it and every
  * "Manage billing" click would have failed with a 400.
  */
-export async function openBillingPortal(customerId) {
+export async function openBillingPortal(customerId, portalToken) {
   const cfg = await loadConfig();
   if (isDemoMode(cfg)) {
     return { redirected: false, message: 'Demo mode — no billing portal is configured.' };
@@ -143,7 +146,7 @@ export async function openBillingPortal(customerId) {
     const res = await fetch(`${cfg.apiBase}/create-portal-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customerId, returnUrl: location.href }),
+      body: JSON.stringify({ customerId, portalToken, returnUrl: location.href }),
     });
     if (!res.ok) return { redirected: false, message: 'Could not open the billing portal.' };
     const { url } = await res.json();

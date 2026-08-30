@@ -226,7 +226,7 @@ const actions = {
   },
 
   'manage-billing': async () => {
-    const r = await openBillingPortal(state.entitlementRaw?.customerId);
+    const r = await openBillingPortal(state.entitlementRaw?.customerId, state.entitlementRaw?.portalToken);
     if (!r.redirected) toast(r.message || 'Billing portal unavailable.');
   },
 
@@ -269,8 +269,13 @@ const actions = {
 };
 
 function csvEscape(s) {
-  const v = String(s).replace(/"/g, '""');
-  return /[",\n]/.test(v) ? `"${v}"` : v;
+  let v = String(s).replace(/"/g, '""');
+  // Spreadsheet formula injection (CWE-1236): a note like `=HYPERLINK(...)`
+  // or `+cmd|...` executes when the exported CSV is opened in Excel or
+  // Sheets. A leading apostrophe forces text interpretation; spreadsheets
+  // hide it, so the note still reads as written.
+  if (/^[=+\-@\t\r]/.test(v)) v = "'" + v;
+  return /[",\n']/.test(v) ? `"${v}"` : v;
 }
 
 function download(filename, content, mime) {

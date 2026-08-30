@@ -75,6 +75,42 @@ export function safeUrl(candidate, fallback) {
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Portal proof-of-ownership tokens.
+ *
+ * The app has no accounts, so "which customer are you?" cannot be answered by
+ * a login. Without proof, the portal endpoint is an IDOR: Stripe customer ids
+ * are not secrets (they appear in receipts, emails, and support threads), and
+ * anyone holding cus_XXX could open that customer's billing portal — seeing
+ * their email and card details and cancelling their subscription.
+ *
+ * The proof is an HMAC over the customer id, minted only by verify-session —
+ * which itself requires the cs_ checkout-session id, a high-entropy secret
+ * that only the paying browser's return URL ever holds. The token lives in
+ * the buyer's local entitlement record and never needs server-side state.
+ * ------------------------------------------------------------------ */
+
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+function tokenSecret() {
+  // Its own secret when configured; the webhook secret is an acceptable
+  // fallback since both live only in the server environment.
+  const secret = process.env.PORTAL_TOKEN_SECRET || process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) throw new HttpError(500, 'No PORTAL_TOKEN_SECRET configured.');
+  return secret;
+}
+
+export function mintPortalToken(customerId) {
+  return createHmac('sha256', tokenSecret()).update(`portal:${customerId}`).digest('hex');
+}
+
+export function verifyPortalToken(customerId, token) {
+  if (typeof token !== 'string' || !/^[0-9a-f]{64}$/.test(token)) return false;
+  const expected = Buffer.from(mintPortalToken(customerId), 'hex');
+  const got = Buffer.from(token, 'hex');
+  return expected.length === got.length && timingSafeEqual(expected, got);
+}
+
 export async function readJson(req) {
   if (req.body && typeof req.body === 'object') return req.body;   // already parsed
   const chunks = [];

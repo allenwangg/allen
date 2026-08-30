@@ -22,6 +22,16 @@ is an accepted trade: there is no expensive server resource behind the paywall
 to steal. If a feature is ever added that genuinely costs money to serve, it
 must verify against the receipt server-side rather than trusting that cache.
 
+Two properties the endpoints enforce that are easy to lose in a rewrite:
+
+- **verify-session** only honours sessions carrying `metadata.product =
+  "vitalarc"`. Without that check, any completed checkout on the same Stripe
+  account — another product, a one-off invoice link — mints Pro entitlement.
+- **create-portal-session** requires an HMAC proof-of-ownership token minted by
+  verify-session. Stripe customer ids are not secrets (they appear in receipts
+  and support email); without the proof this endpoint is an IDOR that opens any
+  customer's billing portal to anyone who has seen their id.
+
 ## Setup
 
 ```bash
@@ -37,6 +47,7 @@ Environment variables:
 | `STRIPE_PRICE_MONTHLY` | Price id for the monthly plan. |
 | `STRIPE_PRICE_ANNUAL` | Price id for the annual plan. |
 | `ALLOWED_ORIGIN` | Your site origin, for CORS. |
+| `PORTAL_TOKEN_SECRET` | HMAC secret for billing-portal proof-of-ownership tokens (falls back to the webhook secret). |
 
 Then create `app/billing-config.json`:
 
