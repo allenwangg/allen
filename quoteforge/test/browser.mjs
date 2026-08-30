@@ -423,6 +423,59 @@ console.log('\n  mobile (390x844)');
   await page.context().close();
 }
 
+/* ===================================================== audit page ======== */
+console.log('\n  audit offer page');
+{
+  const page = await newPage(1280, 900);
+  await page.goto(`${base}/audit.html`, { waitUntil: 'networkidle' });
+
+  check('audit page loads', /last three jobs really kept/i.test(await page.locator('h1').textContent()));
+
+  // Unconfigured (as shipped): no dead button, an honest note instead.
+  check('unconfigured page hides the booking button',
+    !(await page.locator('#ctaBook').isVisible()) && !(await page.locator('#ctaBook2').isVisible()));
+  check('unconfigured page explains instead of dangling',
+    /Booking opens soon/.test(await page.locator('#ctaNote').textContent()));
+  check('the free-slots badge shows while calibrating',
+    /first 5 free/.test(await page.locator('#freeBadge').textContent()));
+
+  // Email-only configuration.
+  await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 5, bookingUrl: '', contactEmail: 'me@example.com' }));
+  check('email config produces a mailto CTA',
+    (await page.locator('#ctaBook').getAttribute('href')).startsWith('mailto:me@example.com'));
+  check('the mailto prefills a booking subject',
+    /subject=/.test(await page.locator('#ctaBook').getAttribute('href')));
+
+  // Payment-link configuration.
+  await page.evaluate(() => renderAuditCTA({ price: '$450', freeSlots: 0, bookingUrl: 'https://buy.stripe.com/test_123', contactEmail: '' }));
+  check('a booking URL wires both CTAs',
+    (await page.locator('#ctaBook').getAttribute('href')) === 'https://buy.stripe.com/test_123'
+    && (await page.locator('#ctaBook2').getAttribute('href')) === 'https://buy.stripe.com/test_123');
+  check('the price flows into the button and headline',
+    (await page.locator('#ctaBook').textContent()).includes('$450')
+    && (await page.locator('#priceAmt').textContent()) === '$450');
+  check('freeSlots 0 hides the calibration badge', !(await page.locator('#freeBadge').isVisible()));
+
+  // The page must claim honestly, and route DIYers to the free app.
+  const body = await page.locator('body').textContent();
+  check('it says what it is not', /Not an accounting engagement/.test(body));
+  check('it offers the DIY path openly', /Do it yourself instead/.test(body));
+
+  // Navigation: landing -> audit -> app.
+  await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+  check('the landing page links the audit offer',
+    (await page.locator('a[href="audit.html"]').count()) >= 2);
+  await page.locator('a[href="audit.html"]').last().click();
+  await page.waitForTimeout(500);
+  check('the landing CTA reaches the audit page', page.url().includes('audit.html'));
+  await page.locator('a[href="quoteforge/"]').last().click();
+  await page.waitForTimeout(700);
+  check('the audit page reaches the working app',
+    (await page.locator('.items tbody tr').count()) > 5);
+
+  await page.context().close();
+}
+
 /* ================================================ subpath deploy ========= */
 // GitHub Pages serves a project site under /<repo>/, not at the root. A
 // relative-path bug is invisible locally and obvious the moment it ships.

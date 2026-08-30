@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Margin audit — find what your last three jobs really kept</title>
+<meta name="description" content="Send three recent jobs. Get back a one-page report per job showing what it actually kept, what went unbilled, and what your next quote has to be.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><text x='16' y='23' font-size='19' font-family='system-ui' font-weight='800' fill='white' text-anchor='middle'>Q</text></svg>">
+
+<script>
+/* =========================================================================
+   THE ONLY THING YOU NEED TO EDIT.
+
+   1. Create a payment or booking link (SELL.md walks through it — a Stripe
+      Payment Link takes about 15 minutes) and paste it as bookingUrl.
+   2. Or, to start with email only, set contactEmail instead.
+   Until one of them is set, the page shows "Booking opens soon" rather than
+   a button that goes nowhere.
+   ========================================================================= */
+const AUDIT_CONFIG = {
+  price: '$400',
+  freeSlots: 5,          // shown as "first N free" while you calibrate; 0 hides it
+  bookingUrl: '',        // e.g. 'https://buy.stripe.com/...' or a Calendly link
+  contactEmail: '',      // e.g. 'you@yourcompany.com'
+};
+</script>
+
+<style>
+:root{
+  --bg:#faf9f7; --surface:#fff; --surface-2:#f4f2ef; --border:#e5e1da; --border-2:#cfc9c0;
+  --text:#1c1917; --text-2:#57534e; --text-3:#8a8378;
+  --accent:#c2410c; --accent-soft:#fff2ea;
+  --good:#15803d; --good-soft:#eefaf1; --bad:#b91c1c;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --radius:12px; --shadow:0 1px 2px rgba(28,25,23,.05),0 10px 30px rgba(28,25,23,.07);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141312; --surface:#1e1c1a; --surface-2:#272421; --border:#35312d; --border-2:#4a453f;
+  --text:#f3f0ec; --text-2:#b4aba1; --text-3:#8a8279;
+  --accent:#fb923c; --accent-soft:#2a1c11;
+  --good:#4ade80; --good-soft:#142a1c; --bad:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}}
+*{box-sizing:border-box}
+/* The .btn display rule would silently defeat the hidden attribute — and the
+   whole point of this page is never showing a booking button that goes nowhere. */
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:0 22px}
+a{color:var(--accent)}
+h1,h2,h3{letter-spacing:-.022em;line-height:1.15;margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px;max-width:1080px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;text-decoration:none;color:var(--text)}
+.mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(140deg,var(--accent),#9a3412);
+      display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px}
+nav .spacer{flex:1}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:9px;
+     border:1px solid var(--border-2);background:var(--surface);color:var(--text);
+     text-decoration:none;font-weight:600;cursor:pointer;transition:.14s;font-size:16px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{padding:7px 14px;font-size:14px}
+
+header.hero{padding:64px 0 8px}
+.eyebrow{display:inline-flex;gap:8px;padding:5px 13px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);
+  font-size:13px;font-weight:650;margin-bottom:18px}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800}
+.sub{font-size:18px;color:var(--text-2);margin:18px 0 26px;max-width:58ch}
+
+section{padding:34px 0}
+section h2{font-size:24px;font-weight:750;margin-bottom:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:24px}
+ol.get{margin:0;padding-left:0;list-style:none;counter-reset:g;display:grid;gap:14px}
+ol.get li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start}
+ol.get li::before{counter-increment:g;content:counter(g);width:28px;height:28px;border-radius:8px;
+  background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+ol.get strong{display:block}
+ol.get span{color:var(--text-2);font-size:15px}
+
+.price-line{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:8px 0 18px}
+.price-line .amt{font-size:44px;font-weight:800;letter-spacing:-.03em}
+.price-line .free{font-size:14px;color:var(--good);font-weight:650;background:var(--good-soft);
+  padding:4px 12px;border-radius:999px}
+.fineprint{font-size:13.5px;color:var(--text-3)}
+.not{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;font-size:14.5px;color:var(--text-2)}
+.not strong{color:var(--text)}
+footer{border-top:1px solid var(--border);padding:32px 0;color:var(--text-3);font-size:14px;margin-top:30px}
+#ctaNote{font-size:14px;color:var(--text-3);margin-top:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><span class="mark">Q</span>QuoteForge</a>
+  <span class="spacer"></span>
+  <a class="btn sm" href="quoteforge/">Open the free app</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">◆ Done-for-you margin audit</span>
+  <h1>Find out what your last three jobs really kept.</h1>
+  <p class="sub">
+    You send the numbers from three recent jobs — what you quoted, what you paid out, what got
+    added along the way. You get back a one-page report per job, in your own numbers, showing
+    exactly where the money went. Most contractors have never once seen this laid out.
+  </p>
+  <div id="ctaSlot">
+    <a class="btn primary" id="ctaBook" href="#book">Book an audit</a>
+    <div id="ctaNote"></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <h2>What you get</h2>
+  <div class="card">
+    <ol class="get">
+      <li><div><strong>A report per job: what it actually kept.</strong>
+        <span>Revenue against real costs, with your overhead applied. The margin you got, next to
+        the margin you priced for. On most jobs these are not the same number, and the gap has a
+        dollar figure on it.</span></div></li>
+      <li><div><strong>Every dollar of work that never got billed.</strong>
+        <span>The "while you're in there" extras, the verbal change orders, the rot repair nobody
+        wrote up. Itemized. This is usually the number that stings — it is work you remember doing,
+        for free, recently.</span></div></li>
+      <li><div><strong>Where each job bled past its budget.</strong>
+        <span>Overruns by trade, so you know whether the problem is your labor number, your tile
+        sub, or your quote. That tells you what to fix before the next bid repeats it.</span></div></li>
+      <li><div><strong>The number your next quote has to be.</strong>
+        <span>Not "charge more" — the specific price, at your real costs, that hits the margin you
+        need. You can take it or leave it, but you will know it.</span></div></li>
+    </ol>
+  </div>
+</div></section>
+
+<section id="book"><div class="wrap">
+  <h2>Price</h2>
+  <div class="card">
+    <div class="price-line">
+      <span class="amt" id="priceAmt">$400</span>
+      <span>for three jobs, delivered inside a week</span>
+      <span class="free" id="freeBadge" hidden></span>
+    </div>
+    <p style="margin:0 0 18px;color:var(--text-2)">
+      You need roughly an hour to pull the numbers together — quotes, receipts or bank lines, and
+      whatever changed mid-job. Rough is fine; the report states what it is based on.
+    </p>
+    <div id="ctaSlot2">
+      <a class="btn primary" id="ctaBook2" href="#">Book an audit</a>
+      <div id="ctaNote2"></div>
+    </div>
+    <p class="fineprint" style="margin-top:16px">
+      If the audit finds nothing worth fixing, it says so — "your pricing is fine" is a real
+      finding and you will get it in writing.
+    </p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>What this is not</h2>
+  <div class="not">
+    <strong>Not an accounting engagement.</strong> The reports are built from the records you
+    provide and say so on their face. Overhead is applied at your stated rate, not measured.
+    It is not tax advice, not a valuation, and it will not tell you anything your own numbers
+    do not contain — the point is that nobody has ever laid your own numbers out this way.
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Do it yourself instead</h2>
+  <p style="color:var(--text-2);max-width:60ch">
+    Everything in the audit is produced with <a href="quoteforge/">QuoteForge</a>, which is free
+    and runs in your browser. Rebuild your own jobs, log what you spent, and print the same
+    report. The paid version of this is for people whose evenings are worth more than $400 —
+    that is the entire pitch.
+  </p>
+  <a class="btn" href="quoteforge/">Open the app</a>
+</div></section>
+
+<footer><div class="wrap">
+  Runs on your numbers. Nothing is shared, sold, or kept beyond the engagement.
+</div></footer>
+
+<script>
+/**
+ * CTA wiring. Exposed as a function so the page's tests can drive both the
+ * configured and unconfigured states without editing the file.
+ */
+function renderAuditCTA(config) {
+  const price = config.price || '$400';
+  document.getElementById('priceAmt').textContent = price;
+
+  const badge = document.getElementById('freeBadge');
+  if (config.freeSlots > 0) {
+    badge.hidden = false;
+    badge.textContent = `first ${config.freeSlots} free while I calibrate the offer`;
+  } else {
+    badge.hidden = true;
+  }
+
+  const slots = [
+    [document.getElementById('ctaBook'), document.getElementById('ctaNote')],
+    [document.getElementById('ctaBook2'), document.getElementById('ctaNote2')],
+  ];
+
+  for (const [btn, note] of slots) {
+    if (config.bookingUrl) {
+      btn.hidden = false;
+      btn.href = config.bookingUrl;
+      btn.textContent = `Book an audit — ${price}`;
+      note.textContent = '';
+    } else if (config.contactEmail) {
+      btn.hidden = false;
+      const subject = encodeURIComponent('Margin audit — booking');
+      const body = encodeURIComponent(
+        'I would like to book a margin audit.\n\n'
+        + 'Company:\nTrade:\nRough size of a typical job:\n\n'
+        + 'I understand I will need to pull together quotes and costs for three recent jobs.',
+      );
+      btn.href = `mailto:${config.contactEmail}?subject=${subject}&body=${body}`;
+      btn.textContent = 'Email to book';
+      note.textContent = 'Booking is by email for now — you will get a reply within a day.';
+    } else {
+      // Nothing configured: never show a button that goes nowhere.
+      btn.hidden = true;
+      note.textContent = 'Booking opens soon. The free app below is the same engine the audit runs on.';
+    }
+  }
+}
+renderAuditCTA(AUDIT_CONFIG);
+</script>
+</body>
+</html>
