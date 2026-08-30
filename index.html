@@ -343,6 +343,17 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
 .o-result.loss{color:var(--heat-edge)}
 .badge.flame{background:var(--heat-soft);color:var(--heat-edge)}
 
+/* ---- trophy case: locked achievements are the completionist loop ---- */
+.trophies{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.t-head{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.t-head b{color:var(--status)}
+.t-row{display:flex;gap:10px;align-items:baseline;padding:5px 0;font-size:13px;border-bottom:1px solid var(--line)}
+.t-row:last-child{border-bottom:0}
+.t-name{font-weight:800;color:var(--dim);white-space:nowrap}
+.t-how{margin-left:auto;color:var(--dim);font-size:12px;font-weight:600;text-align:right}
+.t-row.got .t-name{color:var(--status)}
+.t-row.got .t-how{color:var(--money);font-weight:800}
+
 /* ---- first-load choreography ---- */
 .boot .row{animation:rowin .5s both;animation-delay:calc(var(--i,0)*50ms)}
 @keyframes rowin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -596,6 +607,8 @@ function touchToday(e, amount){
     e.presence = (e.lastBidDay === prevDayOf(todayStr())) ? (e.presence || 0) + 1 : 1;
     e.lastBidDay = todayStr();
   }
+  if (msToMidnightUTC() < 3600000) award(e, "🌙 Night Owl");
+  if ((e.presence || 0) >= 7) award(e, "🔥 Ironflame");
   e.todayTotal += amount;
   e.monthTotal += amount;
 }
@@ -615,7 +628,19 @@ function medallion(e){
   return `<span class="med ${t.cls}" title="${t.name} — lifetime ${fmt(e.total)}">${esc(e.name[0].toUpperCase())}</span>`;
 }
 
-/* ---- earned titles ---- */
+/* ---- earned titles ----
+   A registry rather than loose strings: the dossier shows every title a
+   listing has NOT earned yet, with what it takes. An achievement nobody
+   knows exists is an achievement nobody chases. */
+const TITLES = [
+  { id:"⚔️ Kingslayer",     how:"Dethrone the all-time #1" },
+  { id:"🐋 Whale",          how:"Place a single bid of $500 or more" },
+  { id:"🩸 First Blood",    how:"Place the first bid of any day" },
+  { id:"🛡 Defender",       how:"Win a fight with an auto-defend budget" },
+  { id:"🌙 Night Owl",      how:"Bid in the final hour before the reset" },
+  { id:"🔥 Ironflame",      how:"Keep a 7-day presence flame alive" },
+  { id:"🏆 Season Champion",how:"Finish a month at the top of the Season board" },
+];
 function award(e, title){
   e.titles = e.titles || [];
   if (e.titles.includes(title)) return;
@@ -1240,6 +1265,13 @@ function openDetail(id){
       <div class="d-cell"><b class="num">${fmt(avg)}</b><span>Avg bid</span></div>
       <div class="d-cell"><b class="num">${cpc ? "$"+cpc.toFixed(2) : "—"}</b><span>Cost / click</span></div>
     </div>
+    <div class="trophies">
+      <div class="t-head">Trophy case — <b>${(e.titles||[]).length}</b> of ${TITLES.length} titles</div>
+      ${TITLES.map(t => {
+        const got = (e.titles||[]).includes(t.id);
+        return `<div class="t-row${got?" got":""}"><span class="t-name">${got?"":"🔒 "}${t.id}</span><span class="t-how">${got?"earned":esc(t.how)}</span></div>`;
+      }).join("")}
+    </div>
     ${cpc ? `<div class="d-cpc">This spot has delivered clicks at <b>$${cpc.toFixed(2)} each</b> — typical search-ad CPCs for tech keywords run $2 and up. Rank is an ad that everyone screenshots.</div>` : ""}
     <div class="d-cpc" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span style="display:inline-flex">${badgeSVG(e, rank)}</span>
@@ -1637,6 +1669,8 @@ async function mergeBoardFeed(){
         entry.presence = (entry.lastBidDay === prevDayOf(bidDay)) ? (entry.presence || 0) + 1 : 1;
         entry.lastBidDay = bidDay;
       }
+      if ((entry.presence || 0) >= 7) award(entry, "🔥 Ironflame");
+      if (iso.slice(11,13) === "23") award(entry, "🌙 Night Owl");
     })(c.at);
     if (amount >= 500) award(entry, "🐋 Whale");
     entry.verified = true;

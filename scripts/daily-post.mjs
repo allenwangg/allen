@@ -9,9 +9,12 @@
 // Optional repository variable:
 //   SITE_URL — your deployed URL. The board is read from <SITE_URL>api/board.
 //
-// Two modes, chosen by the UTC hour the workflow fires at:
-//   ~00:05 UTC → the board just reset; today's crown is open again
-//   ~14:00 UTC → the morning stats ritual, with real numbers from the Stripe ledger
+// Five rituals, chosen by the clock (MODE=... overrides for previews):
+//   00:05 UTC daily  → coronation: the board reset, naming the fallen king
+//   14:00 UTC daily  → the morning stats ritual, from the Stripe ledger
+//   23:00 UTC daily  → the Final Hour snipe alert
+//   15:00 UTC Sunday → the weekly hall-of-fame recap, with streaks
+//   00:15 UTC 1st    → the monthly Season Coronation
 //
 // Every number posted comes from completed payments. If the board is empty or
 // unreachable, the robot stays quiet rather than inventing a milestone.
@@ -116,10 +119,9 @@ async function board() {
   };
 }
 
-/* ---------- the three rituals ---------- */
-// MODE=reset|ritual|final overrides the clock, so the workflow's manual "Run"
-// button (and DRY_RUN=1 locally) can preview any post on demand.
-// By the clock: 00:05 → reset (coronation), 14:00 → ritual, 23:00 → final hour.
+/* ---------- the five rituals ---------- */
+// MODE=reset|ritual|final|week|season overrides the clock, so the workflow's
+// manual "Run" button (and DRY_RUN=1 locally) can preview any post on demand.
 const nowUTC = new Date();
 const hourNow = nowUTC.getUTCHours();
 const mode = process.env.MODE ||

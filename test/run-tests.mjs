@@ -367,6 +367,36 @@ await test("dossier offers an embeddable rank badge with copyable HTML", async (
   await page.click("[data-close-detail]");
 });
 
+await test("trophy case shows every title, locked ones with how to earn them", async () => {
+  await page.click("#tabAll");
+  await page.waitForTimeout(120);
+  await page.click('.row[data-id="e1"] .who');        // ShipFast: has Kingslayer + Defender
+  await page.waitForTimeout(200);
+  const body = await page.locator("#detailBody").textContent();
+  const total = await page.evaluate(() => TITLES.length);
+  assert(body.includes(`of ${total} titles`), `trophy case header missing: ${body.slice(0,120)}`);
+  const rows = await page.locator("#detailBody .t-row").count();
+  assert(rows === total, `expected all ${total} titles listed, got ${rows}`);
+  const locked = await page.locator("#detailBody .t-row:not(.got)").count();
+  assert(locked > 0 && body.includes("🔒"), "locked titles should be visible with a lock");
+  assert(body.includes("Keep a 7-day presence flame alive"), "locked titles must explain how to earn them");
+  const got = await page.locator("#detailBody .t-row.got").count();
+  assert(got >= 2, `ShipFast's earned titles should be marked, got ${got}`);
+  await page.click("[data-close-detail]");
+});
+
+await test("bidding in the final hour earns Night Owl", async () => {
+  const earned = await page.evaluate(() => {
+    const e = state.entries.find(x => x.name === "Soba");
+    const real = msToMidnightUTC;
+    window.msToMidnightUTC = () => 60000;               // pretend it is 23:59
+    touchToday(e, 5);
+    window.msToMidnightUTC = real;
+    return (e.titles || []).includes("🌙 Night Owl");
+  });
+  assert(earned, "a bid inside the final hour should earn Night Owl");
+});
+
 await test("Season board ranks by this month's bids with its own crown and countdown", async () => {
   await page.click("#tabSeason");
   await page.waitForTimeout(150);
