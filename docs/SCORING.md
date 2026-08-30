@@ -1,4 +1,4 @@
-# How the Healthspan Score is built
+# How the habit score is built
 
 The point of publishing this is that you should be able to argue with your own
 score. A number you cannot interrogate is a number you stop trusting.
@@ -6,7 +6,7 @@ score. A number you cannot interrogate is a number you stop trusting.
 ## Shape of the model
 
 ```
-Healthspan Score  =  weighted mean of six pillar scores
+Habit score       =  weighted mean of six pillar scores
 Pillar score      =  weighted mean of component scores
 Component score   =  a piecewise dose-response curve applied to one logged value
 ```
@@ -68,36 +68,25 @@ Scored separately from duration, on the standard deviation of bedtime across the
 window. Irregular timing associates with worse outcomes even when total duration
 is adequate, so folding it into duration would hide it.
 
-## Healthspan Age
+## What is deliberately not here
 
-The score is mapped to a years-offset through a saturating transform anchored,
-at the reference age of 35, so that a score of 50 (population-average habits)
-is 0 years, 85 is about −4.5 years, and 20 is about +4 years. It saturates at
-±9 years, and scales modestly with age (older users have more absolute room to
-move). The transform is symmetric about 50, so the anchors are too — an earlier
-version of this document claimed +5.5 years at score 20, which no symmetric
-transform can produce alongside −4.5 at 85; the code now matches the anchors
-and the anchors are stated honestly. If HRV or resting
-heart rate are logged, they nudge the estimate against age-referenced norms.
+There used to be a "healthspan age" — your habits expressed as a number of
+years older or younger than you are. It is gone. This codebase's own comment
+explained why it existed: it was the most shareable, most retention-driving
+number a habit tracker could produce. That is a reason to build something for a
+business, not for a person, and a confident-looking composite at the top of a
+page is a good way to have everything below it ignored.
 
-**This is an illustrative estimate, not a biological-age measurement.** It exists
-because expressing a change in years makes its value legible in a way a 0–100
-score does not — "this habit is worth eight months" lands where "this habit is
-worth 2.4 points" does not. Every place it appears in the app carries a
-confidence tag driven by how many days back it and whether biomarkers are
-present, and a disclaimer.
-
-It is not a diagnosis and it is not an epigenetic clock. The app says so
-wherever the number is shown, not only in the small print.
+The score itself survives because "how have my habits been" is a fair question.
+It is just not the first one, and it says nothing about whether you are well.
 
 ## Verification
 
-`npm test` runs 104 checks over this model, including:
+`npm test` runs 119 checks over this model, including:
 
 - score bounds held across 4,000 fuzzed out-of-range inputs
 - monotonicity where it should hold (alcohol strictly hurts) and non-monotonicity
   where it should not (sleep peaks and declines)
 - pillar weights summing to 1
-- Healthspan Age monotone in score, correctly signed, and saturating
 - protein scoring correctly by bodyweight
 - bedtime wrapping properly past midnight

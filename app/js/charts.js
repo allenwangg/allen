@@ -187,7 +187,7 @@ export function radarChart(values, opts = {}) {
  * ------------------------------------------------------------------ */
 
 export function scoreRing(score, opts = {}) {
-  const { size = 190, stroke = 14, label = 'Healthspan Score', sublabel = '' } = opts;
+  const { size = 190, stroke = 14, label = 'Score', sublabel = '' } = opts;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const frac = score == null ? 0 : Math.max(0, Math.min(1, score / 100));

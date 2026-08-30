@@ -1,5 +1,10 @@
 /**
- * engine.js — The Healthspan scoring engine.
+ * engine.js — Habit scoring.
+ *
+ * A summary of what you did, deliberately not a summary of how you are. It
+ * used to also produce a "healthspan age" in years, which existed because it
+ * was the most shareable number a habit tracker could show. That is a reason
+ * to build something for a business, not for a person, and it is gone.
  *
  * Design constraints that matter commercially:
  *  1. TRANSPARENT. Every point is attributable to a pillar and a curve. Users
@@ -304,67 +309,6 @@ export function ewma(values, halfLifeDays = 7) {
  * Biological age delta
  * ------------------------------------------------------------------ */
 
-/**
- * Convert a sustained habit score into an estimated years-of-healthspan delta.
- *
- * This is an ILLUSTRATIVE heuristic, not a biomarker clock. It exists because
- * "you're 3.2 years younger than your calendar age" is the single most
- * shareable, most retention-driving number a habit tracker can produce — and
- * because expressing it in years makes the marginal value of a habit change
- * legible in a way a 0-100 score never does.
- *
- * The mapping is anchored so that:
- *   score 50  -> 0.0 years (population-average habits)
- *   score 85  -> about -4.5 years
- *   score 20  -> about +4 years
- * and it saturates at +/- 9 years, because claiming more than that from
- * self-reported habit data would be dishonest.
- */
-export function bioAgeDelta(sustainedScore, ctx = {}) {
-  if (sustainedScore == null) return null;
-  const age = Number(ctx.age) || 35;
-  // Logistic-ish transform centred at 50, saturating at +/- 9. The steepness
-  // is solved from the documented anchor rather than chosen by eye: at the
-  // reference age of 35 (age multiplier 0.83), a sustained score of 85 must
-  // map to about -4.5 years, which requires tanh((35/22) * k) = 4.5/(9*0.83),
-  // i.e. k = 0.44. An earlier value of 0.78 overshot the documented anchors by
-  // 40-100% (85 -> -6.3 years at age 35, -9 at age 70), which contradicted
-  // both the doc comment and docs/SCORING.md and made the headline number
-  // less conservative than the product claims to be.
-  const z = (sustainedScore - 50) / 22;
-  let delta = -9 * Math.tanh(z * 0.44);
-
-  // Older users have more absolute room to move; scale modestly with age.
-  delta *= clamp(0.72 + (age - 25) * 0.011, 0.72, 1.25);
-
-  // Biomarker corroboration nudges the estimate and is disclosed in the UI.
-  if (ctx.avgRestingHR != null) {
-    delta += clamp((ctx.avgRestingHR - rhrNorm(age)) * 0.075, -1.6, 1.6);
-  }
-  if (ctx.avgHrv != null) {
-    delta -= clamp((ctx.avgHrv / hrvNorm(age) - 1) * 2.2, -1.6, 1.6);
-  }
-
-  delta = clamp(delta, -9, 9);
-  return {
-    years: Math.round(delta * 10) / 10,
-    effectiveAge: Math.round((age + delta) * 10) / 10,
-    chronologicalAge: age,
-    confidence: ctx.confidence ?? 'low',
-  };
-}
-
-/**
- * Confidence tiering. Shown next to the bio-age number so the claim is always
- * qualified by how much data actually backs it.
- */
-export function confidenceFor(loggedDays, hasBiomarkers) {
-  if (loggedDays < 7) return 'very low';
-  if (loggedDays < 21) return 'low';
-  if (loggedDays < 60) return hasBiomarkers ? 'moderate' : 'low-moderate';
-  return hasBiomarkers ? 'good' : 'moderate';
-}
-
 /* ------------------------------------------------------------------ *
  * Full report — one call, everything the dashboard needs.
  * ------------------------------------------------------------------ */
@@ -395,7 +339,6 @@ export function buildReport(entries, ctx = {}) {
   };
   const avgRestingHR = avgOf('restingHR');
   const avgHrv = avgOf('hrv');
-  const confidence = confidenceFor(sorted.length, avgRestingHR != null || avgHrv != null);
 
   const pillarAverages = {};
   for (const key of Object.keys(PILLAR_WEIGHTS)) {
@@ -415,8 +358,6 @@ export function buildReport(entries, ctx = {}) {
     regularity: sleepRegularity(recent),
     adherence: endDate ? adherence(sorted, 28, endDate) : null,
     streak: currentStreak(sorted),
-    bioAge: bioAgeDelta(sustained, { ...ctx, avgRestingHR, avgHrv, confidence }),
-    confidence,
     loggedDays: sorted.length,
   };
 }
@@ -479,14 +420,11 @@ export function simulate(entries, changes, ctx = {}) {
   }
   const projectedScore = scoreDay(modified, ctx);
 
-  const baseBio = bioAgeDelta(baselineScore.score, ctx);
-  const projBio = bioAgeDelta(projectedScore.score, ctx);
 
   return {
     baseline: baselineScore,
     projected: projectedScore,
     scoreDelta: round1((projectedScore.score ?? 0) - (baselineScore.score ?? 0)),
-    yearsDelta: baseBio && projBio ? Math.round((projBio.years - baseBio.years) * 10) / 10 : null,
     pillarDeltas: Object.fromEntries(
       Object.keys(PILLAR_WEIGHTS).map((k) => [
         k,
@@ -529,7 +467,6 @@ export function topLeverage(entries, ctx = {}, limit = 5) {
     results.push({
       ...c,
       scoreDelta: sim.scoreDelta,
-      yearsDelta: sim.yearsDelta,
       pillar: Object.entries(sim.pillarDeltas).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0][0],
     });
   }

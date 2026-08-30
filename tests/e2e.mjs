@@ -72,13 +72,21 @@ await page.evaluate(() => { location.hash = '#today'; });
 await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(1400);
 
-console.log('\n--- TODAY view (free tier) ---');
-console.log('score ring:', await page.$eval('.ring-number', e=>e.textContent));
-console.log('stats:', await page.$$eval('.hero .stat', els=>els.map(e=>e.querySelector('.stat-label').textContent+'='+e.querySelector('.stat-value').textContent)));
-console.log('bio age shown:', await page.$eval('.bioage', e=>e.textContent.replace(/\s+/g,' ').trim()).catch(()=>'none'));
-await page.screenshot({ path: OUT+'/01-today-free.png', fullPage: true });
+console.log("\n--- TODAY view ---");
+console.log('sections in order:', await page.$$eval('#main .card h2, #main .card h3', els => els.map(e => e.textContent.trim()).slice(0, 5)));
+{
+  const txt = await page.$eval('#main', e => e.textContent);
+  // The vanity metrics are gone and must stay gone.
+  if (/healthspan age/i.test(txt)) throw new Error('healthspan age is back on the dashboard');
+  if (/\bstreak\b/i.test(txt)) throw new Error('streak brag is back on the dashboard');
+  const headings = await page.$$eval('#main .card h2, #main .card h3', els => els.map(e => e.textContent.trim()));
+  if (!headings.some(h => /change one thing|job/i.test(h))) {
+    throw new Error('the one-action card is missing from Today');
+  }
+}
+await page.screenshot({ path: OUT + '/01-today.png', fullPage: true });
 
-console.log('\n--- INSIGHTS (pro) ---');
+console.log('\n--- INSIGHTS ---');
 await page.click('[data-action="goto"][data-view="insights"]');
 await page.waitForTimeout(2500);
 const insights = await page.$$eval('.insight', els => els.map(e => ({

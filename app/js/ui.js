@@ -27,97 +27,138 @@ const fmtP = (p) => (p == null ? '--' : p < 0.0001 ? '&lt;0.0001' : String(p));
  * TODAY
  * ================================================================== */
 
+/**
+ * Today.
+ *
+ * This used to open with a big score ring and a "healthspan age" — both of
+ * which this codebase's own comments admit were chosen because they are
+ * shareable and retention-driving. Neither helps anybody feel better, and a
+ * confident composite number at the top teaches you to watch the number
+ * instead of the thing that is actually wrong.
+ *
+ * So the order is now: how the thing you came here about has been, then the
+ * one change most worth making today, and only then the habit summary. The
+ * score survives because "how have my habits been" is a fair question; it just
+ * is not the first one.
+ */
 export function todayView(state) {
   const { report, entries } = state;
   if (!report || !report.today) {
     return `<div class="card empty-state">
-      <h3>Welcome to VitalArc</h3>
-      <p>Log your first day and you'll get a Healthspan Score immediately.<br>
-      It takes about forty seconds.</p>
+      <h3>Nothing logged yet</h3>
+      <p>Log a day and this fills in. If something specific brought you here, add it as a
+      symptom first — that is the thing everything else will try to explain.</p>
       <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-        <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary" data-action="goto" data-view="log">Log today</button>
-        <button class="btn" data-action="load-sample">Look around with example data first</button>
-      </div>
+        <button class="btn" data-action="goto" data-view="settings">Add a symptom</button>
+        <button class="btn btn-ghost" data-action="load-sample">Look around with example data</button>
       </div>
     </div>`;
   }
 
   const t = report.today;
-  const bio = report.bioAge;
   const trend = report.trendPerWeek;
-  const smooth = state.smoothed || null;
-
-  // Name the window that was actually used, which is however many days exist
-  // up to 28 — claiming a longer window than the data covers is a small lie
-  // that undermines everything else on the page.
   const trendWindow = Math.min(28, report.scored.length);
-  const trendLine = trend == null
-    ? '<span class="delta-flat">Not enough data yet</span>'
-    : `${fmtDelta(trend)} points per week over ${trendWindow} days`;
-
-  const pillarRadar = radarChart(
-    Object.fromEntries(Object.entries(PILLAR_LABELS).map(([k, label]) => [k, { label, value: report.pillarAverages[k] }])),
-    { size: state.narrow ? 320 : 300, label: 'Pillar balance (28-day average)' }
-  );
-
-  const scorePoints = report.scored.map((s) => ({ date: s.date, value: s.score }));
+  const symptoms = (state.symptoms || []).filter((x) => !x.archivedAt);
+  const running = (state.trials || []).find((x) => x.status === 'running');
 
   return `
-  <div class="card">
-    <div class="hero">
-      <div>${scoreRing(t.score, { sublabel: 'today' })}</div>
-      <div>
-        <h1 style="margin-bottom:6px">${headline(t.score)}</h1>
-        <p class="muted" style="margin-bottom:14px">${trendLine}</p>
-        ${bio ? `<div class="bioage">
-            <span>Healthspan age</span>
-            <strong>${bio.effectiveAge}</strong>
-            <span>vs ${bio.chronologicalAge} actual</span>
-          </div>
-          <span class="confidence-tag" title="How much data backs this estimate">${esc(bio.confidence)} confidence</span>` : ''}
-        <div class="grid grid-4" style="margin-top:16px">
-          ${stat('7-day avg', report.avg7 ?? '--')}
-          ${stat('28-day avg', report.avg28 ?? '--')}
-          ${stat('Streak', report.streak + (report.streak === 1 ? ' day' : ' days'))}
-          ${stat('Days logged', report.loggedDays)}
-        </div>
-      </div>
-    </div>
-    ${bio ? `<p class="disclaimer">
-      <strong>Healthspan age is an illustrative estimate, not a medical measurement.</strong>
-      It is derived from the habits you log using published dose-response relationships, and it is
-      shown with a confidence level reflecting how much data supports it. It is not a diagnosis,
-      not a biological-age clock, and not a substitute for advice from a clinician.
-    </p>` : ''}
-  </div>
+  ${symptomCard(state, symptoms)}
+  ${todayFocus(state, running)}
 
   <div class="grid grid-2">
     <div class="card">
-      <div class="card-head"><h2>Score history</h2><div class="spacer"></div>
-        <span class="subtle">All ${entries.length} days</span></div>
-      ${lineChart(scorePoints, {
-        smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time',
-        width: state.narrow ? 380 : 720,
-        height: state.narrow ? 260 : 300,
+      <div class="card-head"><h2>How your habits have been</h2><div class="spacer"></div>
+        <span class="subtle">${t.score ?? '--'} today</span></div>
+      ${lineChart(report.scored.map((x) => ({ date: x.date, value: x.score })), {
+        smooth: state.smoothed, bands: [{ from: 70, to: 100 }],
+        label: 'Habit score over time',
+        width: state.narrow ? 380 : 720, height: state.narrow ? 220 : 240,
       })}
-      <p class="subtle" style="margin-top:8px">Solid line is your daily score. Dashed line is a 7-day smoothed average — that is the one to watch.</p>
+      <p class="subtle" style="margin-top:8px">
+        ${trend == null ? 'Not enough days yet to call a direction.'
+          : `${fmtDelta(trend)} points per week over ${trendWindow} days.`}
+        This is a summary of what you did, not of how you are.</p>
     </div>
     <div class="card">
-      <div class="card-head"><h2>Pillar balance</h2></div>
-      ${pillarRadar}
-      <p class="subtle">28-day averages. The shape matters more than any single point: a lopsided hexagon is where your easiest gains are.</p>
+      <div class="card-head"><h2>Where the gaps are</h2></div>
+      ${radarChart(
+        Object.fromEntries(Object.entries(PILLAR_LABELS).map(([k, label]) => [k, { label, value: report.pillarAverages[k] }])),
+        { size: state.narrow ? 320 : 300, label: 'Pillar balance (28-day average)' }
+      )}
+      <p class="subtle">28-day averages. A lopsided shape is where the easiest changes are.</p>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-head"><h2>Today's breakdown</h2><div class="spacer"></div>
+    <div class="card-head"><h2>Today in detail</h2><div class="spacer"></div>
       <button class="btn btn-sm" data-action="goto" data-view="log">Edit today</button></div>
     ${pillarTable(t)}
-  </div>
+  </div>`;
+}
 
-  ${leverageCard(state)}
-  `;
+/** The thing you came here about, first. */
+function symptomCard(state, symptoms) {
+  if (!symptoms.length) {
+    return `<div class="card">
+      <div class="card-head"><h2>What's bothering you?</h2></div>
+      <p class="muted">Right now this is tracking habits in the abstract. If there is something
+      specific — headaches, gut trouble, joint pain, low mood, anything — name it and every
+      other number here starts working on that question instead.</p>
+      <button class="btn btn-primary" data-action="goto" data-view="settings">Add a symptom</button>
+    </div>`;
+  }
+  const entries = state.entries || [];
+  const recent = entries.slice(-28);
+  const cards = symptoms.map((sym) => {
+    const vals = recent.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);
+    const all = entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null }));
+    const anyDays = vals.filter((v) => v > 0).length;
+    const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+    const half = Math.floor(vals.length / 2);
+    const shift = vals.length >= 8 ? mean(vals.slice(half)) - mean(vals.slice(0, half)) : null;
+    const dir = shift == null ? null : shift < -0.3 ? 'better' : shift > 0.3 ? 'worse' : 'steady';
+    return `<div class="card" style="margin:0">
+      <div class="card-head"><h3 style="margin:0">${esc(sym.label)}</h3><div class="spacer"></div>
+        ${dir ? `<span class="pill ${dir === 'better' ? 'pill-good' : dir === 'worse' ? 'pill-bad' : 'pill-info'}">${dir}</span>` : ''}</div>
+      <p class="muted" style="margin-bottom:8px">
+        ${vals.length ? `Some of it on <strong>${anyDays}</strong> of your last ${vals.length} logged days.`
+                      : 'Not logged yet.'}</p>
+      ${lineChart(all.slice(-60), { min: 0, max: 4, yTicks: [0, 2, 4], label: `${sym.label} over time`,
+        width: state.narrow ? 360 : 460, height: 130, showDots: 0 })}
+    </div>`;
+  }).join('');
+  return `<div class="grid ${symptoms.length > 1 ? 'grid-2' : ''}" style="margin-bottom:16px">${cards}</div>`;
+}
+
+/** One thing worth doing today — or the trial's instruction, which outranks it. */
+function todayFocus(state, running) {
+  if (running) {
+    const lever = getLever(running.leverId);
+    const arm = schedule(running).find((d) => d.date === dateKey())?.arm;
+    if (arm) {
+      return `<div class="card">
+        <div class="card-head"><h2>Today's job</h2><div class="spacer"></div>
+          <span class="pill pill-info">trial day</span></div>
+        <p style="font-size:1.1rem;margin-bottom:6px"><strong>${arm === 'on' ? esc(lever.onText) : esc(lever.offText)}</strong>.</p>
+        <p class="muted">You are ${daysRemaining(running, dateKey())} days from the end of your
+        ${esc(lever.label.toLowerCase())} trial. Doing the OFF days properly matters as much as the
+        ON days — without the contrast there is nothing to compare.</p>
+        <button class="btn btn-sm" data-action="goto" data-view="trials">See the trial</button>
+      </div>`;
+    }
+  }
+  const top = (state.leverage || [])[0];
+  if (!top) return '';
+  return `<div class="card">
+    <div class="card-head"><h2>If you change one thing today</h2></div>
+    <p style="font-size:1.1rem;margin-bottom:6px"><strong>${esc(top.label)}.</strong></p>
+    <p class="muted">Of everything the app can simulate against your own average day, this one
+    moves your habit score most (${top.scoreDelta > 0 ? '+' : ''}${top.scoreDelta} points). That is a
+    statement about your habits, not a promise about how you will feel — if you want to know
+    whether it actually helps <em>you</em>, run it as a trial.</p>
+    <button class="btn btn-sm" data-action="goto" data-view="trials">Test it properly</button>
+  </div>`;
 }
 
 function headline(score) {
@@ -157,7 +198,7 @@ function leverageCard(state) {
     ? '<p class="muted">Log a few more days and we\'ll rank the changes that would move your score most.</p>'
     : barChart(state.leverage.map((l) => ({
         label: l.label, value: l.scoreDelta,
-        display: `+${l.scoreDelta} pts${l.yearsDelta ? ` · ${l.yearsDelta} yrs` : ''}`,
+        display: `+${l.scoreDelta} pts`,
       })), {
         label: 'Highest-leverage changes',
         width: state.narrow ? 380 : 720,
@@ -435,9 +476,6 @@ export function simulatorView(state) {
         <div class="card" style="margin-top:14px;background:var(--surface-2)">
           <div class="stat-label">Score change</div>
           <div class="stat-value">${fmtDelta(sim?.scoreDelta)} points</div>
-          <div class="stat-label" style="margin-top:12px">Healthspan age change</div>
-          <div class="stat-value">${sim?.yearsDelta == null ? '--' :
-            `<span class="${sim.yearsDelta < 0 ? 'delta-good' : sim.yearsDelta > 0 ? 'delta-bad' : 'delta-flat'}">${sim.yearsDelta > 0 ? '+' : ''}${sim.yearsDelta} years</span>`}</div>
         </div>
         ${sim ? barChart(Object.entries(sim.pillarDeltas)
             .filter(([, v]) => Math.abs(v) > 0.05)
@@ -771,8 +809,10 @@ export function settingsView(state) {
     <p class="muted">The scoring curves, their sources, and the statistical method behind insights are documented
     in full rather than hidden. You should be able to argue with your own score.</p>
     <p class="disclaimer">VitalArc is a wellness tool, not a medical device. It does not diagnose, treat, cure or
-    prevent disease. The Healthspan Age figure is an illustrative estimate derived from self-reported habits, not a
-    clinical measurement of biological age. Always consult a qualified clinician about your health.</p>
+    prevent disease, and nothing in it is medical advice. The habit score summarises what you
+    logged; it says nothing about whether you are well. Patterns it finds show what moves
+    together in your log and cannot prove that one thing caused another. If something about your
+    health worries you, or a symptom is severe, new, or getting worse, talk to a doctor.</p>
   </div>`;
 }
 

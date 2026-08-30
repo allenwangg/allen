@@ -688,15 +688,14 @@ function updateSimReadout(input) {
   if (!sim) return;
   const stats = document.querySelectorAll('#main .stat-value');
   // Layout order in simulatorView: Current, Projected, Score change, Age change.
-  if (stats.length >= 4) {
+  // Three tiles since the healthspan-age figure was removed; an earlier
+  // guard of >= 4 silently stopped updating any of them.
+  if (stats.length >= 3) {
     stats[0].textContent = sim.baseline?.score ?? '--';
     stats[1].textContent = sim.projected?.score ?? '--';
     const d = sim.scoreDelta;
     const cls = d > 0.05 ? 'delta-good' : d < -0.05 ? 'delta-bad' : 'delta-flat';
     stats[2].innerHTML = `<span class="${cls}">${d > 0 ? '+' : ''}${d ?? '--'}</span> points`;
-    const y = sim.yearsDelta;
-    const ycls = y < 0 ? 'delta-good' : y > 0 ? 'delta-bad' : 'delta-flat';
-    stats[3].innerHTML = y == null ? '--' : `<span class="${ycls}">${y > 0 ? '+' : ''}${y} years</span>`;
   }
 }
 

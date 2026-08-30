@@ -1,144 +1,109 @@
 # VitalArc
 
-A local-first healthspan tracker whose distinguishing feature is that **it
-refuses to tell you things it cannot support.**
+A private notebook for working out what is actually affecting how you feel.
 
-Log your habits, get a transparent score, and — once you have enough data — find
-out which of those habits genuinely move your numbers, established by permutation
-testing and false-discovery-rate correction rather than by eyeballing a chart.
+You track the symptoms you actually have — not somebody else's idea of
+wellness — and it looks for what moves with them, lets you test a suspicion
+properly, and prints one page you can hand to a doctor.
 
-On pure noise, the insight engine reports nothing. That is the point.
+It cannot diagnose you, treat you, or cure anything, and it will never tell you
+what condition you have or what to take for it. What it can do is stop you
+guessing, and make the guessing that is left somebody qualified's job with
+better information in front of them.
 
 ## Quick start
 
 ```bash
-npm install      # only needed for the browser test
-npm run serve    # http://localhost:8080/app/
-npm test         # 104 unit tests, no dependencies
-npm run e2e      # full browser walkthrough (needs the server running)
+npm install       # only for the browser test
+npm run serve     # http://localhost:8080/app/
+npm test          # 119 unit tests + the copy guard, no dependencies
+npm run e2e       # browser walkthrough (needs the server running)
+npm run stamp-sw  # before deploying — see below
 ```
 
-There is no build step. The app is ES modules served as-is.
-
-One thing to run before deploying:
-
-```bash
-npm run stamp-sw   # writes a content hash of the app shell into app/sw.js
-```
-
-A service worker only installs a new cache when its own bytes change, so a
-stale `VERSION` pins every existing installation to the old build forever.
-CI fails if the stamp is out of date.
+No build step. The app is ES modules served as they are.
 
 ## What it does
 
-- **Log 24 fields** — 20 daily habits across sleep, movement, nutrition,
-  recovery and substances, plus 4 optional biomarkers. Sliders with sensible defaults; a normal day takes
-  under a minute.
-- **Healthspan Score**, six pillars, built from piecewise dose-response curves
-  so non-monotonic relationships are expressed honestly. Every point is
-  traceable. See [docs/SCORING.md](docs/SCORING.md).
-- **Personal insights** — lagged correlations across your own log, filtered
-  through detrending, a permutation test with a calibrated tail, and BH FDR
-  control. See [docs/INSIGHTS.md](docs/INSIGHTS.md).
-- **What-if simulator** — test a change against your own 28-day average day
-  before committing to it. It will tell you when a change would not help.
-- **Highest-leverage actions** — every candidate nudge simulated and ranked,
-  rather than generic advice.
-- **Sample mode** — one tap loads a 90-day synthetic tour with genuinely
-  planted patterns, so every Pro view can be judged before logging a single
-  real day. Labelled on every screen, blocked from mixing with real data.
-- **Works offline**, installable as a PWA, and your data never leaves the device.
+- **Your symptoms, named by you.** Migraine, bloating, joint pain, brain fog,
+  low mood — whatever it actually is. Rated daily in one tap each.
+- **Finds what moves with them.** Lagged rank correlations across your own log,
+  with time trends and weekly rhythms removed first, permutation-based
+  p-values, and multiple-comparison correction done *per symptom* so tracking a
+  second one never costs accuracy on the first.
+- **Tests a suspicion properly.** Block-randomised n-of-1 trials: pick one
+  change, pre-register what you are measuring, and get an exact randomisation
+  test at the end. This is the only part of the app that can support the
+  sentence "this helped".
+- **Knows when to send you elsewhere.** Conservative flags for patterns worth
+  raising with a doctor — never a diagnosis, never reassurance.
+- **Prints for an appointment.** Chief complaint and timeline first, then
+  measurements, then what you have already ruled out, then correlations last.
+- **Works offline**, installs as a PWA, and never sends anything anywhere.
+
+## Where your data goes
+
+Nowhere. Everything lives in your browser on your device. No account, no
+server, no analytics, nothing uploaded — which also means nobody is backing it
+up for you, so the export button matters.
 
 ## Architecture
 
 ```
-index.html              landing page
+index.html              front door
 app/
   index.html            app shell
-  css/app.css           design system, light + dark via CSS custom properties
+  css/app.css           design system, light + dark
   js/
-    model.js            schema, validation, date handling
-    engine.js           scoring curves, pillars, bio-age, simulator
-    insights.js         correlation discovery + the statistics
-    store.js            IndexedDB with localStorage fallback
+    model.js            day schema, symptoms, validation
+    engine.js           habit scoring from dose-response curves
+    insights.js         correlation discovery and the statistics
+    experiments.js      n-of-1 trial design, analysis and verdicts
+    safety.js           when to stop logging and see someone
+    store.js            IndexedDB with a localStorage fallback
+    sample.js           example data so the app is judgeable on day one
     charts.js           dependency-free SVG charts
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  104 unit tests + a browser walkthrough
+tests/                  119 unit tests, a copy guard, a browser walkthrough
 ```
 
-No frameworks and no runtime dependencies. The only dev dependency is Playwright
-for the browser test.
+No frameworks, no runtime dependencies. Playwright is the only dev dependency.
 
 ## The engineering worth reading
 
-An adversarial audit (parallel finder agents per dimension, findings verified
-by reproduction before fixing) later found and fixed a further class of
-problems, the worst being **weekday confounding**: habits that each follow
-their own day-of-week rhythm correlate through the shared weekday without any
-causal link, and the engine reported ~12 such findings per rhythm-only
-dataset. Day-of-week means are now conditionally removed exactly as the time
-trend is; measured false positives on rhythm-only data went from 20/20
-datasets to 0/20 with recall unchanged at 100%. The same audit surfaced a
-billing-portal IDOR (fixed with HMAC proof-of-ownership tokens), a simulator
-that averaged bedtimes across midnight to noon, and a save path that toasted
-"Day saved" over a swallowed quota error. docs/INSIGHTS.md records the full
-statistical history.
+Most of this codebase's history is bugs found by trying to break it rather than
+by reading it, and the pattern is consistent: the dangerous ones all looked
+correct and had no failing test.
 
-### The original three
+**The statistics kept being confidently wrong.** A p-value floored by the
+number of circular shifts silently discarded a correlation of −0.91. A Gaussian
+tail fitted to a 120-sample null invented findings on 20% of pure-noise
+datasets. Naive detrending broke the tied zeros in sparse variables and
+destroyed a real effect while trying to prevent false ones. Independent weekly
+rhythms — the most ordinary structure in human habit data — manufactured twelve
+confident findings per dataset until day-of-week means were removed too. Each
+is documented at the site of the fix in `docs/INSIGHTS.md` and covered by a
+regression test.
 
-Three bugs found during validation, all of the kind that ship silently:
+**The n-of-1 engine hit the same wall from the other side.** A trial's
+reference set is the 2^K ways its coins could have landed, so a five-pair trial
+cannot return a significant result however large the effect. The app refuses to
+create one, and shows you the best p-value your chosen length could ever reach
+before you commit five weeks to it.
 
-1. **A boot hang with an empty console.** The IndexedDB helper resolved with the
-   raw `IDBRequest` whenever a lookup returned `undefined`; awaiting it waited
-   forever on an `onsuccess` that had already fired. A first-run profile lookup
-   legitimately returns `undefined`, so the app hung on first load — and a
-   pending promise throws nothing.
-
-2. **A p-value floor that discarded overwhelming evidence.** Circular-shift
-   permutation admits only *n−1* rotations, flooring the empirical p at 1/*n* —
-   about 9× too coarse to survive FDR correction across 100 hypotheses. A
-   planted Spearman of −0.91 was being thrown away by arithmetic.
-
-3. **Spurious correlations from a shared time trend.** On data where every habit
-   improved together over months, the engine produced twelve confident findings
-   of which one was real. Detrending both series first leaves exactly the true
-   one, essentially unattenuated.
-
-4. **A correction that caused the opposite error.** That same detrending broke
-   sparse variables: alcohol is zero on most days, those zeros are *ties*, and
-   subtracting a fitted line gives each one a different residual ordered by
-   date — manufacturing a calendar ranking in a variable that had none. A real
-   effect fell from r = −0.75 to −0.46 and stopped clearing correction.
-
-5. **An unstable null.** With only *n−1* circular shifts available, two datasets
-   carrying the same planted effect (r = −0.745 and −0.734) returned p-values
-   two orders of magnitude apart. Adding moving-block bootstrap surrogates took
-   recall on realistic weekend-clustered data from 47% to 100%.
-
-Each is documented at the site of the fix and covered by a regression test.
-
-Measured across 82 independent 120-day datasets that contain no real effect —
-40 pure noise, 30 where every habit improves together, 12 where every habit
-follows its own weekly rhythm — the engine reports **nothing at all**. A
-genuine planted effect is recovered **100%** of the time, with or without a
-confounding trend and with or without weekly clustering. `npm test`
-reproduces every one of those numbers.
-
-## Status
-
-Complete and working: all six views, the paywall, offline support, export and
-import, and the full analysis pipeline, verified end to end in Chromium.
-
-Every feature is available to everyone. There is no paywall, no account, and
-no server — the app is a private notebook that happens to do statistics.
+**Silence is the feature.** On 82 datasets containing no real effect — pure
+noise, habits all improving together, and independent weekly rhythms — the
+engine reports nothing at all. On 20 null trials, zero positive verdicts. That
+is the whole reason to believe it when it does say something.
 
 ## Disclaimer
 
-VitalArc is a wellness and habit-tracking tool, **not a medical device.** It does
-not diagnose, treat, cure or prevent any disease. Healthspan Age is an
-illustrative estimate derived from self-reported habits, not a clinical
-measurement. Correlations found in your log show what moves together; they cannot
-prove causation. Consult a qualified clinician about your health.
+VitalArc is a personal notebook, **not a medical device**. It does not
+diagnose, treat, cure or prevent any disease, and nothing in it is medical
+advice. The habit score summarises what you logged; it says nothing about
+whether you are well. Patterns it finds show what moves together in your log
+and cannot prove one thing caused another. If something about your health
+worries you, or a symptom is severe, new, or getting worse, talk to a doctor
+rather than to this app.

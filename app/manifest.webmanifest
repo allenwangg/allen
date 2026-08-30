@@ -1,7 +1,7 @@
 {
-  "name": "VitalArc — Healthspan Tracker",
+  "name": "VitalArc",
   "short_name": "VitalArc",
-  "description": "Track the habits that shape your healthspan and discover which ones actually move your numbers.",
+  "description": "A private notebook for working out what is actually affecting how you feel.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

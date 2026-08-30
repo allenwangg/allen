@@ -6,7 +6,7 @@
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX } from '../app/js/model.js';
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
-import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
+import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
@@ -251,36 +251,6 @@ t('regularity rewards consistency', () => {
 });
 
 /* ================= bio age ================= */
-t('bioAge sign is correct', () => {
-  ok(bioAgeDelta(88, { age: 40 }).years < 0, 'great habits => younger');
-  ok(bioAgeDelta(18, { age: 40 }).years > 0, 'poor habits => older');
-});
-t('bioAge near zero at population average', () => near(bioAgeDelta(50, { age: 35 }).years, 0, 0.15));
-t('bioAge saturates', () => {
-  ok(Math.abs(bioAgeDelta(100, { age: 70 }).years) <= 9);
-  ok(Math.abs(bioAgeDelta(0, { age: 70 }).years) <= 9);
-});
-t('bioAge monotonic in score', () => {
-  let prev = Infinity;
-  for (let s = 0; s <= 100; s += 5) {
-    const y = bioAgeDelta(s, { age: 45 }).years;
-    ok(y <= prev + 1e-9, `not monotonic at ${s}`);
-    prev = y;
-  }
-});
-t('bioAge null-safe', () => eq(bioAgeDelta(null, { age: 40 }), null));
-
-t('simulate averages bedtime on the circular scale', () => {
-  // Alternating 23:30 / 00:30 has a raw clock mean of noon; the wrapped mean
-  // is midnight. Timing must score like a midnight sleeper, not a noon one.
-  const es = ['2026-06-01'].concat(Array.from({ length: 27 }, (_, i) => addDays('2026-06-01', i + 1)))
-    .map((d, i) => { const e = emptyEntry(d); e.bedtimeMinutes = i % 2 ? 1410 : 30; return e; });
-  const sim = simulate(es, {}, ctx);
-  const timing = sim.baseline.pillars.sleep.parts.find((p) => p.key === 'timing').score;
-  ok(timing < 60, 'noon artifact: timing scored ' + timing);
-  const earlier = simulate(es, { bedtimeMinutes: -45 }, ctx);
-  ok(earlier.scoreDelta > 0, 'going to bed earlier must help a post-midnight sleeper, got ' + earlier.scoreDelta);
-});
 t('simulate scores boolean frequency, not truthiness', () => {
   const es = Array.from({ length: 28 }, (_, i) => {
     const e = emptyEntry(addDays('2026-06-01', i));
@@ -302,11 +272,6 @@ t('simulate never materializes a never-logged field', () => {
   });
   const sim = simulate(es, { fiberGrams: 8 }, ctx);
   near(sim.scoreDelta, 0, 0.001, 'nudging an unlogged field must be a no-op');
-});
-t('bioAge hits its documented anchors at the reference age', () => {
-  near(bioAgeDelta(85, { age: 35 }).years, -4.5, 0.3);
-  near(bioAgeDelta(20, { age: 35 }).years, 4.0, 0.4);
-  near(bioAgeDelta(50, { age: 35 }).years, 0, 0.15);
 });
 
 /* ================= statistics ================= */
@@ -839,7 +804,7 @@ const demo = synth(60, 21, (e, i, r) => {
 });
 t('buildReport populates every headline field', () => {
   const r = buildReport(demo, ctx);
-  for (const k of ['today','avg7','avg28','sustained','pillarAverages','trendPerWeek','streak','bioAge','confidence','loggedDays']) {
+  for (const k of ['today','avg7','avg28','sustained','pillarAverages','trendPerWeek','streak','loggedDays']) {
     ok(r[k] !== undefined && r[k] !== null, `missing ${k}`);
   }
 });
@@ -858,10 +823,6 @@ t('simulate: more sleep raises score', () => {
 t('simulate: more alcohol lowers score', () => {
   const s = simulate(demo, { alcoholUnits: 3 }, ctx);
   ok(s.scoreDelta < 0, 'got ' + s.scoreDelta);
-});
-t('simulate: improvement reduces bio age', () => {
-  const s = simulate(demo, { sleepHours: 1, steps: 4000, produceServings: 3 }, ctx);
-  ok(s.yearsDelta < 0, 'got ' + s.yearsDelta);
 });
 t('simulate respects field bounds', () => {
   const s = simulate(demo, { sleepHours: 500 }, ctx);

@@ -10,6 +10,15 @@ found while validating it, because both are the kind that ship silently.
 
 ## The pipeline
 
+Outcomes are the things you want explained: the symptoms you named, plus mood,
+energy, sleep quality, stress and the two heart measures. **Each symptom is
+corrected as its own family**, separately from the wellness outcomes. Pooling
+them would mean that tracking a second symptom makes the app worse at
+explaining the first, which is exactly backwards — the symptoms are the reason
+anyone is here. This is the standard primary/secondary-endpoint split: FDR is
+still controlled at q within every family, and no family's power depends on how
+many other questions you happen to be asking.
+
 For every (driver, outcome, lag) combination, where lag ∈ {0, 1, 2} days:
 
 1. **Pair the days.** Driver on day *d*, outcome on day *d+lag*. Missing days
@@ -192,5 +201,14 @@ guards existed, fooled this engine).
   a habit that helps only over months will not appear. That is the accepted cost
   of not reporting eleven false things in order to catch one slow true one.
 - **Three lags only.** Effects with a longer delay are invisible.
+
+## Where correlation stops
+
+Everything above can only ever generate hypotheses. If you want to know whether
+something actually helps *you*, `app/js/experiments.js` runs block-randomised
+n-of-1 trials — the only part of this app that can support a causal sentence.
+Its own hard constraint is worth knowing: the reference set is the 2^K ways the
+trial's coins could have landed, so fewer than six block-pairs cannot produce a
+significant result however large the effect, and the app refuses to create one.
 
 Run `npm test` to reproduce every number in this document.
