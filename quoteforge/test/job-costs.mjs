@@ -163,6 +163,48 @@ check('the job row flags its faded amount',
 await page.locator('.tab[data-tab="costs"]').click();
 await page.waitForTimeout(250);
 
+/* --- the audit report: the fulfillment document for the audit service --- */
+const audit = await page.locator('#auditPrint').textContent();
+check('audit report renders', /Margin audit/i.test(audit));
+check('it shows what the job actually kept', /Profit kept/i.test(audit));
+check('it names all three leaks',
+  /Leak 1 — Pricing/.test(audit) && /Leak 2 — Work without a signature/.test(audit)
+  && /Leak 3 — Margin fade/.test(audit));
+check('it shows margin and cost — the audit is NOT a client document',
+  /margin/i.test(audit) && /cost/i.test(audit));
+check('it ends in a single found-money figure', /Found on this one job/.test(audit));
+check('it discloses the overhead is applied, not measured',
+  /not\s+measured/i.test(audit));
+
+// With every change order signed, leak 2 must report clean — not silent.
+check('a clean leak 2 says so explicitly', /None found/.test(
+  audit.slice(audit.indexOf('Leak 2'), audit.indexOf('Leak 3'))));
+
+// Now create the condition: an unsigned change order must surface as leak 2.
+await page.locator('.tab[data-tab="changes"]').click();
+await page.waitForTimeout(250);
+await page.locator('#btnAddCO').click();
+await page.waitForTimeout(300);
+await page.locator('[data-cof="title"]').fill('Verbal extra — never written up');
+await page.locator('[data-coadd]').click();
+await page.waitForTimeout(200);
+await page.locator('[data-cif="qty"]').first().fill('8');
+await page.locator('[data-cif="unitCost"]').first().fill('120');
+await page.waitForTimeout(300);
+await page.locator('.tab[data-tab="costs"]').click();
+await page.waitForTimeout(300);
+const audit2 = await page.locator('#auditPrint').textContent();
+check('unsigned work surfaces as leak 2',
+  /Verbal extra — never written up/.test(audit2) && /gift/i.test(audit2));
+check('leak 2 totals the unsigned amount', /of change-order work has nothing\s+signed/.test(audit2.replace(/\s+/g,' ')) || /nothing signed behind it/.test(audit2.replace(/\s+/g,' ')));
+
+// Audit report prints.
+await page.evaluate(() => { document.body.dataset.print = 'audit'; });
+const auditPdf = await page.pdf({ format: 'Letter', printBackground: true,
+  margin: { top: '0.5in', bottom: '0.5in', left: '0.5in', right: '0.5in' } });
+check('audit report prints to PDF', auditPdf.length > 15000, `(${auditPdf.length} bytes)`);
+await page.evaluate(() => { delete document.body.dataset.print; });
+
 /* --- deleting an entry --- */
 const rows = await page.locator('tr[data-ac]').count();
 await page.locator('tr[data-ac]').first().hover();

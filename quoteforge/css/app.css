@@ -725,6 +725,11 @@ table.pr-table tr.group-head td {
   body[data-print="stmt"] #pane-changes { display: block !important; }
   body[data-print="stmt"] #pane-changes > .workspace { display: none !important; }
   body[data-print="stmt"] #stmtPrintShell { display: block !important; }
+
+  body[data-print="audit"] .pane { display: none !important; }
+  body[data-print="audit"] #pane-costs { display: block !important; }
+  body[data-print="audit"] #pane-costs > .workspace { display: none !important; }
+  body[data-print="audit"] #auditPrintShell { display: block !important; }
   body { background: #fff; }
   .pane { padding: 0; }
   .proposal-shell { max-width: none; }
@@ -744,6 +749,11 @@ table.pr-table tr.group-head td {
   .pr-terms li { page-break-inside: avoid; break-inside: avoid; }
   /* Orphan/widow control so a section never leaves one stranded line behind. */
   .proposal p { orphans: 3; widows: 3; }
+
+  /* A trailing margin that overflows the page height emits a blank last page,
+     which reads as sloppy on a signed or paid document. */
+  .proposal .pr-section:last-child { margin-bottom: 0; }
+  .proposal > div > *:last-child { margin-bottom: 0; }
   a { text-decoration: none; color: inherit; }
 }
 

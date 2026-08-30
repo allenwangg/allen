@@ -10,7 +10,7 @@
  * platform already has. No PDF library, no server round-trip, no watermark.
  */
 
-import { CATEGORY_LABELS, formatMoney, buildSchedule } from './pricing.js';
+import { CATEGORY_LABELS, formatMoney, formatPercent, buildSchedule } from './pricing.js';
 
 /** Escape untrusted text for HTML interpolation. */
 export function esc(s) {
@@ -618,4 +618,172 @@ function firstLine(text, limit = 120) {
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
+}
+
+/* ======================================================== audit report ==== */
+
+/**
+ * A margin audit report — the deliverable of the audit service, and the one
+ * document in this app that is NOT for the homeowner. It is for the
+ * contractor, so unlike the proposal it shows everything the proposal hides:
+ * cost, markup, margin, and exactly where the money went.
+ *
+ * Structure follows the three leaks, in the order they bite:
+ *   1. Pricing — what the job kept vs what the target said it should keep.
+ *   2. Unbilled changes — work performed with nothing signed behind it.
+ *   3. Margin fade — overruns by category against the budget.
+ *
+ * Every section ends in a dollar figure, because "you should price better" is
+ * advice and "$4,120 on this one job" is a decision.
+ */
+export function renderAuditReport({ estimate, costed, company, targetMargin, floorMargin }) {
+  const accent = company.accent || '#c2410c';
+  const contract = costed.contract;
+
+  const revenue = contract.base.afterDiscountCents + contract.approvedTotalCents;
+  const target = Number(targetMargin) || 0;
+
+  // What was actually kept, using real spend where it exists. Overhead is
+  // applied at the configured rate against actual direct cost, and labeled as
+  // an estimate — the audit must not claim precision it does not have.
+  const overheadRate = Number(costed.contract.base.settings?.overhead) || 0;
+  const spentDirect = costed.spentCents;
+  const hasActuals = costed.entries.length > 0;
+  const directCost = hasActuals ? spentDirect : costed.budgetCents;
+  const overheadActual = Math.round(directCost * overheadRate);
+  const trueCost = directCost + overheadActual;
+  const actualProfit = revenue - trueCost;
+  const actualMargin = revenue === 0 ? 0 : actualProfit / revenue;
+
+  // The price this job needed to hit the target, at its REAL cost — the
+  // headline "what happened" figure for the summary table.
+  const neededPrice = target < 1 ? Math.round(trueCost / (1 - target)) : Infinity;
+
+  // Leak 1 is measured against BUDGETED cost, not real cost. The pricing leak
+  // is what was wrong with the quote before anything went wrong on site;
+  // pricing it at real cost would fold the overruns (leak 3) into it and
+  // double-count. Keeping the bases separate is what makes the three leak
+  // figures additive.
+  const budgetedTrueCost = Math.round(costed.budgetCents * (1 + overheadRate));
+  const neededAtBudget = target < 1 ? Math.round(budgetedTrueCost / (1 - target)) : Infinity;
+  const pricingGap = Math.max(0, neededAtBudget - revenue);
+
+  const fadeRows = Object.entries(costed.byCategory)
+    .filter(([, v]) => v.overrunCents > 0)
+    .map(([cat, v]) => `
+      <tr>
+        <td>${CATEGORY_LABELS[cat]}</td>
+        <td class="r">${formatMoney(v.budgetCents)}</td>
+        <td class="r">${formatMoney(v.spentCents)}</td>
+        <td class="r" style="color:#b91c1c;font-weight:600">${formatMoney(v.overrunCents)}</td>
+      </tr>`).join('');
+
+  const unsignedRows = contract.unapproved.map(({ order, priced }) => `
+    <tr>
+      <td>${esc(order.number)} — ${esc(order.title || 'Untitled change')}</td>
+      <td class="r">${esc(order.status)}</td>
+      <td class="r">${formatMoney(priced.totalCents)}</td>
+    </tr>`).join('');
+
+  const totalLeak = pricingGap + contract.atRiskCents + costed.overrunCents;
+
+  return `
+<div style="--pr-accent:${esc(accent)}">
+  <div class="pr-head">
+    <div>
+      ${company.logoDataUrl
+        ? `<img class="logo" src="${esc(company.logoDataUrl)}" alt="${esc(company.name)}">`
+        : `<div class="co-name">${esc(company.name || 'Margin Audit')}</div>`}
+      <div class="co-meta">${[company.phone, company.email].filter(Boolean).map(esc).join(' · ')}</div>
+    </div>
+    <div class="pr-doc">
+      <div class="doc-kind">Margin audit</div>
+      <div class="doc-no">${esc(estimate.number || '')}</div>
+      <div class="co-meta" style="margin-top:6px">${fmtDate(todayISO())}</div>
+    </div>
+  </div>
+
+  <div class="pr-parties">
+    <div><h3>Job</h3><div>${esc(estimate.title || 'Untitled')}</div></div>
+    <div><h3>Basis</h3><div>${hasActuals
+      ? `${costed.entries.length} logged cost entr${costed.entries.length === 1 ? 'y' : 'ies'}`
+      : 'Estimated costs — no actuals were provided'}</div></div>
+  </div>
+
+  <div class="pr-section">
+    <h3>What this job actually kept</h3>
+    <table class="pr-table">
+      <tbody>
+        <tr><td>Revenue (contract incl. approved changes, pre-tax)</td><td class="r">${formatMoney(revenue)}</td></tr>
+        <tr><td>Direct costs ${hasActuals ? 'actually paid' : '(estimated)'}</td><td class="r">${formatMoney(directCost)}</td></tr>
+        <tr><td>Overhead at your ${(overheadRate * 100).toFixed(0)}% rate (estimate)</td><td class="r">${formatMoney(overheadActual)}</td></tr>
+        <tr>
+          <td style="font-weight:700">Profit kept — ${formatPercent(actualMargin)} margin</td>
+          <td class="r" style="font-weight:700">${formatMoney(actualProfit)}</td>
+        </tr>
+        <tr>
+          <td>Your target is ${formatPercent(target, 0)}. At this job's real cost, that required a price of</td>
+          <td class="r">${formatMoney(neededPrice)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pr-section">
+    <h3>Leak 1 — Pricing</h3>
+    ${pricingGap > 0 ? `
+      <p>Measured against its own budget, this job was sold ${formatMoney(pricingGap)} below the
+         price needed to hit your ${formatPercent(target, 0)} target. That money was gone before the
+         first day of work — it was promised away in the quote, independent of anything that
+         happened on site afterward.</p>`
+      : `<p>None found. The quote cleared your ${formatPercent(target, 0)} target against the job's
+         own budget. Whatever went wrong on this job, it was not the quote.</p>`}
+  </div>
+
+  <div class="pr-section">
+    <h3>Leak 2 — Work without a signature</h3>
+    ${contract.unapproved.length ? `
+      <table class="pr-table">
+        <thead><tr><th>Change order</th><th class="r">Status</th><th class="r">Value</th></tr></thead>
+        <tbody>${unsignedRows}</tbody>
+      </table>
+      <p style="margin-top:8px">${formatMoney(contract.atRiskCents)} of change-order work has nothing
+         signed behind it. If any of this work was performed, it is currently a gift.</p>`
+      : `<p>None found. Every change order on this job is signed or was declined before work began.
+         This is rarer than you think.</p>`}
+  </div>
+
+  <div class="pr-section">
+    <h3>Leak 3 — Margin fade</h3>
+    ${fadeRows ? `
+      <table class="pr-table">
+        <thead><tr><th>Category</th><th class="r">Budget</th><th class="r">Spent</th><th class="r">Over</th></tr></thead>
+        <tbody>${fadeRows}</tbody>
+      </table>
+      <p style="margin-top:8px">${formatMoney(costed.overrunCents)} was spent past budget with no one
+         left to bill for it. Where an overrun traces to a client request, it belonged on a change
+         order; where it traces to the estimate, the price book number that caused it needs fixing
+         before the next bid repeats it.</p>`
+      : hasActuals
+        ? '<p>None found. No category ran past its budget.</p>'
+        : '<p>Not assessable — no actual costs were provided for this job.</p>'}
+  </div>
+
+  <div class="pr-section">
+    <h3>The number</h3>
+    <div class="pr-totals" style="width:100%;margin-left:0">
+      <div class="row grand">
+        <span>Found on this one job</span>
+        <span class="v">${formatMoney(totalLeak)}</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#57534e;margin:8px 0 0">
+      Pricing gap + unsigned change orders + budget overruns. The pricing gap is measured against
+      budgeted cost, so it does not double-count the overruns; the unsigned-change figure can
+      overlap with an overrun only when that same work also ran past budget. Treat the figure as
+      the size of the problem, not an invoice. Overhead is applied at your stated rate, not
+      measured.
+    </p>
+  </div>
+</div>`;
 }

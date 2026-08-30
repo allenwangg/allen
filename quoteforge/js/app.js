@@ -20,7 +20,8 @@ import {
   effectiveTrades, expandAssemblyWith,
 } from './pricebook.js';
 import {
-  renderProposal, proposalAsText, renderChangeOrder, renderContractStatement, esc,
+  renderProposal, proposalAsText, renderChangeOrder, renderContractStatement,
+  renderAuditReport, esc,
 } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -1736,6 +1737,13 @@ function renderCosts(est) {
   renderActualsGrid(est, c);
   renderBudgetPanel(c);
   renderFadePanel(c);
+  $('#auditPrint').innerHTML = renderAuditReport({
+    estimate: est,
+    costed: c,
+    company: store.state.company,
+    targetMargin: store.state.settings.targetMargin,
+    floorMargin: store.state.settings.floorMargin,
+  });
 }
 
 function renderActualsGrid(est, c) {
@@ -1895,6 +1903,14 @@ ${c.overrunCents ? `
 
 function wireCosts() {
   $('#btnAddActual').onclick = addActualRow;
+  $('#btnAuditReport').onclick = () => {
+    if (!store.active()) return;
+    document.body.dataset.print = 'audit';
+    requestAnimationFrame(() => {
+      window.print();
+      delete document.body.dataset.print;
+    });
+  };
   $('#btnActualsCsv').onclick = () => {
     const est = store.active();
     if (!est) return;
