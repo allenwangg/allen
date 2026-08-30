@@ -546,6 +546,44 @@ await test("ledger reader paginates Stripe, keeps only paid sessions, and leaks 
   assert(board[0].name === "Whale Co" && board[0].total === 900, `ranking wrong: ${JSON.stringify(board[0])}`);
 });
 
+await test("public ledger page renders a listing's payments without leaking full session IDs", async () => {
+  const pages = {
+    first: { has_more: false, data: [
+      { id: "cs_ledger_alpha_00001", payment_status: "paid", amount_total: 50000, created: 1700000000,
+        client_reference_id: "b64." + b64("Ledger Co|ledger.co|"), customer_details: { email: "x@y.z" } },
+      { id: "cs_ledger_alpha_00002", payment_status: "paid", amount_total: 2500, created: 1700100000,
+        client_reference_id: "b64." + b64("ledger co|ledger.co|") },
+      { id: "cs_other_000000000001", payment_status: "paid", amount_total: 900, created: 1700000500,
+        client_reference_id: "b64." + b64("Bystander|by.st|") },
+    ]},
+  };
+  const mock = createServer((req, res) => {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify(pages.first));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+  process.env.STRIPE_SECRET_KEY = "sk_test_x";
+  for (const m of ["_board.js", "ledger.js"]) delete require.cache[require.resolve(join(root, "api", m))];
+  const handler = require(join(root, "api", "ledger.js"));
+
+  let status, bodyOut = "";
+  const res = {
+    setHeader(){}, status(s){ status = s; return res; }, send(h){ bodyOut = h; return res; },
+  };
+  await handler({ query: { name: "Ledger Co" } }, res);
+  mock.close();
+  delete process.env.STRIPE_API_BASE; delete process.env.STRIPE_SECRET_KEY;
+
+  assert(status === 200, `expected 200, got ${status}`);
+  assert(bodyOut.includes("$525"), "total should aggregate both payments ($500 + $25)");
+  assert(bodyOut.includes("Rank <b>#1</b>"), "rank missing or wrong");
+  assert((bodyOut.match(/<tr><td>/g) || []).length === 2, "should list exactly the listing's 2 payments");
+  assert(!bodyOut.includes("cs_ledger_alpha_00001"), "full session ID leaked — must be truncated");
+  assert(bodyOut.includes("cs_ledger_al…"), "truncated session ID missing");
+  assert(!bodyOut.includes("x@y.z"), "customer PII leaked into the public ledger page");
+});
+
 // ---------- performance benchmark ----------
 console.log("\nPerformance benchmark (5 cold loads, headless Chromium)");
 const runs = [];
