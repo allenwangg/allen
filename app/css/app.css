@@ -257,6 +257,17 @@ textarea { min-height: 76px; resize: vertical; }
 
 .seg { display: flex; gap: 5px; flex-wrap: wrap; }
 
+/* Trial schedule strip: one cell per day, blocks visible at a glance. */
+.trial-cal { display: flex; gap: 2px; flex-wrap: wrap; margin-top: 14px; }
+.trial-cell { width: 14px; height: 22px; border-radius: 3px; background: var(--surface-3); }
+.trial-cell.trial-on { background: var(--accent); }
+.trial-cell.trial-off { background: var(--surface-3); }
+.trial-cell.trial-future { opacity: .4; }
+.trial-cell.trial-today { outline: 2px solid var(--text); outline-offset: 1px; }
+.trial-key { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; }
+.trial-key.trial-on { background: var(--accent); }
+.trial-key.trial-off { background: var(--surface-3); }
+
 /* Symptom rows: label and a five-target severity strip, one tap to set. */
 .sym-row { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(180px, 2fr); gap: 12px;
   align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }

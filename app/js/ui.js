@@ -9,6 +9,7 @@
 
 import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, SEVERITY } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
+import { LEVERS, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
@@ -662,5 +663,180 @@ export function settingsView(state) {
     <p class="disclaimer">VitalArc is a wellness tool, not a medical device. It does not diagnose, treat, cure or
     prevent disease. The Healthspan Age figure is an illustrative estimate derived from self-reported habits, not a
     clinical measurement of biological age. Always consult a qualified clinician about your health.</p>
+  </div>`;
+}
+
+
+/* ================================================================== *
+ * TRIALS — the only part of the app that can support "this helped"
+ * ================================================================== */
+
+export function trialsView(state) {
+  const active = state.trials?.find((t) => t.status === 'running');
+  const past = (state.trials || []).filter((t) => t.status !== 'running');
+
+  return `
+  <div class="card">
+    <h1 style="margin:0 0 .4em">Try one thing</h1>
+    <p class="muted">Everything else here can only tell you what moves together in your log,
+    which is never proof. If you actually want to know whether something helps <em>you</em>,
+    the way to find out is to change it on purpose and see.</p>
+    <p class="muted">You pick one change and one thing to measure. The app splits the next few
+    weeks into blocks and tosses a coin for each pair, so you do the change on some blocks and
+    not others. Because the coin decided — not you, and not the calendar — a difference at the
+    end is hard to explain away.</p>
+  </div>
+
+  ${active ? activeTrialCard(state, active) : newTrialCard(state)}
+
+  ${past.length ? `<div class="card">
+    <div class="card-head"><h2>What you've already tried</h2></div>
+    ${past.map((t) => pastTrialRow(state, t)).join('')}
+  </div>` : ''}
+
+  <div class="card">
+    <p class="disclaimer">These are experiments on everyday habits — sleep, walking, coffee,
+    daylight. Never run one on a medicine you have been prescribed, and never change a
+    prescription to test something here. If a symptom is severe, new, or getting worse, that is
+    a reason to see a doctor rather than to start a four-week experiment.</p>
+  </div>`;
+}
+
+function newTrialCard(state) {
+  const outcomes = trialOutcomeOptions(state);
+  if (!outcomes.length) {
+    return `<div class="card empty-state">
+      <h3>Nothing to measure yet</h3>
+      <p>Add a symptom in Settings first, or log a few days — a trial needs something specific
+      to watch.</p>
+      <button class="btn btn-primary" data-action="goto" data-view="settings">Add a symptom</button>
+    </div>`;
+  }
+  const pairs = state.trialDraft?.pairs || DEFAULT_PAIRS;
+  const leverId = state.trialDraft?.leverId || LEVERS[0].id;
+  const lever = getLever(leverId);
+  const blockDays = lever.blockDays || 2;
+  const days = pairs * 2 * blockDays;
+
+  return `<div class="card">
+    <div class="card-head"><h2>Start a trial</h2></div>
+    <div class="grid grid-2">
+      <div class="field">
+        <div class="field-head"><label for="trial-lever">Change one thing</label></div>
+        <select id="trial-lever" data-trial="leverId">
+          ${LEVERS.map((l) => `<option value="${esc(l.id)}" ${l.id === leverId ? 'selected' : ''}>${esc(l.label)}</option>`).join('')}
+        </select>
+        ${lever.note ? `<p class="subtle" style="margin-top:6px">${esc(lever.note)}</p>` : ''}
+      </div>
+      <div class="field">
+        <div class="field-head"><label for="trial-outcome">And watch what it does to</label></div>
+        <select id="trial-outcome" data-trial="outcome">
+          ${outcomes.map((o) => `<option value="${esc(o.value)}" ${o.value === state.trialDraft?.outcome ? 'selected' : ''}>${esc(o.label)}</option>`).join('')}
+        </select>
+        <p class="subtle" style="margin-top:6px">Chosen now and locked. Picking what to measure
+        after seeing the data is how people find effects in anything.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-head"><label for="trial-pairs">How long</label><div class="spacer"></div>
+        <span class="field-value">${days} days</span></div>
+      <input type="range" id="trial-pairs" data-trial="pairs" min="${TRIAL_MIN_PAIRS}" max="10" step="1" value="${pairs}">
+      <p class="subtle" style="margin-top:6px">
+        ${pairs} pairs of ${blockDays}-day blocks. The best this length could ever show is
+        <strong>p = ${floorP(pairs).toFixed(3)}</strong> — that is the arithmetic of ${Math.pow(2, pairs)} possible
+        coin tosses, not a guess. Shorter than ${TRIAL_MIN_PAIRS} pairs and a trial cannot come back
+        significant at all, however well it goes, so the app will not offer it.
+      </p>
+    </div>
+
+    <button class="btn btn-primary" data-action="start-trial">Start on ${esc(dateKey())}</button>
+  </div>`;
+}
+
+function trialOutcomeOptions(state) {
+  const out = (state.symptoms || []).filter((s) => !s.archivedAt)
+    .map((s) => ({ value: s.id, label: s.label }));
+  for (const f of ['energy', 'mood', 'sleepQuality', 'stress']) {
+    if (FIELDS[f]) out.push({ value: f, label: FIELDS[f].label });
+  }
+  return out;
+}
+
+function activeTrialCard(state, t) {
+  const lever = getLever(t.leverId);
+  const left = daysRemaining(t, dateKey());
+  const done = left === 0;
+  const todayArm = schedule(t).find((d) => d.date === dateKey())?.arm;
+  const v = done ? state.trialVerdict : null;
+
+  return `<div class="card">
+    <div class="card-head"><h2>${esc(lever.label)} &rarr; ${esc(t.outcomeLabel || t.outcome)}</h2>
+      <div class="spacer"></div>
+      <span class="pill ${done ? 'pill-good' : 'pill-info'}">${done ? 'finished' : `${left} days to go`}</span></div>
+
+    ${!done && todayArm ? `<div class="banner ${todayArm === 'on' ? 'banner-pro' : 'banner-info'}">
+      <strong>Today:</strong>
+      <span>${todayArm === 'on' ? esc(lever.onText) : esc(lever.offText)}</span>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" data-action="goto" data-view="log">Log today</button>
+    </div>` : ''}
+    ${!done && !todayArm ? '<p class="muted">Today is outside the trial window.</p>' : ''}
+
+    ${done && v ? verdictBlock(v) : ''}
+    ${!done ? `<p class="muted">No results until it finishes. Checking a half-run experiment and
+    stopping when it looks good is the single easiest way to fool yourself, so the app does not
+    show you.</p>` : ''}
+
+    ${trialCalendar(t)}
+
+    <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
+      ${done ? `<button class="btn btn-primary" data-action="finish-trial" data-id="${esc(t.id)}">Save this result</button>` : ''}
+      <button class="btn btn-danger btn-sm" data-action="abandon-trial" data-id="${esc(t.id)}">${done ? 'Discard' : 'Stop this trial'}</button>
+    </div>
+  </div>`;
+}
+
+function trialCalendar(t) {
+  const today = dateKey();
+  const cells = schedule(t).map((d) => {
+    const state = d.date < today ? 'past' : d.date === today ? 'today' : 'future';
+    return `<div class="trial-cell trial-${d.arm} trial-${state}" title="${esc(d.date)}: ${d.arm === 'on' ? 'do it' : 'normal'}"></div>`;
+  }).join('');
+  return `<div class="trial-cal" role="img" aria-label="Trial schedule: ${trialDays(t)} days, alternating blocks">
+    ${cells}
+  </div>
+  <p class="subtle" style="margin-top:6px">
+    <span class="trial-key trial-on"></span> do the change &nbsp;
+    <span class="trial-key trial-off"></span> carry on as normal &nbsp; · ends ${esc(trialEndDate(t))}</p>`;
+}
+
+function verdictBlock(v) {
+  const tone = v.kind === 'helped' ? 'pill-good' : v.kind === 'hurt' ? 'pill-bad' : 'pill-info';
+  return `<div class="insight" style="margin-top:12px">
+    <div class="insight-head"><span class="pill ${tone}">${esc(v.kind.replace('-', ' '))}</span></div>
+    <h3 style="margin:.2em 0 .4em">${esc(v.headline)}</h3>
+    <p class="muted">${esc(v.body)}</p>
+    ${v.caveat ? `<p class="disclaimer">${esc(v.caveat)}</p>` : ''}
+    ${v.analysis?.status === 'analysed' ? `<div class="insight-stats">
+      <span>on: ${v.analysis.meanOn}</span>
+      <span>off: ${v.analysis.meanOff}</span>
+      <span>difference: ${v.analysis.observedDiff}</span>
+      <span>p = ${v.analysis.p}</span>
+      <span>${v.analysis.usablePairs} usable pairs</span>
+    </div>` : ''}
+  </div>`;
+}
+
+function pastTrialRow(state, t) {
+  const lever = getLever(t.leverId);
+  const v = t.result;
+  const tone = v?.kind === 'helped' ? 'pill-good' : v?.kind === 'hurt' ? 'pill-bad' : 'pill-info';
+  return `<div class="sym-row">
+    <div>
+      <div class="sym-label">${esc(lever?.label || t.leverId)} &rarr; ${esc(t.outcomeLabel || t.outcome)}</div>
+      <div class="subtle">${esc(t.startDate)} · ${v ? esc(v.headline) : 'stopped early'}</div>
+    </div>
+    <div style="text-align:right"><span class="pill ${tone}">${esc(v ? v.kind.replace('-', ' ') : 'abandoned')}</span></div>
   </div>`;
 }

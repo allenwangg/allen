@@ -9,6 +9,7 @@
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, symptomId } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
+import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
 import * as views from './ui.js';
@@ -18,6 +19,7 @@ const VIEWS = {
   log:       { render: views.logView,       label: 'Log' },
   insights:  { render: views.insightsView,  label: 'Insights' },
   simulator: { render: views.simulatorView, label: 'Simulator' },
+  trials:    { render: views.trialsView,    label: 'Trials' },
   history:   { render: views.historyView,   label: 'History' },
   report:    { render: views.reportView,    label: 'Report' },
   settings:  { render: views.settingsView,  label: 'Settings' },
@@ -43,6 +45,9 @@ const state = {
   dirty: false,
   sampleMode: false,
   symptoms: [],
+  trials: [],
+  trialDraft: { leverId: null, outcome: null, pairs: DEFAULT_PAIRS },
+  trialVerdict: null,
   // Bumped on every entry mutation. discover() runs the full hypothesis grid
   // (measured 636ms on two years of data) and recompute() fires on every save
   // and slider release, so insights are recomputed only when the underlying
@@ -105,6 +110,14 @@ function recompute() {
   state.leverage = topLeverage(state.entries, ctx);
   state.simulation = simulate(state.entries, state.simChanges, ctx);
   state.draftScore = scoreDay(state.draft, ctx);
+
+  // A running trial only yields a verdict once its last day has passed. Not
+  // computing it earlier is the point: a half-run experiment you can peek at
+  // is an experiment you will stop when it looks good.
+  const running = state.trials.find((t) => t.status === 'running');
+  state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
+    ? verdict(running, state.entries)
+    : null;
 }
 
 /** Precompute scatter data for each shown insight so ui.js stays pure. */
@@ -268,6 +281,46 @@ const actions = {
   import: () => $('#import-file').click(),
 
   'print-report': () => window.print(),
+
+  'start-trial': async () => {
+    const d = state.trialDraft;
+    const outcome = d.outcome || (state.symptoms.find((s) => !s.archivedAt)?.id) || 'energy';
+    const sym = state.symptoms.find((s) => s.id === outcome);
+    const { trial, error } = createTrial({
+      leverId: d.leverId || 'no-late-caffeine',
+      outcome,
+      outcomeLabel: sym ? sym.label : (FIELDS[outcome]?.label || outcome),
+      pairs: d.pairs || DEFAULT_PAIRS,
+      startDate: dateKey(),
+    });
+    if (error) { toast(error); return; }
+    state.trials = [...state.trials, trial];
+    await store.setMeta('trials', state.trials);
+    recompute(); render();
+    toast('Trial started — log every day and do not peek');
+  },
+
+  'finish-trial': async (el) => {
+    const t = state.trials.find((x) => x.id === el.dataset.id);
+    if (!t) return;
+    t.result = state.trialVerdict || verdict(t, state.entries);
+    t.status = 'complete';
+    t.endedAt = Date.now();
+    await store.setMeta('trials', state.trials);
+    recompute(); render();
+    toast('Saved');
+  },
+
+  'abandon-trial': async (el) => {
+    const t = state.trials.find((x) => x.id === el.dataset.id);
+    if (!t) return;
+    if (!confirm('Stop this trial? A part-finished trial cannot give you an answer.')) return;
+    t.status = 'abandoned';
+    t.endedAt = Date.now();
+    await store.setMeta('trials', state.trials);
+    recompute(); render();
+    toast('Trial stopped');
+  },
 
   'add-symptom': async () => {
     const input = document.getElementById('new-symptom');
@@ -455,6 +508,14 @@ function wire() {
       state.dirty = true;
       const ctx = profileCtx();
       state.draftScore = scoreDay(state.draft, ctx);
+
+  // A running trial only yields a verdict once its last day has passed. Not
+  // computing it earlier is the point: a half-run experiment you can peek at
+  // is an experiment you will stop when it looks good.
+  const running = state.trials.find((t) => t.status === 'running');
+  state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
+    ? verdict(running, state.entries)
+    : null;
       updateLiveScore(t);
       return;
     }
@@ -468,6 +529,12 @@ function wire() {
       // drag after one step. The full re-render (for the pillar chart)
       // happens on the change event, when the drag ends.
       updateSimReadout(t);
+      return;
+    }
+
+    if (t.dataset.trial) {
+      state.trialDraft[t.dataset.trial] = t.type === 'range' ? Number(t.value) : t.value;
+      render();
       return;
     }
 
@@ -486,6 +553,11 @@ function wire() {
 
   // A slider drag ends -> now it's worth a full re-render for the charts.
   document.addEventListener('change', (ev) => {
+    if (ev.target.dataset.trial) {
+      state.trialDraft[ev.target.dataset.trial] = ev.target.value;
+      render();
+      return;
+    }
     if (ev.target.dataset.field && ev.target.type === 'range') { recompute(); render(); }
     else if (ev.target.dataset.sim) render();
   });
@@ -588,16 +660,18 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode, symptoms] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms, trials] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
     store.getMeta('sampleMode'),
     store.getMeta('symptoms'),
+    store.getMeta('trials'),
   ]);
 
   state.sampleMode = !!sampleMode;
   state.symptoms = validateSymptoms(symptoms || []);
+  state.trials = Array.isArray(trials) ? trials : [];
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };
   if (theme) state.theme = theme;

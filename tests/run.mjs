@@ -4,7 +4,10 @@
  * statistical honesty of the insight engine.
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX } from '../app/js/model.js';
+import { FIELDS } from '../app/js/model.js';
+const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
+import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
@@ -876,6 +879,122 @@ t('topLeverage returns ranked positive-delta actions', () => {
 t('topLeverage does not repeat a field', () => {
   const fields = topLeverage(demo, ctx).map((l) => l.field);
   eq(new Set(fields).size, fields.length);
+});
+
+/* ================= n-of-1 trials ================= */
+
+function runTrial(seed, trueEffect, adhereRate = 0.95, syms = null) {
+  const symptoms = syms || validateSymptoms([{ label: 'Migraine' }]);
+  const { trial } = createTrial({
+    leverId: 'no-late-caffeine', outcome: 's_migraine', outcomeLabel: 'Migraine',
+    pairs: 7, startDate: '2026-05-01', seed,
+  });
+  const r = mulberry32(seed * 31 + 7);
+  const es = [];
+  for (let i = 0; i < trialDays(trial); i++) {
+    const date = addDays(trial.startDate, i);
+    const e = emptyEntry(date, symptoms);
+    const arm = armForDate(trial, date);
+    const adhering = r() < adhereRate;
+    e.caffeineAfter2pm = arm === 'on' ? (adhering ? 0 : 100) : (r() < 0.9 ? 150 : 0);
+    const exposure = e.caffeineAfter2pm > 0 ? 1 : 0;
+    e.symptoms.s_migraine = Math.max(0, Math.min(4, Math.round(1.0 + exposure * trueEffect + (r() - 0.5) * 1.6)));
+    es.push(e);
+  }
+  return { trial, es };
+}
+
+t('a design that cannot reach significance is refused', () => {
+  // The reference set is the 2^K coin tosses, so the smallest two-sided p is
+  // 2/2^K. At 5 pairs that is 0.0625 — above alpha, so the trial could never
+  // come back significant however large the effect.
+  for (let k = 1; k < TRIAL_MIN_PAIRS; k++) ok(floorP(k) > 0.05, `floor at ${k} pairs should exceed alpha`);
+  ok(floorP(TRIAL_MIN_PAIRS) <= 0.05, 'the minimum must itself be usable');
+  ok(createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 5 }).error, 'must refuse 5 pairs');
+  ok(!createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 6 }).error, 'must allow 6');
+});
+t('a trial pre-registers its outcome and balances the arms', () => {
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 7, seed: 5 });
+  eq(trial.outcome, 'mood');
+  eq(trial.assignment.length, 14);
+  // exactly one ON per pair — that is what makes the sign-flip reference set exact
+  for (let i = 0; i < 7; i++) {
+    const pair = [trial.assignment[i * 2], trial.assignment[i * 2 + 1]].sort().join(',');
+    eq(pair, 'off,on', `pair ${i} must contain exactly one ON block`);
+  }
+  eq(schedule(trial).length, trialDays(trial));
+});
+t('the same seed reproduces the same schedule', () => {
+  const a = createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 7, seed: 99 }).trial;
+  const b = createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 7, seed: 99 }).trial;
+  eq(a.assignment.join(''), b.assignment.join(''));
+});
+
+t('TRIALS detect a real effect', () => {
+  let hits = 0;
+  const T = 12;
+  for (let s = 0; s < T; s++) if (runTrialVerdict(1000 + s, 1.5).kind === 'helped') hits++;
+  console.log(`\n  [trial-power] real effect detected in ${hits}/${T} trials`);
+  ok(hits / T >= 0.7, `power too low: ${hits}/${T}`);
+});
+t('TRIALS stay quiet when there is nothing there', () => {
+  let fp = 0;
+  const T = 20;
+  for (let s = 0; s < T; s++) {
+    const k = runTrialVerdict(3000 + s, 0).kind;
+    if (k === 'helped' || k === 'hurt') fp++;
+  }
+  console.log(`\n  [trial-null] ${fp}/${T} null trials produced a positive verdict (alpha 0.05)`);
+  ok(fp / T <= 0.15, `false positive rate too high: ${fp}/${T}`);
+});
+function runTrialVerdict(seed, effect, adhere = 0.95) {
+  const { trial, es } = runTrial(seed, effect, adhere);
+  return verdict(trial, es);
+}
+t('a trial you did not stick to returns no verdict', () => {
+  const v = runTrialVerdict(5000, 1.5, 0.4);
+  eq(v.kind, 'not-run');
+  ok(/did not really get tested/i.test(v.headline));
+});
+t('a trial with no contrast between arms returns no verdict', () => {
+  const symptoms = validateSymptoms([{ label: 'Migraine' }]);
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: 's_migraine', pairs: 7, startDate: '2026-05-01', seed: 7 });
+  const es = [];
+  for (let i = 0; i < trialDays(trial); i++) {
+    const e = emptyEntry(addDays(trial.startDate, i), symptoms);
+    e.alcoholUnits = 0;                       // teetotal all month: OFF blocks never differ
+    e.symptoms.s_migraine = i % 3;
+    es.push(e);
+  }
+  eq(verdict(trial, es).kind, 'no-contrast');
+});
+t('missing days block a verdict rather than shrinking the test', () => {
+  const { trial, es } = runTrial(1000, 1.5);
+  const gappy = es.filter((_, i) => i % 4 !== 0);   // drop a day from most blocks
+  const res = analyze(trial, gappy);
+  ok(res.status === 'analysed' || res.status === 'inconclusive');
+  const sparse = es.slice(0, 6);                    // only the first few days exist
+  eq(analyze(trial, sparse).status, 'inconclusive');
+  eq(verdict(trial, sparse).kind, 'inconclusive');
+});
+t('every lever is a plain behaviour, never a medicine', () => {
+  // What defines the intervention is the label and id, not the prose note —
+  // an earlier version of this test flagged "works fastest of the lot" for
+  // containing "fast". Match whole words against what the user is asked to do.
+  const banned = /\b(medication|medicine|drug|dose|dosage|supplement|pill|fasting|starve|starvation|restriction|detox|cleanse|prescription)\b/i;
+  for (const l of LEVERS) {
+    ok(!banned.test(`${l.label} ${l.id} ${l.onText} ${l.offText}`), 'unsafe lever: ' + l.label);
+    ok(l.field && l.on && l.off, 'lever needs a measurable target: ' + l.id);
+    // Every lever must be checkable from data the app already logs, otherwise
+    // adherence is self-reported about self-report.
+    ok(FIELDS_KEYS.has(l.field), 'lever must target a logged field: ' + l.field);
+  }
+});
+t('the null verdict states the floor rather than claiming proof', () => {
+  const v = runTrialVerdict(3000, 0);
+  eq(v.kind, 'no-effect');
+  ok(/does not prove it does nothing/i.test(v.caveat), 'must not overclaim a null');
+  ok(v.caveat.includes(String(v.analysis.floorP)), 'must state the smallest p it could have found');
 });
 
 /* ================= report ================= */
