@@ -133,6 +133,14 @@
       "pass": true
     },
     {
+      "name": "a hostile listing name cannot execute script via the Oracle result",
+      "pass": true
+    },
+    {
+      "name": "the copyable badge embed escapes the listing name",
+      "pass": true
+    },
+    {
       "name": "Season board ranks by this month's bids with its own crown and countdown",
       "pass": true
     },
@@ -190,13 +198,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 108,
-    "medianDOMContentLoadedms": 78.7,
-    "medianLoadms": 12479.5,
+    "medianFCPms": 128,
+    "medianDOMContentLoadedms": 94.3,
+    "medianLoadms": 12461.7,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 93626,
-    "gzipBytes": 27844
+    "htmlBytes": 93636,
+    "gzipBytes": 27843
   }
 }
