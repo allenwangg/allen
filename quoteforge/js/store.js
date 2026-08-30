@@ -243,6 +243,10 @@ export class Store {
     copy.validUntil = addDays(todayISO(), 30);
     copy.signature = null;
     copy.items = copy.items.map((it) => ({ ...it, id: uid('li') }));
+    // A duplicate is a NEW job that has not been worked yet. Carrying the
+    // source job's receipts over would show the copy as already over budget
+    // and quietly corrupt the margin-fade figures on both jobs.
+    copy.actuals = [];
     // Change orders come along, but a duplicate is a NEW job: it must not
     // inherit the client's signature or the date they authorized different
     // work, and every id has to be fresh so edits cannot reach the original.
@@ -361,6 +365,25 @@ export class Store {
 
   /* --- portability --- */
 
+  /**
+   * True when this browser still holds the shipped defaults — no company
+   * details entered, no pricing rules changed, no price-book costs corrected.
+   * A restore may safely adopt a backup's profile in that case; once the user
+   * has set anything up here, theirs wins.
+   */
+  isPristineProfile() {
+    const base = defaultCompany();
+    const co = this.state.company || {};
+    const companyUntouched = Object.keys(base).every((k) => (co[k] || '') === (base[k] || ''));
+    const ds = defaultSettings();
+    const settingsUntouched = Object.keys(ds).every((k) => (
+      typeof ds[k] === 'object'
+        ? JSON.stringify(ds[k]) === JSON.stringify(this.state.settings?.[k])
+        : ds[k] === this.state.settings?.[k]));
+    const noOverrides = Object.keys(this.state.priceBookOverrides || {}).length === 0;
+    return companyUntouched && settingsUntouched && noOverrides;
+  }
+
   /** Everything, as a portable document. This is the user's escape hatch. */
   exportAll() {
     return JSON.stringify({
@@ -397,9 +420,10 @@ export class Store {
     }
 
     if (parsed.kind === 'quoteforge-estimate' && parsed.estimate) {
-      const est = migrateEstimate(parsed.estimate);
-      est.id = uid('est');
-      est.items = (est.items || []).map((i) => ({ ...i, id: uid('li') }));
+      // Every id has to be regenerated, not just the top-level items: change
+      // orders, their items, and the actuals log all carry ids that would
+      // collide with the sender's copy if this estimate is later merged back.
+      const est = withFreshIds(migrateEstimate(parsed.estimate));
       this.update((s) => {
         s.estimates.unshift(est);
         s.activeId = est.id;
@@ -415,12 +439,34 @@ export class Store {
       }
       const existing = new Set(this.state.estimates.map((e) => e.id));
       const fresh = incoming.estimates.filter((e) => !existing.has(e.id));
+
+      // Merge mode is how the UI restores a backup, so it must restore more
+      // than estimates. Dropping company details, pricing rules, and corrected
+      // price-book costs turns "restore my data" into "lose everything except
+      // the job list". Adopt them when this browser is still untouched;
+      // otherwise keep what the user has here and only ADD price-book costs
+      // they have not already set themselves.
+      const pristine = this.isPristineProfile();
+      let adopted = [];
       this.update((s) => {
         s.estimates.unshift(...fresh);
         s.nextNumber = Math.max(s.nextNumber, incoming.nextNumber || 1001);
         if (!s.activeId) s.activeId = s.estimates[0]?.id || null;
+
+        if (pristine) {
+          s.company = incoming.company;
+          s.settings = incoming.settings;
+          adopted = ['company', 'settings'];
+        }
+        const mine = s.priceBookOverrides || {};
+        let added = 0;
+        for (const [sku, ov] of Object.entries(incoming.priceBookOverrides || {})) {
+          if (mine[sku] === undefined) { mine[sku] = ov; added++; }
+        }
+        s.priceBookOverrides = mine;
+        if (added) adopted.push(`${added} price book cost${added === 1 ? '' : 's'}`);
       }, { label: 'import backup' });
-      return { imported: fresh.length, kind: 'backup-merge' };
+      return { imported: fresh.length, kind: 'backup-merge', adopted };
     }
 
     throw new Error('That file does not look like a QuoteForge export.');
@@ -445,6 +491,21 @@ export class Store {
     }
     return rows.map((r) => r.map(csvCell).join(',')).join('\r\n');
   }
+}
+
+/** Regenerate every id in an imported estimate so nothing collides. */
+function withFreshIds(est) {
+  return {
+    ...est,
+    id: uid('est'),
+    items: (est.items || []).map((i) => ({ ...i, id: uid('li') })),
+    changeOrders: (est.changeOrders || []).map((co) => ({
+      ...co,
+      id: uid('co'),
+      items: (co.items || []).map((i) => ({ ...i, id: uid('li') })),
+    })),
+    actuals: (est.actuals || []).map((a) => ({ ...a, id: uid('ac') })),
+  };
 }
 
 function csvCell(v) {
@@ -505,8 +566,11 @@ function migrateEstimate(raw) {
     items: (raw.items || []).map(normalizeItem),
     changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
     actuals: (raw.actuals || []).map(migrateActual),
-    milestones: raw.milestones?.length ? raw.milestones : base.milestones,
-    terms: raw.terms?.length ? raw.terms : base.terms,
+    // Present-but-empty means the user deleted every entry on purpose. Only a
+    // MISSING key falls back to defaults — otherwise deleted contract terms and
+    // a discarded payment schedule silently reappear on the next reload.
+    milestones: Array.isArray(raw.milestones) ? raw.milestones : base.milestones,
+    terms: Array.isArray(raw.terms) ? raw.terms : base.terms,
   };
 }
 
@@ -639,7 +703,14 @@ Object.assign(Store.prototype, {
   addChangeOrder(partial = {}) {
     const est = this.active();
     if (!est) return null;
-    const seq = est.changeOrders.length + 1;
+    // Numbering off the array length repeats a number as soon as an earlier
+    // change order is deleted — and CO-02 appearing twice across two signed
+    // authorizations is exactly the ambiguity these documents exist to remove.
+    // Derive from the highest number ever used on this job instead.
+    const seq = est.changeOrders.reduce((max, c) => {
+      const n = parseInt(String(c.number || '').replace(/\D+/g, ''), 10);
+      return Number.isFinite(n) ? Math.max(max, n) : max;
+    }, 0) + 1;
     const order = {
       id: uid('co'),
       number: `CO-${String(seq).padStart(2, '0')}`,

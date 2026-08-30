@@ -10,7 +10,9 @@
  * platform already has. No PDF library, no server round-trip, no watermark.
  */
 
-import { CATEGORY_LABELS, formatMoney, formatPercent, buildSchedule } from './pricing.js';
+import {
+  CATEGORY_LABELS, formatMoney, formatPercent, buildSchedule, allocateLinePrices,
+} from './pricing.js';
 
 /** Escape untrusted text for HTML interpolation. */
 export function esc(s) {
@@ -130,13 +132,21 @@ function scopeTable(priced, { groupByTrade, showLinePrices }) {
     return '<div class="pr-section"><h3>Included work</h3><p style="color:#a8a29e">No line items yet.</p></div>';
   }
 
+  // Printed line prices must sum to the printed Scope price. The raw line
+  // prices do not — they exclude overhead, overhead's markup, and contingency
+  // — so a client adding up the column lands short and can back out the
+  // contractor's loading by subtraction. Allocate it across the lines instead.
+  const scopePriceCents = priced.subtotalCents + priced.contingencyCents;
+  const shown = allocateLinePrices(lines.map((l) => l.priceCents), scopePriceCents);
+  const priceOf = new Map(lines.map((l, i) => [l.id, shown[i]]));
+
   const rows = [];
   const pushRow = (l) => {
     rows.push(`
 <tr>
   <td>${esc(l.description || '—')}${l.note ? `<div style="font-size:10px;color:#78716c">${esc(l.note)}</div>` : ''}</td>
   <td class="r">${fmtQty(l.qty)} ${esc(l.unit || '')}</td>
-  ${showLinePrices ? `<td class="r">${formatMoney(l.priceCents)}</td>` : ''}
+  ${showLinePrices ? `<td class="r">${formatMoney(priceOf.get(l.id))}</td>` : ''}
 </tr>`);
   };
 
@@ -147,7 +157,11 @@ function scopeTable(priced, { groupByTrade, showLinePrices }) {
     // Trade headings ("Tile", "Electrical") describe the work instead.
     const groups = new Map();
     for (const l of lines) {
-      const key = l.trade || CATEGORY_LABELS[l.category] || 'Other';
+      // Never fall back to a staffing CATEGORY here: a heading reading
+      // "Subcontractor" or "Material" tells the client how the job is staffed
+      // and invites an argument about markup on other people's labor. A line
+      // with no trade of its own is simply "General".
+      const key = l.trade || 'General';
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(l);
     }
@@ -365,12 +379,17 @@ export function renderChangeOrder({ estimate, order, priced, contract, company }
   const accent = company.accent || '#c2410c';
   const isCredit = priced.totalCents < 0;
 
+  // Same reconciliation rule as the proposal, and it matters more here: this
+  // is the document the client physically signs. An itemization that lands
+  // ~15% under the amount being authorized reads as either an error or a
+  // hidden fee, and neither survives the conversation that follows.
+  const coShown = allocateLinePrices(priced.lines.map((l) => l.priceCents), priced.totalCents);
   const rows = (order.items || []).length
-    ? priced.lines.map((l) => `
+    ? priced.lines.map((l, i) => `
         <tr>
           <td>${esc(l.description || '—')}</td>
           <td class="r">${fmtQty(l.qty)} ${esc(l.unit || '')}</td>
-          <td class="r">${formatMoney(l.priceCents)}</td>
+          <td class="r">${formatMoney(coShown[i])}</td>
         </tr>`).join('')
     : '<tr><td colspan="3" style="color:#a8a29e">No items yet.</td></tr>';
 
@@ -513,7 +532,10 @@ export function renderContractStatement({ estimate, contract, company }) {
         </tr>`).join('')
     : '<tr><td colspan="3" style="color:#a8a29e">No changes were made to this contract.</td></tr>';
 
-  const pending = contract.unapproved;
+  // Only changes actually SENT to the client belong on their statement. A
+  // draft is the contractor's own working note; printing it under "awaiting
+  // your approval" asks the client to react to a price nobody has quoted them.
+  const pending = contract.unapproved.filter((o) => o.order.status === 'sent');
 
   return `
 <div style="--pr-accent:${esc(accent)}">
@@ -549,7 +571,9 @@ export function renderContractStatement({ estimate, contract, company }) {
       <tbody>
         <tr>
           <td>Original contract — proposal ${esc(estimate.number || '')}</td>
-          <td class="r">${estimate.signature?.signedAt ? fmtDate(estimate.signature.signedAt) : fmtDate(estimate.createdAt)}</td>
+          <td class="r">${estimate.signature?.signedAt
+            ? fmtDate(estimate.signature.signedAt)
+            : '<span style="color:#a8a29e">not signed</span>'}</td>
           <td class="r">${formatMoney(contract.originalTotalCents)}</td>
         </tr>
         ${changeRows}

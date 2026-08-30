@@ -9,7 +9,7 @@ import {
   toCents, toDollars, formatMoney, markupToMargin, marginToMarkup,
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
-  priceChangeOrder, summarizeContract, newChangeOrder, compareActuals,
+  priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -639,6 +639,42 @@ t('a job with no estimate lines but real spend still reports sanely', () => {
   eq(c.overrunCents, 50000, 'all spend against no budget is all overrun:');
   ok(Number.isFinite(c.adjustedMargin), 'margin must stay finite with zero revenue');
 });
+
+/* ------------------------------------------------- line allocation ------- */
+
+t('allocated line prices sum to the target exactly', () => {
+  for (const [lines, target] of [
+    [[100, 200, 700], 1234], [[1], 999999], [[333, 333, 333], 1000],
+    [[-500, -200], -777], [[0, 0], 500], [[7], 7],
+  ]) {
+    const out = allocateLinePrices(lines, target);
+    eq(out.reduce((a, b) => a + b, 0), target, `lines ${lines} -> ${target}:`);
+    eq(out.length, lines.length);
+    ok(out.every(Number.isInteger), 'allocation produced fractional cents');
+  }
+});
+
+t('allocation is proportional, not flat', () => {
+  const out = allocateLinePrices([100, 900], 2000);
+  ok(out[1] > out[0] * 5, `a 9x bigger line should get ~9x the allocation, got ${out}`);
+});
+
+t('allocation of an empty scope is empty, not a crash', () => {
+  eq(allocateLinePrices([], 500).length, 0);
+});
+
+t('property: allocation always reconciles across random shapes', () => {
+  let seed = 99;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = 0; i < 300; i++) {
+    const n = 1 + Math.floor(rnd() * 12);
+    const lines = Array.from({ length: n }, () => Math.round((rnd() - 0.2) * 500000));
+    const target = Math.round((rnd() - 0.2) * 2000000);
+    const out = allocateLinePrices(lines, target);
+    eq(out.reduce((a, b) => a + b, 0), target, `iter ${i}:`);
+  }
+});
+
 
 /* -------------------------------------------------------------- report ---- */
 

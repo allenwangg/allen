@@ -600,6 +600,113 @@ t('the actuals CSV carries entries, budget comparison, and escaping', () => {
   ok(/labor,1000\.00,1300\.00,300\.00/.test(csv), `budget row wrong:\n${csv}`);
 });
 
+/* ------------------------------------------------- audit-found defects ---- */
+
+t('duplicating a job does not carry the original actual costs', () => {
+  const s = mkStore();
+  const src = s.createEstimate({ title: 'Original' });
+  s.addItem({ description: 'Labor', qty: 10, unitCost: 100, category: 'labor' });
+  s.addActual({ description: 'Payroll', category: 'labor', amount: 1400 });
+
+  const copy = s.duplicateEstimate(src.id);
+  eq(copy.actuals.length, 0,
+    'a copy is unworked — inheriting receipts shows it over budget on day one:');
+  eq(s.state.estimates.find((e) => e.id === src.id).actuals.length, 1,
+    'the original must keep its own costs');
+});
+
+t('an imported estimate gets fresh ids all the way down', () => {
+  const a = mkStore();
+  const est = a.createEstimate({ title: 'Shared' });
+  a.addItem({ description: 'Line', qty: 1, unitCost: 10 });
+  const co = a.addChangeOrder({ title: 'Extra' });
+  a.addChangeOrderItem(co.id, { description: 'More', qty: 1, unitCost: 20 });
+  a.addActual({ description: 'Receipt', category: 'material', amount: 30 });
+  const json = a.exportEstimate(est.id);
+
+  const b = mkStore();
+  b.importJSON(json);
+  const got = b.state.estimates[0];
+  const src = a.state.estimates[0];
+  ok(got.id !== src.id, 'estimate id must be fresh');
+  ok(got.items[0].id !== src.items[0].id, 'item ids must be fresh');
+  ok(got.changeOrders[0].id !== src.changeOrders[0].id, 'change order ids must be fresh');
+  ok(got.changeOrders[0].items[0].id !== src.changeOrders[0].items[0].id,
+    'change order item ids must be fresh');
+  ok(got.actuals[0].id !== src.actuals[0].id, 'actuals ids must be fresh');
+});
+
+t('restoring a backup into a fresh browser restores the whole profile', () => {
+  const a = mkStore();
+  a.patchCompany({ name: 'Alder Builders', phone: '555-0100' });
+  a.patchSettings({ targetMargin: 0.33 });
+  a.setPriceBookCost('LAB-LEAD', 72);
+  a.createEstimate({ title: 'Job' });
+
+  const b = mkStore();
+  const res = b.importJSON(a.exportAll());
+  eq(b.state.company.name, 'Alder Builders',
+    'a restore that loses the company profile is not a restore:');
+  eq(b.state.settings.targetMargin, 0.33, 'pricing rules must come back:');
+  eq(b.state.priceBookOverrides['LAB-LEAD'].unitCost, 72, 'corrected costs must come back:');
+  ok(res.adopted.includes('company'), 'the result should report what it adopted');
+});
+
+t('a restore never overwrites a profile this browser already has', () => {
+  const a = mkStore();
+  a.patchCompany({ name: 'Theirs' });
+  a.patchSettings({ targetMargin: 0.10 });
+  a.setPriceBookCost('LAB-LEAD', 99);
+
+  const b = mkStore();
+  b.patchCompany({ name: 'Mine' });
+  b.patchSettings({ targetMargin: 0.40 });
+  b.setPriceBookCost('LAB-LEAD', 61);
+  b.setPriceBookCost('LAB-CARP', 50);
+  b.importJSON(a.exportAll());
+
+  eq(b.state.company.name, 'Mine', 'my company must survive an import:');
+  eq(b.state.settings.targetMargin, 0.40, 'my pricing rules must survive:');
+  eq(b.state.priceBookOverrides['LAB-LEAD'].unitCost, 61,
+    'my own corrected cost must win over the backup:');
+  eq(b.state.priceBookOverrides['LAB-CARP'].unitCost, 50, 'and my other costs stay');
+});
+
+t('a deliberately emptied terms list stays empty across a reload', () => {
+  const storage = memStorage();
+  const a = new Store({ storage });
+  a.createEstimate();
+  a.patchEstimate({ terms: [], milestones: [] }, { coalesce: false });
+  a.save({ immediate: true });
+
+  const b = new Store({ storage });
+  eq(b.active().terms.length, 0, 'deleted contract terms must not resurrect:');
+  eq(b.active().milestones.length, 0, 'a discarded payment schedule must not resurrect:');
+});
+
+t('a missing terms key still falls back to the defaults', () => {
+  const m = migrate({ estimates: [{ id: 'e', items: [] }] });
+  ok(m.estimates[0].terms.length > 0, 'absent (not emptied) should still seed defaults');
+  ok(m.estimates[0].milestones.length > 0);
+});
+
+t('change order numbers never repeat after a deletion', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const a = s.addChangeOrder();
+  const b = s.addChangeOrder();
+  eq(a.number, 'CO-01');
+  eq(b.number, 'CO-02');
+
+  s.removeChangeOrder(a.id);
+  const c = s.addChangeOrder();
+  eq(c.number, 'CO-03',
+    'reusing CO-02 would put the same number on two different signed authorizations:');
+
+  const numbers = s.active().changeOrders.map((x) => x.number);
+  eq(new Set(numbers).size, numbers.length, `duplicate numbers on the job: ${numbers}`);
+});
+
 
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

@@ -612,3 +612,35 @@ export function compareActuals(estimate, settings) {
     spendRatio: budgetTotal === 0 ? 0 : spentTotal / budgetTotal,
   };
 }
+
+/**
+ * Distribute a target total across line items so the displayed amounts sum to
+ * it EXACTLY, in proportion to each line's own price.
+ *
+ * Client-facing documents itemize work and then print a total. If the column
+ * does not add up, two bad things happen at once: the client loses trust in a
+ * document they are about to sign, and the difference — overhead, its markup,
+ * and contingency — is recoverable by subtraction, handing them the
+ * contractor's loading. Allocating the loading back into the line prices fixes
+ * both. The last line absorbs the rounding remainder so the column reconciles
+ * to the penny.
+ */
+export function allocateLinePrices(lineCents, targetCents) {
+  const n = lineCents.length;
+  if (!n) return [];
+  const base = lineCents.reduce((a, c) => a + c, 0);
+  // With no meaningful base to scale by, spread the target evenly rather than
+  // dividing by zero — an all-zero scope with a nonzero total is degenerate,
+  // but it must still add up.
+  if (base === 0) {
+    const each = Math.trunc(targetCents / n);
+    return lineCents.map((_, i) => (i === n - 1 ? targetCents - each * (n - 1) : each));
+  }
+  let allocated = 0;
+  return lineCents.map((c, i) => {
+    if (i === n - 1) return targetCents - allocated;
+    const share = Math.round((c / base) * targetCents);
+    allocated += share;
+    return share;
+  });
+}
