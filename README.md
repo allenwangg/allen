@@ -14,7 +14,7 @@ On pure noise, the insight engine reports nothing. That is the point.
 ```bash
 npm install      # only needed for the browser test
 npm run serve    # http://localhost:8080/app/
-npm test         # 101 unit tests, no dependencies
+npm test         # 104 unit tests, no dependencies
 npm run e2e      # full browser walkthrough (needs the server running)
 ```
 
@@ -32,8 +32,8 @@ CI fails if the stamp is out of date.
 
 ## What it does
 
-- **Log 20 habit fields** across sleep, movement, nutrition, recovery,
-  substances and biomarkers. Sliders with sensible defaults; a normal day takes
+- **Log 24 fields** — 20 daily habits across sleep, movement, nutrition,
+  recovery and substances, plus 4 optional biomarkers. Sliders with sensible defaults; a normal day takes
   under a minute.
 - **Healthspan Score**, six pillars, built from piecewise dose-response curves
   so non-monotonic relationships are expressed honestly. Every point is
@@ -69,7 +69,7 @@ app/
     billing.js          Stripe Checkout, client half
 api/                    four serverless billing endpoints
 docs/                   scoring, insights, monetization
-tests/                  77 unit tests + a browser walkthrough
+tests/                  104 unit tests + a browser walkthrough
 ```
 
 No frameworks and no runtime dependencies. The only dev dependency is Playwright
@@ -123,10 +123,12 @@ Three bugs found during validation, all of the kind that ship silently:
 
 Each is documented at the site of the fix and covered by a regression test.
 
-Measured over 30 independent 120-day datasets per scenario: **0 of 30**
-noise datasets produce any finding, **0 of 30** all-habits-trending datasets
-produce any finding, and a genuine planted effect is recovered **100%** of the
-time — with or without a confounding trend, with or without weekly clustering.
+Measured across 82 independent 120-day datasets that contain no real effect —
+40 pure noise, 30 where every habit improves together, 12 where every habit
+follows its own weekly rhythm — the engine reports **nothing at all**. A
+genuine planted effect is recovered **100%** of the time, with or without a
+confounding trend and with or without weekly clustering. `npm test`
+reproduces every one of those numbers.
 
 ## Status
 

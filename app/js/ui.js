@@ -30,7 +30,10 @@ export function lockOverlay(feature, entitlement) {
 
 function gate(feature, state, innerHtml) {
   if (can(state.entitlement, feature)) return innerHtml;
-  return `<div class="locked"><div class="locked-content" aria-hidden="true">${innerHtml}</div>${lockOverlay(feature, state.entitlement)}</div>`;
+  // `inert` (not just aria-hidden + pointer-events:none) — the pointer rule
+  // blocks the mouse but not the Tab key, so keyboard users used to fall into
+  // blurred, unannounced controls they could still edit.
+  return `<div class="locked"><div class="locked-content" inert aria-hidden="true">${innerHtml}</div>${lockOverlay(feature, state.entitlement)}</div>`;
 }
 
 const fmtDelta = (v, unit = '') => {
@@ -243,7 +246,7 @@ export function logView(state) {
       <h1 style="margin:0">${isToday ? 'Today' : esc(dayName)}</h1>
       <div class="spacer"></div>
       <button class="btn btn-sm" data-action="shift-day" data-delta="-1" aria-label="Previous day">&larr;</button>
-      <input type="date" id="log-date" value="${esc(entry.date)}" max="${esc(dateKey())}" style="width:auto">
+      <input type="date" id="log-date" aria-label="Go to date" value="${esc(entry.date)}" max="${esc(dateKey())}" style="width:auto">
       <button class="btn btn-sm" data-action="shift-day" data-delta="1" aria-label="Next day" ${isToday ? 'disabled' : ''}>&rarr;</button>
     </div>
     <div class="grid grid-4">
@@ -271,10 +274,10 @@ function fieldControl(name, f, value) {
   const id = `f-${name}`;
   if (f.unit === 'bool') {
     return `<div class="field"><div class="field-head">
-      <label for="${id}">${esc(f.label)}</label><div class="spacer"></div></div>
+      <label id="${id}">${esc(f.label)}</label><div class="spacer"></div></div>
       <div class="seg" role="group" aria-labelledby="${id}">
-        <button type="button" data-field="${name}" data-value="0" aria-pressed="${!value}">No</button>
-        <button type="button" data-field="${name}" data-value="1" aria-pressed="${!!value}">Yes</button>
+        <button type="button" id="${id}-0" data-field="${name}" data-value="0" aria-pressed="${!value}">No</button>
+        <button type="button" id="${id}-1" data-field="${name}" data-value="1" aria-pressed="${!!value}">Yes</button>
       </div></div>`;
   }
   if (f.unit === '/5' || f.unit === '/3') {
@@ -284,7 +287,7 @@ function fieldControl(name, f, value) {
       <label id="${id}">${esc(f.label)}</label><div class="spacer"></div>
       <span class="field-value">${value ?? '--'}${esc(f.unit)}</span></div>
       <div class="seg" role="group" aria-labelledby="${id}">
-        ${opts.map((v) => `<button type="button" data-field="${name}" data-value="${v}" aria-pressed="${Number(value) === v}">${v}</button>`).join('')}
+        ${opts.map((v) => `<button type="button" id="${id}-${v}" data-field="${name}" data-value="${v}" aria-pressed="${Number(value) === v}">${v}</button>`).join('')}
       </div></div>`;
   }
   if (f.unit === 'clock') {
@@ -294,7 +297,8 @@ function fieldControl(name, f, value) {
     return `<div class="field"><div class="field-head">
       <label for="${id}">${esc(f.label)}</label><div class="spacer"></div>
       <span class="field-value">${hh}:${mm}</span></div>
-      <input type="range" id="${id}" data-field="${name}" min="${f.min}" max="${f.max}" step="${f.step}" value="${v}"></div>`;
+      <input type="range" id="${id}" data-field="${name}" min="${f.min}" max="${f.max}" step="${f.step}" value="${v}"
+        aria-valuetext="${hh}:${mm}"></div>`;
   }
   const shown = value == null ? '--' : (Math.round(value * 100) / 100);
   return `<div class="field"><div class="field-head">
@@ -533,7 +537,7 @@ export function upgradeView(state) {
       <h3>Free</h3>
       <div><span class="price-amount">$0</span></div>
       <ul>
-        <li>Daily logging, all 20 habit fields</li>
+        <li>Daily logging, all 20 daily habit fields</li>
         <li>Healthspan Score and pillar breakdown</li>
         <li>Streaks and weekday patterns</li>
         <li>Last 14 days of history</li>
@@ -690,8 +694,11 @@ export function settingsView(state) {
         <input type="number" id="p-age" data-profile="age" min="13" max="110" value="${esc(String(p.age ?? 35))}"></div>
       <div class="field"><div class="field-head"><label for="p-weight">Bodyweight (kg)</label></div>
         <input type="number" id="p-weight" data-profile="weightKg" min="25" max="300" step="0.5" value="${esc(String(p.weightKg ?? 75))}"></div>
+      <div class="field"><div class="field-head"><label for="p-height">Height (cm)</label></div>
+        <input type="number" id="p-height" data-profile="heightCm" min="120" max="230" step="1" value="${esc(String(p.heightCm ?? ''))}" placeholder="optional"></div>
     </div>
-    <p class="subtle">Age calibrates the resting-heart-rate and HRV reference ranges. Bodyweight scales the protein target.</p>
+    <p class="subtle">Age calibrates the resting-heart-rate and HRV reference ranges. Bodyweight scales the protein target.
+    Height turns a logged waist measurement into a waist-to-height ratio — without it, waist is recorded but not scored.</p>
   </div>
 
   <div class="card">

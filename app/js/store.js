@@ -218,6 +218,8 @@ export const store = {
       const profile = {};
       if (Number.isFinite(age) && age >= 13 && age <= 110) profile.age = age;
       if (Number.isFinite(weightKg) && weightKg >= 25 && weightKg <= 300) profile.weightKg = weightKg;
+      const heightCm = Number(payload.profile.heightCm);
+      if (Number.isFinite(heightCm) && heightCm >= 120 && heightCm <= 230) profile.heightCm = heightCm;
       if (Object.keys(profile).length) await this.setMeta('profile', profile);
     }
     // Backups export the entitlement, so restoring one must not silently drop

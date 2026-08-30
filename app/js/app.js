@@ -30,7 +30,7 @@ const state = {
   view: 'today',
   entries: [],
   visible: [],
-  profile: { age: 35, weightKg: 75 },
+  profile: { age: 35, weightKg: 75, heightCm: null },
   entitlementRaw: null,
   entitlement: { tier: 'free', status: 'free' },
   report: null,
@@ -80,6 +80,15 @@ function entriesFingerprint() {
   return `${state.entries.length}:${last}:${maxUpdated}:${can(state.entitlement, 'insights')}`;
 }
 
+/** Scoring context derived from the user's profile. */
+function profileCtx() {
+  return {
+    age: Number(state.profile.age) || 35,
+    weightKg: Number(state.profile.weightKg) || 75,
+    heightCm: Number(state.profile.heightCm) || null,
+  };
+}
+
 function recompute() {
   // Sample mode unlocks Pro views on the synthetic data only — a tour, not a
   // giveaway. Its source is 'sample', which the upgrade view treats as
@@ -89,7 +98,7 @@ function recompute() {
     : resolveEntitlement(state.entitlementRaw);
   state.visible = visibleEntries(state.entries, state.entitlement, dateKey());
 
-  const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
+  const ctx = profileCtx();
   state.report = buildReport(state.visible, ctx);
   state.smoothed = ewma(state.report.scored.map((s) => s.score), 7);
 
@@ -161,19 +170,34 @@ function render() {
 
 function renderTabs() {
   const tabs = $('#tabs');
+  // Plain navigation semantics, not role="tab".
+  //
+  // These buttons switch the whole view; they are not a tab widget. Claiming
+  // role=tab promises the ARIA tab pattern — roving tabindex, arrow-key
+  // movement, aria-controls onto a tabpanel — none of which existed, so
+  // screen-reader users were told to press arrow keys that did nothing.
+  // aria-current="page" describes what is actually happening.
   tabs.innerHTML = Object.entries(VIEWS).map(([id, v]) => {
     const locked = v.feature && !can(state.entitlement, v.feature);
-    return `<button class="tab" role="tab" data-action="goto" data-view="${id}" aria-selected="${state.view === id}">`
+    const current = state.view === id;
+    return `<button class="tab" id="tab-${id}" data-action="goto" data-view="${id}"`
+      + `${current ? ' aria-current="page"' : ''}>`
       + `${v.label}${locked ? '<span class="lock" aria-label="Pro feature">&#128274;</span>' : ''}</button>`;
   }).join('');
 }
 
 function go(view) {
   if (!VIEWS[view]) view = 'today';
+  const cameFromNav = document.activeElement?.dataset?.action === 'goto';
   state.view = view;
   history.replaceState(null, '', '#' + view);
+  document.title = `${VIEWS[view].label} — VitalArc`;
   render();
   window.scrollTo({ top: 0, behavior: 'instant' });
+  // renderTabs() replaces every nav button, so a keyboard user who activated
+  // one used to be dumped on <body> and had to tab from the top of the
+  // document again. Put them back on the button they pressed.
+  if (cameFromNav) document.getElementById(`tab-${view}`)?.focus({ preventScroll: true });
 }
 
 let toastTimer;
@@ -297,7 +321,7 @@ const actions = {
   'export-csv': async () => {
     const fields = Object.keys(FIELDS);
     const header = ['date', 'score', ...fields, 'notes'];
-    const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
+    const ctx = profileCtx();
     const rows = state.entries.map((e) => {
       const s = scoreDay(e, ctx).score;
       return [e.date, s, ...fields.map((f) => (e[f] ?? '')), csvEscape(e.notes || '')].join(',');
@@ -337,7 +361,7 @@ const actions = {
     state.entries = [];
     state.entriesRev++;
     state.sampleMode = false;
-    state.profile = { age: 35, weightKg: 75 };
+    state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry();
     state.dirty = false;
     if (keepEntitlement) await store.setMeta('entitlement', keepEntitlement);
@@ -351,7 +375,7 @@ const actions = {
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
     state.entries = []; state.entriesRev++;
-    state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75 };
+    state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry();
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
@@ -432,7 +456,7 @@ async function exitSampleMode() {
   state.entries = [];
   state.entriesRev++;
   state.sampleMode = false;
-  state.profile = { age: 35, weightKg: 75 };
+  state.profile = { age: 35, weightKg: 75, heightCm: null };
   state.draft = emptyEntry();
   state.dirty = false;
 }
@@ -453,6 +477,8 @@ function wire() {
     const seg = ev.target.closest('[data-field][data-value]');
     if (seg) {
       ev.preventDefault();
+      const segGroup = FIELDS[seg.dataset.field]?.group;
+      if (segGroup === 'biomarker' && !can(state.entitlement, 'biomarkers')) return;
       state.draft[seg.dataset.field] = Number(seg.dataset.value);
       state.dirty = true;
       recompute(); render();
@@ -472,10 +498,15 @@ function wire() {
     const t = ev.target;
 
     if (t.dataset.field) {
+      // Defence in depth behind `inert`: a gated field must never reach the
+      // draft, however focus got there. Free users were able to arrow-key
+      // biomarker values into a saved entry through the blurred paywall.
+      const group = FIELDS[t.dataset.field]?.group;
+      if (group === 'biomarker' && !can(state.entitlement, 'biomarkers')) return;
       const v = t.type === 'range' || t.type === 'number' ? Number(t.value) : t.value;
       state.draft[t.dataset.field] = v;
       state.dirty = true;
-      const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
+      const ctx = profileCtx();
       state.draftScore = scoreDay(state.draft, ctx);
       updateLiveScore(t);
       return;
@@ -483,7 +514,7 @@ function wire() {
 
     if (t.dataset.sim) {
       state.simChanges[t.dataset.sim] = Number(t.value);
-      const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
+      const ctx = profileCtx();
       state.simulation = simulate(state.entries, state.simChanges, ctx);
       // Surgical DOM update only: a full render() here replaced the slider
       // element mid-drag, which released the pointer capture and killed the

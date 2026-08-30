@@ -38,7 +38,7 @@ correctly told that another ninety minutes would *cost* them points.
 | Nutrition | 20% | protein 30%, produce 26%, ultra-processed 24%, fiber 12%, hydration 8% |
 | Recovery | 16% | stress 34%, mood 22%, energy 18%, daylight 16%, social 10% |
 | Substances | 10% | alcohol 52%, nicotine 30%, late caffeine 18% |
-| Metabolic | 8% | resting HR 55%, HRV 45% |
+| Metabolic | 8% | resting HR 55%, HRV 45%, waist 30% (needs height) |
 
 Weights reflect roughly how much each domain is discussed in the healthspan
 literature relative to the others, and are deliberately round numbers rather
@@ -50,6 +50,12 @@ than false precision. They are one defensible allocation, not the only one.
 weighted mean rather than scored zero. Someone who never enters HRV is not
 punished for it; their score is computed from what they did log. This is why
 partial logging is safe.
+
+**Waist is scored as a ratio, not a number.** A logged waist is converted to
+waist-to-height ratio, which predicts cardiometabolic risk better than BMI and
+needs no sex-specific table — the familiar "keep your waist under half your
+height" threshold sits at 0.5. Without a height in Settings there is no ratio,
+so waist is stored but not scored, and the app says so rather than guessing.
 
 **Protein and training scale to the person.** Protein is scored per kilogram of
 bodyweight, not in absolute grams, so 100 g is a good day for a 60 kg person and
@@ -86,7 +92,7 @@ wherever the number is shown, not only in the small print.
 
 ## Verification
 
-`npm test` runs 82 checks over this model, including:
+`npm test` runs 104 checks over this model, including:
 
 - score bounds held across 4,000 fuzzed out-of-range inputs
 - monotonicity where it should hold (alcohol strictly hurts) and non-monotonicity

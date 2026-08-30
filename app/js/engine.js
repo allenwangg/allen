@@ -185,6 +185,22 @@ export function scoreDay(entry, ctx = {}) {
     const ratio = entry.hrv / norm;
     metabolicParts.push({ key: 'hrv', weight: 0.45, score: clamp(50 + (ratio - 1) * 90, 0, 100) });
   }
+  if (entry.waistCm != null && (ctx.heightCm || entry.heightCm)) {
+    // Waist-to-height ratio, which predicts cardiometabolic risk better than
+    // BMI and needs no sex-specific table: under 0.5 is the widely used
+    // "keep your waist to less than half your height" threshold.
+    //
+    // This part exists because the Pro copy sells "waist folded into your
+    // score". It previously was not: logging waist changed nothing, which
+    // made the sales sentence false. Either the code backs the claim or the
+    // claim goes; this is the former.
+    const whtr = entry.waistCm / Number(ctx.heightCm || entry.heightCm);
+    metabolicParts.push({
+      key: 'waist',
+      weight: 0.30,
+      score: curve([[0.35, 100], [0.45, 92], [0.50, 78], [0.55, 58], [0.60, 36], [0.70, 14], [0.85, 0]], whtr),
+    });
+  }
 
   const pillars = {
     sleep:      { score: weightedMean(sleepParts),      parts: sleepParts },

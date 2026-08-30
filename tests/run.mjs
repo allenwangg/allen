@@ -310,6 +310,66 @@ t('lag1Autocorr basics', () => {
   ok(lag1Autocorr([1, 2, 3, 4, 5, 6, 7, 8]) > 0.5, 'ramp is autocorrelated');
 });
 
+t('permutationP is calibrated on autocorrelated noise', () => {
+  // docs/INSIGHTS.md publishes an AR(1) calibration row; this is the test
+  // behind it, so "run npm test to reproduce every number" stays true.
+  const ar1 = (n, phi, rnd) => {
+    const out = [gauss(rnd)];
+    for (let i = 1; i < n; i++) out.push(phi * out[i - 1] + gauss(rnd) * Math.sqrt(1 - phi * phi));
+    return out;
+  };
+  for (const phi of [0, 0.5, 0.8]) {
+    const T = 120, ps = [];
+    for (let s = 0; s < T; s++) {
+      const rnd = mulberry32(50000 + s * 7 + Math.round(phi * 100));
+      const xs = ar1(120, phi, rnd), ys = ar1(120, phi, rnd);
+      ps.push(permutationP(xs, ys, spearman(xs, ys)));
+    }
+    const at01 = ps.filter((p) => p <= 0.01).length / T;
+    const at05 = ps.filter((p) => p <= 0.05).length / T;
+    ok(at01 <= 0.05, `phi=${phi}: P(p<=.01)=${at01} should be near 0.01`);
+    ok(at05 <= 0.12, `phi=${phi}: P(p<=.05)=${at05} should be near 0.05`);
+  }
+});
+t('CI coverage is restored by the effective-n correction', () => {
+  // Backs the 78.8% -> 96.2% figures quoted in docs/INSIGHTS.md Guard 6.
+  const T = 200, n = 120, phi = 0.7, rho = 0.4;
+  const rhoS = (6 / Math.PI) * Math.asin(rho / 2);
+  let coverNominal = 0, coverEffective = 0;
+  for (let s = 0; s < T; s++) {
+    const rnd = mulberry32(70000 + s);
+    const shared = [gauss(rnd)], ex = [gauss(rnd)], ey = [gauss(rnd)];
+    for (let i = 1; i < n; i++) {
+      shared.push(phi * shared[i - 1] + gauss(rnd) * Math.sqrt(1 - phi * phi));
+      ex.push(phi * ex[i - 1] + gauss(rnd) * Math.sqrt(1 - phi * phi));
+      ey.push(phi * ey[i - 1] + gauss(rnd) * Math.sqrt(1 - phi * phi));
+    }
+    const a = Math.sqrt(rho), c = Math.sqrt(1 - rho);
+    const xs = shared.map((v, i) => a * v + c * ex[i]);
+    const ys = shared.map((v, i) => a * v + c * ey[i]);
+    const r = spearman(xs, ys);
+    const ciN = correlationCI(r, n);
+    const ciE = correlationCI(r, effectiveN(xs, ys));
+    if (ciN && rhoS >= ciN[0] && rhoS <= ciN[1]) coverNominal++;
+    if (ciE && rhoS >= ciE[0] && rhoS <= ciE[1]) coverEffective++;
+  }
+  const nom = coverNominal / T, eff = coverEffective / T;
+  console.log(`\n  [ci-coverage] nominal-n ${(nom * 100).toFixed(1)}% -> effective-n ${(eff * 100).toFixed(1)}% (target 95%)`);
+  ok(nom < 0.9, 'setup check: the nominal-n interval should under-cover on autocorrelated data');
+  ok(eff >= 0.9, `effective-n coverage too low: ${eff}`);
+});
+t('waist is actually scored when height is known', () => {
+  // The Pro copy sells "waist folded into your score"; this asserts the code
+  // backs that sentence rather than merely storing the number.
+  const mk = (w) => { const e = emptyEntry('2026-01-01'); e.restingHR = 60; e.hrv = 45; e.waistCm = w; return e; };
+  const c = { age: 40, weightKg: 80, heightCm: 178 };
+  ok(scoreDay(mk(80), c).pillars.metabolic.score > scoreDay(mk(110), c).pillars.metabolic.score,
+     'a smaller waist must score better');
+  const noHeight = { age: 40, weightKg: 80 };
+  eq(scoreDay(mk(80), noHeight).pillars.metabolic.score, scoreDay(mk(110), noHeight).pillars.metabolic.score,
+     'without height there is no ratio, so waist must be ignored rather than guessed');
+});
+
 /* ================= insight engine: the honesty tests ================= */
 function synth(n, seed, fn) {
   const rnd = mulberry32(seed);

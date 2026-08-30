@@ -123,7 +123,8 @@ series — conditionally, only when the weekday explains at least 15% of a
 series' variance (fitting seven group means to 120 random points soaks up ~5%
 by chance), so sparse tied variables keep their ties.
 
-After the fix: 0 of 20 rhythm-only datasets produce anything, and recall on a
+After the fix: 0 of 12 rhythm-only datasets produce anything in the suite (0 of
+20 in the wider sweep it was tuned against), and recall on a
 genuine effect planted *inside* a weekend drinking rhythm is still 100%.
 
 ## Guard 6 — honest uncertainty, honest magnitudes
@@ -169,7 +170,7 @@ Independent 120-day datasets per scenario:
 |---|---|---|
 | Pure iid noise, no real effect | 0.00 | n/a — **0 of 40 datasets produced anything** |
 | Habits all trending, no real effect | 0.00 | n/a — **0 of 30 datasets produced anything** |
-| Independent weekly rhythms, no real effect | 0.00 | n/a — **0 of 20 datasets produced anything** |
+| Independent weekly rhythms, no real effect | 0.00 | n/a — **0 of 12 datasets produced anything** |
 | Planted effect, no trend | 1.00 | **100%** |
 | Planted effect + confounding trend | 1.00 | **100%** |
 | Planted effect, weekend-clustered driver | 1.00 | **100%** |

@@ -81,7 +81,8 @@ framing:
 
 The product's defensible advantage is narrow but real: the statistical rigour of
 the insight engine is genuinely uncommon in this category, it is documented and
-testable, and "on pure noise it reports nothing — measured, 0 of 30 datasets" is
+testable, and "on data with no real effect it reports nothing — measured, 0 of
+82 datasets" is
 a claim almost no competitor can make. That is a marketing asset as much as an
 engineering one.
 
