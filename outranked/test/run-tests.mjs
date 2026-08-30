@@ -3,13 +3,20 @@
 // then measures load performance. Prints a report and writes results.json.
 import { createRequire } from "node:module";
 import { createServer } from "node:http";
-import { readFileSync, writeFileSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, statSync, existsSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const require = createRequire("/opt/node22/lib/node_modules/");
-const { chromium } = require("playwright");
+// Resolve Playwright from wherever it lives: a global install (this dev
+// sandbox) or node_modules (CI). Keeps the suite runnable in both.
+const require = createRequire(import.meta.url);
+let chromium;
+try {
+  ({ chromium } = require("playwright"));
+} catch {
+  ({ chromium } = createRequire("/opt/node22/lib/node_modules/")("playwright"));
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(root, "index.html"));
@@ -29,7 +36,12 @@ async function test(name, fn) {
 }
 function assert(cond, msg) { if (!cond) throw new Error(msg); }
 
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
+// Only pin a browser path when this sandbox's prebuilt Chromium is present;
+// on CI, let Playwright use the browser it installed itself.
+const sandboxChromium = "/opt/pw-browsers/chromium";
+const browser = await chromium.launch(
+  existsSync(sandboxChromium) ? { executablePath: sandboxChromium } : {}
+);
 
 // ---------- functional tests ----------
 console.log("\nFunctional tests");

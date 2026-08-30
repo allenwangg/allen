@@ -73,6 +73,14 @@
       "pass": true
     },
     {
+      "name": "?take= deep link lands inside the bid modal aimed at its target",
+      "pass": true
+    },
+    {
+      "name": "dare links carry their target as a ?take= deep link",
+      "pass": true
+    },
+    {
       "name": "share links derive the live domain instead of a hardcoded one",
       "pass": true
     },
@@ -117,6 +125,30 @@
       "pass": true
     },
     {
+      "name": "trophy case shows every title, locked ones with how to earn them",
+      "pass": true
+    },
+    {
+      "name": "bidding in the final hour earns Night Owl",
+      "pass": true
+    },
+    {
+      "name": "Season board ranks by this month's bids with its own crown and countdown",
+      "pass": true
+    },
+    {
+      "name": "presence flames grow on consecutive days and reset after a gap",
+      "pass": true
+    },
+    {
+      "name": "the Oracle locks a pick, then pays out a streak after the day resolves",
+      "pass": true
+    },
+    {
+      "name": "ledger merge attributes historical bids to their own day and month",
+      "pass": true
+    },
+    {
       "name": "Today board ranks by today's bids, independent of all-time totals",
       "pass": true
     },
@@ -151,16 +183,20 @@
     {
       "name": "ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII",
       "pass": true
+    },
+    {
+      "name": "public ledger page renders a listing's payments without leaking full session IDs",
+      "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 104,
-    "medianDOMContentLoadedms": 73.7,
-    "medianLoadms": 12492.1,
+    "medianFCPms": 108,
+    "medianDOMContentLoadedms": 78.7,
+    "medianLoadms": 12479.5,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 75332,
-    "gzipBytes": 23133
+    "htmlBytes": 93626,
+    "gzipBytes": 27844
   }
 }
