@@ -322,7 +322,15 @@ async function loadDraft(date) {
 async function saveDraft() {
   const { entry } = validateEntry(state.draft);
   if (!entry) { toast('Could not save — invalid date.'); return; }
-  await store.putEntry(entry);
+  try {
+    await store.putEntry(entry);
+  } catch (err) {
+    // Never claim a save that did not happen. The quota path used to be
+    // swallowed inside the storage layer and the app toasted "Day saved"
+    // over data that was already gone.
+    toast(err.message || 'Could not save — storage unavailable.');
+    return;
+  }
   const i = state.entries.findIndex((e) => e.date === entry.date);
   if (i >= 0) state.entries[i] = entry; else state.entries.push(entry);
   state.entries.sort((a, b) => (a.date < b.date ? -1 : 1));

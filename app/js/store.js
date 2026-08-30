@@ -35,7 +35,14 @@ function openDB() {
         db.createObjectStore(STORE_META, { keyPath: 'key' });
       }
     };
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      const db = req.result;
+      // When a future version of the app upgrades the schema in another tab,
+      // close this connection so the upgrade can proceed. Without this, the
+      // new tab's open() blocks forever behind the old tab.
+      db.onversionchange = () => { db.close(); dbPromise = null; };
+      resolve(db);
+    };
     req.onerror = () => reject(req.error || new Error('idb-open-failed'));
     req.onblocked = () => reject(new Error('idb-blocked'));
   }).catch((e) => { dbPromise = null; throw e; });
@@ -87,7 +94,11 @@ const lsFallback = {
     return out;
   },
   async put(entry) {
-    try { localStorage.setItem(LS_PREFIX + 'entry:' + entry.date, JSON.stringify(entry)); } catch { /* quota */ }
+    // A swallowed quota error here meant the app toasted "Day saved" while
+    // nothing persisted — the worst possible failure for a journal. Writes
+    // must propagate so the caller can tell the user the truth.
+    try { localStorage.setItem(LS_PREFIX + 'entry:' + entry.date, JSON.stringify(entry)); }
+    catch (e) { throw new Error('Storage is full or unavailable — the entry was NOT saved. Export your data and clear space.'); }
     return entry;
   },
   async get(date) {
@@ -100,7 +111,8 @@ const lsFallback = {
     catch { return null; }
   },
   async setMeta(key, value) {
-    try { localStorage.setItem(LS_PREFIX + 'meta:' + key, JSON.stringify(value)); } catch { /**/ }
+    try { localStorage.setItem(LS_PREFIX + 'meta:' + key, JSON.stringify(value)); }
+    catch (e) { throw new Error('Storage is full or unavailable — the setting was NOT saved.'); }
     return value;
   },
 };
@@ -114,7 +126,15 @@ export const store = {
   async _backend() {
     if (this._mode) return this._mode;
     try { await openDB(); this._mode = 'idb'; }
-    catch { this._mode = 'ls'; }
+    catch (e) {
+      // A blocked open is TRANSIENT — an old tab holds the previous schema
+      // version. Latching to localStorage here would silently fork the user's
+      // data across two backends (new days in localStorage, history in
+      // IndexedDB). Fall back for this call but leave _mode unset so the next
+      // call retries IndexedDB.
+      if (e && e.message === 'idb-blocked') return 'ls';
+      this._mode = 'ls';
+    }
     return this._mode;
   },
 
@@ -190,18 +210,29 @@ export const store = {
       else problems.push({ date: raw && raw.date, errors });
     }
     await this.putMany(good);
-    if (payload.profile) await this.setMeta('profile', payload.profile);
+    if (payload.profile && typeof payload.profile === 'object') {
+      // The entries were validated; the profile must be too — an import is
+      // attacker-shaped input like any other file.
+      const age = Number(payload.profile.age);
+      const weightKg = Number(payload.profile.weightKg);
+      const profile = {};
+      if (Number.isFinite(age) && age >= 13 && age <= 110) profile.age = age;
+      if (Number.isFinite(weightKg) && weightKg >= 25 && weightKg <= 300) profile.weightKg = weightKg;
+      if (Object.keys(profile).length) await this.setMeta('profile', profile);
+    }
     return { imported: good.length, problems };
   },
 
   async clearAll() {
     if (await this._backend() === 'ls') {
-      const keys = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith(LS_PREFIX)) keys.push(k);
-      }
-      for (const k of keys) localStorage.removeItem(k);
+      try {
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(LS_PREFIX)) keys.push(k);
+        }
+        for (const k of keys) localStorage.removeItem(k);
+      } catch { /* storage disabled entirely — nothing to clear */ }
       return;
     }
     const db = await openDB();

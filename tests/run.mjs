@@ -5,7 +5,7 @@
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -249,6 +249,23 @@ t('permutation p low for strong signal', () => {
   const xs = Array.from({ length: 60 }, () => gauss(rnd));
   const ys = xs.map((x) => x * 2 + gauss(rnd) * 0.3);
   ok(permutationP(xs, ys, spearman(xs, ys)) < 0.02);
+});
+
+t('effectiveN shrinks with autocorrelation, not without', () => {
+  const rnd = mulberry32(5150);
+  const iidA = Array.from({ length: 120 }, () => gauss(rnd));
+  const iidB = Array.from({ length: 120 }, () => gauss(rnd));
+  ok(effectiveN(iidA, iidB) > 90, 'iid pairs must keep most of their sample size');
+  const ar = [gauss(rnd)], ar2 = [gauss(rnd)];
+  for (let i = 1; i < 120; i++) {
+    ar.push(0.8 * ar[i - 1] + 0.6 * gauss(rnd));
+    ar2.push(0.8 * ar2[i - 1] + 0.6 * gauss(rnd));
+  }
+  ok(effectiveN(ar, ar2) < 70, 'smooth pairs must lose effective sample size');
+});
+t('lag1Autocorr basics', () => {
+  near(lag1Autocorr([1, 1, 1, 1]), 0, 1e-9, 'constant series');
+  ok(lag1Autocorr([1, 2, 3, 4, 5, 6, 7, 8]) > 0.5, 'ramp is autocorrelated');
 });
 
 /* ================= insight engine: the honesty tests ================= */
