@@ -20,6 +20,10 @@ jobs:
       - name: Unit tests
         run: node tests/run.mjs
 
+      # The one product rule that is not a matter of taste.
+      - name: Copy never claims to diagnose, treat or cure
+        run: node tests/copy-guard.mjs
+
       # A service worker only ships a new cache when its own bytes change. If
       # VERSION goes stale, every existing installation is pinned to the old
       # build forever with no way to push a fix — so this is a hard gate.

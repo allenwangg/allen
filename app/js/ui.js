@@ -7,7 +7,7 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, SEVERITY } from './model.js';
+import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, daysBetween, SEVERITY } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { LEVERS, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
@@ -498,88 +498,198 @@ export function historyView(state) {
  * REPORT — print-friendly summary to take to a clinician
  * ================================================================== */
 
+/**
+ * The doctor handoff.
+ *
+ * Ordered by what is useful in a ten-minute appointment, which is not the same
+ * as what is impressive. The chief complaint and its timeline go first, then
+ * the objective numbers, then what has already been ruled out — that last one
+ * is the part that saves the most appointment time and it is the part only a
+ * self-tracker can bring. Correlations go last, clearly labelled, because they
+ * are the weakest evidence here and leading with them invites them to be taken
+ * for more than they are.
+ *
+ * The scores and the healthspan-age figure are deliberately absent. They were
+ * built to be shareable, they mean nothing to a clinician, and putting a
+ * confident-looking composite number in front of someone is a good way to have
+ * the rest of the page ignored.
+ */
 export function reportView(state) {
-  const r = state.report;
-  if (!r || !r.today) {
-    return `<div class="card empty-state"><h3>Nothing to report yet</h3>
-      <p>Log some days first — the report summarises whatever you have.</p></div>`;
+  const entries = state.entries || [];
+  if (!entries.length) {
+    return `<div class="card empty-state"><h3>Nothing to summarise yet</h3>
+      <p>Log some days first — this page turns whatever you have into one page you can print
+      and take with you.</p></div>`;
   }
+
   const p = state.profile;
-  const bio = r.bioAge;
-  const findings = state.insights?.findings || [];
   const today = dateKey();
+  const first = entries[0].date, last = entries[entries.length - 1].date;
+  const span = daysBetween(first, last) + 1;
+  const symptoms = (state.symptoms || []).filter((x) => !x.archivedAt);
+  const primary = symptoms.find((x) => x.primary) || symptoms[0];
+  const findings = state.insights?.findings || [];
+  const trials = (state.trials || []).filter((t) => t.status === 'complete' && t.result);
+  const flags = state.flags || [];
 
-  const pillarRows = Object.entries(PILLAR_LABELS).map(([k, label]) => `
-    <tr><td>${esc(label)}</td>
-      <td class="num">${r.pillarAverages[k] ?? '--'}</td>
-      <td class="num">${Math.round(PILLAR_WEIGHTS[k] * 100)}%</td></tr>`).join('');
+  const symptomSummary = (sym) => {
+    const vals = entries.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);
+    if (!vals.length) return null;
+    const anyDays = vals.filter((v) => v > 0).length;
+    const badDays = vals.filter((v) => v >= 3).length;
+    const half = Math.floor(vals.length / 2);
+    const firstHalf = vals.slice(0, half), secondHalf = vals.slice(half);
+    const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+    const shift = mean(secondHalf) - mean(firstHalf);
+    return {
+      sym, logged: vals.length, anyDays, badDays,
+      pctAny: Math.round((anyDays / vals.length) * 100),
+      pctBad: Math.round((badDays / vals.length) * 100),
+      trend: shift > 0.3 ? 'worse' : shift < -0.3 ? 'better' : 'about the same',
+      shift: Math.round(shift * 10) / 10,
+      series: entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null })),
+    };
+  };
 
-  const findingRows = findings.length
-    ? findings.map((f) => `<tr>
-        <td>${esc(FIELDS[f.driver]?.label || f.driver)} &rarr; ${esc(FIELDS[f.outcome]?.label || f.outcome)}</td>
-        <td class="num">${f.lag}d</td>
-        <td class="num">${f.r}</td>
-        <td class="num">${f.ci ? `[${f.ci[0]}, ${f.ci[1]}]` : '--'}</td>
-        <td class="num">${f.pAdjusted < 0.0001 ? '&lt;0.0001' : f.pAdjusted}</td>
-        <td class="num">${f.n}</td>
-      </tr>`).join('')
-    : `<tr><td colspan="6" class="muted">No relationships survived significance testing yet
-       (${state.insights?.tested || 0} tested at FDR q=0.10). That is a real result, not missing data.</td></tr>`;
+  const summaries = symptoms.map(symptomSummary).filter(Boolean);
+  const main = primary ? summaries.find((x) => x.sym.id === primary.id) : null;
 
-  const inner = `
-  <div id="print-report">
-    <div class="card">
-      <div class="card-head"><h2 style="margin:0">VitalArc summary</h2><div class="spacer"></div>
-        <span class="subtle">Generated ${esc(today)} &middot; ${r.loggedDays} days logged &middot; self-reported data</span></div>
-      <div class="grid grid-4">
-        ${`<div class="stat"><div class="stat-label">28-day score</div><div class="stat-value">${r.avg28 ?? '--'}</div></div>`}
-        ${`<div class="stat"><div class="stat-label">Trend / week</div><div class="stat-value">${r.trendPerWeek == null ? '--' : (r.trendPerWeek > 0 ? '+' : '') + r.trendPerWeek}</div></div>`}
-        ${`<div class="stat"><div class="stat-label">Adherence</div><div class="stat-value">${r.adherence ? Math.round(r.adherence.ratio * 100) + '%' : '--'}</div></div>`}
-        ${`<div class="stat"><div class="stat-label">Sleep regularity</div><div class="stat-value">${r.regularity ? '&plusmn;' + r.regularity.sdMinutes + 'm' : '--'}</div></div>`}
-      </div>
-      ${bio ? `<p style="margin-top:12px">Healthspan age estimate: <strong>${bio.effectiveAge}</strong> against a
-        chronological ${bio.chronologicalAge} (${esc(bio.confidence)} confidence). This is an illustrative habit-derived
-        estimate, not a clinical measurement.</p>` : ''}
-      <p class="subtle">Profile: age ${esc(String(p.age ?? '--'))}, bodyweight ${esc(String(p.weightKg ?? '--'))} kg.
-        All data below is self-reported by the user through daily logging.</p>
-    </div>
-
-    <div class="card">
-      <h3>Pillars — 28-day averages</h3>
-      <div class="table-wrap"><table class="table">
-        <thead><tr><th>Pillar</th><th class="num">Avg score</th><th class="num">Weight</th></tr></thead>
-        <tbody>${pillarRows}</tbody></table></div>
-    </div>
-
-    <div class="card">
-      <h3>Statistically significant relationships</h3>
-      <p class="subtle">Spearman rank correlations at 0-2 day lags, permutation-tested, Benjamini-Hochberg corrected.
-      Correlation does not establish causation; a shared third factor may drive both sides.</p>
-      <div class="table-wrap"><table class="table">
-        <thead><tr><th>Relationship</th><th class="num">Lag</th><th class="num">r</th><th class="num">95% CI</th><th class="num">p (adj)</th><th class="num">n</th></tr></thead>
-        <tbody>${findingRows}</tbody></table></div>
-    </div>
-
-    <div class="card">
-      <p class="disclaimer">This report was generated by VitalArc, a consumer wellness and habit-tracking application.
-      It is not a medical record, not a diagnostic instrument, and all underlying data is self-reported. The Healthspan
-      Score is a habit-quality index built from published population-level dose-response relationships; methodology at
-      the project repository. Clinical decisions should not be based on this document.</p>
-    </div>
-  </div>`;
+  const objective = [
+    { label: 'Weight', field: 'bodyweightKg', unit: 'kg' },
+    { label: 'Resting heart rate', field: 'restingHR', unit: 'bpm' },
+    { label: 'HRV (RMSSD)', field: 'hrv', unit: 'ms' },
+    { label: 'Sleep', field: 'sleepHours', unit: 'h' },
+    { label: 'Alcohol', field: 'alcoholUnits', unit: 'units/day' },
+  ].map((m) => {
+    const vals = entries.map((e) => e[m.field]).filter((v) => v != null);
+    if (vals.length < 5) return null;
+    const half = Math.floor(vals.length / 2);
+    const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+    const early = mean(vals.slice(0, half)), late = mean(vals.slice(half));
+    return { ...m, n: vals.length, latest: Math.round(late * 10) / 10,
+             change: Math.round((late - early) * 10) / 10 };
+  }).filter(Boolean);
 
   return `
-  <div class="card no-print">
-    <div class="card-head"><h1 style="margin:0">Report</h1>
-      <div class="spacer"></div>
-      <button class="btn btn-primary" data-action="print-report">Print / save as PDF</button>
+  <div id="print-report">
+    <div class="card">
+      <h1 style="margin:0 0 .3em">Summary for an appointment</h1>
+      <p class="muted" style="margin:0">
+        ${esc(String(p.age ?? '—'))}-year-old${p.heightCm ? `, ${esc(String(p.heightCm))} cm` : ''}.
+        Self-tracked ${entries.length} days out of ${span} between ${esc(first)} and ${esc(last)}.
+        Printed ${esc(today)}.
+      </p>
     </div>
-    <p class="muted">A clean, printable summary of your data — the thing to hand a doctor instead of
-    your phone. Uses your browser's print dialog, so "Save as PDF" works everywhere with nothing uploaded.</p>
+
+    ${flags.length ? `<div class="card">
+      <h2>Things I wanted to mention</h2>
+      ${flags.map((f) => `<p><strong>${esc(f.title)}.</strong> ${esc(f.detail)}</p>`).join('')}
+    </div>` : ''}
+
+    ${main ? `<div class="card">
+      <h2>Main problem: ${esc(main.sym.label)}</h2>
+      <p class="muted">Present on <strong>${main.anyDays} of ${main.logged}</strong> logged days
+      (${main.pctAny}%), and severe or worse on <strong>${main.badDays}</strong> of them
+      (${main.pctBad}%). Over the period it has got <strong>${esc(main.trend)}</strong>${
+        main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale, second half vs first)` : ''}.</p>
+      ${lineChart(main.series, {
+        min: 0, max: 4, yTicks: [0, 1, 2, 3, 4], label: `${main.sym.label} severity over time`,
+        width: state.narrow ? 380 : 720, height: state.narrow ? 200 : 220,
+      })}
+    </div>` : ''}
+
+    ${summaries.length > 1 ? `<div class="card">
+      <h2>Everything else I track</h2>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Symptom</th><th class="num">Days present</th><th class="num">Days severe+</th><th>Direction</th></tr></thead>
+        <tbody>${summaries.filter((x) => !main || x.sym.id !== main.sym.id).map((x) => `<tr>
+          <td>${esc(x.sym.label)}</td>
+          <td class="num">${x.anyDays}/${x.logged} (${x.pctAny}%)</td>
+          <td class="num">${x.badDays}</td>
+          <td>${esc(x.trend)}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>` : ''}
+
+    ${objective.length ? `<div class="card">
+      <h2>Measurements</h2>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>What</th><th class="num">Recent average</th><th class="num">Change over the period</th><th class="num">Days</th></tr></thead>
+        <tbody>${objective.map((m) => `<tr>
+          <td>${esc(m.label)}</td>
+          <td class="num">${m.latest} ${esc(m.unit)}</td>
+          <td class="num">${m.change > 0 ? '+' : ''}${m.change}</td>
+          <td class="num">${m.n}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="subtle">Self-measured at home, not clinic measurements.</p>
+    </div>` : ''}
+
+    ${trials.length ? `<div class="card">
+      <h2>What I've already tried</h2>
+      <p class="muted">Each of these was a randomised block trial on myself — the same change
+      done on randomly chosen blocks of days and not others, with the thing being measured
+      chosen before the trial started.</p>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Change</th><th>Measured</th><th>Result</th><th class="num">p</th></tr></thead>
+        <tbody>${trials.map((t) => {
+          const lever = getLever(t.leverId);
+          return `<tr>
+            <td>${esc(lever?.label || t.leverId)}</td>
+            <td>${esc(t.outcomeLabel || t.outcome)}</td>
+            <td>${esc(t.result.headline)}</td>
+            <td class="num">${t.result.analysis?.p ?? '—'}</td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>` : ''}
+
+    <div class="card">
+      <h2>Patterns in the data</h2>
+      <p class="muted">These are correlations found across my own log — things that moved
+      together. They are not evidence that one caused the other.</p>
+      ${findings.length ? `<div class="table-wrap"><table class="table">
+        <thead><tr><th>Pattern</th><th class="num">Lag</th><th class="num">r</th><th class="num">95% CI</th><th class="num">p (corrected)</th><th class="num">n</th></tr></thead>
+        <tbody>${findings.map((f) => `<tr>
+          <td>${esc(fieldLabel(f.driver, state))} &rarr; ${esc(fieldLabel(f.outcome, state))}</td>
+          <td class="num">${f.lag}d</td>
+          <td class="num">${f.r}</td>
+          <td class="num">${f.ci ? `[${f.ci[0]}, ${f.ci[1]}]` : '—'}</td>
+          <td class="num">${f.pAdjusted < 0.0001 ? '&lt;0.0001' : f.pAdjusted}</td>
+          <td class="num">${f.n}</td></tr>`).join('')}</tbody>
+      </table></div>` : `<p class="muted">Nothing held up (${state.insights?.tested || 0} relationships
+        tested, Benjamini–Hochberg at q=0.10). That is a result rather than missing data.</p>`}
+    </div>
+
+    <div class="card">
+      <h3>How this was put together</h3>
+      <p class="subtle">Symptoms and habits are self-reported once a day on a 0–4 scale and are
+      not blinded. Correlations use Spearman rank correlation on days paired at 0, 1 and 2-day
+      lags, after removing any linear time trend and any day-of-week pattern from both series;
+      p-values come from a permutation null (circular shifts plus a moving-block bootstrap) and
+      are corrected for multiple comparisons within each symptom separately. Confidence intervals
+      use an effective sample size adjusted for autocorrelation. Trials are block-randomised with
+      the outcome fixed in advance and analysed by exact randomisation test.</p>
+      <p class="subtle">This was produced by a self-tracking app with no clinical input. It is a
+      record of what I noticed and measured, not an assessment of what is wrong.</p>
+    </div>
   </div>
-  ${inner}`;
+
+  <div class="card no-print">
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn btn-primary" data-action="print-report">Print / save as PDF</button>
+      <button class="btn" data-action="export">Export raw data</button>
+    </div>
+    <p class="subtle" style="margin-top:8px">Prints to about one page. Take it with you — walking
+    in with dates and numbers is worth a great deal more than trying to remember how the last
+    three months went.</p>
+  </div>`;
 }
 
+/** Human label for a field or symptom id. */
+function fieldLabel(id, state) {
+  if (id.startsWith('s_')) {
+    return (state.symptoms || []).find((s) => s.id === id)?.label || id;
+  }
+  return FIELDS[id]?.label || id;
+}
 /* ================================================================== *
  * SETTINGS
  * ================================================================== */

@@ -10,6 +10,7 @@ import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSy
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
+import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
 import * as views from './ui.js';
@@ -48,6 +49,9 @@ const state = {
   trials: [],
   trialDraft: { leverId: null, outcome: null, pairs: DEFAULT_PAIRS },
   trialVerdict: null,
+  flags: [],
+  dismissedFlags: {},
+  crisis: false,
   // Bumped on every entry mutation. discover() runs the full hypothesis grid
   // (measured 636ms on two years of data) and recompute() fires on every save
   // and slider release, so insights are recomputed only when the underlying
@@ -114,6 +118,11 @@ function recompute() {
   // A running trial only yields a verdict once its last day has passed. Not
   // computing it earlier is the point: a half-run experiment you can peek at
   // is an experiment you will stop when it looks good.
+  state.flags = checkFlags(state.entries, {
+    symptoms: state.symptoms,
+    dismissedFlags: state.dismissedFlags,
+  }, dateKey());
+
   const running = state.trials.find((t) => t.status === 'running');
   state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
     ? verdict(running, state.entries)
@@ -150,7 +159,7 @@ function render() {
         <button class="btn btn-sm" data-action="clear-sample">Clear &amp; start my own log</button>
       </div>`
     : '';
-  main.innerHTML = sampleBanner + VIEWS[state.view].render(state);
+  main.innerHTML = sampleBanner + safetyBanner(state) + VIEWS[state.view].render(state);
   renderTabs();
   document.documentElement.setAttribute('data-theme', state.theme === 'system' ? '' : state.theme);
   if (state.theme === 'system') document.documentElement.removeAttribute('data-theme');
@@ -161,6 +170,49 @@ function render() {
     if (el) { el.focus({ preventScroll: true }); window.scrollTo(0, scroll); }
   }
 }
+
+/**
+ * Flags sit above whatever view you are on, because the whole point is that
+ * they are more important than the dashboard underneath them. At most two,
+ * each dismissible, each then quiet for a month.
+ */
+function safetyBanner(state) {
+  let html = '';
+  if (state.crisis) {
+    html += `<div class="card" style="border-color:var(--border-strong)">
+      <h3 style="margin-bottom:.3em">${esc(SUPPORT.title)}</h3>
+      <p class="muted">${esc(SUPPORT.body)}</p>
+      <ul style="margin:0 0 10px;padding-left:18px">
+        ${SUPPORT.routes.map((r) => `<li class="muted">${r.href
+          ? `<a href="${esc(r.href)}" target="_blank" rel="noopener">${esc(r.label)}</a>`
+          : `<strong>${esc(r.label)}</strong>`} — ${esc(r.note)}</li>`).join('')}
+      </ul>
+      <p class="subtle">${esc(SUPPORT.footer)}</p>
+      <button class="btn btn-sm" data-action="dismiss-crisis">Close</button>
+    </div>`;
+  }
+  for (const f of state.flags || []) {
+    html += `<div class="card" data-flag="${esc(f.id)}">
+      <div class="card-head"><h3 style="margin:0">${esc(f.title)}</h3></div>
+      <p class="muted">${esc(f.detail)}</p>
+      <p>${esc(f.ask)}</p>
+      ${f.support ? `<ul style="margin:0 0 10px;padding-left:18px">
+        ${SUPPORT.routes.map((r) => `<li class="muted">${r.href
+          ? `<a href="${esc(r.href)}" target="_blank" rel="noopener">${esc(r.label)}</a>`
+          : `<strong>${esc(r.label)}</strong>`} — ${esc(r.note)}</li>`).join('')}
+      </ul>` : ''}
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn btn-sm" data-action="goto" data-view="report">Put it in the report</button>
+        <button class="btn btn-ghost btn-sm" data-action="dismiss-flag" data-id="${esc(f.id)}">I've seen this</button>
+      </div>
+    </div>`;
+  }
+  return html;
+}
+
+const esc = (v) => String(v ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 function renderTabs() {
   const tabs = $('#tabs');
@@ -321,6 +373,14 @@ const actions = {
     recompute(); render();
     toast('Trial stopped');
   },
+
+  'dismiss-flag': async (el) => {
+    state.dismissedFlags = { ...state.dismissedFlags, [el.dataset.id]: dateKey() };
+    await store.setMeta('dismissedFlags', state.dismissedFlags);
+    recompute(); render();
+  },
+
+  'dismiss-crisis': () => { state.crisis = false; render(); },
 
   'add-symptom': async () => {
     const input = document.getElementById('new-symptom');
@@ -506,12 +566,24 @@ function wire() {
       const v = t.type === 'range' || t.type === 'number' ? Number(t.value) : t.value;
       state.draft[t.dataset.field] = v;
       state.dirty = true;
+      // Notes are checked in memory only — nothing about this is stored,
+      // counted, or sent anywhere. See safety.js for why the check is narrow.
+      if (t.dataset.field === 'notes' && !state.crisis && checkNotesForCrisis(v)) {
+        state.crisis = true;
+        render();
+        return;
+      }
       const ctx = profileCtx();
       state.draftScore = scoreDay(state.draft, ctx);
 
   // A running trial only yields a verdict once its last day has passed. Not
   // computing it earlier is the point: a half-run experiment you can peek at
   // is an experiment you will stop when it looks good.
+  state.flags = checkFlags(state.entries, {
+    symptoms: state.symptoms,
+    dismissedFlags: state.dismissedFlags,
+  }, dateKey());
+
   const running = state.trials.find((t) => t.status === 'running');
   state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
     ? verdict(running, state.entries)
@@ -660,18 +732,20 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode, symptoms, trials] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms, trials, dismissedFlags] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
     store.getMeta('sampleMode'),
     store.getMeta('symptoms'),
     store.getMeta('trials'),
+    store.getMeta('dismissedFlags'),
   ]);
 
   state.sampleMode = !!sampleMode;
   state.symptoms = validateSymptoms(symptoms || []);
   state.trials = Array.isArray(trials) ? trials : [];
+  state.dismissedFlags = (dismissedFlags && typeof dismissedFlags === 'object') ? dismissedFlags : {};
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };
   if (theme) state.theme = theme;

@@ -7,6 +7,7 @@ import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness,
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
+import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
 
@@ -879,6 +880,98 @@ t('topLeverage returns ranked positive-delta actions', () => {
 t('topLeverage does not repeat a field', () => {
   const fields = topLeverage(demo, ctx).map((l) => l.field);
   eq(new Set(fields).size, fields.length);
+});
+
+/* ================= safety ================= */
+
+function safetySeries(n, fn, syms) {
+  const es = [];
+  let d = addDays('2026-08-30', -(n - 1));
+  for (let i = 0; i < n; i++) { const e = emptyEntry(d, syms); fn(e, i, n); es.push(e); d = addDays(d, 1); }
+  return es;
+}
+
+t('flags a substantial unintentional weight loss', () => {
+  const es = safetySeries(95, (e, i, n) => { e.bodyweightKg = 80 - (i / n) * 6; });
+  ok(checkFlags(es, {}, '2026-08-30').some((f) => f.id === 'weight-loss'));
+});
+t('does not flag ordinary weight fluctuation', () => {
+  const rnd = mulberry32(4);
+  const es = safetySeries(95, (e, i) => { e.bodyweightKg = 78 + Math.sin(i / 9) + (rnd() - 0.5) * 1.2; });
+  eq(checkFlags(es, {}, '2026-08-30').length, 0);
+});
+t('flags two weeks of sustained low mood, with support routes', () => {
+  const es = safetySeries(20, (e) => { e.mood = 2; });
+  const f = checkFlags(es, {}, '2026-08-30').find((x) => x.id === 'low-mood');
+  ok(f, 'must notice');
+  ok(f.support === true, 'must offer support routes');
+  ok(!/depress|diagnos|disorder/i.test(f.title + f.detail + f.ask), 'must not name a condition');
+});
+t('does not flag ordinary mood', () => {
+  eq(checkFlags(safetySeries(20, (e) => { e.mood = 4; }), {}, '2026-08-30').length, 0);
+});
+t('flags a symptom that has been severe for two weeks', () => {
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const es = safetySeries(20, (e) => { e.symptoms.s_migraine = 4; e.mood = 4; }, syms);
+  ok(checkFlags(es, { symptoms: syms }, '2026-08-30').some((f) => f.id.startsWith('persistent-symptom')));
+});
+t('a dismissed flag stays quiet, then returns', () => {
+  const es = safetySeries(20, (e) => { e.mood = 2; });
+  eq(checkFlags(es, { dismissedFlags: { 'low-mood': '2026-08-20' } }, '2026-08-30').length, 0, 'recently dismissed');
+  ok(checkFlags(es, { dismissedFlags: { 'low-mood': '2026-06-01' } }, '2026-08-30').length > 0, 'returns after the snooze');
+});
+t('no rule ever names a condition or reassures', () => {
+  const banned = /\b(diagnos|you have|probably nothing|don'?t worry|nothing to worry|cure|it'?s fine)\b/i;
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const extreme = safetySeries(95, (e, i, n) => {
+    e.bodyweightKg = 90 - (i / n) * 12;
+    e.restingHR = 55 + Math.round((i / n) * 25);
+    e.mood = 1;
+    e.symptoms.s_migraine = 4;
+  }, syms);
+  const flags = checkFlags(extreme, { symptoms: syms }, '2026-08-30');
+  ok(flags.length > 0, 'setup check: this person should be flagged');
+  for (const f of flags) {
+    ok(!banned.test(`${f.title} ${f.detail} ${f.ask}`), 'unsafe wording in ' + f.id);
+    ok(/doctor|looked at|mention/i.test(f.ask), 'every flag must point somewhere real: ' + f.id);
+  }
+});
+t('never shows more than two flags at once', () => {
+  const syms = validateSymptoms([{ label: 'A' }, { label: 'B' }]);
+  const es = safetySeries(95, (e, i, n) => {
+    e.bodyweightKg = 90 - (i / n) * 12;
+    e.restingHR = 55 + Math.round((i / n) * 25);
+    e.mood = 1;
+    e.symptoms.s_a = 4; e.symptoms.s_b = 4;
+  }, syms);
+  ok(checkFlags(es, { symptoms: syms }, '2026-08-30').length <= 2);
+});
+t('the notes crisis check is precise, not keyword soup', () => {
+  for (const s of ['this headache is killing me', 'my back is murder today',
+                   'dead tired', 'ended my workout early', 'I could die of embarrassment']) {
+    eq(checkNotesForCrisis(s), false, 'false positive on: ' + s);
+  }
+  for (const s of ['i want to die', 'I am going to kill myself', 'i want to hurt myself']) {
+    eq(checkNotesForCrisis(s), true, 'missed: ' + s);
+  }
+});
+t('flags do not fire on people who are simply unwell-ish', () => {
+  // The crying-wolf check: a flag nobody trusts is worse than no flag.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  let flagged = 0;
+  const T = 60;
+  for (let s = 0; s < T; s++) {
+    const rnd = mulberry32(9000 + s);
+    const es = safetySeries(120, (e, i) => {
+      e.bodyweightKg = 78 + Math.sin(i / 9) * 0.9 + (rnd() - 0.5) * 1.2;
+      e.restingHR = Math.round(60 + Math.sin(i / 13) * 3 + (rnd() - 0.5) * 5);
+      e.mood = 2 + Math.floor(rnd() * 4);
+      e.symptoms.s_migraine = rnd() < 0.25 ? 1 + Math.floor(rnd() * 3) : 0;
+    }, syms);
+    if (checkFlags(es, { symptoms: syms }, '2026-08-30').length) flagged++;
+  }
+  console.log(`\n  [safety] ${flagged}/${T} ordinary logs produced a flag`);
+  ok(flagged / T <= 0.1, `too many false alarms: ${flagged}/${T}`);
 });
 
 /* ================= n-of-1 trials ================= */
