@@ -1231,7 +1231,7 @@ function badgeEmbed(e){
   const src = state.live
     ? new URL("api/badge?name=" + encodeURIComponent(e.name), SITE).href
     : "data:image/svg+xml," + encodeURIComponent(badgeSVG(e, rank));
-  return `<a href="${SITE}"><img src="${src}" alt="${e.name} is #${rank} on OUTRANKED" height="36"></a>`;
+  return `<a href="${SITE}"><img src="${src}" alt="${esc(e.name)} is #${rank} on OUTRANKED" height="36"></a>`;
 }
 
 function openDetail(id){
@@ -1512,7 +1512,7 @@ function renderOracle(){
     (pickedToday ? "" :
       `<div class="o-picks">` + contenders.map(e =>
         `<button class="o-pick" data-oracle="${esc(e.name)}">${esc(e.name)} · ${fmt(e.todayTotal)}</button>`).join("") + `</div>`) +
-    (o.lastResult && !pickedToday ? `<div class="o-result ${o.lastResult.startsWith("✅") ? "win" : "loss"}">${o.lastResult}</div>` : "");
+    (o.lastResult && !pickedToday ? `<div class="o-result ${o.lastResult.startsWith("✅") ? "win" : "loss"}">${esc(o.lastResult)}</div>` : "");
   el.classList.add("show");
 }
 document.addEventListener("click", e => {

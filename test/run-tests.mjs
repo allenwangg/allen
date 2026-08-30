@@ -409,6 +409,54 @@ await test("bidding in the final hour earns Night Owl", async () => {
   assert(earned, "a bid inside the final hour should earn Night Owl");
 });
 
+await test("a hostile listing name cannot execute script via the Oracle result", async () => {
+  // Names are attacker-controlled on a live board (they ride in Stripe's
+  // client_reference_id), and the Oracle result is injected with innerHTML.
+  const octx = await browser.newContext();
+  const p2 = await octx.newPage();
+  await p2.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await p2.waitForTimeout(500);
+  await p2.evaluate(() => {
+    const payload = '<img src=x onerror="window.__xss=1">';
+    const y = prevDayOf(todayStr());
+    state.hall.unshift({ date: y, name: payload, amount: 5 });
+    save();
+    localStorage.setItem("outranked_oracle",
+      JSON.stringify({ pick: payload, pickDay: y, resolved: false, streak: 0 }));
+  });
+  await p2.reload({ waitUntil: "networkidle" });
+  await p2.waitForTimeout(800);
+  const pwned = await p2.evaluate(() => window.__xss);
+  assert(!pwned, "hostile listing name executed script through the Oracle result");
+  const html = await p2.locator("#oracle").innerHTML();
+  assert(!/<img[^>]+onerror/i.test(html), "hostile markup reached the DOM as an element");
+  await octx.close();
+});
+
+await test("the copyable badge embed escapes the listing name", async () => {
+  const embed = await page.evaluate(() => {
+    const e = state.entries.find(x => x.name === "JONI");
+    const original = e.name;
+    e.name = 'Evil" onerror="alert(1)';
+    const out = badgeEmbed(e);
+    e.name = original;
+    return out;
+  });
+  // The snippet is pasted onto a bidder's own site, so a quote in the name must
+  // not close alt="" and add an attribute. Assert the real property by parsing
+  // the snippet the way a browser would, rather than pattern-matching text.
+  const parsed = await page.evaluate((html) => {
+    const host = document.createElement("div");
+    host.innerHTML = html;
+    const img = host.querySelector("img");
+    return { attrs: [...img.attributes].map(a => a.name), alt: img.getAttribute("alt") };
+  }, embed);
+  assert(!parsed.attrs.includes("onerror"),
+    `a quote in the listing name created a real attribute: ${parsed.attrs.join(",")}`);
+  assert(parsed.alt.startsWith('Evil" onerror="alert(1)'),
+    `the name should survive as inert alt text, got: ${parsed.alt}`);
+});
+
 await test("Season board ranks by this month's bids with its own crown and countdown", async () => {
   await page.click("#tabSeason");
   await page.waitForTimeout(150);
