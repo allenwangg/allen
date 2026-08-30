@@ -62,13 +62,10 @@ app/
     engine.js           scoring curves, pillars, bio-age, simulator
     insights.js         correlation discovery + the statistics
     store.js            IndexedDB with localStorage fallback
-    entitlements.js     free/Pro gating, trial and subscription state
     charts.js           dependency-free SVG charts
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
-    billing.js          Stripe Checkout, client half
-api/                    four serverless billing endpoints
-docs/                   scoring, insights, monetization
+docs/                   scoring and insights methodology
 tests/                  104 unit tests + a browser walkthrough
 ```
 
@@ -135,9 +132,8 @@ reproduces every one of those numbers.
 Complete and working: all six views, the paywall, offline support, export and
 import, and the full analysis pipeline, verified end to end in Chromium.
 
-Billing runs in **demo mode** until you add `app/billing-config.json` and deploy
-[the API](api/README.md) — the app says so plainly rather than pretending a
-payment occurred.
+Every feature is available to everyone. There is no paywall, no account, and
+no server — the app is a private notebook that happens to do statistics.
 
 ## Disclaimer
 

@@ -10,19 +10,16 @@ import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series } from './m
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { store } from './store.js';
-import { resolveEntitlement, visibleEntries, startTrial, can } from './entitlements.js';
 import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
-import { beginCheckout, openBillingPortal, restoreFromReceipt, refreshEntitlement } from './billing.js';
 import * as views from './ui.js';
 
 const VIEWS = {
   today:     { render: views.todayView,     label: 'Today' },
   log:       { render: views.logView,       label: 'Log' },
-  insights:  { render: views.insightsView,  label: 'Insights',  feature: 'insights' },
-  simulator: { render: views.simulatorView, label: 'Simulator', feature: 'simulator' },
+  insights:  { render: views.insightsView,  label: 'Insights' },
+  simulator: { render: views.simulatorView, label: 'Simulator' },
   history:   { render: views.historyView,   label: 'History' },
-  report:    { render: views.reportView,    label: 'Report',    feature: 'report' },
-  upgrade:   { render: views.upgradeView,   label: 'Pro' },
+  report:    { render: views.reportView,    label: 'Report' },
   settings:  { render: views.settingsView,  label: 'Settings' },
 };
 
@@ -31,8 +28,6 @@ const state = {
   entries: [],
   visible: [],
   profile: { age: 35, weightKg: 75, heightCm: null },
-  entitlementRaw: null,
-  entitlement: { tier: 'free', status: 'free' },
   report: null,
   insights: null,
   weekday: null,
@@ -53,7 +48,6 @@ const state = {
   // entries actually changed — not when a draft slider or a theme toggle did.
   entriesRev: 0,
   _insightsRev: -1,
-  _insightsTier: null,
   // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
   // only ~140px tall on a phone and the trend line becomes unreadable. The
   // views pick chart dimensions from this instead.
@@ -77,7 +71,7 @@ function entriesFingerprint() {
   let maxUpdated = 0;
   for (const e of state.entries) if (e.updatedAt > maxUpdated) maxUpdated = e.updatedAt;
   const last = state.entries.length ? state.entries[state.entries.length - 1].date : '';
-  return `${state.entries.length}:${last}:${maxUpdated}:${can(state.entitlement, 'insights')}`;
+  return `${state.entries.length}:${last}:${maxUpdated}`;
 }
 
 /** Scoring context derived from the user's profile. */
@@ -90,13 +84,8 @@ function profileCtx() {
 }
 
 function recompute() {
-  // Sample mode unlocks Pro views on the synthetic data only — a tour, not a
-  // giveaway. Its source is 'sample', which the upgrade view treats as
-  // not-subscribed, so pricing still renders normally.
-  state.entitlement = state.sampleMode
-    ? { tier: 'pro', source: 'sample', status: 'sample-tour' }
-    : resolveEntitlement(state.entitlementRaw);
-  state.visible = visibleEntries(state.entries, state.entitlement, dateKey());
+  // Everything the app can compute, it computes. There is no tier to check.
+  state.visible = state.entries;
 
   const ctx = profileCtx();
   state.report = buildReport(state.visible, ctx);
@@ -105,24 +94,15 @@ function recompute() {
   // Insights and the simulator always run on the FULL dataset, not the trimmed
   // view — a Pro user who just upgraded should see results immediately rather
   // than waiting for a recompute, and the gating happens at render time.
-  if (can(state.entitlement, 'insights')) {
-    if (state.entriesRev !== state._insightsRev || state._insightsTier !== 'pro') {
-      state.insights = discover(state.entries);
-      buildPairCache();
-      state._insightsRev = state.entriesRev;
-      state._insightsTier = 'pro';
-    }
-  } else {
-    state._insightsTier = 'free';
-    state.insights = state.entries.length < 21
-      ? { status: 'insufficient-data', findings: [], have: state.entries.length, needed: 21,
-          message: `Log ${Math.max(0, 21 - state.entries.length)} more days to unlock personal correlations.` }
-      : { status: 'locked', findings: [], tested: 0 };
+  if (state.entriesRev !== state._insightsRev) {
+    state.insights = discover(state.entries);
+    buildPairCache();
+    state._insightsRev = state.entriesRev;
   }
 
   state.weekday = weekdayPattern(state.visible, (e) => scoreDay(e, ctx).score);
-  state.leverage = can(state.entitlement, 'leverage') ? topLeverage(state.entries, ctx) : null;
-  state.simulation = can(state.entitlement, 'simulator') ? simulate(state.entries, state.simChanges, ctx) : null;
+  state.leverage = topLeverage(state.entries, ctx);
+  state.simulation = simulate(state.entries, state.simChanges, ctx);
   state.draftScore = scoreDay(state.draft, ctx);
 }
 
@@ -149,11 +129,11 @@ function render() {
   const scroll = window.scrollY;
 
   const sampleBanner = state.sampleMode
-    ? `<div class="banner banner-pro" data-sample-banner>
-        <strong>Sample data</strong>
-        <span>Every number on screen is synthetic — a 90-day tour with real planted patterns, all Pro views open.</span>
+    ? `<div class="banner banner-info" data-sample-banner>
+        <strong>Example data</strong>
+        <span>None of this is yours — it is here so you can see what the app does before logging anything.</span>
         <div class="spacer"></div>
-        <button class="btn btn-sm" data-action="clear-sample">Clear sample &amp; start my log</button>
+        <button class="btn btn-sm" data-action="clear-sample">Clear &amp; start my own log</button>
       </div>`
     : '';
   main.innerHTML = sampleBanner + VIEWS[state.view].render(state);
@@ -178,11 +158,10 @@ function renderTabs() {
   // screen-reader users were told to press arrow keys that did nothing.
   // aria-current="page" describes what is actually happening.
   tabs.innerHTML = Object.entries(VIEWS).map(([id, v]) => {
-    const locked = v.feature && !can(state.entitlement, v.feature);
     const current = state.view === id;
     return `<button class="tab" id="tab-${id}" data-action="goto" data-view="${id}"`
       + `${current ? ' aria-current="page"' : ''}>`
-      + `${v.label}${locked ? '<span class="lock" aria-label="Pro feature">&#128274;</span>' : ''}</button>`;
+      + `${v.label}</button>`;
   }).join('');
 }
 
@@ -262,51 +241,6 @@ const actions = {
     go('today');
   },
 
-  'start-trial': async () => {
-    const next = startTrial(state.entitlementRaw || {});
-    if (next.error) { toast(next.error); return; }
-    state.entitlementRaw = next;
-    await store.setMeta('entitlement', next);
-    // Same reason as checkout: a trial started during the tour must be visible
-    // rather than masked by the sample override.
-    if (state.sampleMode) await exitSampleMode();
-    recompute();
-    render();
-    toast('Pro trial started — enjoy');
-  },
-
-  checkout: async (el) => {
-    const plan = el.dataset.plan;
-    el.disabled = true;
-    el.textContent = 'Opening checkout…';
-    try {
-      const result = await beginCheckout(plan);
-      if (result.redirected) return;              // navigating away
-      if (result.simulated) {
-        state.entitlementRaw = result.entitlement;
-        await store.setMeta('entitlement', result.entitlement);
-        // Buying during the sample tour must surface the real entitlement.
-        // Left in sample mode, the override hid the purchase: the upgrade page
-        // kept selling and Settings offered no Manage-billing button.
-        if (state.sampleMode) await exitSampleMode();
-        recompute(); render();
-        toast('Pro activated (demo mode)');
-        return;
-      }
-      toast(result.message || 'Checkout unavailable right now.');
-    } catch (err) {
-      toast(err.message || 'Could not start checkout.');
-    } finally {
-      el.disabled = false;
-    }
-    render();
-  },
-
-  'manage-billing': async () => {
-    const r = await openBillingPortal(state.entitlementRaw?.customerId, state.entitlementRaw?.portalToken);
-    if (!r.redirected) toast(r.message || 'Billing portal unavailable.');
-  },
-
   'reset-sim': () => {
     for (const k of Object.keys(state.simChanges)) state.simChanges[k] = 0;
     recompute(); render();
@@ -335,9 +269,8 @@ const actions = {
   'print-report': () => window.print(),
 
   'load-sample': async () => {
-    if (state.entries.length > 0) { toast('Clear your data first — sample and real days never mix.'); return; }
-    const rows = generateSampleData(dateKey());
-    await store.putMany(rows);
+    if (state.entries.length > 0) { toast('Clear your own data first — example and real days never mix.'); return; }
+    await store.putMany(generateSampleData(dateKey()));
     await store.setMeta('sampleMode', true);
     await store.setMeta('profile', SAMPLE_PROFILE);
     state.sampleMode = true;
@@ -347,16 +280,10 @@ const actions = {
     await loadDraft(dateKey());
     recompute();
     go('today');
-    toast('Sample loaded — explore the Pro views');
+    toast('Example data loaded');
   },
 
   'clear-sample': async () => {
-    // Preserve any real entitlement across the clear. clearAll() wipes the
-    // meta store, and a user who bought Pro (or started a trial) during the
-    // tour would otherwise have that purchase destroyed by the tour's own
-    // exit button — with the receipt link already consumed, leaving them no
-    // way back.
-    const keepEntitlement = state.entitlementRaw;
     await store.clearAll();
     state.entries = [];
     state.entriesRev++;
@@ -364,18 +291,16 @@ const actions = {
     state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry();
     state.dirty = false;
-    if (keepEntitlement) await store.setMeta('entitlement', keepEntitlement);
     recompute();
     go('log');
-    toast('Sample cleared — this log is yours now');
+    toast('Cleared — this log is yours now');
   },
 
   wipe: async () => {
     if (!confirm('Delete every entry and setting on this device? This cannot be undone. Export first if you want a backup.')) return;
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
-    state.entries = []; state.entriesRev++;
-    state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75, heightCm: null };
+    state.entries = []; state.entriesRev++; state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry();
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
@@ -418,7 +343,7 @@ async function loadDraft(date) {
 
 async function saveDraft() {
   if (state.sampleMode) {
-    toast('This is sample data — clear it from the banner to start your own log.');
+    toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
   const { entry } = validateEntry(state.draft);
@@ -443,24 +368,6 @@ async function saveDraft() {
 
 async function persistDraftIfDirty() { if (state.dirty) await saveDraft(); }
 
-/**
- * Leave the sample tour, discarding the synthetic days but keeping whatever
- * the user has actually acquired. Used when a purchase or trial starts during
- * the tour, so the entitlement they just gained is not masked by the tour's
- * Pro override.
- */
-async function exitSampleMode() {
-  const keepEntitlement = state.entitlementRaw;
-  await store.clearAll();
-  if (keepEntitlement) await store.setMeta('entitlement', keepEntitlement);
-  state.entries = [];
-  state.entriesRev++;
-  state.sampleMode = false;
-  state.profile = { age: 35, weightKg: 75, heightCm: null };
-  state.draft = emptyEntry();
-  state.dirty = false;
-}
-
 /* ------------------------------------------------------------------ *
  * Event wiring — all delegated, so re-rendering never breaks handlers.
  * ------------------------------------------------------------------ */
@@ -477,8 +384,6 @@ function wire() {
     const seg = ev.target.closest('[data-field][data-value]');
     if (seg) {
       ev.preventDefault();
-      const segGroup = FIELDS[seg.dataset.field]?.group;
-      if (segGroup === 'biomarker' && !can(state.entitlement, 'biomarkers')) return;
       state.draft[seg.dataset.field] = Number(seg.dataset.value);
       state.dirty = true;
       recompute(); render();
@@ -498,11 +403,6 @@ function wire() {
     const t = ev.target;
 
     if (t.dataset.field) {
-      // Defence in depth behind `inert`: a gated field must never reach the
-      // draft, however focus got there. Free users were able to arrow-key
-      // biomarker values into a saved entry through the blurred paywall.
-      const group = FIELDS[t.dataset.field]?.group;
-      if (group === 'biomarker' && !can(state.entitlement, 'biomarkers')) return;
       const v = t.type === 'range' || t.type === 'number' ? Number(t.value) : t.value;
       state.draft[t.dataset.field] = v;
       state.dirty = true;
@@ -641,43 +541,17 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, entitlement, theme, sampleMode] = await Promise.all([
+  const [entries, profile, theme, sampleMode] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
-    store.getMeta('entitlement'),
     store.getMeta('theme'),
     store.getMeta('sampleMode'),
   ]);
-  state.sampleMode = !!sampleMode;
 
+  state.sampleMode = !!sampleMode;
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };
-  state.entitlementRaw = entitlement;
   if (theme) state.theme = theme;
-
-  // A checkout return carries a receipt token; exchange it for entitlement.
-  const restored = await restoreFromReceipt();
-  if (restored) {
-    state.entitlementRaw = restored;
-    await store.setMeta('entitlement', restored);
-  }
-
-  // A subscription whose stored period has elapsed needs re-checking against
-  // the server — Stripe renews silently and this device would otherwise never
-  // learn the new period end. Access is NOT gated on the outcome: the request
-  // may fail (offline, demo mode) and Pro is kept regardless. Only an explicit
-  // "canceled" answer takes it away.
-  const resolvedAtBoot = resolveEntitlement(state.entitlementRaw);
-  if (resolvedAtBoot.needsRefresh) {
-    const patch = await refreshEntitlement(
-      state.entitlementRaw?.customerId,
-      state.entitlementRaw?.portalToken
-    );
-    if (patch) {
-      state.entitlementRaw = { ...state.entitlementRaw, ...patch };
-      await store.setMeta('entitlement', state.entitlementRaw);
-    }
-  }
 
   await loadDraft(dateKey());
   recompute();

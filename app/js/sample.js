@@ -1,29 +1,24 @@
 /**
- * sample.js — Demo dataset for the first-run experience.
+ * sample.js — Example data.
  *
- * The paid features are the insight engine, the simulator, and the report, and
- * none of them can show anything until ~21 days are logged. That is a three
- * week gap between installing the app and seeing the reason to pay for it.
+ * The analysis needs about three weeks of logging before it can say anything
+ * honest, which is a long time to wait before you can tell whether this app is
+ * any use to you. This loads 90 example days so every view has something in it
+ * and you can see what the thing actually does.
  *
- * Sample mode closes the gap: one tap loads 90 days of realistic synthetic
- * data with genuine planted structure, so every Pro view lights up and the
- * user can judge the product on what it actually does. The rules that keep it
- * honest:
+ * It is example data, not yours. So:
+ *   - a banner says so on every screen while it is loaded,
+ *   - your own logging is blocked until you clear it, so the two can never mix,
+ *   - clearing removes every trace and leaves a clean, empty app.
  *
- *   - It is labelled everywhere. A banner sits on every view while active.
- *   - Pro views are unlocked ON THE SAMPLE ONLY — a tour, not a giveaway.
- *   - Logging your own data requires clearing the sample first, so real and
- *     synthetic days can never mix in one dataset.
- *   - Clearing removes every trace and returns the app to a clean first run.
- *
- * The generator plants real relationships (drinking suppresses next-day
- * energy; late caffeine hurts sleep quality) so the insight engine finds true
- * things, and includes a weekend rhythm so the weekday view has a story too.
+ * The generator plants two real relationships (drinking suppresses next-day
+ * energy; late caffeine costs sleep quality) so the analysis has something true
+ * to find, plus a weekend rhythm so the weekday view has a story too.
  */
 
 import { emptyEntry, addDays, dateKey } from './model.js';
 
-/** Deterministic PRNG — the same tour for every user, and testable. */
+/** Deterministic PRNG — the same example data every time, and testable. */
 function mulberry32(seed) {
   let s = seed >>> 0;
   return function () {
@@ -72,7 +67,7 @@ export function generateSampleData(endDate = dateKey()) {
     e.bodyweightKg = round1(83.5 - p * 3.5 + rnd() * 0.8);
     e.waistCm = round1(93 - p * 4 + rnd() * 1.2);
     e.energy = 3;                                // overwritten below
-    e.notes = i === SAMPLE_DAYS - 1 ? 'This is sample data — clear it from the banner to start your own log.' : '';
+    e.notes = i === SAMPLE_DAYS - 1 ? 'This is example data — clear it from the banner to start your own log.' : '';
     entries.push(e);
     d = addDays(d, 1);
   }

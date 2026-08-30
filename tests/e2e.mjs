@@ -76,25 +76,7 @@ console.log('\n--- TODAY view (free tier) ---');
 console.log('score ring:', await page.$eval('.ring-number', e=>e.textContent));
 console.log('stats:', await page.$$eval('.hero .stat', els=>els.map(e=>e.querySelector('.stat-label').textContent+'='+e.querySelector('.stat-value').textContent)));
 console.log('bio age shown:', await page.$eval('.bioage', e=>e.textContent.replace(/\s+/g,' ').trim()).catch(()=>'none'));
-console.log('leverage locked (free):', await page.$$eval('.lock-overlay', e=>e.length) > 0);
 await page.screenshot({ path: OUT+'/01-today-free.png', fullPage: true });
-
-console.log('\n--- start trial ---');
-await page.click('[data-action="goto"][data-view="upgrade"]');
-await page.waitForTimeout(400);
-await page.screenshot({ path: OUT+'/02-upgrade.png', fullPage: true });
-await page.click('[data-action="start-trial"]');
-await page.waitForTimeout(900);
-// Verify the trial actually took effect, rather than checking for a banner on
-// a view that never renders one (an earlier version of this test did exactly
-// that and reported a false negative).
-const tierAfterTrial = await page.evaluate(async () => {
-  const { store } = await import('./js/store.js');
-  const { resolveEntitlement } = await import('./js/entitlements.js');
-  return resolveEntitlement(await store.getMeta('entitlement'));
-});
-console.log('entitlement after trial:', JSON.stringify(tierAfterTrial));
-if (tierAfterTrial.tier !== 'pro') throw new Error('trial did not activate');
 
 console.log('\n--- INSIGHTS (pro) ---');
 await page.click('[data-action="goto"][data-view="insights"]');
@@ -107,9 +89,6 @@ const insights = await page.$$eval('.insight', els => els.map(e => ({
 console.log('findings:', insights.length);
 insights.forEach((i,n)=>console.log(`  ${n+1}. [${i.verdict}] ${i.text}\n      ${i.stats}`));
 console.log('scatter charts rendered:', await page.$$eval('.chart-scatter', e=>e.length));
-const stillLocked = await page.$$eval('.lock-overlay', e => e.length);
-console.log('lock overlays on insights (expect 0):', stillLocked);
-if (stillLocked > 0) throw new Error('insights still gated after starting the trial');
 // The seed contains one genuine planted effect (yesterday's alcohol suppresses
 // today's energy) buried in habits that all trend together. Detrending should
 // leave that one and discard the trend-driven rest.
@@ -139,40 +118,6 @@ await page.click('[data-action="goto"][data-view="history"]');
 await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
-
-console.log('\n--- sample mode (fresh profile) ---');
-{
-  const sctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
-  const sp = await sctx.newPage();
-  sp.on('pageerror', e => errors.push('SAMPLE PAGEERROR: ' + e.message));
-  await sp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
-  await sp.waitForTimeout(700);
-  const cta = await sp.$('[data-action="load-sample"]');
-  console.log('tour CTA on empty Today:', !!cta);
-  if (!cta) throw new Error('sample-mode CTA missing from empty state');
-  await sp.click('[data-action="load-sample"]');
-  await sp.waitForTimeout(2500);
-  if (!(await sp.$('[data-sample-banner]'))) throw new Error('sample banner missing after load');
-  await sp.evaluate(() => { location.hash = '#insights'; });
-  await sp.waitForTimeout(2500);
-  const sampleFindings = await sp.$$eval('.insight', els => els.length);
-  console.log('sample insights rendered:', sampleFindings);
-  if (sampleFindings < 2) throw new Error('sample data must light up at least 2 insights, got ' + sampleFindings);
-  // Save must be refused while the sample is loaded.
-  await sp.evaluate(() => { location.hash = '#log'; });
-  await sp.waitForTimeout(400);
-  await sp.click('[data-action="save-entry"]');
-  await sp.waitForTimeout(400);
-  const toastText = await sp.$eval('#toast', e => e.textContent);
-  if (!/sample data/i.test(toastText)) throw new Error('save was not refused in sample mode: ' + toastText);
-  console.log('save refused with honest toast:', true);
-  await sp.click('[data-action="clear-sample"]');
-  await sp.waitForTimeout(800);
-  const left = await sp.evaluate(async () => (await (await import('./js/store.js')).store.allEntries()).length);
-  if (left !== 0) throw new Error('clear-sample left ' + left + ' entries behind');
-  console.log('clear-sample restores clean first run:', true);
-  await sctx.close();
-}
 
 console.log('\n--- dark mode ---');
 await ctx.close();

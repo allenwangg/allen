@@ -10,31 +10,8 @@
 import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
-import { TIERS, FEATURE_COPY, TRIAL_DAYS, can, annualSavings } from './entitlements.js';
 
 /* ---------------- shared bits ---------------- */
-
-export function lockOverlay(feature, entitlement) {
-  const copy = FEATURE_COPY[feature] || { name: 'Pro feature', why: '' };
-  const canTrial = !entitlement?.trialUsed && entitlement?.status === 'free';
-  return `<div class="lock-overlay"><div class="lock-card">
-    <span class="pill pill-pro">Pro</span>
-    <h3 style="margin-top:8px">${esc(copy.name)}</h3>
-    <p>${esc(copy.why)}</p>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-      ${canTrial ? `<button class="btn btn-pro" data-action="start-trial">Try free for ${TRIAL_DAYS} days</button>` : ''}
-      <button class="btn ${canTrial ? '' : 'btn-pro'}" data-action="goto" data-view="upgrade">See plans</button>
-    </div>
-  </div></div>`;
-}
-
-function gate(feature, state, innerHtml) {
-  if (can(state.entitlement, feature)) return innerHtml;
-  // `inert` (not just aria-hidden + pointer-events:none) — the pointer rule
-  // blocks the mouse but not the Tab key, so keyboard users used to fall into
-  // blurred, unannounced controls they could still edit.
-  return `<div class="locked"><div class="locked-content" inert aria-hidden="true">${innerHtml}</div>${lockOverlay(feature, state.entitlement)}</div>`;
-}
 
 const fmtDelta = (v, unit = '') => {
   if (v == null) return '<span class="delta-flat">--</span>';
@@ -57,11 +34,11 @@ export function todayView(state) {
       <p>Log your first day and you'll get a Healthspan Score immediately.<br>
       It takes about forty seconds.</p>
       <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+        <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary" data-action="goto" data-view="log">Log today</button>
-        <button class="btn" data-action="load-sample">Or take a tour with sample data</button>
+        <button class="btn" data-action="load-sample">Look around with example data first</button>
       </div>
-      <p class="subtle" style="margin-top:10px">The tour loads 90 synthetic days with real planted patterns,
-      so you can see every view — including Pro — before logging anything.</p>
+      </div>
     </div>`;
   }
 
@@ -70,9 +47,9 @@ export function todayView(state) {
   const trend = report.trendPerWeek;
   const smooth = state.smoothed || null;
 
-  // Name the window that was actually used. On Free this is 14 days, not 28,
-  // and claiming otherwise is a small lie that undermines everything else on
-  // the page.
+  // Name the window that was actually used, which is however many days exist
+  // up to 28 — claiming a longer window than the data covers is a small lie
+  // that undermines everything else on the page.
   const trendWindow = Math.min(28, report.scored.length);
   const trendLine = trend == null
     ? '<span class="delta-flat">Not enough data yet</span>'
@@ -86,7 +63,6 @@ export function todayView(state) {
   const scorePoints = report.scored.map((s) => ({ date: s.date, value: s.score }));
 
   return `
-  ${banner(state)}
   <div class="card">
     <div class="hero">
       <div>${scoreRing(t.score, { sublabel: 'today' })}</div>
@@ -118,7 +94,7 @@ export function todayView(state) {
   <div class="grid grid-2">
     <div class="card">
       <div class="card-head"><h2>Score history</h2><div class="spacer"></div>
-        <span class="subtle">${state.entitlement.tier === 'free' ? 'Last 14 days (Free)' : `All ${entries.length} days`}</span></div>
+        <span class="subtle">All ${entries.length} days</span></div>
       ${lineChart(scorePoints, {
         smooth, bands: [{ from: 70, to: 100 }], label: 'Healthspan Score over time',
         width: state.narrow ? 380 : 720,
@@ -189,34 +165,10 @@ function leverageCard(state) {
       });
 
   return `<div class="card">
-    <div class="card-head"><h2>Your highest-leverage changes</h2><span class="pill pill-pro">Pro</span></div>
+    <div class="card-head"><h2>Your highest-leverage changes</h2></div>
     <p class="muted">Not generic advice. Each of these was simulated against <em>your own</em> 28-day average day, and ranked by the actual score change it produced.</p>
-    ${gate('leverage', state, inner)}
+    ${inner}
   </div>`;
-}
-
-function banner(state) {
-  const e = state.entitlement;
-  if (e.status === 'trialing') {
-    return `<div class="banner banner-pro">
-      <strong>Pro trial</strong>
-      <span>${e.daysLeft} ${e.daysLeft === 1 ? 'day' : 'days'} left. No card was required, and nothing happens automatically when it ends.</span>
-      <div class="spacer"></div>
-      <button class="btn btn-pro btn-sm" data-action="goto" data-view="upgrade">Keep Pro</button></div>`;
-  }
-  if (e.status === 'trial-ended') {
-    return `<div class="banner banner-info">
-      <span>Your trial has ended. Everything you logged is still here, and logging stays free forever.</span>
-      <div class="spacer"></div>
-      <button class="btn btn-pro btn-sm" data-action="goto" data-view="upgrade">See plans</button></div>`;
-  }
-  if (e.inGrace) {
-    return `<div class="banner banner-info">
-      <span>We couldn't process your last renewal. Pro stays on for a few days while you update your payment method.</span>
-      <div class="spacer"></div>
-      <button class="btn btn-sm" data-action="manage-billing">Update payment</button></div>`;
-  }
-  return '';
 }
 
 /* ================================================================== *
@@ -228,11 +180,10 @@ export function logView(state) {
   const groups = Object.entries(GROUPS).map(([gid, g]) => {
     const fields = Object.entries(FIELDS).filter(([, f]) => f.group === gid);
     if (!fields.length) return '';
-    const locked = gid === 'biomarker' && !can(state.entitlement, 'biomarkers');
     const inner = fields.map(([name, f]) => fieldControl(name, f, entry[name])).join('');
     return `<div class="card">
-      <div class="card-head"><h3>${esc(g.label)}</h3>${locked ? '<span class="pill pill-pro">Pro</span>' : ''}</div>
-      ${locked ? gate('biomarkers', state, inner) : inner}
+      <div class="card-head"><h3>${esc(g.label)}</h3></div>
+      ${inner}
     </div>`;
   }).join('');
 
@@ -337,10 +288,10 @@ export function insightsView(state) {
   if (!res || res.status === 'insufficient-data') {
     return `
     <div class="card">
-      <div class="card-head"><h1 style="margin:0">Personal insights</h1><span class="pill pill-pro">Pro</span></div>
+      <div class="card-head"><h1 style="margin:0">Personal insights</h1></div>
       <div class="empty-state">
         <h3>Keep logging</h3>
-        <p>${esc(res?.message || 'Log at least 21 days to unlock personal correlations.')}</p>
+        <p>${esc(res?.message || 'Log at least 21 days before this can say anything worth trusting.')}</p>
         <p class="subtle" style="max-width:520px;margin:12px auto 0">We don't show correlations early. With too few days,
         anything we found would be noise — and a health app that confidently reports noise is worse than one that says nothing.</p>
       </div>
@@ -360,14 +311,14 @@ export function insightsView(state) {
 
   return `
   <div class="card">
-    <div class="card-head"><h1 style="margin:0">Personal insights</h1><span class="pill pill-pro">Pro</span></div>
+    <div class="card-head"><h1 style="margin:0">Personal insights</h1></div>
     <p class="muted">These are correlations found in <strong>your</strong> data — not population averages, and not advice
     copied from an article. Every one shown here survived a permutation test and a false-discovery-rate correction across
     ${res?.tested ? `${esc(String(res.tested))} relationship${res.tested === 1 ? '' : 's'}` : 'every relationship'} we tested.</p>
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
   </div>
-  ${gate('insights', state, body)}
+  ${body}
   ${weekdayCard}`;
 }
 
@@ -449,11 +400,11 @@ export function simulatorView(state) {
 
   return `
   <div class="card">
-    <div class="card-head"><h1 style="margin:0">What-if simulator</h1><span class="pill pill-pro">Pro</span></div>
+    <div class="card-head"><h1 style="margin:0">What-if simulator</h1></div>
     <p class="muted">Test a change before you commit to it. This runs the same scoring engine against your own
     28-day average day, so the answer is specific to you — someone who already sleeps eight hours gets almost nothing
     from sleeping more, and the simulator will tell them so.</p>
-    ${gate('simulator', state, inner)}
+    ${inner}
   </div>`;
 }
 
@@ -478,7 +429,6 @@ export function historyView(state) {
     </tr>`;
   }).join('');
 
-  const gated = state.entitlement.tier === 'free' && state.entries.length > state.visible.length;
 
   return `
   <div class="card">
@@ -487,11 +437,6 @@ export function historyView(state) {
       <button class="btn btn-sm" data-action="export-csv">Export CSV</button>
       <button class="btn btn-sm" data-action="import">Import</button>
     </div>
-    ${gated ? `<div class="banner banner-pro">
-      <span>You have <strong>${state.entries.length}</strong> days logged but Free shows the last ${state.visible.length}.
-      Your older data is safe and untouched — upgrading brings it straight back.</span>
-      <div class="spacer"></div>
-      <button class="btn btn-pro btn-sm" data-action="goto" data-view="upgrade">Unlock full history</button></div>` : ''}
     <div class="table-wrap"><table class="table">
       <thead><tr><th>Date</th><th class="num">Score</th>
       ${Object.values(PILLAR_LABELS).map((l) => `<th class="num">${esc(l.slice(0, 4))}</th>`).join('')}
@@ -502,100 +447,7 @@ export function historyView(state) {
 }
 
 /* ================================================================== *
- * UPGRADE
- * ================================================================== */
-
-export function upgradeView(state) {
-  const a = annualSavings();
-  const e = state.entitlement;
-  const isPro = e.tier === 'pro';
-  const canTrial = !state.entitlementRaw?.trialStartedAt;
-
-  if (isPro && e.source === 'subscription') {
-    return `<div class="card">
-      <h1>You're on Pro</h1>
-      <p class="muted">Thanks — genuinely. ${e.renewsAt ? `Your subscription renews on ${new Date(e.renewsAt).toLocaleDateString()}.` : ''}</p>
-      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
-        <button class="btn" data-action="manage-billing">Manage billing</button>
-        <button class="btn btn-ghost" data-action="goto" data-view="today">Back to dashboard</button>
-      </div>
-      <p class="disclaimer">Cancelling takes two clicks from the billing portal and takes effect at the end of your
-      current period. We don't hide it, and we don't make you email anyone.</p>
-    </div>`;
-  }
-
-  return `
-  <div class="card center">
-    <h1>Know which habits actually work — for you</h1>
-    <p class="muted" style="max-width:620px;margin:0 auto 6px">
-      Free gives you the score, the pillars and your streak, forever. Pro adds the analysis:
-      what's driving your numbers, what a change would be worth, and your whole history.</p>
-  </div>
-
-  <div class="price-grid">
-    <div class="price">
-      <h3>Free</h3>
-      <div><span class="price-amount">$0</span></div>
-      <ul>
-        <li>Daily logging, all 20 daily habit fields</li>
-        <li>Healthspan Score and pillar breakdown</li>
-        <li>Streaks and weekday patterns</li>
-        <li>Last 14 days of history</li>
-        <li>Full data export, any time</li>
-      </ul>
-      <button class="btn btn-block" ${e.tier === 'free' ? 'disabled' : ''}>${e.tier === 'free' ? 'Your current plan' : 'Free'}</button>
-    </div>
-
-    <div class="price featured">
-      <div class="price-badge">Best value · save ${a.percent}%</div>
-      <h3>Pro, annual</h3>
-      <div><span class="price-amount">$${a.annual}</span><span class="price-period">/year</span></div>
-      <p class="subtle" style="margin:2px 0 0">$${a.perMonthEquivalent}/month, billed yearly. You save $${a.saved}.</p>
-      <ul>
-        <li>Everything in Free</li>
-        <li><strong>Personal insight engine</strong> — statistically tested correlations</li>
-        <li><strong>What-if simulator</strong></li>
-        <li><strong>Highest-leverage rankings</strong></li>
-        <li>Unlimited history and long-range trends</li>
-        <li>Biomarker tracking (HRV, resting HR, waist)</li>
-        <li>Printable report for your doctor or coach</li>
-      </ul>
-      <button class="btn btn-pro btn-block" data-action="checkout" data-plan="annual">Get Pro annual</button>
-    </div>
-
-    <div class="price">
-      <h3>Pro, monthly</h3>
-      <div><span class="price-amount">$${TIERS.pro.priceMonthly}</span><span class="price-period">/month</span></div>
-      <p class="subtle" style="margin:2px 0 0">Cancel any time.</p>
-      <ul>
-        <li>Everything in the annual plan</li>
-        <li>Month-to-month, no commitment</li>
-      </ul>
-      <button class="btn btn-block" data-action="checkout" data-plan="monthly">Get Pro monthly</button>
-    </div>
-  </div>
-
-  ${canTrial ? `<div class="card center" style="margin-top:16px">
-    <h3>Or try it first</h3>
-    <p class="muted">${TRIAL_DAYS} days of Pro. No card, no auto-billing, no countdown pressure —
-    when it ends, you simply go back to Free with all your data intact.</p>
-    <button class="btn btn-pro" data-action="start-trial">Start ${TRIAL_DAYS}-day trial</button>
-  </div>` : ''}
-
-  <div class="card">
-    <h3>What you're actually paying for</h3>
-    <p class="muted">Most trackers show you what your watch already told you. The Pro features exist because
-    finding real signal in a single person's noisy daily log is genuinely hard: we test every habit against every
-    outcome at multiple time lags, then apply a permutation test and a false-discovery-rate correction so that what
-    survives is worth acting on. On pure noise, that pipeline reports nothing at all — which is exactly the point.</p>
-    <p class="disclaimer">VitalArc is a wellness and habit-tracking tool. It is not a medical device, it does not
-    diagnose, treat or prevent any condition, and nothing in it should be used in place of professional medical advice.
-    If something in your health concerns you, talk to a clinician.</p>
-  </div>`;
-}
-
-/* ================================================================== *
- * REPORT — print-friendly summary for a doctor or coach (Pro)
+ * REPORT — print-friendly summary to take to a clinician
  * ================================================================== */
 
 export function reportView(state) {
@@ -670,14 +522,14 @@ export function reportView(state) {
 
   return `
   <div class="card no-print">
-    <div class="card-head"><h1 style="margin:0">Report</h1><span class="pill pill-pro">Pro</span>
+    <div class="card-head"><h1 style="margin:0">Report</h1>
       <div class="spacer"></div>
-      ${can(state.entitlement, 'report') ? '<button class="btn btn-primary" data-action="print-report">Print / save as PDF</button>' : ''}
+      <button class="btn btn-primary" data-action="print-report">Print / save as PDF</button>
     </div>
-    <p class="muted">A clean, printable summary of your data — the thing to hand a doctor, coach or trainer instead of
+    <p class="muted">A clean, printable summary of your data — the thing to hand a doctor instead of
     your phone. Uses your browser's print dialog, so "Save as PDF" works everywhere with nothing uploaded.</p>
   </div>
-  ${gate('report', state, inner)}`;
+  ${inner}`;
 }
 
 /* ================================================================== *
@@ -721,17 +573,6 @@ export function settingsView(state) {
     </div>
     <p class="subtle" style="margin-top:10px">Storage backend in use: <span class="mono">${esc(state.storageMode || 'detecting…')}</span> ·
     ${state.entries.length} ${state.entries.length === 1 ? 'day' : 'days'} stored.</p>
-  </div>
-
-  <div class="card">
-    <h3>Subscription</h3>
-    <p class="muted">Current plan: <strong>${esc(TIERS[state.entitlement.tier].label)}</strong>
-    ${state.entitlement.status === 'trialing' ? ` (trial, ${state.entitlement.daysLeft} days left)` : ''}</p>
-    <div style="display:flex;gap:9px;flex-wrap:wrap">
-      ${state.entitlement.tier === 'pro' && state.entitlement.source === 'subscription'
-        ? '<button class="btn" data-action="manage-billing">Manage billing</button>'
-        : '<button class="btn btn-pro" data-action="goto" data-view="upgrade">See Pro plans</button>'}
-    </div>
   </div>
 
   <div class="card">

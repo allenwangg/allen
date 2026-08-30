@@ -4,7 +4,6 @@
  * statistical honesty of the insight engine.
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
-import { resolveEntitlement, visibleEntries } from '../app/js/entitlements.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
 
@@ -54,47 +53,6 @@ t('validateEntry survives garbage', () => {
   eq(entry.steps, 6000);
 });
 t('completeness full on default entry', () => eq(completeness(emptyEntry()), 1));
-
-/* ================= entitlements ================= */
-t('a renewing subscriber is NEVER lapsed by the clock alone', () => {
-  // The single most damaging bug this app has had: the client writes its
-  // entitlement once at checkout, Stripe renews silently, and treating the
-  // stale periodEnd as expiry downgraded every paying subscriber to Free on
-  // about day 33 while their card was still being charged.
-  const D = 86400000, buy = 1780000000000;
-  const sub = { status: 'active', tier: 'pro', periodEnd: buy + 30 * D };
-  for (const day of [29, 31, 34, 120, 400]) {
-    const r = resolveEntitlement(sub, buy + day * D);
-    eq(r.tier, 'pro', `day ${day} must stay pro without a server answer`);
-  }
-  ok(resolveEntitlement(sub, buy + 31 * D).needsRefresh, 'a stale record must ask for revalidation');
-  ok(!resolveEntitlement(sub, buy + 29 * D).needsRefresh, 'a fresh record must not');
-});
-t('only an explicit server answer removes Pro', () => {
-  const D = 86400000, buy = 1780000000000;
-  eq(resolveEntitlement({ status: 'canceled', canceledAt: buy }, buy + 40 * D).tier, 'free');
-  // past_due keeps Pro but flags the payment problem for the UI
-  const pd = resolveEntitlement({ status: 'active', tier: 'pro', periodEnd: buy + 30 * D, pastDue: true }, buy + 31 * D);
-  eq(pd.tier, 'pro'); eq(pd.inGrace, true);
-});
-t('a healthy subscription never shows a payment-failure banner', () => {
-  const D = 86400000, buy = 1780000000000;
-  const r = resolveEntitlement({ status: 'active', tier: 'pro', periodEnd: buy + 30 * D }, buy + 31 * D);
-  eq(r.inGrace, false, 'inGrace must require an actual server-reported failure');
-});
-t('visibleEntries trims by calendar days, not entry count', () => {
-  // A sparse logger (twice a week) used to see a 46-day window under a label
-  // promising 14 days, because the trim sliced the last N entries.
-  const sparse = [];
-  for (let i = 0; i < 14; i++) sparse.push({ date: addDays('2026-07-16', i * 3) });
-  const seen = visibleEntries(sparse, { tier: 'free' }, '2026-08-26');
-  ok(seen.length < 14, 'sparse entries outside the window must be trimmed, got ' + seen.length);
-  for (const e of seen) ok(e.date >= '2026-08-13', 'entry outside 14-day window leaked: ' + e.date);
-});
-t('visibleEntries is unbounded for Pro', () => {
-  const many = Array.from({ length: 400 }, (_, i) => ({ date: addDays('2025-01-01', i) }));
-  eq(visibleEntries(many, { tier: 'pro' }, '2026-02-04').length, 400);
-});
 
 /* ================= curves ================= */
 t('curve exact node', () => near(curve([[0, 0], [10, 100]], 10), 100));
