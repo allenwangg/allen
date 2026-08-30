@@ -107,8 +107,14 @@ what actually works for this segment:
 2. **Trade-specific SEO.** "bathroom remodel cost per square foot", "contractor markup vs
    margin", "how much to charge for a deck". High intent, and the assemblies already
    contain the answers.
-3. **One trade association or supplier partnership** is worth more than months of
-   cold outreach.
+3. **A trade association or supplier partnership** can be worth more than months of cold
+   outreach — but go in knowing the channel is already served. SoftPlan is used by 1,100+
+   North American lumber yards and runs at hundreds of Builders FirstSource locations;
+   STACK, TradeTek, PrebuiltML and Estimator360 sell into the same channel. Every one of
+   them is a *takeoff* product answering "how much material," and none claims to answer
+   "will this job make money." That distinction is the only opening, and it is unverified.
+   The first supplier conversation is therefore a discovery call, not a pitch: ask what
+   they already give contractors, and whether contractors actually use it.
 
 ## The operational version
 
@@ -136,6 +142,20 @@ link is the thing to build. If they shrug, it is not, and you have saved yoursel
 months. That answer determines which path above is worth building and which are fantasy.
 It costs you a week and it is the only step here that cannot be skipped.
 
+## What checking the market changed
+
+An hour of research refuted a thesis this document previously implied. The supplier channel
+is not greenfield — see above. Two other findings are worth carrying into every decision here:
+
+- **The markup/margin trap is real and well documented.** Joist, Buildern, Projul, Beam,
+  TradePilot and Foundation Software all published on it in 2026, using the same arithmetic
+  this product uses. That confirms the pain and simultaneously kills any claim to a hidden
+  insight — the *concept* is commodity content.
+- **The differentiated asset is measurement, not education.** Nobody is rebuilding a
+  contractor's last three jobs and handing them their own number. That is the audit, and it
+  is the one offer here whose value does not evaporate on contact with a better-funded
+  incumbent. It also happens to be a service, not software.
+
 ## Risks worth stating
 
 - **The free tier may cannibalize the paid one.** The app is genuinely complete. A
@@ -147,8 +167,10 @@ It costs you a week and it is the only step here that cannot be skipped.
 - **Price book accuracy is a liability surface.** If someone bids a job off default
   numbers and loses money, they will blame the tool. The app labels the costs as
   editable estimates; keep that framing prominent.
-- **This is a crowded market with funded incumbents.** The wedge is sharp but narrow.
-  Being better at one thing is a real strategy, but it is not a moat.
+- **This is a crowded market with funded incumbents, confirmed rather than suspected.**
+  The wedge is sharp but narrow. Being better at one thing is a real strategy, but it is not
+  a moat — and the research above found competitors on both the software side and the
+  content side before a single customer conversation had happened.
 - **Change orders are a discipline problem before they are a software problem.** The app
   makes writing one fast and makes the exposure visible, but a contractor who does not
   want to have the awkward conversation with their client still will not have it. Tools
