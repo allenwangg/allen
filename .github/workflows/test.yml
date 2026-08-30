@@ -1,0 +1,29 @@
+name: Tests
+
+# The suite drives the real page in headless Chromium and exercises the Stripe
+# ledger reader against a mock, so a green check here means the board actually
+# works — not merely that it built.
+on:
+  push:
+    branches: [main, master, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright + Chromium
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Run the suite
+        run: node test/run-tests.mjs
