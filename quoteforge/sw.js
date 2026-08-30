@@ -15,12 +15,14 @@ const CACHE = 'quoteforge-v1';
 const SHELL = [
   './',
   './index.html',
+  './intake.html',
   './css/app.css',
   './js/app.js',
   './js/pricing.js',
   './js/pricebook.js',
   './js/store.js',
   './js/proposal.js',
+  './js/intake-link.js',
 ];
 
 self.addEventListener('install', (event) => {

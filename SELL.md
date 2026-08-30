@@ -63,6 +63,21 @@ the estimator, Changes and Costs tabs still do that line by line.
 If step 4's number surprises you, you have both rehearsed the product and acquired
 your first marketing story — yours, true, and specific.
 
+## 3b. Send the link instead of booking the call
+
+`quoteforge/intake.html` is the same twelve questions, as a page a contractor
+fills in themselves. They hit *Create my summary*, get a link, and send it back;
+you paste it into **Audit a job** and everything is filled in.
+
+This is the only part of the funnel that scales without a backend. Five booked
+calls is a scheduling problem; twenty sent links is not. Say the privacy line
+out loud when you ask, because it is true and it is unusual: their figures live
+in the link's fragment, which browsers never transmit — the page has no server
+to send them to.
+
+Their answers still need your eyes. Rough numbers are the point, but a missing
+zero in "what you charged" will produce a confident, wrong report.
+
 ## 4. The five free audits — the step that cannot be skipped
 
 Offer five real contractors a free audit. Not to be generous: to find out whether the

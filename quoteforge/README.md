@@ -35,6 +35,10 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   offers a one-click fix.
 - **Client proposals** grouped by trade, with optional upgrades priced separately, a
   payment schedule that reconciles to the penny, your terms, and signature capture.
+- **A shareable intake link.** `intake.html` is the same questions as a page the
+  contractor fills in on their own time; it packs their answers into a URL fragment they
+  send back, which the app unpacks into a finished audit. No server, and — because
+  fragments are never transmitted — their figures are not sent anywhere at all.
 - **A one-screen audit intake.** Twelve fields — what they charged, cost by trade
   estimated and actual, and what changed — reconstruct a finished job exactly and produce
   the audit report. It exists because the margin audit is the one offer worth selling and
@@ -70,7 +74,7 @@ went. Export CSV and hand the rest to whatever you already use.
 
 ## Architecture
 
-Five modules, no framework, no build:
+Six modules, no framework, no build:
 
 | File | Responsibility |
 |---|---|
@@ -79,6 +83,7 @@ Five modules, no framework, no build:
 | `js/store.js` | State, persistence, undo/redo, import/export, migration. |
 | `js/app.js` | UI wiring. Renders from state; owns no truth of its own. |
 | `js/proposal.js` | The client-facing document, as a pure function of state. |
+| `js/intake-link.js` | Packs a job summary into a URL fragment and back. |
 
 Three decisions worth knowing about:
 
@@ -112,7 +117,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-156 unit assertions with no test framework and no install step, plus 191 browser
+166 unit assertions with no test framework and no install step, plus 202 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 and `test/security.mjs`. Both figures are what `./run-tests.sh --all` actually reports —
 re-read them from its output rather than trusting this line after a change. The pricing suite includes a

@@ -16,6 +16,7 @@ import {
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
+import { readIntakeFrom } from './intake-link.js';
 import {
   ASSEMBLIES, UNITS, searchEffective, effectiveItem,
   effectiveTrades, expandAssemblyWith,
@@ -2070,12 +2071,46 @@ function wireAuditIntake() {
       </tr>`).join('');
     $('#aChanges').innerHTML = '';
     addChangeRow();
-    for (const id of ['#aTitle', '#aClient', '#aQuoted']) $(id).value = '';
+    for (const id of ['#aTitle', '#aClient', '#aQuoted', '#aPaste']) $(id).value = '';
+    $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
     dlg.showModal();
     requestAnimationFrame(() => $('#aTitle').focus());
   };
 
   $('#btnAddChangeRow').onclick = addChangeRow;
+
+  // A link the contractor filled in themselves. Everything travels in the URL
+  // fragment, so their figures were never sent anywhere — this just unpacks it.
+  $('#aPaste').addEventListener('input', (e) => {
+    const raw = e.target.value.trim();
+    if (!raw) { $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.'; return; }
+    const data = readIntakeFrom(raw);
+    if (!data) {
+      $('#aPasteNote').textContent = 'That link is not readable — ask them to send it again, unbroken.';
+      return;
+    }
+    $('#aTitle').value = data.title;
+    $('#aClient').value = data.client;
+    $('#aQuoted').value = data.quotedTotal || '';
+    for (const [key, value] of Object.entries(data.budget)) {
+      const el = $(`[data-budget="${key}"]`);
+      if (el) el.value = value || '';
+    }
+    for (const [key, value] of Object.entries(data.spent)) {
+      const el = $(`[data-spent="${key}"]`);
+      if (el) el.value = value || '';
+    }
+    $('#aChanges').innerHTML = '';
+    for (const ch of data.changes) {
+      addChangeRow();
+      const row = $$('#aChanges .change-row').at(-1);
+      row.querySelector('[data-ctitle]').value = ch.title;
+      row.querySelector('[data-camount]').value = ch.amount;
+      row.querySelector('[data-csigned]').checked = ch.signed;
+    }
+    if (!data.changes.length) addChangeRow();
+    $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}, ${data.changes.length} change${data.changes.length === 1 ? '' : 's'}. Check it over and build.`;
+  });
 
   $('#aChanges').onclick = (e) => {
     const del = e.target.closest('[data-delchange]');

@@ -257,6 +257,74 @@ check('unsigned work surfaces from the intake',
 check('overruns surface from the intake', /over budget|Over/i.test(
   await page.locator('#budgetPanel').textContent()));
 
+/* --- the async loop: contractor fills a page, link builds the audit --- */
+{
+  // A separate page stands in for the contractor's own browser — the intake
+  // shares no storage with the app, which is the point of the link.
+  const filler = await b.newPage();
+  await filler.goto(`http://localhost:${PORT}/quoteforge/intake.html`, { waitUntil: 'networkidle' });
+
+  check('the contractor intake page loads',
+    /ten minutes/i.test(await filler.locator('#formPane h1').textContent()));
+  check('it promises nothing is uploaded',
+    /never leave this page/i.test(await filler.locator('.privacy').textContent()));
+
+  await filler.locator('#btnFinish').click();
+  await filler.waitForTimeout(200);
+  check('it will not produce an empty summary',
+    !(await filler.locator('#donePane').evaluate((el) => el.classList.contains('show'))));
+
+  await filler.locator('#fTitle').fill('Bathroom — Cedar Ave');
+  await filler.locator('#fClient').fill("O'Brien & Sons");
+  await filler.locator('#fQuoted').fill('28500');
+  await filler.locator('[data-budget="labor"]').fill('9000');
+  await filler.locator('[data-budget="material"]').fill('6500');
+  await filler.locator('[data-spent="labor"]').fill('11800');
+  await filler.locator('[data-spent="material"]').fill('6500');
+  await filler.locator('[data-ctitle]').first().fill('Replaced the subfloor');
+  await filler.locator('[data-camount]').first().fill('1900');
+  await filler.locator('#btnFinish').click();
+  await filler.waitForTimeout(300);
+
+  const link = await filler.locator('#outLink').inputValue();
+  check('it produces a link', link.includes('#j='), `(got ${link.slice(0, 40)})`);
+  check('the link is short enough to send', link.length < 700, `(${link.length} chars)`);
+  await filler.close();
+
+  // Back in the app: paste it and build.
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(300);
+  await page.locator('#aPaste').fill(link);
+  await page.waitForTimeout(400);
+
+  check('pasting the link fills the intake',
+    (await page.locator('#aTitle').inputValue()) === 'Bathroom — Cedar Ave'
+    && (await page.locator('#aQuoted').inputValue()) === '28500',
+    '(their figures should arrive intact)');
+  check('an apostrophe in a company name survives the trip',
+    (await page.locator('#aClient').inputValue()) === "O'Brien & Sons");
+  check('their change order comes across',
+    (await page.locator('[data-ctitle]').first().inputValue()) === 'Replaced the subfloor');
+
+  await page.locator('#btnBuildAudit').click();
+  await page.waitForTimeout(600);
+  const fromLink = await page.locator('#auditPrint').textContent();
+  check('the audit builds straight from their link',
+    /Bathroom — Cedar Ave/.test(fromLink) && /Replaced the subfloor/.test(fromLink));
+
+  // A mangled link must fail readably, not silently produce wrong numbers.
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(300);
+  await page.locator('#aPaste').fill(link.slice(0, link.length - 20));
+  await page.waitForTimeout(300);
+  check('a truncated link says so instead of loading garbage',
+    /not readable/i.test(await page.locator('#aPasteNote').textContent()));
+  check('and it does not populate anything',
+    (await page.locator('#aTitle').inputValue()) === '');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+}
+
 /* --- deleting an entry --- */
 const rows = await page.locator('tr[data-ac]').count();
 await page.locator('tr[data-ac]').first().hover();

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job summary — margin audit</title>
+<meta name="description" content="Ten minutes of numbers from one finished job. Nothing is uploaded; your figures stay in the link you send back.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><text x='16' y='23' font-size='19' font-family='system-ui' font-weight='800' fill='white' text-anchor='middle'>Q</text></svg>">
+<style>
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; }
+  .intro h1 { font-size: clamp(26px, 4.5vw, 36px); letter-spacing: -.02em; margin: 0 0 12px; }
+  .intro p { color: var(--text-2); max-width: 62ch; }
+  .privacy {
+    border: 1px solid var(--border); background: var(--surface-2);
+    border-radius: var(--radius); padding: 14px 16px;
+    font-size: 13.5px; color: var(--text-2); margin: 18px 0 26px;
+  }
+  .privacy strong { color: var(--text); }
+  .done { display: none; }
+  .done.show { display: block; }
+  .form.hide { display: none; }
+  #outLink {
+    width: 100%; font-family: var(--mono); font-size: 12.5px;
+    padding: 12px; border: 1px solid var(--border-strong);
+    border-radius: var(--radius-s); background: var(--surface-2);
+    color: var(--text); word-break: break-all; min-height: 96px; resize: vertical;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="form" id="formPane">
+    <div class="intro">
+      <h1>One finished job, in about ten minutes</h1>
+      <p>
+        Rough numbers are fine — this is about finding where the money went, not auditing your
+        books. You do not need line items or receipts; what you remember and a bank statement
+        is enough.
+      </p>
+    </div>
+
+    <div class="privacy">
+      <strong>Nothing here is uploaded.</strong> Your figures never leave this page — they get
+      packed into a link that you choose to send back. This page has no server to send them to.
+    </div>
+
+    <section class="card">
+      <header><h2>The job</h2></header>
+      <div class="body">
+        <div class="grid-3">
+          <div class="field">
+            <label for="fTitle">What was it?</label>
+            <input id="fTitle" placeholder="Kitchen remodel — Alder St">
+          </div>
+          <div class="field">
+            <label for="fClient">Your company</label>
+            <input id="fClient" placeholder="Whitmore Building">
+          </div>
+          <div class="field">
+            <label for="fQuoted">What you charged</label>
+            <input id="fQuoted" class="num" type="number" step="0.01" min="0" placeholder="42000">
+            <span class="hint">The contract total, before sales tax.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <h2>Costs</h2>
+        <span class="spacer"></span>
+        <span class="tiny faint">What you thought it would cost, and what it did</span>
+      </header>
+      <div id="costWrap"></div>
+      <div class="body" style="padding-top:0">
+        <p class="hint" style="margin:0">
+          Skip any row that does not apply. "What you actually paid" can come straight off bank
+          lines — close is good enough to be useful.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <h2>What changed</h2>
+        <span class="spacer"></span>
+        <button class="btn sm" id="btnAddChange">+ Another</button>
+      </header>
+      <div class="body">
+        <div id="changes"></div>
+        <p class="hint" style="margin:10px 0 0">
+          Anything you did that was not in the original price. The amount is what the work was
+          <em>worth</em> — tick the box only if the client actually signed for it.
+        </p>
+      </div>
+    </section>
+
+    <div style="display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap">
+      <button class="btn primary lg" id="btnFinish" style="padding:12px 24px">Create my summary</button>
+      <span class="tiny faint" id="finishNote"></span>
+    </div>
+  </div>
+
+  <div class="done" id="donePane">
+    <div class="intro">
+      <h1>Done — send this back</h1>
+      <p>
+        Copy the link below and send it however you like. It contains only the numbers you
+        just entered.
+      </p>
+    </div>
+    <textarea id="outLink" readonly rows="4" aria-label="Your summary link"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn primary" id="btnCopy">Copy link</button>
+      <button class="btn" id="btnBack">Go back and change something</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script type="module">
+import { encodeIntake, INTAKE_CATEGORIES } from './js/intake-link.js';
+
+const $ = (s) => document.querySelector(s);
+const LABELS = {
+  labor: 'Labor / payroll', material: 'Materials', subcontractor: 'Subcontractors',
+  equipment: 'Equipment & rentals', other: 'Permits & fees',
+};
+
+$('#costWrap').innerHTML = `
+  <table class="items">
+    <thead><tr><th>Category</th><th class="right">You estimated</th><th class="right">You actually paid</th></tr></thead>
+    <tbody>${INTAKE_CATEGORIES.map((c) => `
+      <tr>
+        <td style="padding-left:10px;color:var(--text-2)">${LABELS[c]}</td>
+        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-budget="${c}" placeholder="0"></td>
+        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-spent="${c}" placeholder="0"></td>
+      </tr>`).join('')}</tbody>
+  </table>`;
+
+function addChange() {
+  const row = document.createElement('div');
+  row.className = 'change-row';
+  row.innerHTML = `
+    <input data-ctitle placeholder="e.g. rot under the tub, extra outlets">
+    <input data-camount class="num" type="number" step="0.01" placeholder="Worth">
+    <label class="signed"><input type="checkbox" data-csigned> They signed</label>
+    <button class="btn sm icon ghost" data-del title="Remove">✕</button>`;
+  $('#changes').append(row);
+}
+addChange();
+$('#btnAddChange').onclick = addChange;
+$('#changes').onclick = (e) => {
+  if (e.target.closest('[data-del]')) e.target.closest('.change-row').remove();
+};
+
+function read(attr) {
+  return Object.fromEntries([...document.querySelectorAll(`[data-${attr}]`)]
+    .map((el) => [el.dataset[attr], Number(el.value) || 0]));
+}
+
+$('#btnFinish').onclick = () => {
+  const quoted = Number($('#fQuoted').value) || 0;
+  const budget = read('budget');
+  if (quoted <= 0) {
+    $('#finishNote').textContent = 'Add what you charged for the job first.';
+    $('#fQuoted').focus();
+    return;
+  }
+  if (Object.values(budget).every((v) => !v)) {
+    $('#finishNote').textContent = 'Add at least one estimated cost.';
+    return;
+  }
+  $('#finishNote').textContent = '';
+
+  const code = encodeIntake({
+    title: $('#fTitle').value.trim(),
+    client: $('#fClient').value.trim(),
+    quotedTotal: quoted,
+    budget,
+    spent: read('spent'),
+    changes: [...document.querySelectorAll('.change-row')].map((r) => ({
+      title: r.querySelector('[data-ctitle]').value.trim(),
+      amount: Number(r.querySelector('[data-camount]').value) || 0,
+      signed: r.querySelector('[data-csigned]').checked,
+    })),
+  });
+
+  const url = `${location.origin}${location.pathname}#j=${code}`;
+  $('#outLink').value = url;
+  $('#formPane').classList.add('hide');
+  $('#donePane').classList.add('show');
+  window.scrollTo(0, 0);
+};
+
+$('#btnBack').onclick = () => {
+  $('#formPane').classList.remove('hide');
+  $('#donePane').classList.remove('show');
+  window.scrollTo(0, 0);
+};
+
+$('#btnCopy').onclick = async () => {
+  const el = $('#outLink');
+  try {
+    await navigator.clipboard.writeText(el.value);
+    $('#btnCopy').textContent = 'Copied';
+    setTimeout(() => { $('#btnCopy').textContent = 'Copy link'; }, 2000);
+  } catch {
+    // Clipboard access is blocked in some contexts; selecting it is enough.
+    el.select();
+  }
+};
+</script>
+</body>
+</html>
