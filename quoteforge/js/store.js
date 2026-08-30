@@ -23,8 +23,15 @@ function clone(v) {
   return typeof structuredClone === 'function' ? structuredClone(v) : JSON.parse(JSON.stringify(v));
 }
 
+/**
+ * Today in the LOCAL timezone. toISOString() is UTC, so an estimate created at
+ * 6pm Pacific was stamped tomorrow — and change-order approval dates are
+ * evidence of when a client authorized work.
+ */
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 function addDays(iso, days) {

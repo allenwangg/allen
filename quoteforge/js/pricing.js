@@ -246,8 +246,13 @@ function weightedMarkup(lines, settings) {
 function resolveDiscount(estimate, base) {
   const d = estimate.discount;
   if (!d || !d.value) return 0;
-  if (d.type === 'percent') return scale(base, Number(d.value) || 0);
-  return Math.min(base, toCents(d.value));
+  // Both forms clamp at the job and at zero. A fixed discount already did; a
+  // percent one did not, so a mistyped 150% drove the estimate total negative
+  // and printed a job the contractor pays the client to do.
+  const raw = d.type === 'percent'
+    ? scale(base, Number(d.value) || 0)
+    : toCents(d.value);
+  return Math.min(Math.max(0, raw), Math.max(0, base));
 }
 
 function rollupByCategory(lines) {
@@ -320,9 +325,13 @@ export function buildSchedule(totalCents, milestones) {
   let allocated = 0;
   milestones.forEach((m, i) => {
     const isLast = i === milestones.length - 1;
+    // Earlier milestones can never claim more than the job is worth, so the
+    // final one absorbs a remainder instead of printing a negative payment on
+    // a signed contract. Over-allocated schedules simply exhaust early.
+    const remaining = totalCents - allocated;
     const amount = isLast
-      ? totalCents - allocated
-      : scale(totalCents, Number(m.percent) || 0);
+      ? remaining
+      : clampToRemaining(scale(totalCents, Number(m.percent) || 0), remaining);
     allocated += amount;
     rows.push({
       label: m.label,
@@ -332,6 +341,12 @@ export function buildSchedule(totalCents, milestones) {
     });
   });
   return rows;
+}
+
+/** Keep a milestone inside what is left of the job, in either sign. */
+function clampToRemaining(amount, remaining) {
+  if (remaining >= 0) return Math.min(Math.max(0, amount), remaining);
+  return Math.max(Math.min(0, amount), remaining);
 }
 
 export function defaultMilestones() {
@@ -482,7 +497,15 @@ export function summarizeContract(estimate, settings) {
 
   // Margin is computed on the revenue that actually backs the profit, so a
   // credit change order (negative total) cannot make the ratio nonsensical.
-  const revenue = base.afterDiscountCents + approvedTotal;
+  //
+  // Both halves must be on the SAME basis. base.afterDiscountCents is pre-tax,
+  // so the change-order half has to be pre-tax too — using their totalCents
+  // (which includes sales tax the contractor merely collects and remits)
+  // inflated the denominator and understated margin on every taxed job.
+  const approvedPreTax = approved.reduce(
+    (a, r) => a + (r.priced.totalCents - r.priced.taxCents), 0,
+  );
+  const revenue = base.afterDiscountCents + approvedPreTax;
 
   return {
     base,
@@ -492,6 +515,8 @@ export function summarizeContract(estimate, settings) {
     rejected: by(CO_REJECTED),
     approvedCount: approved.length,
     approvedTotalCents: approvedTotal,
+    /** Approved change orders excluding sales tax — for margin and audit math. */
+    approvedPreTaxCents: approvedPreTax,
     contractTotalCents: contractTotal,
     contractCostCents: contractCost,
     contractProfitCents: contractProfit,

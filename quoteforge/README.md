@@ -108,7 +108,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-144 unit assertions with no test framework and no install step, plus 180 browser
+149 unit assertions with no test framework and no install step, plus 181 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 and `test/security.mjs`. Both figures are what `./run-tests.sh --all` actually reports —
 re-read them from its output rather than trusting this line after a change. The pricing suite includes a

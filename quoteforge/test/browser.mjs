@@ -181,6 +181,19 @@ console.log('\n  estimator');
   await page.waitForTimeout(250);
   await page.locator('#pbQuery').fill('lead carpenter');
   await page.waitForTimeout(150);
+  // Clearing the field mid-edit must not commit $0 into the price book.
+  await page.locator('#pbQuery').fill('lead carpenter');
+  await page.waitForTimeout(150);
+  const box = page.locator('.pb-cost-input').first();
+  await box.fill('');
+  await page.waitForTimeout(250);
+  const zeroed = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('quoteforge.v1') || '{}')?.priceBookOverrides?.['LAB-LEAD']?.unitCost);
+  check('clearing a cost field does not commit $0',
+    zeroed !== 0, `(stored ${zeroed})`);
+  await box.fill('72');
+  await page.waitForTimeout(250);
+
   check('edited costs persist across a reload',
     (await page.locator('.pb-cost-input').first().inputValue()) === '72');
   await page.keyboard.press('Escape');

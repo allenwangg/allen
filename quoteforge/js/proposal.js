@@ -190,6 +190,11 @@ function scopeTable(priced, { groupByTrade, showLinePrices }) {
 </div>`;
 }
 
+/** A number with at most two decimals and no trailing zeros. */
+function trimNum(n) {
+  return String(Math.round(n * 100) / 100);
+}
+
 function fmtQty(q) {
   const n = Number(q) || 0;
   return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
@@ -207,8 +212,11 @@ function totals(priced, est) {
   rows.push(`<div class="row"><span>Scope price</span><span class="v">${formatMoney(scopePrice)}</span></div>`);
 
   if (priced.discountCents > 0) {
+    // Print the rate that was actually applied. Rounding 12.5% to "13%" beside
+    // an amount computed at 12.5% invites the client to recompute and find a
+    // discrepancy on a document they are about to sign.
     const label = est.discount?.type === 'percent'
-      ? `Discount (${(Number(est.discount.value) * 100).toFixed(0)}%)`
+      ? `Discount (${trimNum(Number(est.discount.value) * 100)}%)`
       : 'Discount';
     rows.push(`<div class="row"><span>${esc(label)}</span><span class="v">−${formatMoney(priced.discountCents)}</span></div>`);
   }
@@ -640,8 +648,17 @@ function firstLine(text, limit = 120) {
   return `${(lastSpace > limit * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[,;:.\s]+$/, '')}…`;
 }
 
+/**
+ * Today's date in the LOCAL timezone.
+ *
+ * toISOString() is UTC, so a contractor printing a statement at 6pm Pacific
+ * got tomorrow's date on a document a client reads — and on an audit report
+ * whose whole value is being trusted with dates.
+ */
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 /* ======================================================== audit report ==== */
@@ -664,7 +681,10 @@ export function renderAuditReport({ estimate, costed, company, targetMargin, flo
   const accent = company.accent || '#c2410c';
   const contract = costed.contract;
 
-  const revenue = contract.base.afterDiscountCents + contract.approvedTotalCents;
+  // Pre-tax on BOTH halves, as the row label says. Sales tax on approved
+  // change orders is money the contractor collects and remits, not revenue —
+  // including it inflated profit kept and understated the pricing leak.
+  const revenue = contract.base.afterDiscountCents + contract.approvedPreTaxCents;
   const target = Number(targetMargin) || 0;
 
   // What was actually kept, using real spend where it exists. Overhead is

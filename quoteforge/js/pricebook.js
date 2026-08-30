@@ -282,7 +282,7 @@ export function expandAssembly(assembly, driverQty) {
   return assembly.items.map((ref) => {
     const book = findSku(ref.sku);
     if (!book) return null;
-    let q = qty * ref.factor * (book.waste || 1);
+    let q = qty * ref.factor * wasteFor(book);
     if (ref.min !== undefined) q = Math.max(q, ref.min);
     q = roundQty(q, book.unit);
     return {
@@ -298,11 +298,36 @@ export function expandAssembly(assembly, driverQty) {
   }).filter(Boolean);
 }
 
-/** Whole units for countable things, two decimals for measured things. */
+/**
+ * Waste applies to MATERIAL you buy, never to a subcontractor's installed
+ * price. A tile sub quoting per square foot of wall already carries their own
+ * breakage; multiplying their area by a waste factor bills the client for
+ * square feet of wall that do not exist.
+ */
+function wasteFor(book) {
+  return book.category === 'material' ? (book.waste || 1) : 1;
+}
+
+/**
+ * Whole units for countable things, two decimals for measured things.
+ *
+ * A bare ceil() ordered a fourth fixture rough-in for a three-fixture
+ * bathroom, because the factor lands on 3.015. So a quantity that is
+ * essentially integral snaps to that integer; anything genuinely fractional
+ * still rounds up, because you cannot order most of a dumpster.
+ *
+ * The tolerance is capped in absolute terms as well as relative: a purely
+ * proportional epsilon would shave a real unit off a large count (110 roofing
+ * squares became 109), which is a worse error than the one being fixed.
+ */
 function roundQty(q, unit) {
   const countable = ['ea', 'ls', 'day', 'sq'];
-  if (countable.includes(unit)) return Math.max(1, Math.ceil(q - 1e-9));
-  return Math.round(q * 100) / 100;
+  if (!countable.includes(unit)) return Math.round(q * 100) / 100;
+
+  const eps = Math.max(1e-9, Math.min(Math.abs(q) * 0.01, 0.05));
+  const nearest = Math.round(q);
+  if (Math.abs(q - nearest) <= eps) return Math.max(1, nearest);
+  return Math.max(1, Math.ceil(q));
 }
 
 /* ==================================================== user price book ===== */
@@ -389,7 +414,7 @@ export function expandAssemblyWith(assembly, driverQty, overrides = {}) {
     if (overrides[ref.sku]?.hidden) return null;
     const book = effectiveItem(ref.sku, overrides) || findSku(ref.sku);
     if (!book) return null;
-    let q = qty * ref.factor * (book.waste || 1);
+    let q = qty * ref.factor * wasteFor(book);
     if (ref.min !== undefined) q = Math.max(q, ref.min);
     q = roundQty(q, book.unit);
     return {

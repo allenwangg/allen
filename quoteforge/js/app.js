@@ -709,8 +709,21 @@ function renderPriceBookList() {
   list.oninput = (e) => {
     const sku = e.target.dataset.cost;
     if (!sku) return;
+    // An empty field means the user is mid-edit — clearing it before typing a
+    // new number. Committing that as $0 would silently zero the cost and carry
+    // it into every future assembly and quote.
+    if (e.target.value.trim() === '') return;
     store.setPriceBookCost(sku, e.target.value);
     markRowEdited(e.target.closest('.pb-row'), sku);
+  };
+
+  // Left empty and abandoned, restore the shipped cost rather than keeping a
+  // blank the user never confirmed.
+  list.onfocusout = (e) => {
+    const sku = e.target.dataset?.cost;
+    if (!sku || e.target.value.trim() !== '') return;
+    store.resetPriceBookItem(sku);
+    renderPriceBookList();
   };
 
   list.onclick = (e) => {

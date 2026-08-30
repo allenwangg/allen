@@ -722,6 +722,55 @@ t('property: the discount solver hits arbitrary targets', () => {
   }
 });
 
+/* ------------------------------------------------ audit-found math ------- */
+
+t('a percent discount over 100% cannot drive the job negative', () => {
+  const est = { items: [{ id: '1', qty: 1, unitCost: 1000, category: 'labor', markup: null }] };
+  for (const value of [1.5, 3, 99]) {
+    const p = priceEstimate({ ...est, discount: { type: 'percent', value } }, S);
+    ok(p.totalCents >= 0, `a ${value * 100}% discount produced ${p.totalCents}`);
+    ok(p.afterDiscountCents >= 0);
+  }
+});
+
+t('a negative discount is treated as no discount', () => {
+  const est = { items: [{ id: '1', qty: 1, unitCost: 1000, category: 'labor', markup: null }] };
+  const plain = priceEstimate(est, S).totalCents;
+  eq(priceEstimate({ ...est, discount: { type: 'fixed', value: -500 } }, S).totalCents, plain,
+    'a negative discount must not inflate the job:');
+});
+
+t('a payment schedule never prints a negative milestone', () => {
+  const over = buildSchedule(100000, [
+    { label: 'A', percent: 0.7 }, { label: 'B', percent: 0.7 }, { label: 'C', percent: 0.7 },
+  ]);
+  ok(over.every((m) => m.amountCents >= 0),
+    `over-allocated schedule produced ${over.map((m) => m.amountCents)}`);
+  eq(over.reduce((a, m) => a + m.amountCents, 0), 100000, 'and it must still reconcile:');
+});
+
+t('a credit job schedule stays negative and still reconciles', () => {
+  const s = buildSchedule(-50000, [{ label: 'A', percent: 0.5 }, { label: 'B', percent: 0.5 }]);
+  ok(s.every((m) => m.amountCents <= 0), 'a credit should not produce positive payments');
+  eq(s.reduce((a, m) => a + m.amountCents, 0), -50000);
+});
+
+t('contract margin uses a pre-tax basis on both halves', () => {
+  const items = [{ id: '1', qty: 1, unitCost: 5000, category: 'material', markup: null }];
+  const co = { id: 'c', number: 'CO-01', status: 'approved',
+    items: [{ id: 'x', qty: 1, unitCost: 2000, category: 'material', markup: null }] };
+  const taxed = { ...S, taxMode: 'all', taxRate: 0.10 };
+  const c = summarizeContract({ items, changeOrders: [co] }, taxed);
+
+  ok(c.approvedPreTaxCents < c.approvedTotalCents,
+    'the pre-tax figure should exclude collected sales tax');
+  // Sales tax is collected and remitted, so it must not dilute margin: the
+  // margin with tax on should match the margin with tax off.
+  const untaxed = summarizeContract({ items, changeOrders: [co] }, { ...S, taxMode: 'none', taxRate: 0 });
+  near(c.contractMargin, untaxed.contractMargin, 1e-9,
+    'sales tax must not change the margin the contractor earns:');
+});
+
 
 /* -------------------------------------------------------------- report ---- */
 
