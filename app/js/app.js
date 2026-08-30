@@ -11,6 +11,7 @@ import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js'
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { store } from './store.js';
 import { resolveEntitlement, visibleEntries, startTrial, can } from './entitlements.js';
+import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
 import { beginCheckout, openBillingPortal, restoreFromReceipt } from './billing.js';
 import * as views from './ui.js';
 
@@ -45,6 +46,7 @@ const state = {
   theme: 'system',
   storageMode: null,
   dirty: false,
+  sampleMode: false,
   // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
   // only ~140px tall on a phone and the trend line becomes unreadable. The
   // views pick chart dimensions from this instead.
@@ -72,7 +74,12 @@ function entriesFingerprint() {
 }
 
 function recompute() {
-  state.entitlement = resolveEntitlement(state.entitlementRaw);
+  // Sample mode unlocks Pro views on the synthetic data only — a tour, not a
+  // giveaway. Its source is 'sample', which the upgrade view treats as
+  // not-subscribed, so pricing still renders normally.
+  state.entitlement = state.sampleMode
+    ? { tier: 'pro', source: 'sample', status: 'sample-tour' }
+    : resolveEntitlement(state.entitlementRaw);
   state.visible = visibleEntries(state.entries, state.entitlement);
 
   const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
@@ -120,7 +127,15 @@ function render() {
   const activeId = document.activeElement?.id;
   const scroll = window.scrollY;
 
-  main.innerHTML = VIEWS[state.view].render(state);
+  const sampleBanner = state.sampleMode
+    ? `<div class="banner banner-pro" data-sample-banner>
+        <strong>Sample data</strong>
+        <span>Every number on screen is synthetic — a 90-day tour with real planted patterns, all Pro views open.</span>
+        <div class="spacer"></div>
+        <button class="btn btn-sm" data-action="clear-sample">Clear sample &amp; start my log</button>
+      </div>`
+    : '';
+  main.innerHTML = sampleBanner + VIEWS[state.view].render(state);
   renderTabs();
   document.documentElement.setAttribute('data-theme', state.theme === 'system' ? '' : state.theme);
   if (state.theme === 'system') document.documentElement.removeAttribute('data-theme');
@@ -193,7 +208,8 @@ const actions = {
   }),
 
   'save-entry': async () => {
-    await saveDraft();
+    const ok = await saveDraft();
+    if (!ok) return;                 // saveDraft already told the user why
     toast('Day saved');
     go('today');
   },
@@ -274,6 +290,34 @@ const actions = {
 
   'print-report': () => window.print(),
 
+  'load-sample': async () => {
+    if (state.entries.length > 0) { toast('Clear your data first — sample and real days never mix.'); return; }
+    const rows = generateSampleData(dateKey());
+    await store.putMany(rows);
+    await store.setMeta('sampleMode', true);
+    await store.setMeta('profile', SAMPLE_PROFILE);
+    state.sampleMode = true;
+    state.entries = await store.allEntries();
+    state.profile = { ...SAMPLE_PROFILE };
+    await loadDraft(dateKey());
+    recompute();
+    go('today');
+    toast('Sample loaded — explore the Pro views');
+  },
+
+  'clear-sample': async () => {
+    await store.clearAll();
+    state.entries = [];
+    state.sampleMode = false;
+    state.profile = { age: 35, weightKg: 75 };
+    state.entitlementRaw = null;
+    state.draft = emptyEntry();
+    state.dirty = false;
+    recompute();
+    go('log');
+    toast('Sample cleared — this log is yours now');
+  },
+
   wipe: async () => {
     if (!confirm('Delete every entry and setting on this device? This cannot be undone. Export first if you want a backup.')) return;
     if (!confirm('Really delete everything? There is no recovery.')) return;
@@ -320,8 +364,12 @@ async function loadDraft(date) {
 }
 
 async function saveDraft() {
+  if (state.sampleMode) {
+    toast('This is sample data — clear it from the banner to start your own log.');
+    return false;
+  }
   const { entry } = validateEntry(state.draft);
-  if (!entry) { toast('Could not save — invalid date.'); return; }
+  if (!entry) { toast('Could not save — invalid date.'); return false; }
   try {
     await store.putEntry(entry);
   } catch (err) {
@@ -329,13 +377,14 @@ async function saveDraft() {
     // swallowed inside the storage layer and the app toasted "Day saved"
     // over data that was already gone.
     toast(err.message || 'Could not save — storage unavailable.');
-    return;
+    return false;
   }
   const i = state.entries.findIndex((e) => e.date === entry.date);
   if (i >= 0) state.entries[i] = entry; else state.entries.push(entry);
   state.entries.sort((a, b) => (a.date < b.date ? -1 : 1));
   state.dirty = false;
   recompute();
+  return true;
 }
 
 async function persistDraftIfDirty() { if (state.dirty) await saveDraft(); }
@@ -468,9 +517,15 @@ function updateSimReadout(input) {
   if (!sim) return;
   const stats = document.querySelectorAll('#main .stat-value');
   // Layout order in simulatorView: Current, Projected, Score change, Age change.
-  if (stats.length >= 2) {
+  if (stats.length >= 4) {
     stats[0].textContent = sim.baseline?.score ?? '--';
     stats[1].textContent = sim.projected?.score ?? '--';
+    const d = sim.scoreDelta;
+    const cls = d > 0.05 ? 'delta-good' : d < -0.05 ? 'delta-bad' : 'delta-flat';
+    stats[2].innerHTML = `<span class="${cls}">${d > 0 ? '+' : ''}${d ?? '--'}</span> points`;
+    const y = sim.yearsDelta;
+    const ycls = y < 0 ? 'delta-good' : y > 0 ? 'delta-bad' : 'delta-flat';
+    stats[3].innerHTML = y == null ? '--' : `<span class="${ycls}">${y > 0 ? '+' : ''}${y} years</span>`;
   }
 }
 
@@ -506,12 +561,14 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, entitlement, theme] = await Promise.all([
+  const [entries, profile, entitlement, theme, sampleMode] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('entitlement'),
     store.getMeta('theme'),
+    store.getMeta('sampleMode'),
   ]);
+  state.sampleMode = !!sampleMode;
 
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };

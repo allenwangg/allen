@@ -12,7 +12,7 @@ const VERSION = 'vitalarc-v1';
 const SHELL = [
   './', './index.html', './css/app.css',
   './js/app.js', './js/ui.js', './js/engine.js', './js/insights.js',
-  './js/model.js', './js/store.js', './js/charts.js', './js/entitlements.js', './js/billing.js',
+  './js/model.js', './js/store.js', './js/charts.js', './js/entitlements.js', './js/billing.js', './js/sample.js',
   './manifest.webmanifest',
 ];
 

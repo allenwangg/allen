@@ -53,7 +53,12 @@ export function todayView(state) {
       <h3>Welcome to VitalArc</h3>
       <p>Log your first day and you'll get a Healthspan Score immediately.<br>
       It takes about forty seconds.</p>
-      <button class="btn btn-primary" data-action="goto" data-view="log">Log today</button>
+      <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" data-action="goto" data-view="log">Log today</button>
+        <button class="btn" data-action="load-sample">Or take a tour with sample data</button>
+      </div>
+      <p class="subtle" style="margin-top:10px">The tour loads 90 synthetic days with real planted patterns,
+      so you can see every view — including Pro — before logging anything.</p>
     </div>`;
   }
 

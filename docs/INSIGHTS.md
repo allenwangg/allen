@@ -15,8 +15,8 @@ For every (driver, outcome, lag) combination, where lag ∈ {0, 1, 2} days:
 1. **Pair the days.** Driver on day *d*, outcome on day *d+lag*. Missing days
    break the chain rather than being interpolated — inventing data in order to
    find correlations in it is the cardinal sin of this category.
-2. **Detrend both series** against elapsed time — but only where a trend
-   actually exists (see below).
+2. **Detrend both series** against elapsed time, and **remove day-of-week
+   means** — each only where that structure actually exists (see below).
 3. **Spearman rank correlation.** Self-reported 1–5 scales are ordinal and
    lumpy; Pearson overstates linear structure in them.
 4. **Permutation test** against a null built from circular shifts *and*
@@ -105,7 +105,44 @@ Detrending is a correction for a confound, so applying it where no confound
 exists can only add noise. A series is now detrended only when a linear time
 trend explains at least 5% of its variance.
 
-## Guard 5 — spurious time trends
+## Guard 5 — the weekday is a lurking variable
+
+Habits follow weekly rhythms: weekend drinking, Monday stress, Sunday lie-ins.
+Any two rhythmic series correlate through the shared weekday without one
+influencing the other at all. Measured: 20 of 20 synthetic users with
+INDEPENDENT weekday profiles and zero cross-effects received ~12 confident
+findings each — "on your higher-caffeine days, resting HR runs lower two days
+later, r = −0.74" — every one of them the calendar.
+
+The null cannot be patched around this: circular shifts at multiples of seven
+re-align the rhythms (fat tail) while block-bootstrap surrogates with random
+phase destroy them (thin tail), so any pooling of the two families mis-states
+the spread. The fix removes the confound at the source, exactly as detrending
+does for the slow drift: day-of-week group means are subtracted from both
+series — conditionally, only when the weekday explains at least 15% of a
+series' variance (fitting seven group means to 120 random points soaks up ~5%
+by chance), so sparse tied variables keep their ties.
+
+After the fix: 0 of 20 rhythm-only datasets produce anything, and recall on a
+genuine effect planted *inside* a weekend drinking rhythm is still 100%.
+
+## Guard 6 — honest uncertainty, honest magnitudes
+
+Three smaller corrections in the same spirit:
+
+- **Confidence intervals use an effective sample size.** Two smooth 120-day
+  series carry far fewer than 120 independent observations; the nominal-n
+  interval covered the true value only 78.8% of the time on AR(0.7) pairs.
+  With the Bartlett correction from the two series' lag-1 autocorrelations,
+  measured coverage is 96.2% at nominal 95%.
+- **The surrogate seed hashes the data, never the observed statistic** — a
+  seed that moves with the effect size makes the p-value non-monotone in it.
+- **Practical effects split at a value threshold, not an array position.**
+  A positional median split dilutes zero-inflated drivers (alcohol is zero on
+  most days) with the same zeros on both sides; the threshold split lands on
+  "days you did vs days you didn't", which is also the honest sentence.
+
+## Guard 7 — spurious time trends
 
 This is the failure mode most likely to reach a real user. Someone who starts
 taking their health seriously improves many habits at once: protein up, fiber
@@ -126,20 +163,24 @@ understood, and almost universally ignored in consumer health apps.
 
 ## Measured behaviour
 
-Thirty independent 120-day datasets per scenario:
+Independent 120-day datasets per scenario:
 
 | Scenario | Findings/dataset | Planted effect recovered |
 |---|---|---|
-| Pure noise, no real effect | 0.00 | n/a — **0 of 30 datasets produced anything** |
+| Pure iid noise, no real effect | 0.00 | n/a — **0 of 40 datasets produced anything** |
 | Habits all trending, no real effect | 0.00 | n/a — **0 of 30 datasets produced anything** |
+| Independent weekly rhythms, no real effect | 0.00 | n/a — **0 of 20 datasets produced anything** |
 | Planted effect, no trend | 1.00 | **100%** |
 | Planted effect + confounding trend | 1.00 | **100%** |
 | Planted effect, weekend-clustered driver | 1.00 | **100%** |
-| Planted effect, trend *and* weekend-clustered | 1.00 | **100%** |
+| Planted effect, trend *and* weekend-clustered | 1.03 | **100%** |
+| AR(1) noise, φ ∈ {0, .5, .8} | — | P(p ≤ .01) at or under nominal |
 
-The two rows that matter most are the first two: on data containing no real
-day-to-day relationship, the engine reports nothing at all — including when
-every habit is improving together, which is the case that fools naive analysis.
+The rows that matter most are the no-effect ones: on data containing no real
+day-to-day relationship the engine reports nothing at all — including when
+every habit improves together over months, and when every habit follows its
+own weekly rhythm, the two cases that fool naive analysis (and, before these
+guards existed, fooled this engine).
 
 ## What it still cannot do
 
