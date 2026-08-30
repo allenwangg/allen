@@ -9,6 +9,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# push and pull_request both fire on a PR branch; keep only the newest run.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

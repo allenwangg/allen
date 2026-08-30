@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 37 tests in repo |
+| Automated test suite | none public | ✅ 47 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -38,7 +38,7 @@ product titles, public click counts):
 |---|---|---|
 | Daily-reset board | ✅ separate /today page, added day 4 | ✅ the default view, with Final Hour endgame |
 | Public click counts | ✅ raw number | ✅ plus computed cost-per-click vs search ads |
-| Status progression (tiers, titles, streaks) | ❌ | ✅ nobility medallions, 4 earned titles, streaks |
+| Status progression (tiers, titles, streaks) | ❌ | ✅ 5 nobility tiers, 7 titles in a trophy case, presence flames |
 | Permanent record (Hall of Fame) | ❌ | ✅ midnight rollover engraves each day's king |
 | Rivalry/war detection | ❌ | ✅ tested |
 | 📺 Watch Mode broadcast view | ❌ | ✅ full-screen live board for streams and screen-recordings |
@@ -47,11 +47,15 @@ product titles, public click counts):
 | Hijack resistance (link/decree) | n/a | ✅ first-bid link, largest-bid decree, both tested |
 | Per-listing dossier with ROI math | ❌ | ✅ tested |
 | Auto-defend proxy bidding | ❌ | ✅ tested |
+| Monthly seasons with engraved champions | ❌ | ✅ tested |
+| Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
+| Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 37/37 passing
+## 2. Functional correctness — 47/47 passing
 
-`node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus the
-Stripe ledger reader exercised against a mock Stripe:
+`node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
+the Stripe ledger reader exercised against a mock Stripe. This suite also runs
+on CI for every push and pull request:
 
 ```
 PASS  page loads with correct title
@@ -72,6 +76,9 @@ PASS  no third-party requests besides Google Fonts
 PASS  XSS in listing name is escaped
 PASS  demo ribbon is shown until a payment link is configured
 PASS  brag share bar appears after a bid with rank and amount in the tweet
+PASS  ?take= deep link lands inside the bid modal aimed at its target
+PASS  dare links carry their target as a ?take= deep link
+PASS  share links derive the live domain instead of a hardcoded one
 PASS  crown card carries a dare-to-dethrone tweet intent
 PASS  with Stripe configured, checkout carries the bid and the board is NOT faked
 PASS  webhook feed merges as VERIFIED bids, idempotently
@@ -82,6 +89,12 @@ PASS  Watch Mode opens as a live broadcast view and closes on Escape
 PASS  clicking a row opens the dossier with cost-per-click math
 PASS  crowning bid with a decree shows the taunt on the crown card
 PASS  dossier offers an embeddable rank badge with copyable HTML
+PASS  trophy case shows every title, locked ones with how to earn them
+PASS  bidding in the final hour earns Night Owl
+PASS  Season board ranks by this month's bids with its own crown and countdown
+PASS  presence flames grow on consecutive days and reset after a gap
+PASS  the Oracle locks a pick, then pays out a streak after the day resolves
+PASS  ledger merge attributes historical bids to their own day and month
 PASS  Today board ranks by today's bids, independent of all-time totals
 PASS  outbound clicks are counted per listing (advertiser ROI proof)
 PASS  live Stripe ledger takes over the board and clears the demo seeds
@@ -91,8 +104,9 @@ PASS  API ranks by cumulative payment, breaking ties by who paid first
 PASS  a cheap bid cannot hijack an established listing's link or decree
 PASS  a genuinely larger bid does take over the decree
 PASS  ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII
+PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-37/37 tests passed
+47/47 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -101,10 +115,10 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **104 ms** |
-| DOMContentLoaded | **66.6 ms** |
+| First Contentful Paint | **116 ms** |
+| DOMContentLoaded | **82 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
-| Page weight | **73.2 KB raw / 22.4 KB gzipped** |
+| Page weight | **91.4 KB raw / 27.2 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
 | Backend | **none** — the board is computed from the Stripe ledger |
 
