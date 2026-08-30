@@ -65,12 +65,29 @@ function boot() {
   });
 
   // A debounced save can still be pending when the tab goes away.
+  registerServiceWorker();
+
   window.addEventListener('pagehide', () => store.save({ immediate: true }));
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') store.save({ immediate: true });
   });
 
   render();
+}
+
+/**
+ * Cache the app shell so it opens with no signal.
+ *
+ * Registration is best-effort and deliberately silent on failure: service
+ * workers need a secure context, so this is a no-op over file:// or plain
+ * http on a LAN address. The app works either way; only the offline cold-load
+ * is lost, and nothing about the UI depends on it.
+ */
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* offline cache unavailable */ });
+  });
 }
 
 /**

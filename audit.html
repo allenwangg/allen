@@ -30,7 +30,7 @@ const AUDIT_CONFIG = {
 :root{
   --bg:#faf9f7; --surface:#fff; --surface-2:#f4f2ef; --border:#e5e1da; --border-2:#cfc9c0;
   --text:#1c1917; --text-2:#57534e; --text-3:#8a8378;
-  --accent:#c2410c; --accent-soft:#fff2ea;
+  --accent:#c2410c; --accent-soft:#fff2ea; --on-accent:#fff;
   --good:#15803d; --good-soft:#eefaf1; --bad:#b91c1c;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -40,6 +40,9 @@ const AUDIT_CONFIG = {
   --bg:#141312; --surface:#1e1c1a; --surface-2:#272421; --border:#35312d; --border-2:#4a453f;
   --text:#f3f0ec; --text-2:#b4aba1; --text-3:#8a8279;
   --accent:#fb923c; --accent-soft:#2a1c11;
+  /* The dark palette lightens the accent, so white text on it fails contrast;
+     ink on the light accent is the readable pairing. */
+  --on-accent:#1c1917;
   --good:#4ade80; --good-soft:#142a1c; --bad:#f87171;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
 }}
@@ -65,7 +68,7 @@ nav .spacer{flex:1}
      border:1px solid var(--border-2);background:var(--surface);color:var(--text);
      text-decoration:none;font-weight:600;cursor:pointer;transition:.14s;font-size:16px}
 .btn:hover{background:var(--surface-2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.sm{padding:7px 14px;font-size:14px}
 
@@ -182,7 +185,7 @@ footer{border-top:1px solid var(--border);padding:32px 0;color:var(--text-3);fon
   <p style="color:var(--text-2);max-width:60ch">
     Everything in the audit is produced with <a href="quoteforge/">QuoteForge</a>, which is free
     and runs in your browser. Rebuild your own jobs, log what you spent, and print the same
-    report. The paid version of this is for people whose evenings are worth more than $400 —
+    report. The paid version of this is for people whose evenings are worth more than <span id="diyPrice">$400</span> —
     that is the entire pitch.
   </p>
   <a class="btn" href="quoteforge/">Open the app</a>
@@ -201,8 +204,14 @@ function renderAuditCTA(config) {
   const price = config.price || '$400';
   document.getElementById('priceAmt').textContent = price;
 
+  document.getElementById('diyPrice').textContent = price;
+
+  // Only advertise free slots when there is actually a way to claim one.
+  // Promising "first 5 free" above a page with no booking path is a claim the
+  // page cannot honor.
+  const bookable = Boolean(config.bookingUrl || config.contactEmail);
   const badge = document.getElementById('freeBadge');
-  if (config.freeSlots > 0) {
+  if (config.freeSlots > 0 && bookable) {
     badge.hidden = false;
     badge.textContent = `first ${config.freeSlots} free while I calibrate the offer`;
   } else {

@@ -8,7 +8,14 @@ to ignore on one job and large enough to end a business over a few hundred of th
 Every number this app produces is derived from explicit cost so the two figures can
 never quietly drift apart.
 
-Open `index.html` in a browser. There is no build step, no dependencies, and no server.
+There is no build step and no dependencies, but the app is made of ES modules, which
+browsers refuse to load over `file://` — opening `index.html` directly shows a blank
+page. Serve the folder over http instead; anything works, and nothing needs installing:
+
+```sh
+python3 -m http.server 8000     # then open http://localhost:8000/quoteforge/
+```
+
 To publish it, see [DEPLOY.md](../DEPLOY.md) — GitHub Pages takes about two minutes.
 To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.md).
 
@@ -40,6 +47,8 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   is visible from any tab rather than surfacing when the final invoice is disputed.
 - **Print to PDF** through the browser's own print dialog. No PDF library, no server.
 
+- **Works with no signal.** A service worker precaches the app shell, so it cold-loads
+  in a basement with no bars — which is where a change order actually gets written.
 - **Job costing**, because the third leak is margin fade: the job was priced at 25%,
   finished at 14%, and nobody can say which trade ate the difference. Every receipt,
   sub invoice, and week of payroll is logged against the category it was estimated
@@ -57,7 +66,7 @@ went. Export CSV and hand the rest to whatever you already use.
 
 ## Architecture
 
-Four modules, no framework, no build:
+Five modules, no framework, no build:
 
 | File | Responsibility |
 |---|---|
@@ -99,9 +108,10 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-122 unit assertions with no test framework and no install step, plus 145 browser
+144 unit assertions with no test framework and no install step, plus 180 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
-and `test/security.mjs`. The pricing suite includes a
+and `test/security.mjs`. Both figures are what `./run-tests.sh --all` actually reports —
+re-read them from its output rather than trusting this line after a change. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
 

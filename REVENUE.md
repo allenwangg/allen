@@ -73,7 +73,6 @@ messaging. Charge for what the browser cannot do:
   thirty seconds is worth real money to the contractor precisely because the
   alternative costs them real money
 - Team seats, shared price book
-- Job costing against actuals
 
 **Realistic pricing:** $19–29/mo. **Realistic conversion** on a free tool with no brand:
 1–3% of active users. That means 3,000+ engaged users to clear $1,000/mo. Which is to
@@ -101,8 +100,9 @@ Every path above bottlenecks on the same thing: **people have to find this.** Ra
 what actually works for this segment:
 
 1. **The calculator is the marketing.** "A 20% markup is a 16.7% margin" is a shareable,
-   argument-starting claim. It belongs in contractor Facebook groups, r/Contractor,
-   r/HomeImprovement, and trade forums — as a useful post, not a link drop. Those
+   argument-starting claim. It belongs in contractor Facebook groups, r/Contractor, and
+   trade forums — as a useful post, not a link drop. Not r/HomeImprovement: that is
+   homeowners, who are the wrong side of this trade. Those
    communities eject advertisers instantly and reward people who are actually helpful.
 2. **Trade-specific SEO.** "bathroom remodel cost per square foot", "contractor markup vs
    margin", "how much to charge for a deck". High intent, and the assemblies already

@@ -13,7 +13,7 @@
 :root{
   --bg:#faf9f7; --surface:#fff; --surface-2:#f4f2ef; --border:#e5e1da; --border-2:#cfc9c0;
   --text:#1c1917; --text-2:#57534e; --text-3:#8a8378;
-  --accent:#c2410c; --accent-2:#ea580c; --accent-soft:#fff2ea;
+  --accent:#c2410c; --accent-2:#ea580c; --accent-soft:#fff2ea; --on-accent:#fff;
   --good:#15803d; --good-soft:#eefaf1; --bad:#b91c1c; --bad-soft:#fdf0ef; --warn:#b45309;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -23,6 +23,8 @@
   --bg:#141312; --surface:#1e1c1a; --surface-2:#272421; --border:#35312d; --border-2:#4a453f;
   --text:#f3f0ec; --text-2:#b4aba1; --text-3:#8a8279;
   --accent:#fb923c; --accent-2:#f97316; --accent-soft:#2a1c11;
+  /* White on the lightened dark-mode accent fails contrast; use ink. */
+  --on-accent:#1c1917;
   --good:#4ade80; --good-soft:#142a1c; --bad:#f87171; --bad-soft:#2e1717; --warn:#fbbf24;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
 }}
@@ -49,7 +51,7 @@ nav a.navlink:hover{color:var(--text)}
      border:1px solid var(--border-2);background:var(--surface);color:var(--text);
      text-decoration:none;font-weight:600;cursor:pointer;transition:.14s}
 .btn:hover{background:var(--surface-2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.sm{padding:7px 14px;font-size:14px}
 .btn.lg{padding:14px 26px;font-size:17px}
@@ -447,7 +449,8 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
     $('rProfit').textContent = money(profit);
     $('rMargin').textContent = pct(margin);
     $('rNeeded').textContent = Number.isFinite(needed) ? money(needed) : '—';
-    $('rGap').textContent = money(gap * jobs);
+    // Reconciles with the per-job figure the verdict prints (see below).
+    $('rGap').textContent = money(Math.round(gap) * jobs);
 
     const v = $('verdict');
     if (!cost) {
@@ -465,8 +468,13 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
         + 'To actually hold ' + pct(target) + ' you would need to quote ' + money(needed)
         // The sentence-ending period lives inside the <strong> so it can never
         // wrap onto a line of its own after the bold run.
+        // Both figures are rounded for display, so the annual number is derived
+        // from the ROUNDED per-job figure. Otherwise a reader who multiplies
+        // what they see gets a different answer than the page prints — on a
+        // page whose entire claim is that the arithmetic is right.
         + ' — <strong>' + money(per) + ' more per job.</strong> '
-        + 'Across ' + jobs + ' job' + (jobs === 1 ? '' : 's') + ' a year that is ' + money(per * jobs)
+        + 'Across ' + jobs + ' job' + (jobs === 1 ? '' : 's') + ' a year that is '
+        + money(Math.round(per) * jobs)
         + ' of margin you are pricing away.';
     }
   }

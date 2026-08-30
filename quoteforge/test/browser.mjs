@@ -365,7 +365,10 @@ console.log('\n  landing page');
   check('quote = cost x 1.20', r.quote === '$38,400', `(${r.quote})`);
   check('20% markup shows as 16.7% margin', r.margin === '16.7%', `(${r.margin})`);
   check('price for a 25% margin is cost/0.75', r.needed === '$42,667', `(${r.needed})`);
-  check('annual gap = (needed - quote) x jobs', r.gap === '$51,200', `(${r.gap})`);
+  // Derived from the ROUNDED per-job figure so a reader who multiplies what
+  // the page shows gets what the page prints: $4,267 x 12.
+  check('the annual gap reconciles with the printed per-job figure',
+    r.gap === '$51,204', `(${r.gap})`);
 
   await page.locator('#cMarkup').fill('40');
   await page.waitForTimeout(80);
@@ -421,6 +424,31 @@ console.log('\n  mobile (390x844)');
   check('the app does not scroll sideways on a phone', !hScrollApp);
 
   await page.context().close();
+}
+
+/* ================================================ offline capability ===== */
+// The landing page promises the app works with no internet on a job site.
+// That is only true if a COLD load succeeds offline, not merely that state
+// persists — a contractor in a basement with no bars gets nothing otherwise.
+console.log('\n  offline');
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(`${base}/quoteforge/`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(2500);   // let the worker install and precache
+  check('a service worker takes control',
+    (await page.evaluate(() => !!navigator.serviceWorker.controller)));
+
+  await ctx.setOffline(true);
+  await page.goto(`${base}/quoteforge/`, { waitUntil: 'domcontentloaded' }).catch(() => {});
+  await page.waitForTimeout(1500);
+  check('the app cold-loads with the network off',
+    (await page.locator('.items tbody tr').count()) > 5,
+    '(the "works offline" claim depends on this)');
+  check('and it still prices the job offline',
+    /\$[\d,]+/.test(await page.locator('.figure.total .value').textContent()));
+  await ctx.setOffline(false);
+  await ctx.close();
 }
 
 /* ============================================== audit-found UI bugs ====== */
@@ -488,11 +516,14 @@ console.log('\n  audit offer page');
     !(await page.locator('#ctaBook').isVisible()) && !(await page.locator('#ctaBook2').isVisible()));
   check('unconfigured page explains instead of dangling',
     /Booking opens soon/.test(await page.locator('#ctaNote').textContent()));
-  check('the free-slots badge shows while calibrating',
-    /first 5 free/.test(await page.locator('#freeBadge').textContent()));
+  check('no free-slots promise while there is no way to book',
+    !(await page.locator('#freeBadge').isVisible()),
+    '(promising "first 5 free" above a dead page is a claim it cannot honor)');
 
   // Email-only configuration.
   await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 5, bookingUrl: '', contactEmail: 'me@example.com' }));
+  check('the badge appears once booking is possible',
+    /first 5 free/.test(await page.locator('#freeBadge').textContent()));
   check('email config produces a mailto CTA',
     (await page.locator('#ctaBook').getAttribute('href')).startsWith('mailto:me@example.com'));
   check('the mailto prefills a booking subject',
@@ -503,9 +534,11 @@ console.log('\n  audit offer page');
   check('a booking URL wires both CTAs',
     (await page.locator('#ctaBook').getAttribute('href')) === 'https://buy.stripe.com/test_123'
     && (await page.locator('#ctaBook2').getAttribute('href')) === 'https://buy.stripe.com/test_123');
-  check('the price flows into the button and headline',
+  check('the price flows into the button, headline, and DIY copy',
     (await page.locator('#ctaBook').textContent()).includes('$450')
-    && (await page.locator('#priceAmt').textContent()) === '$450');
+    && (await page.locator('#priceAmt').textContent()) === '$450'
+    && (await page.locator('#diyPrice').textContent()) === '$450',
+    '(a hardcoded price contradicts the configured one)');
   check('freeSlots 0 hides the calibration badge', !(await page.locator('#freeBadge').isVisible()));
 
   // The page must claim honestly, and route DIYers to the free app.
