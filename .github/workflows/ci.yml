@@ -20,6 +20,12 @@ jobs:
       - name: Unit tests
         run: node tests/run.mjs
 
+      # A service worker only ships a new cache when its own bytes change. If
+      # VERSION goes stale, every existing installation is pinned to the old
+      # build forever with no way to push a fix — so this is a hard gate.
+      - name: Service worker version is current
+        run: node scripts/stamp-sw.mjs --check
+
       - name: Install (Playwright only)
         run: npm install --no-audit --no-fund
 

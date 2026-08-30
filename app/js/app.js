@@ -654,13 +654,50 @@ async function boot() {
   go(location.hash.slice(1) || (state.entries.length ? 'today' : 'log'));
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => { /* offline support is a bonus, not a requirement */ });
+    navigator.serviceWorker.register('./sw.js')
+      .then(watchForUpdate)
+      .catch(() => { /* offline support is a bonus, not a requirement */ });
   }
 }
 
 // Debug/support handle: lets a user (or a test) inspect the app's resolved
 // state from the console without any framework devtools.
 if (typeof window !== 'undefined') window.__vitalarc = { state };
+
+/**
+ * Surface a new version instead of stranding it.
+ *
+ * The service worker deliberately does not skipWaiting: activating a new
+ * module set under a page that already imported the old one is how you get
+ * half-updated code. So the new worker waits, and without this the user would
+ * sit on the old build until every tab closed. Offering the reload is the
+ * other half of that design.
+ */
+function watchForUpdate(reg) {
+  if (!reg) return;
+  const offer = (worker) => {
+    if (!worker || !navigator.serviceWorker.controller) return;  // first install, nothing to replace
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloading) return;
+      reloading = true;
+      location.reload();
+    });
+    const el = document.getElementById('update-banner');
+    if (!el) return;
+    el.hidden = false;
+    el.querySelector('[data-action="apply-update"]').onclick = () => worker.postMessage('skip-waiting');
+  };
+
+  if (reg.waiting) offer(reg.waiting);
+  reg.addEventListener('updatefound', () => {
+    const installing = reg.installing;
+    if (!installing) return;
+    installing.addEventListener('statechange', () => {
+      if (installing.state === 'installed') offer(reg.waiting || installing);
+    });
+  });
+}
 
 boot().catch((err) => {
   document.getElementById('main').innerHTML =

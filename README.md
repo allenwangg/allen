@@ -14,11 +14,21 @@ On pure noise, the insight engine reports nothing. That is the point.
 ```bash
 npm install      # only needed for the browser test
 npm run serve    # http://localhost:8080/app/
-npm test         # 96 unit tests, no dependencies
+npm test         # 101 unit tests, no dependencies
 npm run e2e      # full browser walkthrough (needs the server running)
 ```
 
 There is no build step. The app is ES modules served as-is.
+
+One thing to run before deploying:
+
+```bash
+npm run stamp-sw   # writes a content hash of the app shell into app/sw.js
+```
+
+A service worker only installs a new cache when its own bytes change, so a
+stale `VERSION` pins every existing installation to the old build forever.
+CI fails if the stamp is out of date.
 
 ## What it does
 

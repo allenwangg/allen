@@ -391,6 +391,14 @@ textarea { min-height: 76px; resize: vertical; }
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
+.update-banner {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  z-index: 101; display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: 999px; padding: 8px 8px 8px 18px; box-shadow: var(--shadow-lg);
+  font-size: .9rem; max-width: calc(100vw - 32px);
+}
+
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); }
 .empty-state h3 { color: var(--text); }
 
