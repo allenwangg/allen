@@ -6,7 +6,7 @@
  * beyond swapping innerHTML and restoring focus.
  */
 
-import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series } from './model.js';
+import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, symptomId } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { store } from './store.js';
@@ -42,6 +42,7 @@ const state = {
   storageMode: null,
   dirty: false,
   sampleMode: false,
+  symptoms: [],
   // Bumped on every entry mutation. discover() runs the full hypothesis grid
   // (measured 636ms on two years of data) and recompute() fires on every save
   // and slider release, so insights are recomputed only when the underlying
@@ -268,6 +269,40 @@ const actions = {
 
   'print-report': () => window.print(),
 
+  'add-symptom': async () => {
+    const input = document.getElementById('new-symptom');
+    const label = (input?.value || '').trim();
+    if (!label) { toast('Give it a name first.'); return; }
+    if (state.symptoms.some((s) => s.id === symptomId(label))) { toast('You already track that.'); return; }
+    const next = validateSymptoms([...state.symptoms, { label }]);
+    if (next.length === state.symptoms.length) { toast('You can track up to 12 symptoms.'); return; }
+    state.symptoms = next;
+    await store.setMeta('symptoms', state.symptoms);
+    // Today's draft gains the new symptom at "none"; past days stay untouched,
+    // so the series starts today rather than pretending you were fine before.
+    if (!state.draft.symptoms) state.draft.symptoms = {};
+    for (const s of state.symptoms) if (state.draft.symptoms[s.id] === undefined) state.draft.symptoms[s.id] = 0;
+    recompute(); render();
+    toast(`Now tracking ${label}`);
+  },
+
+  'remove-symptom': async (el) => {
+    const id = el.dataset.id;
+    const sym = state.symptoms.find((s) => s.id === id);
+    if (!sym) return;
+    if (!confirm(`Stop tracking ${sym.label}? Days you already logged keep their ratings.`)) return;
+    state.symptoms = validateSymptoms(state.symptoms.filter((s) => s.id !== id));
+    await store.setMeta('symptoms', state.symptoms);
+    recompute(); render();
+    toast(`Stopped tracking ${sym.label}`);
+  },
+
+  'set-primary-symptom': async (el) => {
+    state.symptoms = validateSymptoms(state.symptoms.map((s) => ({ ...s, primary: s.id === el.dataset.id })));
+    await store.setMeta('symptoms', state.symptoms);
+    recompute(); render();
+  },
+
   'load-sample': async () => {
     if (state.entries.length > 0) { toast('Clear your own data first — example and real days never mix.'); return; }
     await store.putMany(generateSampleData(dateKey()));
@@ -289,7 +324,7 @@ const actions = {
     state.entriesRev++;
     state.sampleMode = false;
     state.profile = { age: 35, weightKg: 75, heightCm: null };
-    state.draft = emptyEntry();
+    state.draft = emptyEntry(dateKey(), state.symptoms);
     state.dirty = false;
     recompute();
     go('log');
@@ -301,7 +336,7 @@ const actions = {
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
     state.entries = []; state.entriesRev++; state.profile = { age: 35, weightKg: 75, heightCm: null };
-    state.draft = emptyEntry();
+    state.draft = emptyEntry(dateKey(), state.symptoms);
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
     // beforeunload nagged about "unsaved changes" that no longer exist.
@@ -336,7 +371,8 @@ function download(filename, content, mime) {
 
 async function loadDraft(date) {
   const existing = await store.getEntry(date);
-  state.draft = existing ? { ...emptyEntry(date), ...existing } : emptyEntry(date);
+  const blank = emptyEntry(date, state.symptoms);
+  state.draft = existing ? { ...blank, ...existing, symptoms: { ...blank.symptoms, ...(existing.symptoms || {}) } } : blank;
   state.dirty = false;
   recompute();
 }
@@ -380,6 +416,17 @@ function wire() {
       await actions[el.dataset.action](el);
       return;
     }
+    // Symptom severity taps.
+    const sym = ev.target.closest('[data-symptom][data-value]');
+    if (sym) {
+      ev.preventDefault();
+      if (!state.draft.symptoms) state.draft.symptoms = {};
+      state.draft.symptoms[sym.dataset.symptom] = Number(sym.dataset.value);
+      state.dirty = true;
+      recompute(); render();
+      return;
+    }
+
     // Segmented controls in the log form.
     const seg = ev.target.closest('[data-field][data-value]');
     if (seg) {
@@ -541,14 +588,16 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
     store.getMeta('sampleMode'),
+    store.getMeta('symptoms'),
   ]);
 
   state.sampleMode = !!sampleMode;
+  state.symptoms = validateSymptoms(symptoms || []);
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };
   if (theme) state.theme = theme;

@@ -532,14 +532,25 @@ export function indexEntries(sorted) {
 }
 
 /** alignedPairs against a prebuilt index — identical semantics, integer-only. */
+/** Read a field, transparently resolving `s_*` ids to the symptom map. */
+export function readField(entry, field) {
+  if (!entry) return null;
+  if (field.charCodeAt(0) === 115 && field.charCodeAt(1) === 95) {   // "s_"
+    const v = entry.symptoms ? entry.symptoms[field] : undefined;
+    return v === undefined ? null : v;
+  }
+  const v = entry[field];
+  return v === undefined ? null : v;
+}
+
 export function alignedPairsIndexed(index, driver, outcome, lag) {
   const xs = [], ys = [], times = [], xDows = [], yDows = [];
   for (const { e, day } of index.rows) {
-    const x = e[driver];
+    const x = readField(e, driver);
     if (x == null) continue;
     const target = index.byDay.get(day + lag);
     if (!target) continue;
-    const y = target[outcome];
+    const y = readField(target, outcome);
     if (y == null) continue;
     xs.push(x); ys.push(y);
     // The time axis is used only for linear detrending, which is invariant to
@@ -644,13 +655,38 @@ function hasUsableVariance(values) {
 export function discover(entries, opts = {}) {
   const {
     drivers = DRIVER_FIELDS,
-    outcomes = OUTCOME_FIELDS,
     lags = DEFAULT_LAGS,
     q = FDR_Q,
     minPairs = MIN_PAIRS,
     limit = 12,
     detrend: detrend_enabled = true,
+    symptoms = [],
   } = opts;
+
+  // OUTCOME FAMILIES, and why they exist.
+  //
+  // Benjamini-Hochberg controls the false-discovery rate across whatever set
+  // of tests you hand it, so a bigger set means a stricter bar for every
+  // member. Folding a user's symptoms into one pool with the generic wellness
+  // outcomes would mean that adding a second symptom makes the app less able
+  // to explain the first — which is exactly backwards, since the symptoms are
+  // the reason the person is here.
+  //
+  // So each symptom is corrected as its own family, and the wellness outcomes
+  // as another. This is the standard primary/secondary-endpoint split: FDR is
+  // still controlled within every family, and no family's power depends on how
+  // many other questions the user happens to be asking.
+  const activeSymptoms = (symptoms || []).filter((sym) => sym && sym.id && !sym.archivedAt);
+  const families = activeSymptoms.map((sym) => ({
+    key: sym.id,
+    kind: 'symptom',
+    label: sym.label,
+    outcomes: [sym.id],
+  }));
+  families.push({ key: '_wellness', kind: 'wellness', label: 'How you feel', outcomes: opts.outcomes || OUTCOME_FIELDS });
+  const outcomes = families.flatMap((f) => f.outcomes);
+  const familyOf = new Map();
+  for (const f of families) for (const o of f.outcomes) familyOf.set(o, f.key);
 
   const sorted = [...entries].sort((a, b) => (a.date < b.date ? -1 : 1));
   const index = indexEntries(sorted);
@@ -697,6 +733,7 @@ export function discover(entries, opts = {}) {
 
         const corrected = cx.detrended || cy.detrended || sx.deseasonalized || sy.deseasonalized;
         raw.push({
+          family: familyOf.get(outcome) || '_wellness',
           driver, outcome, lag,
           r: round2(r), rRaw: round2(rRaw),
           detrended: cx.detrended || cy.detrended,
@@ -730,10 +767,29 @@ export function discover(entries, opts = {}) {
   const pValues = raw.map((c) =>
     Math.abs(c.r) < MIN_REPORTABLE_R ? 1 : permutationP(c.xs, c.ys, c.r)
   );
-  const { passing, adjusted } = benjaminiHochberg(pValues, q);
+
+  // Correct WITHIN each outcome family, not across the pooled grid — see the
+  // families comment above. Every hypothesis belongs to exactly one family, so
+  // FDR is controlled at q within each, and a user tracking five symptoms gets
+  // the same power on each as a user tracking one.
+  const passing = new Set();
+  const adjusted = new Array(raw.length).fill(1);
+  const byFamily = new Map();
+  raw.forEach((c, i) => {
+    if (!byFamily.has(c.family)) byFamily.set(c.family, []);
+    byFamily.get(c.family).push(i);
+  });
+  for (const idxs of byFamily.values()) {
+    const res = benjaminiHochberg(idxs.map((i) => pValues[i]), q);
+    idxs.forEach((globalIdx, k) => {
+      adjusted[globalIdx] = res.adjusted[k];
+      if (res.passing.has(k)) passing.add(globalIdx);
+    });
+  }
 
   const findings = raw
     .map((c, i) => ({
+      family: c.family,
       driver: c.driver,
       outcome: c.outcome,
       lag: c.lag,
@@ -766,6 +822,11 @@ export function discover(entries, opts = {}) {
   return {
     status: deduped.length ? 'ok' : 'nothing-significant',
     findings: deduped.slice(0, limit),
+    families: families.map((f) => ({
+      key: f.key, kind: f.kind, label: f.label,
+      tested: (byFamily.get(f.key) || []).length,
+      found: deduped.filter((d) => d.family === f.key).length,
+    })),
     tested: raw.length,
     q,
     message: deduped.length

@@ -3,7 +3,7 @@
  * Covers the two things that must not break: scoring monotonicity and the
  * statistical honesty of the insight engine.
  */
-import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
+import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
 
@@ -53,6 +53,99 @@ t('validateEntry survives garbage', () => {
   eq(entry.steps, 6000);
 });
 t('completeness full on default entry', () => eq(completeness(emptyEntry()), 1));
+
+/* ================= symptoms ================= */
+t('validateSymptoms dedupes, trims, and elects one primary', () => {
+  const out = validateSymptoms([
+    { label: 'Migraine' }, { label: 'Bloating' }, { label: '   ' },
+    { label: 'Migraine' }, { label: 'x'.repeat(200) },
+  ]);
+  eq(out.length, 3);
+  eq(out[0].id, 's_migraine');
+  eq(out.filter((x) => x.primary).length, 1, 'exactly one primary');
+  ok(out[2].label.length <= 60, 'labels are bounded');
+});
+t('validateSymptoms caps the list', () => {
+  const many = Array.from({ length: 40 }, (_, i) => ({ label: 'sym' + i }));
+  ok(validateSymptoms(many).length <= 12);
+});
+t('symptomId is a safe slug', () => {
+  eq(symptomId('Joint pain!! (left knee)'), 's_joint-pain-left-knee');
+  ok(/^s_[a-z0-9-]+$/.test(symptomId('  ??  ')) || symptomId('  ??  ') === 's_symptom');
+});
+t('symptom ratings are clamped and unknown ids dropped', () => {
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const r = validateSymptomRatings({ s_migraine: 99, s_nope: 2, junk: 'x' }, syms);
+  eq(r.s_migraine, SEVERITY_MAX);
+  eq(r.s_nope, undefined);
+});
+t('a logged day defaults its symptoms to none, not to missing', () => {
+  // "I logged today and didn't mark the migraine" means I didn't have one.
+  // Leaving it absent would build a series made only of bad days, which
+  // correlates with nothing.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  eq(emptyEntry('2026-01-01', syms).symptoms.s_migraine, 0);
+});
+t('symptoms survive the validateEntry round-trip', () => {
+  const { entry } = validateEntry({ date: '2026-01-01', symptoms: { s_migraine: 3 } });
+  eq(entry.symptoms.s_migraine, 3);
+});
+
+t('a symptom is explained, and noise symptoms stay silent', () => {
+  const syms = validateSymptoms([{ label: 'Migraine' }, { label: 'Bloating' }, { label: 'Joint pain' }]);
+  const es = synth(120, 11, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.exerciseMinutes = Math.round(r() * 60);
+    e.proteinGrams = Math.round(70 + r() * 60);
+    e.produceServings = Math.round(r() * 6);
+    e.ultraProcessed = Math.round(r() * 6);
+    e.fiberGrams = Math.round(12 + r() * 20);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.caffeineAfter2pm = Math.round(r() * 4) * 50;
+    e.sunlightMinutes = Math.round(r() * 70);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.energy = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.symptoms = {
+      s_migraine: 0,
+      s_bloating: r() < 0.3 ? 1 + Math.floor(r() * 3) : 0,
+      's_joint-pain': r() < 0.25 ? 1 + Math.floor(r() * 3) : 0,
+    };
+  });
+  const rn = mulberry32(78);
+  for (let i = 1; i < es.length; i++) {
+    es[i].symptoms.s_migraine = Math.max(0, Math.min(4,
+      Math.round(es[i - 1].alcoholUnits * 0.75 + (rn() - 0.5) * 1.4)));
+  }
+  const res = discover(es, { symptoms: syms });
+  const hit = res.findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === 's_migraine');
+  ok(hit, 'the planted symptom driver must be found');
+  ok(hit.r > 0.5, 'and at roughly its true strength, got ' + hit.r);
+  ok(!res.findings.some((f) => f.outcome === 's_bloating' || f.outcome === 's_joint-pain'),
+     'symptoms with no real driver must stay silent');
+});
+
+t('each symptom is corrected as its own family', () => {
+  // Pooling every symptom into one BH family would mean that tracking a second
+  // symptom makes the app worse at explaining the first. Each family must be
+  // sized by its own hypotheses only.
+  const syms = validateSymptoms([{ label: 'A' }, { label: 'B' }, { label: 'C' }]);
+  const es = synth(90, 12, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.symptoms = { s_a: Math.floor(r() * 3), s_b: Math.floor(r() * 3), s_c: Math.floor(r() * 3) };
+  });
+  const res = discover(es, { symptoms: syms });
+  const symFamilies = res.families.filter((f) => f.kind === 'symptom');
+  eq(symFamilies.length, 3, 'one family per symptom');
+  const sizes = new Set(symFamilies.map((f) => f.tested));
+  eq(sizes.size, 1, 'each symptom family is the same size regardless of the others');
+  ok(symFamilies[0].tested < res.tested, 'a family must be smaller than the pooled grid');
+});
 
 /* ================= curves ================= */
 t('curve exact node', () => near(curve([[0, 0], [10, 100]], 10), 100));

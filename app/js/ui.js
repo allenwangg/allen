@@ -7,7 +7,7 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey } from './model.js';
+import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, SEVERITY } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
@@ -187,6 +187,8 @@ export function logView(state) {
     </div>`;
   }).join('');
 
+  const symptomCard = symptomLogCard(state);
+
   const d = parseDateKey(entry.date);
   const isToday = entry.date === dateKey();
   const dayName = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
@@ -208,6 +210,7 @@ export function logView(state) {
     </div>
     <p class="subtle" style="margin-top:10px">The score updates as you type. Everything saves locally on this device — nothing is uploaded.</p>
   </div>
+  ${symptomCard}
   ${groups}
   <div class="card">
     <div class="field"><div class="field-head"><label for="notes">Notes</label></div>
@@ -218,6 +221,43 @@ export function logView(state) {
       <div class="spacer" style="flex:1"></div>
       <button class="btn btn-danger btn-sm" data-action="delete-entry">Delete this day</button>
     </div>
+  </div>`;
+}
+
+/**
+ * The daily symptom card.
+ *
+ * Deliberately not sliders. Someone tracking five symptoms should not face
+ * five more sliders every morning — on most days the honest answer to all of
+ * them is "none", so the row defaults there and a normal day costs zero taps.
+ * Five discrete targets per symptom means one tap when the answer is not none.
+ */
+function symptomLogCard(state) {
+  const active = (state.symptoms || []).filter((s) => !s.archivedAt);
+  if (!active.length) {
+    return `<div class="card">
+      <div class="card-head"><h3>Symptoms</h3></div>
+      <p class="muted">Nothing tracked yet. If something specific brought you here — headaches,
+      gut trouble, joint pain, low mood, whatever it is — name it and this will try to work out
+      what moves with it.</p>
+      <button class="btn btn-sm" data-action="goto" data-view="settings">Add a symptom</button>
+    </div>`;
+  }
+  const rows = active.map((sym) => {
+    const v = state.draft.symptoms?.[sym.id] ?? 0;
+    return `<div class="sym-row">
+      <div class="sym-label" id="sym-${esc(sym.id)}">${esc(sym.label)}${sym.primary ? ' <span class="subtle">· main</span>' : ''}</div>
+      <div class="seg sym-seg" role="group" aria-labelledby="sym-${esc(sym.id)}">
+        ${SEVERITY.map((sv) => `<button type="button" id="sym-${esc(sym.id)}-${sv.value}"
+          data-symptom="${esc(sym.id)}" data-value="${sv.value}"
+          aria-pressed="${Number(v) === sv.value}" title="${esc(sv.label)}">${esc(sv.short)}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="card-head"><h3>Symptoms</h3><div class="spacer"></div>
+      <span class="subtle">Left alone means you didn't have it</span></div>
+    ${rows}
   </div>`;
 }
 
@@ -315,6 +355,13 @@ export function insightsView(state) {
     <p class="muted">These are correlations found in <strong>your</strong> data — not population averages, and not advice
     copied from an article. Every one shown here survived a permutation test and a false-discovery-rate correction across
     ${res?.tested ? `${esc(String(res.tested))} relationship${res.tested === 1 ? '' : 's'}` : 'every relationship'} we tested.</p>
+    ${res?.families?.length ? `<div class="table-wrap" style="margin-top:12px"><table class="table">
+      <thead><tr><th>Question</th><th class="num">Relationships tested</th><th class="num">Held up</th></tr></thead>
+      <tbody>${res.families.map((f) => `<tr><td>${esc(f.label)}</td><td class="num">${f.tested}</td><td class="num">${f.found}</td></tr>`).join('')}</tbody>
+    </table></div>
+    <p class="subtle" style="margin-top:8px">Each symptom is judged on its own, so tracking more
+    of them never makes the app worse at explaining any one. A zero in the last column is a real
+    answer: nothing in your log moved with it strongly enough to be worth telling you about.</p>` : ''}
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
   </div>
@@ -538,9 +585,42 @@ export function reportView(state) {
 
 export function settingsView(state) {
   const p = state.profile;
+  const active = (state.symptoms || []).filter((s) => !s.archivedAt);
+  const symptomRows = active.length
+    ? active.map((sym) => `<div class="sym-row">
+        <div class="sym-label">${esc(sym.label)}</div>
+        <div style="display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap">
+          ${sym.primary
+            ? '<span class="pill pill-good">main concern</span>'
+            : `<button class="btn btn-ghost btn-sm" data-action="set-primary-symptom" data-id="${esc(sym.id)}">Make this the main one</button>`}
+          <button class="btn btn-ghost btn-sm" data-action="remove-symptom" data-id="${esc(sym.id)}">Remove</button>
+        </div>
+      </div>`).join('')
+    : '<p class="muted">Nothing tracked yet.</p>';
+
   return `
   <div class="card">
     <h1>Settings</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>What you're tracking</h3></div>
+    <p class="muted">Name the things that actually bother you, in your own words. They get rated
+    on the log screen each day, and the analysis treats each one as a separate question —
+    so tracking a second symptom never costs you accuracy on the first.</p>
+    ${symptomRows}
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <input type="text" id="new-symptom" maxlength="60" placeholder="e.g. migraine, bloating, joint pain"
+        style="flex:1;min-width:200px" aria-label="New symptom to track">
+      <button class="btn" data-action="add-symptom">Add</button>
+    </div>
+    <p class="subtle" style="margin-top:8px">Up to 12. Removing one keeps the days you already
+    logged. This app has no idea what any of these mean medically — it only looks for what moves
+    with them.</p>
+  </div>
+
+  <div class="card">
+    <h3>About you</h3>
     <div class="grid grid-2">
       <div class="field"><div class="field-head"><label for="p-age">Age</label></div>
         <input type="number" id="p-age" data-profile="age" min="13" max="110" value="${esc(String(p.age ?? 35))}"></div>

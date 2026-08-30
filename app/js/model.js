@@ -7,7 +7,81 @@
  */
 
 /** Schema version. Bump when the shape of a DayEntry changes; add a migration. */
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
+
+/* ------------------------------------------------------------------ *
+ * Symptoms — the things you actually have.
+ *
+ * The 24 fields below are habits and biomarkers: what you do and what your
+ * body reads. They are not what brought you here. Symptoms are user-defined
+ * because a fixed list would be someone else's idea of what is wrong with you,
+ * and because naming your own is the difference between a wellness app and a
+ * notebook about your actual problem.
+ *
+ * They live in a sparse map on each entry (`entry.symptoms[id] = 0..4`) rather
+ * than as columns, because the set changes over time and old entries must
+ * survive a symptom being added or retired.
+ * ------------------------------------------------------------------ */
+
+/** Severity scale. 0 is a real observation ("didn't have it today"), not a gap. */
+export const SEVERITY = [
+  { value: 0, label: 'None',     short: '—' },
+  { value: 1, label: 'Mild',     short: 'Mild' },
+  { value: 2, label: 'Moderate', short: 'Mod' },
+  { value: 3, label: 'Severe',   short: 'Sev' },
+  { value: 4, label: 'Very bad', short: 'Bad' },
+];
+export const SEVERITY_MAX = 4;
+
+/** A symptom id is a slug the user never sees; the label is theirs. */
+export function symptomId(label) {
+  const base = String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 32);
+  return 's_' + (base || 'symptom');
+}
+
+/** Validate a user-supplied symptom list from settings or an import. */
+export function validateSymptoms(raw) {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const label = typeof item.label === 'string' ? item.label.trim().slice(0, 60) : '';
+    if (!label) continue;
+    const id = typeof item.id === 'string' && /^s_[a-z0-9-]{1,32}$/.test(item.id) ? item.id : symptomId(label);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({
+      id,
+      label,
+      createdAt: Number(item.createdAt) || Date.now(),
+      archivedAt: Number(item.archivedAt) || null,
+      // The one the user most wants explained. Its correlations are corrected
+      // as their own family so that adding a second symptom does not cost
+      // statistical power on the first (see insights.js).
+      primary: item.primary === true,
+    });
+  }
+  // Exactly one primary, if any exist at all.
+  const primaries = out.filter((x) => x.primary);
+  if (primaries.length > 1) for (const x of primaries.slice(1)) x.primary = false;
+  if (out.length && !primaries.length) out[0].primary = true;
+  return out.slice(0, 12);
+}
+
+/** Severity map on an entry, cleaned. */
+export function validateSymptomRatings(raw, symptoms) {
+  const known = new Set((symptoms || []).map((s) => s.id));
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [id, v] of Object.entries(raw)) {
+    if (known.size && !known.has(id)) continue;      // dropped symptom
+    const n = Number(v);
+    if (!Number.isFinite(n)) continue;
+    out[id] = clamp(Math.round(n), 0, SEVERITY_MAX);
+  }
+  return out;
+}
 
 /**
  * Field definitions drive validation, the log form UI, and the what-if
@@ -93,9 +167,18 @@ export function daysBetween(a, b) {
 }
 
 /** A blank day, pre-filled with sensible defaults so logging is fast. */
-export function emptyEntry(key = dateKey()) {
-  const e = { date: key, v: SCHEMA_VERSION, createdAt: Date.now(), updatedAt: Date.now(), notes: '' };
+export function emptyEntry(key = dateKey(), symptoms = []) {
+  const e = { date: key, v: SCHEMA_VERSION, createdAt: Date.now(), updatedAt: Date.now(), notes: '', symptoms: {} };
   for (const [name, f] of Object.entries(FIELDS)) e[name] = f.default;
+  // A logged day with a symptom left untouched means "didn't have it", which
+  // is real information — a symptom series made only of the bad days would be
+  // all-severe and correlate with nothing.
+  //
+  // Guarded because `emptyEntry` is a one-argument function everywhere it is
+  // passed to `.map()`, which would otherwise hand it an array index here.
+  if (Array.isArray(symptoms)) {
+    for (const s of symptoms) if (s && s.id && !s.archivedAt) e.symptoms[s.id] = 0;
+  }
   return e;
 }
 
@@ -116,6 +199,7 @@ export function validateEntry(raw) {
     createdAt: Number(raw.createdAt) || Date.now(),
     updatedAt: Date.now(),
     notes: typeof raw.notes === 'string' ? raw.notes.slice(0, 2000) : '',
+    symptoms: validateSymptomRatings(raw.symptoms, null),
   };
   for (const [name, f] of Object.entries(FIELDS)) {
     const val = raw[name];

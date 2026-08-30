@@ -256,6 +256,16 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 textarea { min-height: 76px; resize: vertical; }
 
 .seg { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* Symptom rows: label and a five-target severity strip, one tap to set. */
+.sym-row { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(180px, 2fr); gap: 12px;
+  align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.sym-row:last-child { border-bottom: 0; }
+.sym-label { font-weight: 550; font-size: .93rem; }
+.sym-seg button { min-width: 38px; font-size: .82rem; padding: 7px 4px; }
+.sym-seg button[aria-pressed="true"][data-value="0"] { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
+.sym-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--bad); border-color: var(--bad); color: #fff; }
+@media (max-width: 520px) { .sym-row { grid-template-columns: 1fr; gap: 6px; } }
 .seg button {
   flex: 1 1 auto; min-width: 42px; appearance: none; font: inherit; cursor: pointer;
   background: var(--surface-2); color: var(--text-2);
