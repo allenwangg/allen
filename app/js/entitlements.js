@@ -44,7 +44,7 @@ export const TIERS = {
     features: new Set([
       'log', 'today', 'pillars', 'streak', 'weekday', 'export',
       'insights', 'simulator', 'leverage', 'fullHistory', 'trends',
-      'biomarkers', 'report', 'reminders',
+      'biomarkers', 'report',
     ]),
   },
 };
@@ -57,7 +57,6 @@ export const FEATURE_COPY = {
   trends:      { name: 'Long-range trends',   why: '90-day and all-time trend analysis.' },
   biomarkers:  { name: 'Biomarker tracking',  why: 'Resting heart rate, HRV, waist and weight folded into your score.' },
   report:      { name: 'Shareable report',    why: 'A clean summary you can hand to a doctor or coach.' },
-  reminders:   { name: 'Smart reminders',     why: 'Nudges timed to when you actually log.' },
 };
 
 export const TRIAL_DAYS = 7;

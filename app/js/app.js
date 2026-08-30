@@ -20,6 +20,7 @@ const VIEWS = {
   insights:  { render: views.insightsView,  label: 'Insights',  feature: 'insights' },
   simulator: { render: views.simulatorView, label: 'Simulator', feature: 'simulator' },
   history:   { render: views.historyView,   label: 'History' },
+  report:    { render: views.reportView,    label: 'Report',    feature: 'report' },
   upgrade:   { render: views.upgradeView,   label: 'Pro' },
   settings:  { render: views.settingsView,  label: 'Settings' },
 };
@@ -254,6 +255,8 @@ const actions = {
 
   import: () => $('#import-file').click(),
 
+  'print-report': () => window.print(),
+
   wipe: async () => {
     if (!confirm('Delete every entry and setting on this device? This cannot be undone. Export first if you want a backup.')) return;
     if (!confirm('Really delete everything? There is no recovery.')) return;
@@ -469,6 +472,10 @@ async function boot() {
     navigator.serviceWorker.register('./sw.js').catch(() => { /* offline support is a bonus, not a requirement */ });
   }
 }
+
+// Debug/support handle: lets a user (or a test) inspect the app's resolved
+// state from the console without any framework devtools.
+if (typeof window !== 'undefined') window.__vitalarc = { state };
 
 boot().catch((err) => {
   document.getElementById('main').innerHTML =
