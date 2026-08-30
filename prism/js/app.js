@@ -66,7 +66,8 @@
     { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
     { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities'] },
     { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology', 'Creativity', 'Design'] },
-    { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] }
+    { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] },
+    { id: 'world', label: 'World', cats: ['Anthropology', 'Literature', 'Society'] }
   ];
   var activeTheme = 'all';   // resets each load; filtering is a browsing aid, not a setting
 
@@ -116,7 +117,12 @@
     'mythology': 'flame', 'design': 'layers',
     'public-speaking': 'dialog', 'media-literacy': 'eye', 'chemistry': 'flame',
     'art-history': 'lens', 'geology': 'mountain', 'conflict': 'bridge',
-    'computing': 'puzzle', 'decisions': 'fork'
+    'computing': 'puzzle', 'decisions': 'fork',
+    'islamic-golden-age': 'key', 'imperial-china': 'pyramid', 'african-kingdoms': 'flame',
+    'india-legacy': 'lightbulb', 'indigenous-knowledge': 'compass', 'latin-america': 'mountain',
+    'russian-literature': 'book', 'japan-aesthetics': 'wave', 'architecture': 'bridge',
+    'how-doctors-think': 'lens', 'statistics': 'graph', 'ecology': 'seed',
+    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
@@ -370,10 +376,11 @@
 
     // paths strip
     h += '<div class="lib-head"><h2 class="section-title">Paths</h2>' +
-      '<a class="lib-count link" href="#/paths">See all ' + Paths.list.length + ' ›</a></div>' +
+      '<a class="lib-count link" href="#/paths">See all ' + livePaths().length + ' ›</a></div>' +
       '<section class="path-strip">';
-    for (var pi = 0; pi < Math.min(4, Paths.list.length); pi++) {
-      var pth = Paths.list[pi], ppr = pathProgress(pth);
+    var strip = livePaths();
+    for (var pi = 0; pi < Math.min(4, strip.length); pi++) {
+      var pth = strip[pi], ppr = pathProgress(pth);
       h += '<a class="path-chip" style="--ah:' + HUES[pi % HUES.length] + '" href="#/path/' + esc(pth.id) + '">' +
         '<span class="path-chip-art">' + Art.svg(pth.art) + '</span>' +
         '<b>' + esc(pth.title) + '</b>' +
@@ -729,6 +736,7 @@
   /* ---------------- learning paths ---------------- */
 
   function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
+  function livePaths() { return Paths.available(findCourse); }
 
   /* How many of a course's review cards are due right now. */
   function courseDue(cid) {
@@ -743,8 +751,9 @@
       '<h1 class="page-title">Learning paths</h1>' +
       '<p class="today-sub">Curated journeys through the library — each course builds on the one before it.</p>' +
       '<section class="paths">';
-    for (var i = 0; i < Paths.list.length; i++) {
-      var p = Paths.list[i], pr = pathProgress(p);
+    var shown = livePaths();
+    for (var i = 0; i < shown.length; i++) {
+      var p = shown[i], pr = pathProgress(p);
       h += '<a class="path-card" style="--ah:' + HUES[i % HUES.length] + '" href="#/path/' + esc(p.id) + '">' +
         '<div class="path-art">' + Art.svg(p.art) + '</div>' +
         '<div class="path-body"><h3>' + esc(p.title) + '</h3><p>' + esc(p.blurb) + '</p>' +
@@ -770,9 +779,9 @@
         '<div class="cover-meta wide"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
         '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div></div>' +
       '</section><section class="lessons">';
-    for (var i = 0; i < p.courses.length; i++) {
-      var c = findCourse(p.courses[i]);
-      if (!c) continue;
+    var pcs = Paths.coursesOf(p, findCourse);
+    for (var i = 0; i < pcs.length; i++) {
+      var c = pcs[i];
       var cp = Store.courseProgress(c);
       var done = cp.total && cp.done === cp.total;
       var isNext = c.id === pr.next;

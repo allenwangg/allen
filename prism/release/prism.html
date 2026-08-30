@@ -1085,6 +1085,15 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
     { id: 'modern-tech', title: 'The Modern Frontier', art: 'network',
       blurb: 'The technologies rewriting this decade, explained without hype.',
       courses: ['how-internet-works', 'how-ai-works', 'genes-and-editing', 'how-things-spread'] },
+    { id: 'world-traditions', title: 'The Wider World', art: 'map',
+      blurb: 'Civilisations, ideas and art from beyond the usual syllabus.',
+      courses: ['islamic-golden-age', 'imperial-china', 'african-kingdoms', 'india-legacy', 'indigenous-knowledge', 'latin-america'] },
+    { id: 'how-things-work', title: 'How Things Actually Work', art: 'puzzle',
+      blurb: 'The systems holding up the built and natural world.',
+      courses: ['architecture', 'energy', 'ecology', 'astronomy', 'geology', 'computing'] },
+    { id: 'evidence', title: 'Thinking With Evidence', art: 'graph',
+      blurb: 'Reading studies, numbers and diagnoses the way professionals should.',
+      courses: ['statistics', 'how-doctors-think', 'media-literacy', 'decisions', 'anthropology'] },
     { id: 'communicate', title: 'Communicate & Persuade', art: 'dialog',
       blurb: 'Move people with evidence, story and structure — ethically.',
       courses: ['persuasion', 'art-of-storytelling', 'genius-of-language', 'music-and-brain'] }
@@ -1095,20 +1104,39 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
     return null;
   }
 
-  /* {done, total, next} — next is the first course id not yet complete. */
-  function progress(path, findCourse, courseProgress) {
-    var done = 0, next = null;
+  /* The courses of a path that actually exist in the loaded library. A path may
+     name a course that has not shipped yet, so every consumer resolves through
+     here and a path never renders a row pointing at nothing. */
+  function coursesOf(path, findCourse) {
+    var out = [];
     for (var i = 0; i < path.courses.length; i++) {
       var c = findCourse(path.courses[i]);
-      if (!c) continue;
-      var p = courseProgress(c);
-      if (p.total && p.done === p.total) done += 1;
-      else if (!next) next = c.id;
+      if (c) out.push(c);
     }
-    return { done: done, total: path.courses.length, next: next };
+    return out;
   }
 
-  window.Paths = { list: PATHS, byId: byId, progress: progress };
+  /* {done, total, next} — totals count only courses present in the library. */
+  function progress(path, findCourse, courseProgress) {
+    var cs = coursesOf(path, findCourse), done = 0, next = null;
+    for (var i = 0; i < cs.length; i++) {
+      var p = courseProgress(cs[i]);
+      if (p.total && p.done === p.total) done += 1;
+      else if (!next) next = cs[i].id;
+    }
+    return { done: done, total: cs.length, next: next };
+  }
+
+  /* Paths worth showing: those with at least one course actually available. */
+  function available(findCourse) {
+    var out = [];
+    for (var i = 0; i < PATHS.length; i++) {
+      if (coursesOf(PATHS[i], findCourse).length) out.push(PATHS[i]);
+    }
+    return out;
+  }
+
+  window.Paths = { list: PATHS, byId: byId, progress: progress, coursesOf: coursesOf, available: available };
 })();
 
 </script>
@@ -26767,7 +26795,8 @@ window.COURSES = [
     { id: 'money', label: 'Money & Work', cats: ['Finance', 'Economics', 'Business'] },
     { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities'] },
     { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology', 'Creativity', 'Design'] },
-    { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] }
+    { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] },
+    { id: 'world', label: 'World', cats: ['Anthropology', 'Literature', 'Society'] }
   ];
   var activeTheme = 'all';   // resets each load; filtering is a browsing aid, not a setting
 
@@ -26817,7 +26846,12 @@ window.COURSES = [
     'mythology': 'flame', 'design': 'layers',
     'public-speaking': 'dialog', 'media-literacy': 'eye', 'chemistry': 'flame',
     'art-history': 'lens', 'geology': 'mountain', 'conflict': 'bridge',
-    'computing': 'puzzle', 'decisions': 'fork'
+    'computing': 'puzzle', 'decisions': 'fork',
+    'islamic-golden-age': 'key', 'imperial-china': 'pyramid', 'african-kingdoms': 'flame',
+    'india-legacy': 'lightbulb', 'indigenous-knowledge': 'compass', 'latin-america': 'mountain',
+    'russian-literature': 'book', 'japan-aesthetics': 'wave', 'architecture': 'bridge',
+    'how-doctors-think': 'lens', 'statistics': 'graph', 'ecology': 'seed',
+    'astronomy': 'orbit', 'law-and-justice': 'balance', 'energy': 'flame', 'anthropology': 'network'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
@@ -27071,10 +27105,11 @@ window.COURSES = [
 
     // paths strip
     h += '<div class="lib-head"><h2 class="section-title">Paths</h2>' +
-      '<a class="lib-count link" href="#/paths">See all ' + Paths.list.length + ' ›</a></div>' +
+      '<a class="lib-count link" href="#/paths">See all ' + livePaths().length + ' ›</a></div>' +
       '<section class="path-strip">';
-    for (var pi = 0; pi < Math.min(4, Paths.list.length); pi++) {
-      var pth = Paths.list[pi], ppr = pathProgress(pth);
+    var strip = livePaths();
+    for (var pi = 0; pi < Math.min(4, strip.length); pi++) {
+      var pth = strip[pi], ppr = pathProgress(pth);
       h += '<a class="path-chip" style="--ah:' + HUES[pi % HUES.length] + '" href="#/path/' + esc(pth.id) + '">' +
         '<span class="path-chip-art">' + Art.svg(pth.art) + '</span>' +
         '<b>' + esc(pth.title) + '</b>' +
@@ -27430,6 +27465,7 @@ window.COURSES = [
   /* ---------------- learning paths ---------------- */
 
   function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
+  function livePaths() { return Paths.available(findCourse); }
 
   /* How many of a course's review cards are due right now. */
   function courseDue(cid) {
@@ -27444,8 +27480,9 @@ window.COURSES = [
       '<h1 class="page-title">Learning paths</h1>' +
       '<p class="today-sub">Curated journeys through the library — each course builds on the one before it.</p>' +
       '<section class="paths">';
-    for (var i = 0; i < Paths.list.length; i++) {
-      var p = Paths.list[i], pr = pathProgress(p);
+    var shown = livePaths();
+    for (var i = 0; i < shown.length; i++) {
+      var p = shown[i], pr = pathProgress(p);
       h += '<a class="path-card" style="--ah:' + HUES[i % HUES.length] + '" href="#/path/' + esc(p.id) + '">' +
         '<div class="path-art">' + Art.svg(p.art) + '</div>' +
         '<div class="path-body"><h3>' + esc(p.title) + '</h3><p>' + esc(p.blurb) + '</p>' +
@@ -27471,9 +27508,9 @@ window.COURSES = [
         '<div class="cover-meta wide"><div class="bar"><i style="width:' + Math.round(100 * pr.done / pr.total) + '%"></i></div>' +
         '<span>' + pr.done + ' of ' + pr.total + ' complete</span></div></div>' +
       '</section><section class="lessons">';
-    for (var i = 0; i < p.courses.length; i++) {
-      var c = findCourse(p.courses[i]);
-      if (!c) continue;
+    var pcs = Paths.coursesOf(p, findCourse);
+    for (var i = 0; i < pcs.length; i++) {
+      var c = pcs[i];
       var cp = Store.courseProgress(c);
       var done = cp.total && cp.done === cp.total;
       var isNext = c.id === pr.next;

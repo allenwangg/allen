@@ -19,7 +19,22 @@ if (await page.locator('#tour-go').count()) await page.locator('#tour-go').click
 
 // --- paths ---
 await page.goto(url+'#/paths'); await page.waitForSelector('.path-card');
-ok(await page.locator('.path-card').count()===8, 'paths index lists 8 paths');
+const nPaths = await page.evaluate(()=>Paths.available(id=>window.COURSES.find(c=>c.id===id)).length);
+ok(await page.locator('.path-card').count()===nPaths, `paths index lists every available path (${nPaths})`);
+// a path may name a course that has not shipped yet; it must never render a dead row
+const pathHealth = await page.evaluate(()=>{
+  const find = id => window.COURSES.find(c=>c.id===id);
+  const ids = new Set(window.COURSES.map(c=>c.id));
+  let unshipped = 0, emptyShown = 0;
+  for (const p of Paths.list) {
+    for (const cid of p.courses) if (!ids.has(cid)) unshipped++;
+    const live = Paths.coursesOf(p, find);
+    const pr = Paths.progress(p, find, c=>Store.courseProgress(c));
+    if (pr.total !== live.length) emptyShown++;      // totals must count only real courses
+  }
+  return { unshipped, emptyShown, shown: Paths.available(find).length };
+});
+ok(pathHealth.emptyShown===0, `path totals count only shipped courses (${pathHealth.unshipped} not yet shipped, handled)`);
 await page.locator('.path-card').first().click();
 await page.waitForSelector('.lesson-row');
 ok(await page.locator('.lesson-row').count()>=4, 'path detail lists its courses');

@@ -24,6 +24,15 @@
     { id: 'modern-tech', title: 'The Modern Frontier', art: 'network',
       blurb: 'The technologies rewriting this decade, explained without hype.',
       courses: ['how-internet-works', 'how-ai-works', 'genes-and-editing', 'how-things-spread'] },
+    { id: 'world-traditions', title: 'The Wider World', art: 'map',
+      blurb: 'Civilisations, ideas and art from beyond the usual syllabus.',
+      courses: ['islamic-golden-age', 'imperial-china', 'african-kingdoms', 'india-legacy', 'indigenous-knowledge', 'latin-america'] },
+    { id: 'how-things-work', title: 'How Things Actually Work', art: 'puzzle',
+      blurb: 'The systems holding up the built and natural world.',
+      courses: ['architecture', 'energy', 'ecology', 'astronomy', 'geology', 'computing'] },
+    { id: 'evidence', title: 'Thinking With Evidence', art: 'graph',
+      blurb: 'Reading studies, numbers and diagnoses the way professionals should.',
+      courses: ['statistics', 'how-doctors-think', 'media-literacy', 'decisions', 'anthropology'] },
     { id: 'communicate', title: 'Communicate & Persuade', art: 'dialog',
       blurb: 'Move people with evidence, story and structure — ethically.',
       courses: ['persuasion', 'art-of-storytelling', 'genius-of-language', 'music-and-brain'] }
@@ -34,18 +43,37 @@
     return null;
   }
 
-  /* {done, total, next} — next is the first course id not yet complete. */
-  function progress(path, findCourse, courseProgress) {
-    var done = 0, next = null;
+  /* The courses of a path that actually exist in the loaded library. A path may
+     name a course that has not shipped yet, so every consumer resolves through
+     here and a path never renders a row pointing at nothing. */
+  function coursesOf(path, findCourse) {
+    var out = [];
     for (var i = 0; i < path.courses.length; i++) {
       var c = findCourse(path.courses[i]);
-      if (!c) continue;
-      var p = courseProgress(c);
-      if (p.total && p.done === p.total) done += 1;
-      else if (!next) next = c.id;
+      if (c) out.push(c);
     }
-    return { done: done, total: path.courses.length, next: next };
+    return out;
   }
 
-  window.Paths = { list: PATHS, byId: byId, progress: progress };
+  /* {done, total, next} — totals count only courses present in the library. */
+  function progress(path, findCourse, courseProgress) {
+    var cs = coursesOf(path, findCourse), done = 0, next = null;
+    for (var i = 0; i < cs.length; i++) {
+      var p = courseProgress(cs[i]);
+      if (p.total && p.done === p.total) done += 1;
+      else if (!next) next = cs[i].id;
+    }
+    return { done: done, total: cs.length, next: next };
+  }
+
+  /* Paths worth showing: those with at least one course actually available. */
+  function available(findCourse) {
+    var out = [];
+    for (var i = 0; i < PATHS.length; i++) {
+      if (coursesOf(PATHS[i], findCourse).length) out.push(PATHS[i]);
+    }
+    return out;
+  }
+
+  window.Paths = { list: PATHS, byId: byId, progress: progress, coursesOf: coursesOf, available: available };
 })();
