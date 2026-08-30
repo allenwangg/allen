@@ -1293,7 +1293,7 @@
         if (!Store.lessonRecord(c.id, l.id)) continue;   // only quiz what was learned
         for (var k = 0; k < l.cards.length; k++) {
           var cd = l.cards[k];
-          if (cd.type === 'mcq' || cd.type === 'truefalse') pool.push({ card: cd, course: c, ci: i });
+          if (cd.type === 'mcq' || cd.type === 'truefalse') pool.push({ card: cd, course: c, ci: i, lid: l.id });
         }
       }
     }
@@ -1311,7 +1311,16 @@
       bindChrome();
       return;
     }
-    prac = { queue: shuffle(pool.slice()).slice(0, 12), i: 0, correct: 0, xp: 0, courseId: cid || null };
+    // adaptive draw: fill the session from Shaky lessons first, then Growing,
+    // then everything else — practice goes where memory is weakest
+    var tiers = { shaky: [], growing: [], rest: [] };
+    for (var t = 0; t < pool.length; t++) {
+      var band = lessonMastery(pool[t].course.id, pool[t].lid).band;
+      (tiers[band === 'shaky' ? 'shaky' : band === 'growing' ? 'growing' : 'rest']).push(pool[t]);
+    }
+    var queue = shuffle(tiers.shaky).concat(shuffle(tiers.growing)).concat(shuffle(tiers.rest)).slice(0, 12);
+    prac = { queue: shuffle(queue), i: 0, correct: 0, xp: 0, courseId: cid || null,
+             focused: tiers.shaky.length > 0 };
     renderPracCard();
   }
 
@@ -1387,7 +1396,8 @@
     $app.innerHTML = '<main class="player complete">' +
       '<div class="card-stage"><div class="card done-card">' +
       '<div class="card-art">' + Art.svg('target') + '</div>' +
-      '<span class="kicker">Practice complete</span><h2>Sharp as ever</h2>' +
+      '<span class="kicker">Practice complete</span><h2>' + (prac.focused ? 'Weak spots, worked' : 'Sharp as ever') + '</h2>' +
+      (prac.focused ? '<p class="goal-note dim">This round leaned toward the lessons your reviews say are shakiest.</p>' : '') +
       '<div class="done-stats">' +
         '<div class="stat"><b>' + prac.correct + '/' + prac.queue.length + '</b><span>correct</span></div>' +
         '<div class="stat"><b>' + acc + '%</b><span>accuracy</span></div>' +
