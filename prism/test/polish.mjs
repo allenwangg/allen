@@ -27,27 +27,46 @@ ok(/Card 1 of \d+/.test(ann||''), `card change is announced (${(ann||'').slice(0
 ok(await page.evaluate(()=>document.activeElement && document.activeElement.id==='card'),'focus moves into the card');
 ok(await page.evaluate(()=>!document.getElementById('app').hasAttribute('aria-live')),'router root is not a live region');
 
+// Swipe is a touch gesture, so drive it with real touch pointer events.
+async function touchSwipe(dx) {
+  await page.evaluate(async (dx) => {
+    const el = document.getElementById('card');
+    const r = el.getBoundingClientRect();
+    const x0 = r.left + r.width * 0.6, y = r.top + r.height * 0.5;
+    const ev = (type, x) => el.dispatchEvent(new PointerEvent(type, {
+      pointerId: 1, pointerType: 'touch', isPrimary: true, button: 0,
+      clientX: x, clientY: y, bubbles: true, cancelable: true
+    }));
+    ev('pointerdown', x0);
+    for (let i = 1; i <= 8; i++) { ev('pointermove', x0 + (dx * i) / 8); await new Promise(r => setTimeout(r, 8)); }
+    ev('pointerup', x0 + dx);
+  }, dx);
+  await page.waitForTimeout(430);
+}
+
 // --- swipe advances a content card ---
 const before = await page.locator('.card h2').textContent();
-const box = await page.locator('#card').boundingBox();
-await page.mouse.move(box.x+box.width*0.6, box.y+box.height*0.5);
-await page.mouse.down();
-for (let i=1;i<=8;i++) await page.mouse.move(box.x+box.width*0.6-i*30, box.y+box.height*0.5, {steps:2});
-await page.mouse.up();
-await page.waitForTimeout(420);
+await touchSwipe(-240);
 const after = await page.locator('.card h2, .card .prompt').first().textContent();
-ok(before!==after, `swipe left advances the card (${(before||'').slice(0,24)} -> ${(after||'').slice(0,24)})`);
+ok(before!==after, `touch swipe advances the card (${(before||'').slice(0,24)} -> ${(after||'').slice(0,24)})`);
 
 // --- a short drag springs back rather than advancing ---
 const cur = await page.locator('.card h2, .card .prompt').first().textContent();
-const box2 = await page.locator('#card').boundingBox();
-await page.mouse.move(box2.x+box2.width*0.6, box2.y+box2.height*0.5);
-await page.mouse.down();
-await page.mouse.move(box2.x+box2.width*0.6-25, box2.y+box2.height*0.5, {steps:4});
-await page.mouse.up();
-await page.waitForTimeout(400);
+await touchSwipe(-25);
 const same = await page.locator('.card h2, .card .prompt').first().textContent();
-ok(cur===same, 'a short drag springs back instead of advancing');
+ok(cur===same, 'a short touch drag springs back instead of advancing');
+
+// --- mouse drag on card text must NOT swipe (it means text selection) ---
+await page.goto(url+`#/lesson/${cid}/${lid}`); await page.waitForSelector('.card');
+const beforeMouse = await page.locator('.card h2, .card .prompt').first().textContent();
+const mb = await page.locator('.card .body, .card h2').first().boundingBox();
+await page.mouse.move(mb.x+mb.width*0.8, mb.y+mb.height*0.5);
+await page.mouse.down();
+for (let i=1;i<=8;i++) await page.mouse.move(mb.x+mb.width*0.8-i*35, mb.y+mb.height*0.5, {steps:2});
+await page.mouse.up();
+await page.waitForTimeout(420);
+const afterMouse = await page.locator('.card h2, .card .prompt').first().textContent();
+ok(beforeMouse===afterMouse, 'mouse drag selects text instead of swiping the card away');
 
 // --- mastery map appears once review data exists ---
 await page.goto(url+`#/course/${cid}`); await page.waitForSelector('.lesson-row');

@@ -41,7 +41,7 @@ node build.mjs        # → dist/prism.html (self-contained, shareable)
 node validate.mjs        # structural checks on course content
 node test/smoke.mjs      # 26 end-to-end checks (needs playwright-core + Chromium)
 node test/features.mjs   # 14 checks: Today sessions, paths, saved cards, streak freezes
-node test/polish.mjs     # 12 checks: swipe gestures, mastery map, announcements
+node test/polish.mjs     # 13 checks: swipe gestures, mastery map, announcements
 ```
 
 ## Architecture

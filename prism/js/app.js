@@ -477,6 +477,9 @@
 
     function down(e) {
       if (e.button !== undefined && e.button !== 0) return;
+      // swipe is a touch metaphor: a mouse drag on card text means selection,
+      // not navigation, so only touch and pen pointers start a swipe
+      if (e.pointerType === 'mouse') return;
       var t = e.target;
       // let real controls handle their own gestures
       if (t && t.closest && t.closest('button, a, input, select, textarea, summary')) return;
