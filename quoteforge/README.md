@@ -39,11 +39,18 @@ To publish it, see [DEPLOY.md](../DEPLOY.md) — GitHub Pages takes about two mi
   is visible from any tab rather than surfacing when the final invoice is disputed.
 - **Print to PDF** through the browser's own print dialog. No PDF library, no server.
 
+- **Job costing**, because the third leak is margin fade: the job was priced at 25%,
+  finished at 14%, and nobody can say which trade ate the difference. Every receipt,
+  sub invoice, and week of payroll is logged against the category it was estimated
+  under; overruns erode the profit figure dollar for dollar, on screen, while the job
+  is still running. Erosion is the sum of per-category overruns — deliberately not
+  netted against underspent categories, because unbought tile is not savings.
+
 ## What it deliberately does not do
 
-Job costing against actuals, invoicing, payroll, scheduling, accounting integration,
-or multi-device sync. It prices work and produces proposals. Export CSV and hand it to
-whatever you already use.
+Invoicing, payroll, payment tracking, scheduling, accounting integration, or
+multi-device sync. It prices work, produces the documents, and shows where the money
+went. Export CSV and hand the rest to whatever you already use.
 
 ---
 
@@ -91,8 +98,9 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-106 unit assertions with no test framework and no install step, plus 119 browser
-assertions across `test/browser.mjs`, `test/change-orders.mjs`, and `test/security.mjs`. The pricing suite includes a
+121 unit assertions with no test framework and no install step, plus 140 browser
+assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
+and `test/security.mjs`. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.
 

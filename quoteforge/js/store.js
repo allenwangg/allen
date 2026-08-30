@@ -76,6 +76,7 @@ export function newEstimate(overrides = {}) {
     exclusions: '',
     items: [],
     changeOrders: [],
+    actuals: [],
     discount: null,
     milestones: defaultMilestones(),
     terms: [...DEFAULT_TERMS],
@@ -503,6 +504,7 @@ function migrateEstimate(raw) {
     client: { ...base.client, ...(raw.client || {}) },
     items: (raw.items || []).map(normalizeItem),
     changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
+    actuals: (raw.actuals || []).map(migrateActual),
     milestones: raw.milestones?.length ? raw.milestones : base.milestones,
     terms: raw.terms?.length ? raw.terms : base.terms,
   };
@@ -522,6 +524,17 @@ function normalizeItem(i) {
     note: i.note || '',
     sku: i.sku || '',
     trade: i.trade || '',
+  };
+}
+
+/** One logged cost: a receipt, an invoice from a sub, a week of payroll. */
+function migrateActual(raw) {
+  return {
+    id: raw.id || uid('ac'),
+    date: raw.date || todayISO(),
+    category: raw.category || 'other',
+    description: raw.description || '',
+    amount: Number(raw.amount) || 0,
   };
 }
 
@@ -707,5 +720,46 @@ Object.assign(Store.prototype, {
       const co = e?.changeOrders.find((c) => c.id === coId);
       if (co) co.items = co.items.filter((i) => i.id !== itemId);
     }, { label: 'remove co item' });
+  },
+});
+
+/* -------------------------------------------------------------- actuals --- */
+
+/**
+ * The actuals log is a checkbook, not an accounting system: date, category,
+ * what it was, what it cost. The whole value of the feature is that logging a
+ * receipt takes less time than losing it, so these stay as flat and dumb as
+ * possible.
+ */
+Object.assign(Store.prototype, {
+  addActual(partial = {}) {
+    const entry = {
+      id: uid('ac'),
+      date: todayISO(),
+      category: 'material',
+      description: '',
+      amount: 0,
+      ...partial,
+    };
+    this.update((s) => {
+      const est = s.estimates.find((e) => e.id === s.activeId);
+      if (est) est.actuals.push(entry);
+    }, { label: 'add actual' });
+    return entry;
+  },
+
+  patchActual(id, patch, opts = {}) {
+    this.update((s) => {
+      const est = s.estimates.find((e) => e.id === s.activeId);
+      const entry = est?.actuals.find((a) => a.id === id);
+      if (entry) Object.assign(entry, patch);
+    }, { label: `actual-${id}`, coalesce: true, ...opts });
+  },
+
+  removeActual(id) {
+    this.update((s) => {
+      const est = s.estimates.find((e) => e.id === s.activeId);
+      if (est) est.actuals = est.actuals.filter((a) => a.id !== id);
+    }, { label: 'remove actual' });
   },
 });

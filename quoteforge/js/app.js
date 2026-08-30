@@ -11,7 +11,7 @@
 import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
-  solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder,
+  solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -51,6 +51,7 @@ function boot() {
   wireAssemblies();
   wireProposal();
   wireChangeOrders();
+  wireCosts();
   wireJobs();
   wireShortcuts();
 
@@ -120,6 +121,8 @@ function render() {
     renderProposalPane(est, priced);
   } else if (ui.tab === 'changes') {
     renderChanges(est);
+  } else if (ui.tab === 'costs') {
+    renderCosts(est);
   } else if (ui.tab === 'jobs') {
     renderJobs();
   } else if (ui.tab === 'settings') {
@@ -127,6 +130,7 @@ function render() {
   }
 
   renderChangeBadge(est);
+  renderCostsBadge(est);
   $('#btnUndo').disabled = !store.canUndo();
   $('#btnRedo').disabled = !store.canRedo();
 }
@@ -136,7 +140,7 @@ function renderTabs() {
     const on = tab.dataset.tab === ui.tab;
     tab.setAttribute('aria-selected', String(on));
   }
-  for (const name of ['estimate', 'proposal', 'changes', 'jobs', 'settings']) {
+  for (const name of ['estimate', 'proposal', 'changes', 'costs', 'jobs', 'settings']) {
     $(`#pane-${name}`).hidden = name !== ui.tab;
   }
 }
@@ -1286,7 +1290,7 @@ const SHORTCUTS = [
   ['⌘/Ctrl+Z', 'Undo'],
   ['⌘/Ctrl+⇧+Z', 'Redo'],
   ['⌘/Ctrl+P', 'Print / save as PDF'],
-  ['1 – 5', 'Switch tabs'],
+  ['1 – 6', 'Switch tabs'],
   ['?', 'This list'],
 ];
 
@@ -1316,8 +1320,9 @@ function wireShortcuts() {
       case '1': ui.tab = 'estimate'; render(); break;
       case '2': ui.tab = 'proposal'; render(); break;
       case '3': ui.tab = 'changes'; render(); break;
-      case '4': ui.tab = 'jobs'; render(); break;
-      case '5': ui.tab = 'settings'; render(); break;
+      case '4': ui.tab = 'costs'; render(); break;
+      case '5': ui.tab = 'jobs'; render(); break;
+      case '6': ui.tab = 'settings'; render(); break;
     }
   });
 }
@@ -1695,4 +1700,190 @@ function wireChangeOrders() {
       delete document.body.dataset.print;
     });
   };
+}
+
+/* ------------------------------------------------------------ job costs --- */
+
+/**
+ * The Costs badge appears only when a category is over budget. A count of
+ * entries would be noise; an overrun is the one thing worth interrupting for,
+ * because every day it runs it gets quietly bigger.
+ */
+function renderCostsBadge(est) {
+  const badge = $('#acBadge');
+  if (!est || !est.actuals?.length) { badge.classList.add('hidden'); return; }
+  const c = compareActuals(est, store.state.settings);
+  const overCats = Object.values(c.byCategory).filter((v) => v.overrunCents > 0).length;
+  badge.classList.toggle('hidden', overCats === 0);
+  if (overCats) {
+    badge.textContent = overCats;
+    badge.title = `${overCats} categor${overCats === 1 ? 'y is' : 'ies are'} over budget`;
+  }
+}
+
+function renderCosts(est) {
+  if (!est) { $('#actualsWrap').innerHTML = ''; return; }
+  const c = compareActuals(est, store.state.settings);
+  renderActualsGrid(est, c);
+  renderBudgetPanel(c);
+  renderFadePanel(c);
+}
+
+function renderActualsGrid(est, c) {
+  const wrap = $('#actualsWrap');
+
+  if (!est.actuals.length) {
+    wrap.innerHTML = `
+      <div class="empty-state" style="padding:32px 16px">
+        <h3>Nothing logged yet</h3>
+        <p>Every receipt, sub invoice, and week of payroll goes here — against the category it
+           was estimated under. That is the whole system. At the end of the job you will know
+           which trade made money and which one ate it.</p>
+        <button class="btn primary" data-acnew>+ Log the first cost</button>
+      </div>`;
+    wrap.onclick = (e) => { if (e.target.closest('[data-acnew]')) addActualRow(); };
+    return;
+  }
+
+  const focus = captureACFocus();
+
+  wrap.innerHTML = `
+<table class="items">
+  <thead>
+    <tr><th style="width:118px">Date</th><th style="width:132px">Category</th>
+        <th>What it was</th><th class="right" style="width:110px">Amount</th><th style="width:34px"></th></tr>
+  </thead>
+  <tbody>
+    ${c.entries.map((a) => `
+      <tr data-ac="${esc(a.id)}">
+        <td><input data-acf="date" type="date" value="${esc(a.date)}"></td>
+        <td>
+          <select data-acf="category">
+            ${CATEGORIES.map((cat) => `<option value="${cat}"${cat === a.category ? ' selected' : ''}>${CATEGORY_LABELS[cat]}</option>`).join('')}
+          </select>
+        </td>
+        <td><input data-acf="description" value="${esc(a.description)}" placeholder="Sub invoice, receipt, payroll…"></td>
+        <td><input data-acf="amount" class="num" type="number" step="0.01" value="${esc(a.amount)}"></td>
+        <td class="col-actions">
+          <div class="row-tools"><button class="btn sm icon ghost" data-acdel title="Delete">✕</button></div>
+        </td>
+      </tr>`).join('')}
+  </tbody>
+</table>
+<div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">
+  <span class="tiny faint">${c.entries.length} entr${c.entries.length === 1 ? 'y' : 'ies'}</span>
+  <span style="flex:1"></span>
+  <span class="tiny faint">Spent ${formatMoney(c.spentCents)} of ${formatMoney(c.budgetCents)} budgeted</span>
+</div>`;
+
+  wrap.oninput = (e) => {
+    const tr = e.target.closest('tr[data-ac]');
+    const field = e.target.dataset.acf;
+    if (!tr || !field) return;
+    let value = e.target.value;
+    if (field === 'amount') {
+      value = value === '' ? 0 : Number(value);
+      if (!Number.isFinite(value)) return;
+    }
+    store.patchActual(tr.dataset.ac, { [field]: value },
+      { label: `ac-${tr.dataset.ac}-${field}`, coalesce: true });
+  };
+
+  wrap.onclick = (e) => {
+    const del = e.target.closest('[data-acdel]');
+    if (!del) return;
+    const id = del.closest('tr[data-ac]').dataset.ac;
+    const entry = est.actuals.find((a) => a.id === id);
+    store.removeActual(id);
+    toast(`Removed ${entry?.description || 'entry'}.`, { undo: true });
+  };
+
+  restoreACFocus(focus);
+}
+
+function captureACFocus() {
+  const el = document.activeElement;
+  const tr = el?.closest?.('tr[data-ac]');
+  if (!tr || !el.dataset.acf) return null;
+  return { id: tr.dataset.ac, field: el.dataset.acf, start: el.selectionStart, end: el.selectionEnd };
+}
+
+function restoreACFocus(focus) {
+  if (!focus) return;
+  const el = $(`tr[data-ac="${CSS.escape(focus.id)}"] [data-acf="${focus.field}"]`);
+  if (!el) return;
+  el.focus();
+  if (focus.start != null && el.setSelectionRange && el.type === 'text') {
+    try { el.setSelectionRange(focus.start, focus.end); } catch { /* not selectable */ }
+  }
+}
+
+function addActualRow() {
+  const entry = store.addActual();
+  requestAnimationFrame(() => {
+    $(`tr[data-ac="${CSS.escape(entry.id)}"] [data-acf="description"]`)?.focus();
+  });
+}
+
+function renderBudgetPanel(c) {
+  const el = $('#budgetPanel');
+  const cats = Object.entries(c.byCategory);
+  if (!cats.length) {
+    el.innerHTML = '<p class="tiny faint" style="margin:0">Price the estimate first — the budget comes from it.</p>';
+    return;
+  }
+  el.innerHTML = cats.map(([cat, v]) => {
+    const ratio = v.budgetCents === 0 ? (v.spentCents > 0 ? 1.01 : 0) : v.spentCents / v.budgetCents;
+    const cls = ratio > 1 ? 'over' : ratio > 0.85 ? 'warm' : '';
+    return `
+      <div class="budget-bar">
+        <div class="head">
+          <span>${CATEGORY_LABELS[cat]}</span>
+          <span class="num">${formatMoney(v.spentCents)} / ${formatMoney(v.budgetCents)}</span>
+        </div>
+        <div class="budget-track">
+          <div class="budget-fill ${cls}" style="width:${Math.min(100, Math.max(0, ratio * 100))}%"></div>
+        </div>
+        <div class="foot ${v.overrunCents ? 'over' : ''}">
+          ${v.overrunCents
+            ? `${formatMoney(v.overrunCents)} over budget`
+            : `${formatMoney(v.remainingCents)} left to spend`}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderFadePanel(c) {
+  const el = $('#fadePanel');
+  const floor = Number(store.state.settings.floorMargin) || 0;
+
+  el.innerHTML = `
+<div class="figure"><span class="label">Margin at estimate</span><span class="value">${formatPercent(c.estimatedMargin)}</span></div>
+<div class="figure"><span class="label">Margin after overruns</span>
+  <span class="value" style="${c.overrunCents ? 'color:var(--bad);font-weight:650' : ''}">${formatPercent(c.adjustedMargin)}</span></div>
+<div class="figure"><span class="label">Profit at estimate</span><span class="value">${formatMoney(c.estimatedProfitCents)}</span></div>
+<div class="figure total"><span class="label">Profit as it stands</span><span class="value">${formatMoney(c.adjustedProfitCents)}</span></div>
+
+${c.overrunCents ? `
+  <div class="coach ${c.adjustedMargin < floor ? 'bad' : 'warn'}" style="margin-top:12px">
+    <strong>${formatMoney(c.overrunCents)} of margin has faded.</strong>
+    Overruns come straight out of profit — there is no one left to bill for them.
+    ${c.adjustedMargin < floor
+      ? `This job is now under your ${formatPercent(floor)} floor. If there is uncontracted extra
+         work behind these numbers, it belongs on a change order while the client still needs you.`
+      : 'If any of this spend was caused by a client request, it belongs on a change order, not in your costs.'}
+  </div>`
+  : c.spentCents ? `
+  <div class="coach good" style="margin-top:12px">
+    <strong>On budget so far.</strong>
+    ${formatPercent(c.spendRatio, 0)} of the direct budget is spent and no category is over.
+  </div>` : `
+  <div class="coach" style="margin-top:12px">
+    <strong>Nothing spent yet.</strong>
+    Log costs as they land and this panel will show the real margin, not the hoped-for one.
+  </div>`}`;
+}
+
+function wireCosts() {
+  $('#btnAddActual').onclick = addActualRow;
 }

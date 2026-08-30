@@ -776,3 +776,24 @@ table.pr-table tr.group-head td {
 
 .co-status-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 .co-status-row .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ------------------------------------------------------------ job costs --- */
+
+.budget-bar { margin-bottom: 11px; }
+.budget-bar .head {
+  display: flex; justify-content: space-between; gap: 8px;
+  font-size: 12px; margin-bottom: 3px;
+}
+.budget-bar .head .num { white-space: nowrap; }
+.budget-track {
+  position: relative;
+  height: 8px; border-radius: 999px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.budget-fill { height: 100%; background: var(--good); border-radius: 999px; }
+.budget-fill.warm { background: var(--warn); }
+.budget-fill.over { background: var(--bad); }
+.budget-bar .foot { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.budget-bar .foot.over { color: var(--bad); font-weight: 600; }

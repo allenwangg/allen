@@ -6,7 +6,7 @@
  * estimates.
  */
 import { Store, migrate, newEstimate, uid, STORAGE_KEY } from './store.js';
-import { priceEstimate, defaultSettings, summarizeContract } from './pricing.js';
+import { priceEstimate, defaultSettings, summarizeContract, compareActuals } from './pricing.js';
 
 let passed = 0, failed = 0;
 const failures = [];
@@ -527,6 +527,65 @@ t('change orders feed the contract summary', () => {
   c = summarizeContract(s.active(), s.state.settings);
   eq(c.atRiskCents, 0, 'approval should clear the exposure:');
   ok(c.contractTotalCents > c.originalTotalCents, 'approval should raise the contract');
+});
+
+/* -------------------------------------------------------------- actuals --- */
+
+t('actuals are added, edited, and removed', () => {
+  const s = mkStore();
+  s.createEstimate();
+  const a = s.addActual({ description: 'Lumber run', category: 'material', amount: 412.87 });
+  eq(s.active().actuals.length, 1);
+  ok(a.date, 'an entry defaults to today');
+
+  s.patchActual(a.id, { amount: 450 });
+  eq(s.active().actuals[0].amount, 450);
+
+  s.removeActual(a.id);
+  eq(s.active().actuals.length, 0);
+});
+
+t('actuals survive a reload and a backup round-trip', () => {
+  const storage = memStorage();
+  const a = new Store({ storage });
+  a.createEstimate();
+  a.addActual({ description: 'Payroll wk 1', category: 'labor', amount: 1840 });
+  a.save({ immediate: true });
+
+  const b = new Store({ storage });
+  eq(b.active().actuals[0].description, 'Payroll wk 1');
+  eq(b.active().actuals[0].amount, 1840);
+
+  const c = mkStore();
+  c.importJSON(a.exportAll());
+  eq(c.state.estimates[0].actuals[0].amount, 1840, 'backup dropped the actuals:');
+});
+
+t('an estimate saved before actuals existed gains an empty log', () => {
+  const migrated = migrate({ estimates: [{ id: 'old', title: 'Legacy', items: [] }] });
+  eq(Array.isArray(migrated.estimates[0].actuals), true);
+  eq(migrated.estimates[0].actuals.length, 0);
+});
+
+t('a malformed actual is repaired on load, not dropped', () => {
+  const migrated = migrate({
+    estimates: [{ id: 'e', actuals: [{ description: 'Torn receipt', amount: '312.5' }] }],
+  });
+  const entry = migrated.estimates[0].actuals[0];
+  eq(entry.amount, 312.5, 'string amounts should be coerced:');
+  eq(entry.category, 'other', 'a missing category should default:');
+  ok(entry.id && entry.date, 'id and date should be generated');
+});
+
+t('actuals feed compareActuals end to end', () => {
+  const s = mkStore();
+  s.createEstimate();
+  s.addItem({ description: 'Labor', qty: 10, unitCost: 100, category: 'labor' });
+  s.addActual({ description: 'Payroll', category: 'labor', amount: 1300 });
+  const c = compareActuals(s.active(), s.state.settings);
+  eq(c.byCategory.labor.spentCents, 130000);
+  eq(c.byCategory.labor.overrunCents, 30000);
+  ok(c.adjustedProfitCents < c.estimatedProfitCents);
 });
 
 

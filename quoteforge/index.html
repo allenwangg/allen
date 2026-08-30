@@ -38,6 +38,7 @@
     <button class="tab" role="tab" data-tab="estimate" aria-selected="true">Estimate</button>
     <button class="tab" role="tab" data-tab="proposal" aria-selected="false">Proposal</button>
     <button class="tab" role="tab" data-tab="changes"  aria-selected="false">Changes <span id="coBadge" class="tab-badge hidden"></span></button>
+    <button class="tab" role="tab" data-tab="costs"    aria-selected="false">Costs <span id="acBadge" class="tab-badge hidden"></span></button>
     <button class="tab" role="tab" data-tab="jobs"     aria-selected="false">Jobs</button>
     <button class="tab" role="tab" data-tab="settings" aria-selected="false">Settings</button>
   </nav>
@@ -190,6 +191,33 @@
          print stylesheet swaps it in for the editor. -->
     <div class="proposal-shell print-only" id="coPrintShell"><div class="proposal" id="coPrint"></div></div>
     <div class="proposal-shell print-only" id="stmtPrintShell"><div class="proposal" id="stmtPrint"></div></div>
+  </main>
+
+  <!-- ======================================================= COSTS PANE == -->
+  <main class="pane" id="pane-costs" hidden>
+    <div class="workspace">
+      <div>
+        <section class="card">
+          <header>
+            <h2>Job costs</h2>
+            <span class="spacer"></span>
+            <span class="tiny faint">Log it when you pay it — a receipt takes ten seconds here and an argument later</span>
+            <button class="btn sm primary" id="btnAddActual">+ Cost</button>
+          </header>
+          <div id="actualsWrap"></div>
+        </section>
+      </div>
+      <aside class="profit-rail">
+        <section class="card">
+          <header><h2>Budget vs spent</h2></header>
+          <div class="body" id="budgetPanel"></div>
+        </section>
+        <section class="card">
+          <header><h2>Margin fade</h2></header>
+          <div class="body" id="fadePanel"></div>
+        </section>
+      </aside>
+    </div>
   </main>
 
   <!-- ======================================================== JOBS PANE == -->

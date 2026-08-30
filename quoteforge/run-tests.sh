@@ -15,6 +15,8 @@ if [ "${1:-}" = "--all" ]; then
   node quoteforge/test/browser.mjs || fail=1
   echo "  change order suite"
   node quoteforge/test/change-orders.mjs || fail=1
+  echo "  job cost suite"
+  node quoteforge/test/job-costs.mjs || fail=1
   echo "  security suite"
   node quoteforge/test/security.mjs || fail=1
 fi

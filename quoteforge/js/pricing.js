@@ -521,3 +521,94 @@ export function newChangeOrder(seq = 1) {
     signature: null,
   };
 }
+
+/* ========================================================== job costing === */
+
+/**
+ * Compare actual spend against the job's budget.
+ *
+ * The third leak, after mispricing and unbilled changes, is margin fade: the
+ * job was priced at 25%, finished at 14%, and nobody can say which trade ate
+ * the difference — because receipts went into a shoebox and were never laid
+ * against the estimate. This closes that loop with the cheapest possible
+ * discipline: a flat log of what was actually spent, rolled up per category
+ * against what the estimate said it would cost.
+ *
+ * The budget is DIRECT cost only — the line costs of the estimate plus its
+ * approved change orders. Overhead is a percentage carried in the price, not
+ * something anyone writes a check against per job, so it stays out of the
+ * category budgets and remains accounted for inside contract profit.
+ *
+ * Erosion is the sum of PER-CATEGORY overruns, deliberately not the net
+ * against underspent categories. Money not yet spent on tile is usually tile
+ * that has not been bought, not savings — netting it against a labor overrun
+ * reports a healthy job right up until it suddenly is not.
+ */
+export function compareActuals(estimate, settings) {
+  const contract = summarizeContract(estimate, settings);
+
+  // Budget per category: estimate lines plus approved change order lines.
+  const budget = {};
+  for (const cat of CATEGORIES) budget[cat] = 0;
+  for (const [cat, v] of Object.entries(contract.base.byCategory)) budget[cat] += v.costCents;
+  for (const { priced } of contract.approved) {
+    for (const [cat, v] of Object.entries(priced.byCategory)) budget[cat] += v.costCents;
+  }
+
+  // Spend per category. Amounts are dollars at the boundary, cents inside;
+  // negative entries (a refund, a returned pallet) net against the category.
+  const spent = {};
+  for (const cat of CATEGORIES) spent[cat] = 0;
+  // Newest first — by date, and within a day by most recently logged. A
+  // stable date-only sort leaves every same-day tie in insertion order, which
+  // buries the receipt the user just typed at the bottom of the grid.
+  const entries = (estimate.actuals || []).map((a, i) => ({
+    ...a,
+    amountCents: toCents(a.amount),
+    _seq: i,
+  }));
+  for (const e of entries) {
+    const cat = CATEGORIES.includes(e.category) ? e.category : 'other';
+    spent[cat] += e.amountCents;
+  }
+
+  const byCategory = {};
+  let budgetTotal = 0;
+  let spentTotal = 0;
+  let overrunTotal = 0;
+  for (const cat of CATEGORIES) {
+    if (!budget[cat] && !spent[cat]) continue;
+    const over = Math.max(0, spent[cat] - budget[cat]);
+    byCategory[cat] = {
+      budgetCents: budget[cat],
+      spentCents: spent[cat],
+      remainingCents: budget[cat] - spent[cat],
+      overrunCents: over,
+    };
+    budgetTotal += budget[cat];
+    spentTotal += spent[cat];
+    overrunTotal += over;
+  }
+
+  // Every dollar over budget in any category comes straight out of profit.
+  const adjustedProfit = contract.contractProfitCents - overrunTotal;
+  const revenue = contract.base.afterDiscountCents + contract.approvedTotalCents;
+
+  return {
+    contract,
+    entries: entries
+      .sort((a, b) => (b.date || '').localeCompare(a.date || '') || b._seq - a._seq)
+      .map(({ _seq, ...rest }) => rest),
+    byCategory,
+    budgetCents: budgetTotal,
+    spentCents: spentTotal,
+    remainingCents: budgetTotal - spentTotal,
+    overrunCents: overrunTotal,
+    estimatedProfitCents: contract.contractProfitCents,
+    adjustedProfitCents: adjustedProfit,
+    estimatedMargin: contract.contractMargin,
+    adjustedMargin: revenue === 0 ? 0 : adjustedProfit / revenue,
+    /** Fraction of the direct budget consumed so far. */
+    spendRatio: budgetTotal === 0 ? 0 : spentTotal / budgetTotal,
+  };
+}

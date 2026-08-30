@@ -9,7 +9,7 @@ import {
   toCents, toDollars, formatMoney, markupToMargin, marginToMarkup,
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
-  priceChangeOrder, summarizeContract, newChangeOrder,
+  priceChangeOrder, summarizeContract, newChangeOrder, compareActuals,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -521,6 +521,123 @@ t('newChangeOrder numbers are zero-padded and sequential', () => {
   eq(newChangeOrder(9).number, 'CO-09');
   eq(newChangeOrder(12).number, 'CO-12');
   eq(newChangeOrder(1).status, 'draft');
+});
+
+
+/* -------------------------------------------------------- job costing ----- */
+
+function costedJob(actuals = [], orders = []) {
+  return {
+    items: [
+      { id: '1', qty: 40, unitCost: 60, category: 'labor', markup: null },     // $2400
+      { id: '2', qty: 1, unitCost: 4000, category: 'material', markup: null }, // $4000
+    ],
+    changeOrders: orders,
+    actuals,
+  };
+}
+
+t('an untouched job reports its full budget and zero spend', () => {
+  const c = compareActuals(costedJob(), S);
+  eq(c.budgetCents, 640000);
+  eq(c.spentCents, 0);
+  eq(c.overrunCents, 0);
+  eq(c.adjustedProfitCents, c.estimatedProfitCents,
+    'with nothing spent, profit should be untouched:');
+  ok(Number.isFinite(c.adjustedMargin));
+});
+
+t('spend rolls up per category', () => {
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'labor', description: 'Week 1 payroll', amount: 1100 },
+    { id: 'b', date: '2026-08-02', category: 'labor', description: 'Week 2 payroll', amount: 900 },
+    { id: 'c', date: '2026-08-03', category: 'material', description: 'Lumber', amount: 1500 },
+  ]), S);
+  eq(c.byCategory.labor.spentCents, 200000);
+  eq(c.byCategory.material.spentCents, 150000);
+  eq(c.spentCents, 350000);
+  eq(c.overrunCents, 0, 'nothing is over budget yet:');
+});
+
+t('an overrun erodes profit dollar for dollar', () => {
+  const base = compareActuals(costedJob(), S);
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'labor', description: 'Payroll', amount: 3000 },
+  ]), S);
+  eq(c.byCategory.labor.overrunCents, 60000, '$3000 spent against a $2400 labor budget:');
+  eq(c.adjustedProfitCents, base.estimatedProfitCents - 60000);
+  ok(c.adjustedMargin < c.estimatedMargin);
+});
+
+t('underspend in one category does not hide an overrun in another', () => {
+  // $600 over on labor, $3900 "under" on material (not yet bought).
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'labor', description: 'Payroll', amount: 3000 },
+    { id: 'b', date: '2026-08-02', category: 'material', description: 'First order', amount: 100 },
+  ]), S);
+  eq(c.overrunCents, 60000,
+    'unbought material must not be netted against a real labor overrun:');
+});
+
+t('a refund nets against its category', () => {
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'material', description: 'Tile order', amount: 2000 },
+    { id: 'b', date: '2026-08-05', category: 'material', description: 'Returned pallet', amount: -350 },
+  ]), S);
+  eq(c.byCategory.material.spentCents, 165000);
+});
+
+t('approved change orders raise the budget; unapproved ones do not', () => {
+  const coItems = [{ id: 'x', qty: 10, unitCost: 100, category: 'labor', markup: null }];
+  const approved = compareActuals(costedJob([], [
+    { id: 'c1', number: 'CO-01', status: 'approved', items: coItems },
+  ]), S);
+  const pending = compareActuals(costedJob([], [
+    { id: 'c1', number: 'CO-01', status: 'sent', items: coItems },
+  ]), S);
+  const none = compareActuals(costedJob(), S);
+  eq(approved.byCategory.labor.budgetCents, none.byCategory.labor.budgetCents + 100000,
+    'an approved change should fund its own spend:');
+  eq(pending.byCategory.labor.budgetCents, none.byCategory.labor.budgetCents,
+    'spending against an unsigned change has no budget behind it:');
+});
+
+t('spend in an unknown category lands in other instead of vanishing', () => {
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'misc-typo', description: 'Fees', amount: 250 },
+  ]), S);
+  eq(c.byCategory.other.spentCents, 25000);
+  eq(c.spentCents, 25000, 'no entry may fall out of the totals:');
+});
+
+t('entries come back sorted newest first', () => {
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-01', category: 'labor', description: 'old', amount: 10 },
+    { id: 'b', date: '2026-08-20', category: 'labor', description: 'new', amount: 10 },
+    { id: 'c', date: '2026-08-10', category: 'labor', description: 'mid', amount: 10 },
+  ]), S);
+  eq(c.entries.map((e) => e.description).join(','), 'new,mid,old');
+});
+
+t('same-day entries put the most recently logged first', () => {
+  // Three receipts logged the same day: the one just typed must top the grid,
+  // or every edit aimed at "the new row" silently hits the oldest one.
+  const c = compareActuals(costedJob([
+    { id: 'a', date: '2026-08-15', category: 'labor', description: 'first', amount: 10 },
+    { id: 'b', date: '2026-08-15', category: 'labor', description: 'second', amount: 10 },
+    { id: 'c', date: '2026-08-15', category: 'labor', description: 'third', amount: 10 },
+  ]), S);
+  eq(c.entries.map((e) => e.description).join(','), 'third,second,first');
+});
+
+t('a job with no estimate lines but real spend still reports sanely', () => {
+  const c = compareActuals({ items: [], actuals: [
+    { id: 'a', date: '2026-08-01', category: 'labor', description: 'Payroll', amount: 500 },
+  ] }, S);
+  eq(c.budgetCents, 0);
+  eq(c.spentCents, 50000);
+  eq(c.overrunCents, 50000, 'all spend against no budget is all overrun:');
+  ok(Number.isFinite(c.adjustedMargin), 'margin must stay finite with zero revenue');
 });
 
 /* -------------------------------------------------------------- report ---- */
