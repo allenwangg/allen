@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 47 tests, run on CI |
+| Automated test suite | none public | ✅ 49 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -51,7 +51,7 @@ product titles, public click counts):
 | Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
 | Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 47/47 passing
+## 2. Functional correctness — 49/49 passing
 
 `node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
 the Stripe ledger reader exercised against a mock Stripe. This suite also runs
@@ -91,6 +91,8 @@ PASS  crowning bid with a decree shows the taunt on the crown card
 PASS  dossier offers an embeddable rank badge with copyable HTML
 PASS  trophy case shows every title, locked ones with how to earn them
 PASS  bidding in the final hour earns Night Owl
+PASS  a hostile listing name cannot execute script via the Oracle result
+PASS  the copyable badge embed escapes the listing name
 PASS  Season board ranks by this month's bids with its own crown and countdown
 PASS  presence flames grow on consecutive days and reset after a gap
 PASS  the Oracle locks a pick, then pays out a streak after the day resolves
@@ -106,7 +108,7 @@ PASS  a genuinely larger bid does take over the decree
 PASS  ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII
 PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-47/47 tests passed
+49/49 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -115,8 +117,8 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **116 ms** |
-| DOMContentLoaded | **82 ms** |
+| First Contentful Paint | **128 ms** |
+| DOMContentLoaded | **94 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
 | Page weight | **91.4 KB raw / 27.2 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
