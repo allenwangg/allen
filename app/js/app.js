@@ -54,6 +54,22 @@ const state = {
  * Derivation — recompute everything downstream of entries.
  * ------------------------------------------------------------------ */
 
+/**
+ * discover() is by far the most expensive derivation (hundreds of ms on long
+ * histories) and its inputs change only when an entry is saved, deleted or
+ * imported — yet recompute() also runs on every slider release and profile
+ * keystroke. Fingerprint what discovery actually depends on and skip it when
+ * nothing relevant moved.
+ */
+let insightsFingerprint = null;
+
+function entriesFingerprint() {
+  let maxUpdated = 0;
+  for (const e of state.entries) if (e.updatedAt > maxUpdated) maxUpdated = e.updatedAt;
+  const last = state.entries.length ? state.entries[state.entries.length - 1].date : '';
+  return `${state.entries.length}:${last}:${maxUpdated}:${can(state.entitlement, 'insights')}`;
+}
+
 function recompute() {
   state.entitlement = resolveEntitlement(state.entitlementRaw);
   state.visible = visibleEntries(state.entries, state.entitlement);

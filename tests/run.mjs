@@ -5,7 +5,7 @@
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -381,6 +381,22 @@ t('phrasing states the right verdict', () => {
   es[0].energy = 3;
   const hit = discover(es).findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === 'energy');
   ok(hit.text.includes('costing you'), 'bad effect must be phrased as a cost: ' + hit.text);
+});
+
+t('never endorses a harmful habit for a beneficial-looking correlation', () => {
+  // Weekend confound: drinking clusters on already-relaxed days, so alcohol
+  // correlates with LOWER same-day stress. The pattern is shown, but the
+  // verdict must caution about context rather than bless the drinking.
+  const f = { driver: 'alcoholUnits', outcome: 'stress', lag: 0, r: -0.5, effect: 'large',
+              practical: { delta: -0.7 } };
+  const text = phrase(f);
+  ok(!text.includes('working for you'), 'must not endorse alcohol: ' + text);
+  ok(/care|context|those days/i.test(text), 'must carry a caution: ' + text);
+});
+t('still celebrates a beneficial correlation from a healthy driver', () => {
+  const f = { driver: 'sleepHours', outcome: 'stress', lag: 0, r: -0.5, effect: 'large',
+              practical: { delta: -0.7 } };
+  ok(phrase(f).includes('working for you'), 'got: ' + phrase(f));
 });
 
 t('skips same-day self-report pairs', () => {

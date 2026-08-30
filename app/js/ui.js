@@ -366,11 +366,14 @@ function insightCard(f, state) {
   const driverLabel = FIELDS[f.driver]?.label || f.driver;
   const outcomeLabel = FIELDS[f.outcome]?.label || f.outcome;
   const good = (!LOWER_IS_BETTER.has(f.outcome)) === (f.r > 0);
+  // Beneficial-looking correlations from harmful drivers (alcohol lowering
+  // stress) are most likely confounds; the pill must not endorse the habit.
+  const caution = good && LOWER_IS_BETTER.has(f.driver);
   const pairs = (state.pairCache?.[`${f.driver}|${f.outcome}|${f.lag}`]) || [];
 
   return `<div class="insight">
     <div class="insight-head">
-      <span class="pill ${good ? 'pill-good' : 'pill-bad'}">${good ? 'Working for you' : 'Costing you'}</span>
+      <span class="pill ${caution ? 'pill-info' : good ? 'pill-good' : 'pill-bad'}">${caution ? 'Likely a context effect' : good ? 'Working for you' : 'Costing you'}</span>
       <span class="pill pill-info">${esc(f.effect)} effect</span>
       <span class="subtle">${f.lag === 0 ? 'same day' : `${f.lag}-day lag`} · n=${f.n}</span>
     </div>
