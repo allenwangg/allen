@@ -162,18 +162,35 @@ function toast(message) {
  * Actions
  * ------------------------------------------------------------------ */
 
+/**
+ * Draft navigation is serialized through this chain. Two rapid taps on the
+ * day arrows used to interleave their awaits: both read the same
+ * state.draft.date, both computed the same "next" day, and the second tap
+ * was silently swallowed. Each navigation now starts only after the previous
+ * one has fully settled.
+ */
+let navChain = Promise.resolve();
+const serializeNav = (fn) => { navChain = navChain.then(fn, fn); return navChain; };
+
 const actions = {
   goto: (el) => go(el.dataset.view),
 
-  'shift-day': async (el) => {
+  'shift-day': (el) => serializeNav(async () => {
     await persistDraftIfDirty();
     const next = addDays(state.draft.date, Number(el.dataset.delta));
     if (next > dateKey()) return;
     await loadDraft(next);
     render();
-  },
+  }),
 
-  'edit-day': async (el) => { await loadDraft(el.dataset.date); go('log'); },
+  // Persist a half-edited day before switching, exactly as the sibling
+  // navigation paths (shift-day, the date input) do — silently discarding it
+  // only here made data loss depend on which button the user happened to tap.
+  'edit-day': (el) => serializeNav(async () => {
+    await persistDraftIfDirty();
+    await loadDraft(el.dataset.date);
+    go('log');
+  }),
 
   'save-entry': async () => {
     await saveDraft();
@@ -263,6 +280,10 @@ const actions = {
     await store.clearAll();
     state.entries = []; state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75 };
     state.draft = emptyEntry();
+    // The draft this flag referred to has just been destroyed; leaving it set
+    // meant the next tap on Save quietly re-populated the wiped store, and
+    // beforeunload nagged about "unsaved changes" that no longer exist.
+    state.dirty = false;
     recompute(); go('today');
     toast('All data deleted');
   },
@@ -359,7 +380,11 @@ function wire() {
       state.simChanges[t.dataset.sim] = Number(t.value);
       const ctx = { age: Number(state.profile.age) || 35, weightKg: Number(state.profile.weightKg) || 75 };
       state.simulation = simulate(state.entries, state.simChanges, ctx);
-      render();
+      // Surgical DOM update only: a full render() here replaced the slider
+      // element mid-drag, which released the pointer capture and killed the
+      // drag after one step. The full re-render (for the pillar chart)
+      // happens on the change event, when the drag ends.
+      updateSimReadout(t);
       return;
     }
 
@@ -379,6 +404,7 @@ function wire() {
   // A slider drag ends -> now it's worth a full re-render for the charts.
   document.addEventListener('change', (ev) => {
     if (ev.target.dataset.field && ev.target.type === 'range') { recompute(); render(); }
+    else if (ev.target.dataset.sim) render();
   });
 
   $('#import-file').addEventListener('change', async (ev) => {
@@ -389,6 +415,10 @@ function wire() {
       const { imported, problems } = await store.importAll(payload, validateEntry);
       state.entries = await store.allEntries();
       state.profile = (await store.getMeta('profile')) || state.profile;
+      // Rebuild the draft from the store: the import may have replaced the
+      // very day the draft mirrors, and saving the stale pre-import draft
+      // afterwards would clobber the imported entry.
+      await loadDraft(state.draft.date);
       recompute(); render();
       toast(`Imported ${imported} day${imported === 1 ? '' : 's'}${problems.length ? ` (${problems.length} with warnings)` : ''}`);
     } catch (err) {
@@ -415,6 +445,25 @@ function wire() {
   window.addEventListener('beforeunload', (ev) => {
     if (state.dirty) { ev.preventDefault(); ev.returnValue = ''; }
   });
+}
+
+/** Patch the simulator's readout numbers in place during a slider drag. */
+function updateSimReadout(input) {
+  const f = FIELDS[input.dataset.sim];
+  const delta = Number(input.value);
+  const out = input.closest('.field')?.querySelector('.field-value');
+  if (out && f) {
+    const unit = f.unit && f.unit !== 'bool' && f.unit !== 'clock' ? ' ' + f.unit : '';
+    out.textContent = `${delta > 0 ? '+' : ''}${Math.round(delta * 100) / 100}${unit}`;
+  }
+  const sim = state.simulation;
+  if (!sim) return;
+  const stats = document.querySelectorAll('#main .stat-value');
+  // Layout order in simulatorView: Current, Projected, Score change, Age change.
+  if (stats.length >= 2) {
+    stats[0].textContent = sim.baseline?.score ?? '--';
+    stats[1].textContent = sim.projected?.score ?? '--';
+  }
 }
 
 /**
