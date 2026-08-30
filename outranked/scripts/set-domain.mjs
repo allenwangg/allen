@@ -21,10 +21,17 @@ try {
   process.exit(1);
 }
 
-const files = ["index.html", "outbid-lol-alternative.html"];
+const files = ["index.html", "outbid-lol-alternative.html", "robots.txt", "sitemap.xml"];
 let changed = 0;
 for (const file of files) {
   const before = readFileSync(file, "utf8");
+  if (!file.endsWith(".html")) {
+    // Plain-text files: swap any absolute https URL's origin wholesale.
+    const after = before.replace(/https:\/\/[^/\s<]+/g, origin);
+    if (after !== before) { writeFileSync(file, after); changed++; }
+    console.log(`${after !== before ? "updated" : "unchanged"}  ${file}`);
+    continue;
+  }
   // Rewrite only absolute URLs inside meta/link tags — and never third-party
   // hosts. (An earlier version rewrote the Google Fonts stylesheet URL too,
   // which silently broke typography on the deployed site.)

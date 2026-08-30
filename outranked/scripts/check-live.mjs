@@ -57,5 +57,22 @@ try {
   ok("SEO page serves (clean URL)", r.ok, `HTTP ${r.status}`);
 } catch (e) { ok("SEO page serves (clean URL)", false, String(e)); }
 
+// 5. Crawlability + the 404 page
+try {
+  const r = await fetch(base + "/robots.txt");
+  const t = await r.text();
+  ok("robots.txt serves", r.ok && t.includes("Sitemap:"), `HTTP ${r.status}`);
+  ok("sitemap points at this site", t.includes(base), t.includes(base) ? "" : "sitemap URL is another domain — run scripts/set-domain.mjs");
+} catch (e) { ok("robots.txt serves", false, String(e)); }
+try {
+  const r = await fetch(base + "/sitemap.xml");
+  ok("sitemap.xml serves", r.ok, `HTTP ${r.status}`);
+} catch (e) { ok("sitemap.xml serves", false, String(e)); }
+try {
+  const r = await fetch(base + "/definitely-not-a-page-" + Date.now());
+  const t = await r.text();
+  ok("branded 404 page", r.status === 404 && t.includes("outbid"), `HTTP ${r.status}`);
+} catch (e) { ok("branded 404 page", false, String(e)); }
+
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll checks passed — the live site is healthy.");
 process.exit(failures ? 1 : 0);

@@ -188,6 +188,25 @@ await test("brag share bar appears after a bid with rank and amount in the tweet
   assert(await page.locator("#sharebar.show").isVisible(), "share bar not shown");
 });
 
+await test("?take= deep link lands inside the bid modal aimed at its target", async () => {
+  const p2 = await ctx.newPage();
+  await p2.goto(url + "?nosim&take=ShipFast", { waitUntil: "networkidle" });
+  await p2.waitForTimeout(900);
+  assert(await p2.locator("#bidModal").evaluate(d => d.open), "bid modal did not open from the deep link");
+  const title = await p2.locator("#modalTitle").textContent();
+  assert(title.includes("ShipFast"), `modal should target ShipFast, got: ${title}`);
+  const val = await p2.inputValue("#fAmt");
+  assert(+val > 0, `amount should be prefilled to beat the target, got "${val}"`);
+  await p2.close();
+});
+
+await test("dare links carry their target as a ?take= deep link", async () => {
+  await page.click("#tabAll");            // the dare link lives on the all-time crown
+  await page.waitForTimeout(150);
+  const href = decodeURIComponent(await page.locator("#dareLink").getAttribute("href"));
+  assert(href.includes("?take="), `dare link missing deep link: ${href.slice(0, 140)}`);
+});
+
 await test("share links derive the live domain instead of a hardcoded one", async () => {
   const origin = await page.evaluate(() => location.origin);
   const brag = await page.locator("#bragBtn").getAttribute("href");

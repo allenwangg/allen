@@ -1131,7 +1131,7 @@ function openDetail(id){
     <div class="mrow">
       <button type="button" class="ghost" data-close-detail>Close</button>
       <a class="ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener"
-         href="${tweetIntent(`${e.name} sits at #${rank} on OUTRANKED with ${fmt(e.total)}. Taking it costs ${fmt(e.total+1)}: ${SHARE_LINK}`)}">Dare on 𝕏</a>
+         href="${tweetIntent(`${e.name} sits at #${rank} on OUTRANKED with ${fmt(e.total)}. Taking it costs ${fmt(e.total+1)}: ${SITE}?take=${encodeURIComponent(e.name)}&r=x`)}">Dare on 𝕏</a>
       <button type="button" class="cta" data-boost="${e.id}">Boost — ${fmt((view==="today"?(e.todayTotal||0):e.total)+1)}</button>
     </div>`;
   detailModal.showModal();
@@ -1243,7 +1243,8 @@ function tweetIntent(text){
   return "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
 }
 function dareIntent(top){
-  return tweetIntent(`Someone paid ${fmt(top.total)} to be #1 on OUTRANKED. It costs exactly ${fmt(top.total+1)} to take it from them. ${SHARE_LINK}`);
+  const link = SITE + "?take=" + encodeURIComponent(top.name) + "&r=x";
+  return tweetIntent(`Someone paid ${fmt(top.total)} to be #1 on OUTRANKED. It costs exactly ${fmt(top.total+1)} to take it from them: ${link}`);
 }
 function bragIntent(entry, rank, amount){
   const via = CONFIG.X_HANDLE ? ` (@${CONFIG.X_HANDLE})` : "";
@@ -1323,6 +1324,20 @@ function confetti(){
 
 /* demo ribbon: visible until a real payment link is configured */
 if (!CONFIG.STRIPE_PAYMENT_LINK) $("#demoRibbon").classList.add("show");
+
+/* Challenge deep links: a dare tweet lands the visitor INSIDE the bid modal,
+   prefilled to beat its target — no hunting through the board first. */
+(function(){
+  const takeName = new URLSearchParams(location.search).get("take");
+  if (!takeName) return;
+  history.replaceState(null, "", location.pathname);
+  /* after first render + ledger merge, so the target exists */
+  setTimeout(()=>{
+    const t = state.entries.find(e => e.name.toLowerCase() === takeName.toLowerCase());
+    if (t){ openBid(t.id); }
+    else { openBid(null); toast(`⚔️ ${esc(takeName)} isn't on the board any more — take their spot instead.`); }
+  }, 600);
+})();
 
 /* Stripe return: thank the bidder the moment they land back */
 if (location.search.includes("paid=1")){
