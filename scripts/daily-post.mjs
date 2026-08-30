@@ -120,8 +120,13 @@ async function board() {
 // MODE=reset|ritual|final overrides the clock, so the workflow's manual "Run"
 // button (and DRY_RUN=1 locally) can preview any post on demand.
 // By the clock: 00:05 → reset (coronation), 14:00 → ritual, 23:00 → final hour.
-const hourNow = new Date().getUTCHours();
-const mode = process.env.MODE || (hourNow < 7 ? "reset" : hourNow >= 22 ? "final" : "ritual");
+const nowUTC = new Date();
+const hourNow = nowUTC.getUTCHours();
+const mode = process.env.MODE ||
+  (hourNow < 7 ? "reset"
+   : hourNow >= 22 ? "final"
+   : (nowUTC.getUTCDay() === 0 && hourNow === 15) ? "week"
+   : "ritual");
 const b = await board();
 
 if (mode === "reset") {
@@ -159,6 +164,42 @@ if (mode === "reset") {
       `${site}?r=final`
     );
   }
+} else if (mode === "week") {
+  // Sunday hall-of-fame recap: the week's daily kings, computed from the
+  // ledger itself, plus any active streak worth taunting about.
+  let payload = null;
+  try { payload = await (await fetch(BOARD_URL, { headers: { accept: "application/json" } })).json(); } catch {}
+  const bids = payload && (Array.isArray(payload) ? payload : payload.bids);
+  if (!Array.isArray(bids) || !bids.length) {
+    console.log("No ledger data for a weekly recap — staying quiet."); process.exit(0);
+  }
+  const byDay = new Map();
+  for (const bid of bids) {
+    const d = new Date(bid.at * 1000).toISOString().slice(0, 10);
+    const m = byDay.get(d) || new Map();
+    const n = decodeRef(bid.ref).name;
+    m.set(n, (m.get(n) || 0) + (+bid.amount || 0));
+    byDay.set(d, m);
+  }
+  const days = [];
+  for (let i = 7; i >= 1; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    const m = byDay.get(d);
+    if (!m) continue;
+    const [name, total] = [...m.entries()].sort((a, x) => x[1] - a[1])[0];
+    days.push({ d, dow: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(d).getUTCDay()], name, total });
+  }
+  if (!days.length) { console.log("No crowned days this week — staying quiet."); process.exit(0); }
+  let streak = 1;
+  for (let i = days.length - 2; i >= 0 && days[i].name === days[days.length - 1].name; i--) streak++;
+  const lines = [`👑 This week's kings:`, ``];
+  for (const k of days) lines.push(`${k.dow} — ${k.name} · ${usd(k.total)}`);
+  lines.push(``);
+  lines.push(streak > 1
+    ? `${days[days.length - 1].name} is on a ${streak}-day streak. Somebody please stop them.`
+    : `No streaks survived the week. The board shows no mercy.`);
+  lines.push(``, `${site}?r=week`);
+  await post(lines.join("\n"));
 } else {
   if (!b) { console.log("Board empty or unreachable — staying quiet rather than posting a fake milestone."); process.exit(0); }
   const lines = [

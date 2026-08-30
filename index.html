@@ -1110,7 +1110,7 @@ function openDetail(id){
   $("#detailBody").innerHTML = `
     <div class="d-head">${medallion(e)}
       <div><div class="nm">${esc(e.name)}</div>
-      <div class="t">#${rank} all-time · <a href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a></div></div>
+      <div class="t">#${rank} all-time · <a href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>${state.live ? ` · <a href="api/ledger?name=${encodeURIComponent(e.name)}" target="_blank" rel="noopener">public ledger</a>` : ""}</div></div>
     </div>
     <div class="d-badges">${badges}</div>
     ${sparkBig(e.history)}

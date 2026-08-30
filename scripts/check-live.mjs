@@ -57,6 +57,13 @@ try {
   ok("SEO page serves (clean URL)", r.ok, `HTTP ${r.status}`);
 } catch (e) { ok("SEO page serves (clean URL)", false, String(e)); }
 
+// 4b. The public ledger page
+try {
+  const r = await fetch(base + "/api/ledger?name=smoketest");
+  const t = await r.text();
+  ok("/api/ledger serves", r.ok && t.includes("ledger"), `HTTP ${r.status}`);
+} catch (e) { ok("/api/ledger serves", false, String(e)); }
+
 // 5. Crawlability + the 404 page
 try {
   const r = await fetch(base + "/robots.txt");
