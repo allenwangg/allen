@@ -838,3 +838,38 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 
 .hero-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .hero-btns .btn.small { margin-top: 0; }
+
+/* ---------------- mastery map ---------------- */
+
+.mastery { margin-bottom: 4px; }
+.mastery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mastery-rows {
+  display: flex; flex-direction: column; gap: 9px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.m-row { display: grid; grid-template-columns: minmax(0, 1fr) 2fr 84px; align-items: center; gap: 14px; }
+.m-name { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-track { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.m-fill { display: block; height: 100%; border-radius: 99px; transition: width .5s cubic-bezier(.3,.7,.3,1); }
+.m-fill.solid   { background: var(--good); }
+.m-fill.growing { background: var(--accent); }
+.m-fill.shaky   { background: var(--gold); }
+.m-fill.seen    { background: var(--mut); opacity: .5; }
+.m-band { font-size: 12px; font-weight: 700; text-align: right; }
+.m-band.solid { color: var(--good); }
+.m-band.growing { color: var(--accent-strong); }
+.m-band.shaky { color: var(--gold); }
+.m-band.seen, .m-band.new { color: var(--mut); font-weight: 600; }
+@media (max-width: 560px) {
+  .m-row { grid-template-columns: minmax(0, 1fr) 68px; }
+  .m-track { display: none; }
+}
+
+/* visually hidden but available to assistive technology */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.card:focus { outline: none; }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }

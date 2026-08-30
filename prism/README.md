@@ -15,6 +15,7 @@ Prism is a visual micro-learning app in the spirit of [Imprint](https://imprinta
 - **Read-aloud narration** at a natural pace (browser speech, no audio files, neural voices preferred) with optional hands-free auto-read; **bookmarked cards** kept in a Saved collection; **streak freezes** that cover a missed day automatically.
 - **Practice mode** — quick-fire quiz remixes drawn from lessons you've completed, per course or across the library; a **match-the-pairs bonus round** after every lesson; **mid-lesson resume** so leaving never loses your place; a 30-day XP history and a first-visit tour.
 - **32 hand-drawn SVG illustrations** set in soft pastel scenes and tinted per course; four themes (system / light / **pastel** / dark); full keyboard controls (1–4 to answer, Enter to continue, Esc to exit).
+- **Swipe to advance** — cards follow your finger, tilt, and fly out past the threshold or spring back; **a mastery map** on every course page shows what you have actually retained (Solid / Growing / Shaky) from how your review cards are holding up, not merely what you have visited.
 - **Mobile-first ergonomics** — safe-area insets, touch-action tuning, and layouts audited at phone widths; **backup & restore** moves progress between devices via the clipboard.
 - **Zero dependencies, no build step required** — plain HTML/CSS/JS. Progress persists in `localStorage`.
 
@@ -40,6 +41,7 @@ node build.mjs        # → dist/prism.html (self-contained, shareable)
 node validate.mjs        # structural checks on course content
 node test/smoke.mjs      # 26 end-to-end checks (needs playwright-core + Chromium)
 node test/features.mjs   # 14 checks: Today sessions, paths, saved cards, streak freezes
+node test/polish.mjs     # 12 checks: swipe gestures, mastery map, announcements
 ```
 
 ## Architecture

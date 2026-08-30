@@ -437,6 +437,89 @@
     document.getElementById('tour-go').onclick = done;
   }
 
+  /* ---------------- announcements ----------------
+     A dedicated polite live region, separate from the router root. Announcing a
+     short summary keeps screen readers useful without re-reading the whole page
+     on every render, which is what putting aria-live on #app did. */
+
+  var liveEl = null;
+  function announce(msg) {
+    if (!liveEl) {
+      liveEl = document.createElement('div');
+      liveEl.className = 'sr-only';
+      liveEl.setAttribute('role', 'status');
+      liveEl.setAttribute('aria-live', 'polite');
+      document.body.appendChild(liveEl);
+    }
+    liveEl.textContent = '';
+    setTimeout(function () { liveEl.textContent = msg; }, 60);
+  }
+
+  /* Move focus to the new card so keyboard and screen-reader users land in the
+     content rather than back at the top of the document. */
+  function focusCard() {
+    var c = document.getElementById('card');
+    if (!c) return;
+    c.setAttribute('tabindex', '-1');
+    try { c.focus({ preventScroll: true }); } catch (e) { c.focus(); }
+  }
+
+  /* ---------------- swipe ----------------
+     Cards are a physical metaphor, so they should move like objects: follow the
+     finger, tilt slightly, and either fly out or spring back. Only enabled when
+     advancing is actually allowed, so a quiz cannot be swiped past unanswered. */
+
+  var swipeState = null;
+
+  function enableSwipe(el, onNext) {
+    if (!el || !onNext) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function down(e) {
+      if (e.button !== undefined && e.button !== 0) return;
+      var t = e.target;
+      // let real controls handle their own gestures
+      if (t && t.closest && t.closest('button, a, input, select, textarea, summary')) return;
+      swipeState = { x: e.clientX, y: e.clientY, dx: 0, dy: 0, id: e.pointerId, moved: false };
+      el.setPointerCapture && el.setPointerCapture(e.pointerId);
+      el.style.transition = 'none';
+    }
+
+    function move(e) {
+      if (!swipeState || e.pointerId !== swipeState.id) return;
+      swipeState.dx = e.clientX - swipeState.x;
+      swipeState.dy = e.clientY - swipeState.y;
+      // vertical intent means the user is scrolling, not swiping
+      if (!swipeState.moved && Math.abs(swipeState.dy) > Math.abs(swipeState.dx)) { release(e); return; }
+      if (Math.abs(swipeState.dx) > 4) swipeState.moved = true;
+      var dx = swipeState.dx;
+      var damped = dx > 0 ? Math.pow(dx, 0.75) : -Math.pow(-dx, 0.92);  // resist backwards
+      el.style.transform = 'translateX(' + damped + 'px) rotate(' + (damped / 34) + 'deg)';
+      el.style.opacity = String(Math.max(0.45, 1 - Math.abs(damped) / 420));
+    }
+
+    function release(e) {
+      if (!swipeState) return;
+      var dx = swipeState.dx;
+      var moved = swipeState.moved;
+      swipeState = null;
+      el.style.transition = 'transform .28s cubic-bezier(.2,.8,.3,1), opacity .28s';
+      if (moved && dx < -90) {                    // far enough left: send it away
+        el.style.transform = 'translateX(-130%) rotate(-12deg)';
+        el.style.opacity = '0';
+        setTimeout(onNext, 150);
+        return;
+      }
+      el.style.transform = '';
+      el.style.opacity = '';
+    }
+
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+  }
+
   /* ---------------- Today: one smart session ----------------
      Assembles the highest-value mix for right now — cards that are due,
      the next lesson in your current path, and a practice round — then runs
@@ -586,6 +669,60 @@
     onkey = function (e) { if (e.key === 'Enter' || e.key === 'Escape') nav('#/'); };
   }
 
+  /* ---------------- mastery ----------------
+     Progress bars say what you have visited. This says what you have retained:
+     each lesson's SRS items carry an interval, and a long interval means the
+     idea survived repeated recall. Four bands, from unseen to solid. */
+
+  function lessonMastery(cid, lid) {
+    var items = [], srs = Store.state.srs;
+    for (var k in srs) if (srs[k].courseId === cid && srs[k].lessonId === lid) items.push(srs[k]);
+    if (!items.length) return { band: Store.lessonRecord(cid, lid) ? 'seen' : 'new', pct: 0, n: 0 };
+    var score = 0;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      // a card is "held" once it has graduated and survived to a multi-day interval
+      var s = it.state === 'review' ? Math.min(1, it.ivl / 21) : 0.12;
+      if (it.lapses > 1) s *= 0.7;
+      score += s;
+    }
+    var pct = score / items.length;
+    var band = pct >= 0.75 ? 'solid' : pct >= 0.35 ? 'growing' : 'shaky';
+    return { band: band, pct: pct, n: items.length };
+  }
+
+  function courseMastery(course) {
+    var solid = 0, growing = 0, shaky = 0, seen = 0, fresh = 0;
+    for (var i = 0; i < course.lessons.length; i++) {
+      var m = lessonMastery(course.id, course.lessons[i].id);
+      if (m.band === 'solid') solid++;
+      else if (m.band === 'growing') growing++;
+      else if (m.band === 'shaky') shaky++;
+      else if (m.band === 'seen') seen++;
+      else fresh++;
+    }
+    return { solid: solid, growing: growing, shaky: shaky, seen: seen, fresh: fresh, total: course.lessons.length };
+  }
+
+  var BAND_LABEL = { solid: 'Solid', growing: 'Growing', shaky: 'Shaky', seen: 'Just read', new: 'Not started' };
+
+  function masteryHTML(course) {
+    var any = false;
+    for (var i = 0; i < course.lessons.length; i++) {
+      if (lessonMastery(course.id, course.lessons[i].id).n) { any = true; break; }
+    }
+    if (!any) return '';
+    var h = '<section class="mastery"><div class="mastery-head"><h2 class="section-title">What you actually know</h2>' +
+      '<span class="lib-count">based on how your review cards are holding up</span></div><div class="mastery-rows">';
+    for (var j = 0; j < course.lessons.length; j++) {
+      var l = course.lessons[j], m = lessonMastery(course.id, l.id);
+      h += '<div class="m-row"><span class="m-name">' + esc(l.title) + '</span>' +
+        '<span class="m-track"><i class="m-fill ' + m.band + '" style="width:' + Math.round(Math.max(m.pct, m.band === 'seen' ? 0.06 : 0) * 100) + '%"></i></span>' +
+        '<span class="m-band ' + m.band + '">' + BAND_LABEL[m.band] + '</span></div>';
+    }
+    return h + '</div></section>';
+  }
+
   /* ---------------- learning paths ---------------- */
 
   function pathProgress(p) { return Paths.progress(p, findCourse, Store.courseProgress); }
@@ -702,6 +839,7 @@
           '</div>' : '') +
       '</div></section>';
 
+    h += masteryHTML(c);
     h += '<section class="lessons">';
     for (var i = 0; i < c.lessons.length; i++) {
       var l = c.lessons[i];
@@ -826,6 +964,8 @@
 
     $app.innerHTML = playerShell(inner, footer);
     bindCard(card);
+    focusCard();
+    announce('Card ' + (session.idx + 1) + ' of ' + cards.length + '. ' + cardSpeech(card));
   }
 
   function award(n, anchor) { session.xp += n; gainXP(n, anchor); var el = document.querySelector('.player-xp'); if (el) el.textContent = '+' + session.xp; }
@@ -891,6 +1031,7 @@
     if (next) next.onclick = advance;
 
     var cardEl = document.getElementById('card');
+    if (next) enableSwipe(cardEl, advance);   // swipe only where Continue exists
 
     if (card.type === 'intro' || card.type === 'concept' || card.type === 'example' || card.type === 'quote' || card.type === 'recap') {
       onkey = function (e) {
@@ -935,11 +1076,13 @@
         }
         var ex = document.getElementById('explain');
         ex.innerHTML = '<b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + esc(card.explain || '');
+        announce((ok ? 'Correct. ' : 'Not quite. ') + (card.explain || ''));
         ex.hidden = false;
         ex.className = 'explain show ' + (ok ? 'good' : 'bad');
         document.getElementById('foot').innerHTML = continueBtn();
         document.getElementById('btn-next').onclick = advance;
         document.getElementById('btn-next').focus();
+        enableSwipe(document.getElementById('card'), advance);
       }
       for (var i = 0; i < choices.length; i++) {
         (function (btn) { btn.onclick = function () { pick(btn); }; })(choices[i]);
@@ -967,6 +1110,7 @@
         document.getElementById('foot').innerHTML = continueBtn();
         document.getElementById('btn-next').onclick = advance;
         document.getElementById('btn-next').focus();
+        enableSwipe(document.getElementById('card'), advance);
       }
       rb.onclick = doReveal;
       onkey = function (e) {
@@ -1322,6 +1466,8 @@
         : '<button class="btn primary" id="btn-flip">Show answer</button>') +
       '</div></main>';
     $app.innerHTML = h;
+    focusCard();
+    announce(rev.flipped ? item.back : (rev.i + 1) + ' of ' + rev.queue.length + '. ' + item.front);
 
     document.getElementById('btn-exit').onclick = function () { nav('#/'); };
     if (!rev.flipped) {
