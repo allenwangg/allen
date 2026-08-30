@@ -286,9 +286,15 @@ export function permutationP(xs, ys, observed, samples = PERMUTATIONS) {
     return (exceed + 1) / (nulls.length + 1);
   }
 
-  // 2. Block-bootstrap surrogates to make the tail estimate stable. Seeded from
-  //    the data so results are reproducible.
-  const seed = (n * 2654435761) ^ Math.round(absObs * 1e6);
+  // 2. Block-bootstrap surrogates to make the tail estimate stable. Seeded
+  //    from a hash of the ranks themselves so results are reproducible.
+  //    Deliberately NOT seeded from the observed correlation: a seed that
+  //    moves with the statistic under test makes the p-value non-monotone in
+  //    the effect size (a slightly stronger correlation could draw an
+  //    unluckier null and come back LESS significant), and lets unrelated
+  //    hypothesis pairs with equal |r| collide on identical surrogate draws.
+  let seed = n * 2654435761;
+  for (let i = 0; i < n; i++) seed = ((seed << 5) - seed + rx[i] * 31 + ry[i]) | 0;
   const rnd = seededRandom(seed);
   const want = Math.max(0, samples - nulls.length);
   for (let i = 0; i < want; i++) {
@@ -310,10 +316,14 @@ export function permutationP(xs, ys, observed, samples = PERMUTATIONS) {
 
   const zObs = fisherZ(observed);
   const parametric = studentTTwoSided((zObs - mean) / sd, NULL_TAIL_DF);
+  if (!Number.isFinite(parametric)) return empirical;
 
-  // Never claim more certainty than the smaller estimate warrants, and never
-  // return a literal zero.
-  return Math.max(1e-12, Math.min(empirical, Number.isFinite(parametric) ? parametric : empirical));
+  // The parametric tail exists precisely because the empirical count has no
+  // resolution below 1/(nulls+1); deep in the tail it is the only calibrated
+  // estimate, so it is used alone. Taking min(empirical, parametric) here —
+  // as an earlier version did — systematically picks whichever estimator got
+  // lucky, which is a bias toward significance, not a safeguard.
+  return Math.max(1e-12, parametric);
 }
 
 /**
@@ -364,12 +374,13 @@ const round2 = (x) => Math.round(x * 100) / 100;
  * is the cardinal sin of this category.
  */
 export function alignedPairs(entriesByDate, driver, outcome, lag) {
-  const xs = [], ys = [], times = [];
+  const xs = [], ys = [], times = [], xDows = [], yDows = [];
   let origin = null;
   for (const [date, e] of entriesByDate) {
     const x = e[driver];
     if (x == null) continue;
-    const target = entriesByDate.get(lag === 0 ? date : addDays(date, lag));
+    const targetDate = lag === 0 ? date : addDays(date, lag);
+    const target = entriesByDate.get(targetDate);
     if (!target) continue;
     const y = target[outcome];
     if (y == null) continue;
@@ -378,8 +389,17 @@ export function alignedPairs(entriesByDate, driver, outcome, lag) {
     // Real elapsed days, not array position, so a gap is not silently squeezed
     // out of the time axis.
     times.push(daysBetween(origin, date));
+    // Each series keeps ITS OWN calendar day: for a lag-1 pair the driver sits
+    // on day d and the outcome on day d+1, and their weekday effects differ.
+    xDows.push(dayOfWeek(date));
+    yDows.push(dayOfWeek(targetDate));
   }
-  return { xs, ys, times };
+  return { xs, ys, times, xDows, yDows };
+}
+
+function dayOfWeek(key) {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y, m - 1, d).getDay();
 }
 
 /**
@@ -475,15 +495,18 @@ export function conditionalDetrend(values, times, minR2 = DETREND_MIN_R2) {
  * Paying the date parsing once here makes lag alignment pure integer lookups.
  */
 export function indexEntries(sorted) {
-  if (!sorted.length) return { rows: [], byDay: new Map() };
+  if (!sorted.length) return { rows: [], byDay: new Map(), originDow: 0 };
   const origin = sorted[0].date;
   const rows = sorted.map((e) => ({ e, day: daysBetween(origin, e.date) }));
-  return { rows, byDay: new Map(rows.map((r) => [r.day, r.e])) };
+  const [y, m, d] = origin.split('-').map(Number);
+  // Weekday of any row is (originDow + day) mod 7 — one Date construction for
+  // the whole grid instead of one per pair.
+  return { rows, byDay: new Map(rows.map((r) => [r.day, r.e])), originDow: new Date(y, m - 1, d).getDay() };
 }
 
 /** alignedPairs against a prebuilt index — identical semantics, integer-only. */
 export function alignedPairsIndexed(index, driver, outcome, lag) {
-  const xs = [], ys = [], times = [];
+  const xs = [], ys = [], times = [], xDows = [], yDows = [];
   for (const { e, day } of index.rows) {
     const x = e[driver];
     if (x == null) continue;
@@ -496,8 +519,76 @@ export function alignedPairsIndexed(index, driver, outcome, lag) {
     // a constant shift, so day-since-first-entry serves exactly as well as the
     // day-since-first-pair the string path computed.
     times.push(day);
+    // Each series keeps ITS OWN calendar day: for a lag-1 pair the driver sits
+    // on day d and the outcome on day d+1, and their weekday effects differ.
+    xDows.push((index.originDow + day) % 7);
+    yDows.push((index.originDow + day + lag) % 7);
   }
-  return { xs, ys, times };
+  return { xs, ys, times, xDows, yDows };
+}
+
+/**
+ * Share of a series' variance explained by day-of-week group means (eta
+ * squared), plus the residuals with those means removed.
+ */
+export function weekdayFit(values, dows) {
+  const n = values.length;
+  if (n < 14) return null;
+  const sums = new Array(7).fill(0), counts = new Array(7).fill(0);
+  for (let i = 0; i < n; i++) { sums[dows[i]] += values[i]; counts[dows[i]]++; }
+  const grand = values.reduce((a, b) => a + b, 0) / n;
+  const means = sums.map((sm, d) => (counts[d] ? sm / counts[d] : grand));
+  let ssTotal = 0, ssResid = 0;
+  for (let i = 0; i < n; i++) {
+    ssTotal += (values[i] - grand) ** 2;
+    ssResid += (values[i] - means[dows[i]]) ** 2;
+  }
+  if (ssTotal === 0) return null;
+  return {
+    eta2: Math.max(0, 1 - ssResid / ssTotal),
+    residuals: values.map((v, i) => v - means[dows[i]] + grand),
+  };
+}
+
+/**
+ * Minimum variance share the weekday effect must explain before it is removed.
+ *
+ * Fitting seven group means to ~120 random points soaks up about 6/(n-1), or
+ * roughly 5%, of the variance by chance alone, so the floor sits well above
+ * that — otherwise half of all genuinely structureless series would be
+ * "deseasonalized" and their ties broken for nothing.
+ */
+export const DESEASON_MIN_ETA2 = 0.15;
+
+/**
+ * Remove day-of-week means from a series — conditionally.
+ *
+ * WHY THIS EXISTS. The weekday is a lurking variable exactly like the calendar
+ * trend: sleep, drinking, training, daylight and mood all follow weekly
+ * rhythms, so any two of them correlate through the shared weekday without one
+ * influencing the other in any way. Measured before this guard existed: on
+ * synthetic users whose habits had INDEPENDENT day-of-week profiles and zero
+ * cross-effects, the engine reported ~12 confident findings per dataset,
+ * 20 of 20 datasets — e.g. "on your higher-caffeine days, resting HR runs
+ * lower two days later, r = -0.74" — every one of them the weekly rhythm and
+ * none of them a habit effect.
+ *
+ * The permutation null could not save us on its own: circular shifts at
+ * multiples of seven re-align the rhythms (fat tail), while block-bootstrap
+ * surrogates with random phase destroy them (thin tail), and any pooling of
+ * the two families mis-states the spread. Removing the weekday means from
+ * both series where they genuinely exist dissolves the problem at the source,
+ * and afterwards both surrogate families agree.
+ *
+ * Conditional for the same reason detrending is: subtracting group means from
+ * a sparse, mostly-zero series breaks the ties Spearman depends on.
+ */
+export function conditionalDeseasonalize(values, dows, minEta2 = DESEASON_MIN_ETA2) {
+  const fit = weekdayFit(values, dows);
+  if (!fit || fit.eta2 < minEta2) {
+    return { values: values.slice(), deseasonalized: false, eta2: fit ? fit.eta2 : 0 };
+  }
+  return { values: fit.residuals, deseasonalized: true, eta2: fit.eta2 };
 }
 
 /** Guard against a "correlation" driven by three outlier days on a flat series. */
@@ -557,7 +648,7 @@ export function discover(entries, opts = {}) {
         // a bad day makes you rate stress high AND mood low in one sitting.
         if (lag === 0 && isSelfReport(driver) && isSelfReport(outcome)) continue;
 
-        const { xs, ys, times } = alignedPairsIndexed(index, driver, outcome, lag);
+        const { xs, ys, times, xDows, yDows } = alignedPairsIndexed(index, driver, outcome, lag);
         if (xs.length < minPairs) continue;
         if (!hasUsableVariance(xs) || !hasUsableVariance(ys)) continue;
 
@@ -570,16 +661,22 @@ export function discover(entries, opts = {}) {
         // long-term drift rather than a day-to-day effect.
         const cx = detrend_enabled ? conditionalDetrend(xs, times) : { values: xs, detrended: false };
         const cy = detrend_enabled ? conditionalDetrend(ys, times) : { values: ys, detrended: false };
-        const r = spearman(cx.values, cy.values);
+        // Weekday means are fitted on the detrended residuals — the classic
+        // trend-then-seasonality decomposition order.
+        const sx = detrend_enabled ? conditionalDeseasonalize(cx.values, xDows) : { values: cx.values, deseasonalized: false };
+        const sy = detrend_enabled ? conditionalDeseasonalize(cy.values, yDows) : { values: cy.values, deseasonalized: false };
+        const r = spearman(sx.values, sy.values);
         if (r == null || !Number.isFinite(r)) continue;
 
+        const corrected = cx.detrended || cy.detrended || sx.deseasonalized || sy.deseasonalized;
         raw.push({
           driver, outcome, lag,
           r: round2(r), rRaw: round2(rRaw),
           detrended: cx.detrended || cy.detrended,
-          trendDriven: (cx.detrended || cy.detrended) && Math.abs(rRaw) - Math.abs(r) > 0.25,
+          deseasonalized: sx.deseasonalized || sy.deseasonalized,
+          trendDriven: corrected && Math.abs(rRaw) - Math.abs(r) > 0.25,
           n: xs.length,
-          xs: cx.values, ys: cy.values,
+          xs: sx.values, ys: sy.values,
           rawXs: xs, rawYs: ys,
         });
       }

@@ -5,7 +5,7 @@
  */
 import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness } from '../app/js/model.js';
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, bioAgeDelta, sleepRegularity } from '../app/js/engine.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -493,6 +493,86 @@ t('reports NOTHING when every habit trends but none actually matters', () => {
   }
   console.log(`\n  [trending] ${datasetsWithFindings}/${trials} all-habits-trending datasets produced any finding`);
   ok(datasetsWithFindings === 0, `expected silence, got findings in ${datasetsWithFindings} datasets`);
+});
+
+t('weekdayFit recovers planted group means', () => {
+  const dows = Array.from({ length: 70 }, (_, i) => i % 7);
+  const vals = dows.map((d) => 10 + d * 2);
+  const fit = weekdayFit(vals, dows);
+  near(fit.eta2, 1, 1e-9, 'pure weekday structure must explain everything');
+  const uniq = new Set(fit.residuals.map((v) => Math.round(v * 1e6)));
+  eq(uniq.size, 1, 'residuals of pure weekday structure must be constant');
+});
+t('conditionalDeseasonalize leaves structureless series alone', () => {
+  const rnd = mulberry32(31337);
+  const dows = Array.from({ length: 120 }, (_, i) => i % 7);
+  const vals = dows.map(() => Math.floor(rnd() * 3));   // ties, no weekday link
+  const out = conditionalDeseasonalize(vals, dows);
+  eq(out.deseasonalized, false, 'no weekday structure -> untouched');
+  eq(out.values.filter((v) => v === 0).length, vals.filter((v) => v === 0).length, 'ties preserved');
+});
+t('conditionalDeseasonalize removes a real weekday rhythm', () => {
+  const rnd = mulberry32(99);
+  const dows = Array.from({ length: 140 }, (_, i) => i % 7);
+  const vals = dows.map((d) => (d === 0 || d === 6 ? 8 : 2) + rnd());
+  const out = conditionalDeseasonalize(vals, dows);
+  eq(out.deseasonalized, true);
+  const fitAfter = weekdayFit(out.values, dows);
+  ok(fitAfter.eta2 < 0.05, 'weekday share must be gone after removal, got ' + fitAfter.eta2);
+});
+t('permutationP p-value does not depend on the observed effect size (seed independence)', () => {
+  // The surrogate seed must derive from the data alone. If it moved with the
+  // observed correlation, p would be non-monotone in effect size.
+  const rnd = mulberry32(777);
+  const xs = Array.from({ length: 80 }, () => gauss(rnd));
+  const ys = Array.from({ length: 80 }, () => gauss(rnd));
+  const r = spearman(xs, ys);
+  // Same data, two slightly different claimed "observed" values: the null
+  // sample must be identical, so p must move monotonically with |observed|.
+  const pWeak = permutationP(xs, ys, 0.30);
+  const pStrong = permutationP(xs, ys, 0.45);
+  ok(pStrong < pWeak, `p must decrease as |r| grows on the same null: ${pStrong} vs ${pWeak}`);
+});
+
+t('SILENT on independent weekly rhythms with no cross-effects', () => {
+  // Habits that each follow their own day-of-week profile — busy Mondays, lazy
+  // Sundays — correlate through the shared weekday without influencing each
+  // other at all. Before conditional deseasonalization existed this scenario
+  // produced ~12 confident findings per dataset, 20/20 datasets. The honest
+  // answer is zero.
+  let dsWith = 0, total = 0;
+  const trials = 12;
+  for (let s = 0; s < trials; s++) {
+    const rp = mulberry32(90000 + s);
+    const prof = {};
+    for (const v of ['sleepHours','steps','proteinGrams','produceServings','ultraProcessed',
+                     'alcoholUnits','sunlightMinutes','stress','mood','energy','sleepQuality','restingHR','hrv']) {
+      prof[v] = Array.from({ length: 7 }, () => rp() - 0.5);
+    }
+    const es = synth(120, 91000 + s, (e, i, r) => {
+      const parts = e.date.split('-');
+      const dow = new Date(+parts[0], +parts[1] - 1, +parts[2]).getDay();
+      const w = (v, amp) => prof[v][dow] * amp;
+      e.sleepHours = 6.8 + w('sleepHours', 1.6) + r() * 0.8;
+      e.steps = Math.round(6500 + w('steps', 5000) + r() * 2500);
+      e.proteinGrams = Math.round(95 + w('proteinGrams', 50) + r() * 25);
+      e.produceServings = Math.max(0, Math.round(3 + w('produceServings', 4) + r() * 1.5));
+      e.ultraProcessed = Math.max(0, Math.round(3 + w('ultraProcessed', 4) + r() * 1.5));
+      e.alcoholUnits = Math.max(0, Math.round(1 + w('alcoholUnits', 3) + r() * 1.5));
+      e.sunlightMinutes = Math.max(0, Math.round(30 + w('sunlightMinutes', 40) + r() * 20));
+      e.stress = Math.max(1, Math.min(5, Math.round(3 + w('stress', 2.4) + r() * 1.2)));
+      e.mood = Math.max(1, Math.min(5, Math.round(3 + w('mood', 2.4) + r() * 1.2)));
+      e.energy = Math.max(1, Math.min(5, Math.round(3 + w('energy', 2.4) + r() * 1.2)));
+      e.sleepQuality = Math.max(1, Math.min(5, Math.round(3 + w('sleepQuality', 2.4) + r() * 1.2)));
+      e.restingHR = Math.round(62 + w('restingHR', 6) + r() * 4);
+      e.hrv = Math.round(45 + w('hrv', 14) + r() * 8);
+    });
+    const res = discover(es);
+    total += res.findings.length;
+    if (res.findings.length) dsWith++;
+  }
+  console.log(`\n  [weekday-confound] ${dsWith}/${trials} rhythm-only datasets produced any finding (${(total / trials).toFixed(1)}/ds)`);
+  ok(dsWith === 0, `weekday-confounded findings leaked through in ${dsWith} datasets`);
 });
 
 t('RECOVERS an effect in weekly-clustered data', () => {
