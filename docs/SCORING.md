@@ -64,9 +64,14 @@ is adequate, so folding it into duration would hide it.
 
 ## Healthspan Age
 
-The score is mapped to a years-offset through a saturating transform anchored so
-that a score of 50 (population-average habits) is 0 years, 85 is about −4.5
-years, and 20 is about +5.5 years. It saturates at ±9 years. If HRV or resting
+The score is mapped to a years-offset through a saturating transform anchored,
+at the reference age of 35, so that a score of 50 (population-average habits)
+is 0 years, 85 is about −4.5 years, and 20 is about +4 years. It saturates at
+±9 years, and scales modestly with age (older users have more absolute room to
+move). The transform is symmetric about 50, so the anchors are too — an earlier
+version of this document claimed +5.5 years at score 20, which no symmetric
+transform can produce alongside −4.5 at 85; the code now matches the anchors
+and the anchors are stated honestly. If HRV or resting
 heart rate are logged, they nudge the estimate against age-referenced norms.
 
 **This is an illustrative estimate, not a biological-age measurement.** It exists

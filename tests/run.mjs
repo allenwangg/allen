@@ -173,6 +173,45 @@ t('bioAge monotonic in score', () => {
 });
 t('bioAge null-safe', () => eq(bioAgeDelta(null, { age: 40 }), null));
 
+t('simulate averages bedtime on the circular scale', () => {
+  // Alternating 23:30 / 00:30 has a raw clock mean of noon; the wrapped mean
+  // is midnight. Timing must score like a midnight sleeper, not a noon one.
+  const es = ['2026-06-01'].concat(Array.from({ length: 27 }, (_, i) => addDays('2026-06-01', i + 1)))
+    .map((d, i) => { const e = emptyEntry(d); e.bedtimeMinutes = i % 2 ? 1410 : 30; return e; });
+  const sim = simulate(es, {}, ctx);
+  const timing = sim.baseline.pillars.sleep.parts.find((p) => p.key === 'timing').score;
+  ok(timing < 60, 'noon artifact: timing scored ' + timing);
+  const earlier = simulate(es, { bedtimeMinutes: -45 }, ctx);
+  ok(earlier.scoreDelta > 0, 'going to bed earlier must help a post-midnight sleeper, got ' + earlier.scoreDelta);
+});
+t('simulate scores boolean frequency, not truthiness', () => {
+  const es = Array.from({ length: 28 }, (_, i) => {
+    const e = emptyEntry(addDays('2026-06-01', i));
+    e.nicotine = i === 0 ? 1 : 0;
+    e.strengthSession = i === 0 ? 1 : 0;
+    return e;
+  });
+  const sim = simulate(es, {}, ctx);
+  const nic = sim.baseline.pillars.substances.parts.find((p) => p.key === 'nicotine').score;
+  const str = sim.baseline.pillars.movement.parts.find((p) => p.key === 'strength').score;
+  ok(nic > 90, 'one smoking day in 28 must not baseline as a daily smoker, got ' + nic);
+  ok(str < 45, 'one session in 28 must not baseline as daily training, got ' + str);
+});
+t('simulate never materializes a never-logged field', () => {
+  const es = Array.from({ length: 28 }, (_, i) => {
+    const e = emptyEntry(addDays('2026-06-01', i));
+    e.fiberGrams = null;
+    return e;
+  });
+  const sim = simulate(es, { fiberGrams: 8 }, ctx);
+  near(sim.scoreDelta, 0, 0.001, 'nudging an unlogged field must be a no-op');
+});
+t('bioAge hits its documented anchors at the reference age', () => {
+  near(bioAgeDelta(85, { age: 35 }).years, -4.5, 0.3);
+  near(bioAgeDelta(20, { age: 35 }).years, 4.0, 0.4);
+  near(bioAgeDelta(50, { age: 35 }).years, 0, 0.15);
+});
+
 /* ================= statistics ================= */
 t('rank averages ties', () => { const r = rank([10, 20, 20, 30]); near(r[1], 2.5); near(r[2], 2.5); });
 t('rank ascending', () => { const r = rank([5, 1, 3]); eq(r[0], 3); eq(r[1], 1); eq(r[2], 2); });

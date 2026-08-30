@@ -136,7 +136,12 @@ export function scoreDay(entry, ctx = {}) {
   const movementParts = [
     { key: 'steps',    weight: 0.42, score: curve(CURVES.steps, entry.steps) },
     { key: 'training', weight: 0.42, score: curve(CURVES.exerciseMinutes, trainingLoad) },
-    { key: 'strength', weight: 0.16, score: entry.strengthSession ? 100 : 35 },
+    // Linear in the value, not a truthiness test. Logged days carry 0 or 1,
+    // where this is identical — but the simulator's average day carries the
+    // 28-day FREQUENCY (one session in 28 days = 0.036), and a truthiness test
+    // scored that user as if they trained daily, which both mis-stated their
+    // baseline and hid 'add a strength session' from the leverage ranking.
+    { key: 'strength', weight: 0.16, score: 35 + 65 * clamp(entry.strengthSession ?? 0, 0, 1) },
   ];
 
   /* --- Nutrition ----------------------------------------------- */
@@ -161,7 +166,10 @@ export function scoreDay(entry, ctx = {}) {
   /* --- Substances ---------------------------------------------- */
   const substanceParts = [
     { key: 'alcohol',  weight: 0.52, score: curve(CURVES.alcoholUnits, entry.alcoholUnits) },
-    { key: 'nicotine', weight: 0.30, score: entry.nicotine ? 0 : 100 },
+    // Same frequency-linear treatment as strengthSession above: one smoking
+    // day in 28 used to zero this part, baselining an occasional smoker as a
+    // daily one.
+    { key: 'nicotine', weight: 0.30, score: 100 * (1 - clamp(entry.nicotine ?? 0, 0, 1)) },
     { key: 'caffeine', weight: 0.18, score: curve(CURVES.caffeineAfter2pm, entry.caffeineAfter2pm) },
   ];
 
@@ -292,16 +300,23 @@ export function ewma(values, halfLifeDays = 7) {
  * The mapping is anchored so that:
  *   score 50  -> 0.0 years (population-average habits)
  *   score 85  -> about -4.5 years
- *   score 20  -> about +5.5 years
+ *   score 20  -> about +4 years
  * and it saturates at +/- 9 years, because claiming more than that from
  * self-reported habit data would be dishonest.
  */
 export function bioAgeDelta(sustainedScore, ctx = {}) {
   if (sustainedScore == null) return null;
   const age = Number(ctx.age) || 35;
-  // Logistic-ish transform centred at 50, saturating at +/- 9.
+  // Logistic-ish transform centred at 50, saturating at +/- 9. The steepness
+  // is solved from the documented anchor rather than chosen by eye: at the
+  // reference age of 35 (age multiplier 0.83), a sustained score of 85 must
+  // map to about -4.5 years, which requires tanh((35/22) * k) = 4.5/(9*0.83),
+  // i.e. k = 0.44. An earlier value of 0.78 overshot the documented anchors by
+  // 40-100% (85 -> -6.3 years at age 35, -9 at age 70), which contradicted
+  // both the doc comment and docs/SCORING.md and made the headline number
+  // less conservative than the product claims to be.
   const z = (sustainedScore - 50) / 22;
-  let delta = -9 * Math.tanh(z * 0.78);
+  let delta = -9 * Math.tanh(z * 0.44);
 
   // Older users have more absolute room to move; scale modestly with age.
   delta *= clamp(0.72 + (age - 25) * 0.011, 0.72, 1.25);
@@ -413,7 +428,18 @@ export function simulate(entries, changes, ctx = {}) {
   const avgDay = { date: recent[recent.length - 1].date };
   for (const name of Object.keys(FIELDS)) {
     const vals = recent.map((e) => e[name]).filter((v) => v != null);
-    avgDay[name] = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+    if (!vals.length) { avgDay[name] = null; continue; }
+    if (name === 'bedtimeMinutes') {
+      // Bedtime is circular. A user alternating 23:30 and 00:30 has a raw
+      // clock mean of NOON, which bedtimeScore reads as "not late at all" —
+      // it scored that user's timing 100 instead of ~46, and told them going
+      // to bed 45 minutes EARLIER would cost 4.3 points. Average on the
+      // wrapped scale (post-midnight values shifted +1440) and wrap back.
+      const wrapped = vals.map((t) => (t < 720 ? t + 1440 : t));
+      avgDay[name] = Math.round(wrapped.reduce((a, b) => a + b, 0) / wrapped.length) % 1440;
+    } else {
+      avgDay[name] = vals.reduce((a, b) => a + b, 0) / vals.length;
+    }
   }
 
   const baselineScore = scoreDay(avgDay, ctx);
@@ -421,8 +447,19 @@ export function simulate(entries, changes, ctx = {}) {
   for (const [field, delta] of Object.entries(changes)) {
     const f = FIELDS[field];
     if (!f) continue;
-    const base = modified[field] ?? f.default ?? 0;
-    modified[field] = clamp(base + delta, f.min, f.max);
+    // A field the user has never logged stays null on BOTH sides of the
+    // comparison. Substituting the form default here (as an earlier version
+    // did) conjured a brand-new scoring component into the projected day only,
+    // so the reported delta conflated the nudge with silently starting to log
+    // the field — inflating 'add 8 g of fiber' to three times its honest value
+    // for users who never track fiber.
+    if (modified[field] == null) continue;
+    if (field === 'bedtimeMinutes') {
+      const wrapped = modified[field] < 720 ? modified[field] + 1440 : modified[field];
+      modified[field] = ((clamp(wrapped + delta, 720, 720 + 1439) % 1440) + 1440) % 1440;
+    } else {
+      modified[field] = clamp(modified[field] + delta, f.min, f.max);
+    }
   }
   const projectedScore = scoreDay(modified, ctx);
 
