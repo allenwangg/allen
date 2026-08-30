@@ -367,6 +367,93 @@ await test("dossier offers an embeddable rank badge with copyable HTML", async (
   await page.click("[data-close-detail]");
 });
 
+await test("Season board ranks by this month's bids with its own crown and countdown", async () => {
+  await page.click("#tabSeason");
+  await page.waitForTimeout(150);
+  const crown = await page.locator(".crown-card").textContent();
+  assert(crown.includes("Season") && crown.includes("ends in"), `season crown wrong: ${crown.slice(0,100)}`);
+  const order = await page.evaluate(() => sortedSeason().map(e => e.name).slice(0, 3));
+  const dom = (await page.locator(".board .row .nm").allTextContents()).map(t => t.trim().split("\n")[0].trim());
+  assert(dom[0].includes(order[0]), `season DOM leader ${dom[0]} != computed ${order[0]}`);
+  const before = await page.evaluate(() => sortedSeason()[0].monthTotal);
+  await page.click(".board .row .take");
+  await page.waitForTimeout(120);
+  const val = +(await page.inputValue("#fAmt"));
+  assert(val === before + 1, `season take should prefill month total + 1 (${before + 1}), got ${val}`);
+  await page.click("[data-close]");
+  await page.click("#tabAll");
+  await page.waitForTimeout(100);
+});
+
+await test("presence flames grow on consecutive days and reset after a gap", async () => {
+  const r = await page.evaluate(() => {
+    const e = state.entries.find(x => x.name === "TestRocket");
+    e.lastBidDay = prevDayOf(todayStr()); e.presence = 3;
+    touchToday(e, 1);
+    const grew = e.presence;
+    const d = new Date(); d.setUTCDate(d.getUTCDate() - 3);
+    e.lastBidDay = d.toISOString().slice(0, 10); e.presence = 7;
+    touchToday(e, 1);
+    return { grew, afterGap: e.presence };
+  });
+  assert(r.grew === 4, `consecutive-day bid should extend flame 3->4, got ${r.grew}`);
+  assert(r.afterGap === 1, `a gap should reset the flame to 1, got ${r.afterGap}`);
+});
+
+await test("the Oracle locks a pick, then pays out a streak after the day resolves", async () => {
+  // Own context: the Oracle plays with localStorage and must not leak into
+  // the main page's state.
+  const octx = await browser.newContext();
+  const p2 = await octx.newPage();
+  await p2.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await p2.waitForTimeout(600);
+  assert(await p2.locator("#oracle.show").isVisible(), "oracle card missing");
+  await p2.click(".o-pick");
+  await p2.waitForTimeout(150);
+  const locked = await p2.locator("#oracle").textContent();
+  assert(locked.includes("Prophecy locked"), "pick did not lock");
+  await p2.evaluate(() => {
+    const o = JSON.parse(localStorage.getItem("outranked_oracle"));
+    const y = prevDayOf(todayStr());
+    o.pickDay = y; o.resolved = false;
+    localStorage.setItem("outranked_oracle", JSON.stringify(o));
+    state.hall.unshift({ date: y, name: o.pick, amount: 123 });
+    save();
+  });
+  await p2.reload({ waitUntil: "networkidle" });
+  await p2.waitForTimeout(700);
+  const after = await p2.evaluate(() => JSON.parse(localStorage.getItem("outranked_oracle")));
+  assert(after.streak === 1 && after.lastResult.startsWith("\u2705"),
+    `correct prophecy should pay a streak, got ${JSON.stringify(after)}`);
+  await octx.close();
+});
+
+await test("ledger merge attributes historical bids to their own day and month", async () => {
+  // Own context: this test flips the page to live mode (goLive wipes the
+  // board), which must never bleed into the shared main page.
+  const actx = await browser.newContext();
+  const ap = await actx.newPage();
+  await ap.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await ap.waitForTimeout(400);
+  const shape = await ap.evaluate(async () => {
+    const oldAt = Math.floor(Date.now()/1000) - 40 * 86400;
+    const nowAt = Math.floor(Date.now()/1000);
+    CONFIG.BOARD_FEED_URL = "stub://attr";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      { id: "cs_attr_old", ref: encodeRef("TimeTraveler", "tt.io", ""), amount: 700, at: oldAt },
+      { id: "cs_attr_new", ref: encodeRef("TimeTraveler", "tt.io", ""), amount: 40, at: nowAt },
+    ]})});
+    await mergeBoardFeed();
+    const e = state.entries.find(x => x.name === "TimeTraveler");
+    return { total: e.total, today: e.todayTotal, month: e.monthTotal, presence: e.presence };
+  });
+  assert(shape.total === 740, `all-time should be 740, got ${shape.total}`);
+  assert(shape.today === 40, `only the fresh bid belongs to today, got ${shape.today}`);
+  assert(shape.month === 40, `last month's bid must not inflate this season, got ${shape.month}`);
+  assert(shape.presence === 1, `a 40-day gap cannot be a streak, got ${shape.presence}`);
+  await actx.close();
+});
+
 await test("Today board ranks by today's bids, independent of all-time totals", async () => {
   await page.click("#tabToday");
   await page.waitForTimeout(100);

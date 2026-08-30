@@ -328,6 +328,21 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
 .w-feed .ev .amt{color:var(--money);font-weight:800}
 .w-url{text-align:center;color:var(--dim);font-size:14.5px;padding-top:16px;font-weight:600}
 
+/* ---- the Oracle: the free spectator game ---- */
+.oracle{background:var(--card);border:1.5px solid var(--status);border-radius:16px;padding:13px 16px;margin:0 0 12px;font-size:14px;display:none;box-shadow:0 3px 0 var(--status-soft)}
+.oracle.show{display:block}
+.o-head{display:flex;align-items:center;gap:8px;font-weight:800}
+.o-head .streak{margin-left:auto;color:var(--status);font-family:"Spline Sans Mono",monospace;font-size:13px}
+.o-sub{color:var(--muted);font-size:12.5px;font-weight:600;margin-top:2px}
+.o-picks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.o-pick{border:1.5px solid var(--line);background:var(--paper);border-radius:11px;padding:7px 13px;font-size:13px;font-weight:800;box-shadow:0 2px 0 var(--line);transition:transform .08s, box-shadow .08s}
+.o-pick:hover{border-color:var(--status);color:var(--status)}
+.o-pick:active{transform:translateY(2px);box-shadow:none}
+.o-result{margin-top:8px;font-weight:700;font-size:13.5px}
+.o-result.win{color:var(--money)}
+.o-result.loss{color:var(--heat-edge)}
+.badge.flame{background:var(--heat-soft);color:var(--heat-edge)}
+
 /* ---- first-load choreography ---- */
 .boot .row{animation:rowin .5s both;animation-delay:calc(var(--i,0)*50ms)}
 @keyframes rowin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -400,9 +415,12 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
   <section id="crown" aria-label="Current champion"></section>
 
   <div class="tabs" role="tablist">
+    <button class="tab active" id="tabToday" data-view="today" role="tab" aria-selected="true">🔥 Today</button>
+    <button class="tab" id="tabSeason" data-view="season" role="tab" aria-selected="false">🏆 Season</button>
     <button class="tab" id="tabAll" data-view="all" role="tab" aria-selected="false">👑 All-time</button>
-    <button class="tab active" id="tabToday" data-view="today" role="tab" aria-selected="true">🔥 Today — resets at midnight</button>
   </div>
+
+  <div class="oracle" id="oracle"></div>
 
   <div class="empire" id="empire"></div>
 
@@ -415,13 +433,16 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
   <div class="hall" id="hall" aria-label="Hall of Fame"></div>
 
   <details class="rules">
-    <summary>Rules — all eight of them</summary>
+    <summary>Rules — the whole game</summary>
     <ol>
       <li><b>Your rank = total dollars you've paid.</b> No votes, no algorithm, no editor. Money is the only judge.</li>
       <li><b>$5 minimum</b> to claim a new spot. <b>$1 increments</b> after that. Bids are cumulative and final.</li>
       <li><b>Take any rank instantly</b> — every row shows the exact price to pass it. No math required.</li>
       <li><b>Auto-defend:</b> set a budget and we re-bid +$1 automatically the moment you're outbid. Sleep while your money fights.</li>
       <li><b>The crown is timed.</b> #1 wears it and the reign clock runs. Longest reign goes in the record books forever.</li>
+      <li><b>Seasons run monthly.</b> The Season board counts only this month's bids; its champion is engraved forever on the 1st, and everyone starts even again.</li>
+      <li><b>Flames reward the faithful.</b> Bid on any day and your listing's 🔥 flame grows; miss a day and it dies. The hottest flame sits in the record books.</li>
+      <li><b>The Oracle is free.</b> Once a day, predict who holds midnight. Streaks are bragging rights — and prophecies have a way of getting funded.</li>
       <li><b>Everything is public:</b> every bid, every overtake, every dethroning — streamed on the live feed. Every listing on this board is a completed payment; there is no other way onto it.</li>
       <li><b>A listing's link is claimed by its first bid, and its decree belongs to its largest.</b> Anyone may pay into anyone's listing — but a cheap bid can't repoint your link or speak in your name. Attacking someone here just funds them.</li>
       <li><b>No refunds.</b> Obviously.</li>
@@ -556,10 +577,27 @@ function ensureToday(e){
   if (e.todayDate !== todayStr()){ e.todayDate = todayStr(); e.todayTotal = 0; }
   return e;
 }
+function monthStr(){ return new Date().toISOString().slice(0,7); }
+function ensureSeason(e){
+  if (e.monthKey !== monthStr()){ e.monthKey = monthStr(); e.monthTotal = 0; }
+  return e;
+}
+function prevDayOf(day){
+  const d = new Date(day + "T00:00:00Z"); d.setUTCDate(d.getUTCDate()-1);
+  return d.toISOString().slice(0,10);
+}
 function touchToday(e, amount){
   ensureToday(e);
+  ensureSeason(e);
   if (state.firstBloodDay !== todayStr()){ state.firstBloodDay = todayStr(); award(e, "🩸 First Blood"); }
+  /* Presence streak: consecutive days with at least one bid. Miss a day and
+     the flame dies — the board's Duolingo lever. */
+  if (e.lastBidDay !== todayStr()){
+    e.presence = (e.lastBidDay === prevDayOf(todayStr())) ? (e.presence || 0) + 1 : 1;
+    e.lastBidDay = todayStr();
+  }
   e.todayTotal += amount;
+  e.monthTotal += amount;
 }
 
 /* ---- nobility tiers: lifetime spend buys permanent, visible rank ---- */
@@ -602,6 +640,21 @@ function rollover(){
     delete state.todayDecree;     /* decrees reset with the board */
   }
   state.lastDay = todayStr();
+
+  /* Season rollover: on the 1st, last month's leader is champion forever. */
+  if (state.lastMonth && state.lastMonth !== monthStr()){
+    let champ = null;
+    for (const e of state.entries)
+      if (e.monthKey === state.lastMonth && e.monthTotal > 0 && (!champ || e.monthTotal > champ.monthTotal)) champ = e;
+    if (champ){
+      state.seasons = state.seasons || [];
+      state.seasons.unshift({ month: state.lastMonth, name: champ.name, amount: champ.monthTotal });
+      state.seasons = state.seasons.slice(0, 24);
+      award(champ, "🏆 Season Champion");
+      feed(`🏆 <b>${esc(champ.name)}</b> is the ${state.lastMonth} SEASON CHAMPION with <span class="amt">${fmt(champ.monthTotal)}</span> — a new season begins`);
+    }
+  }
+  state.lastMonth = monthStr();
 }
 function prevDayStr(day){
   const d = new Date(day + "T00:00:00Z"); d.setUTCDate(d.getUTCDate()-1);
@@ -626,6 +679,27 @@ if (!state.hall){
   if (cal) cal.titles = ["🐋 Whale"];
 }
 
+/* demo season + presence seeds, refreshed monthly */
+if (state.seededMonth !== monthStr()){
+  state.seededMonth = monthStr();
+  const monthSeed = {"JONI":2400,"ShipFast":1750,"CalAI":940,"Quill":610,"Soba":180};
+  const presenceSeed = {"Quill":9,"ShipFast":5,"CalAI":3,"TinyBets":2};
+  for (const e of state.entries){
+    ensureSeason(e);
+    if (monthSeed[e.name] && !e.monthTotal) e.monthTotal = monthSeed[e.name];
+    if (presenceSeed[e.name] && !e.presence){ e.presence = presenceSeed[e.name]; e.lastBidDay = todayStr(); }
+  }
+  if (!state.seasons){
+    const d = new Date(); d.setUTCMonth(d.getUTCMonth()-1);
+    const prev = d.toISOString().slice(0,7);
+    d.setUTCMonth(d.getUTCMonth()-1);
+    state.seasons = [
+      { month: prev, name: "JONI", amount: 6120 },
+      { month: d.toISOString().slice(0,7), name: "ShipFast", amount: 4300 },
+    ];
+  }
+}
+
 /* seed a small bid war on today's board so it never starts empty in demo */
 if (!state.seededToday || state.seededToday !== todayStr()){
   state.seededToday = todayStr();
@@ -637,6 +711,11 @@ let prevRanks = rankMap();
 
 function sorted(){ return [...state.entries].sort((a,b)=>b.total-a.total); }
 function sortedToday(){ return state.entries.map(ensureToday).filter(e=>e.todayTotal>0).sort((a,b)=>b.todayTotal-a.todayTotal); }
+function sortedSeason(){ return state.entries.map(ensureSeason).filter(e=>e.monthTotal>0).sort((a,b)=>b.monthTotal-a.monthTotal); }
+function msToMonthEndUTC(){
+  const n = new Date();
+  return Date.UTC(n.getUTCFullYear(), n.getUTCMonth()+1, 1) - n.getTime();
+}
 function rankMap(){ const m={}; sorted().forEach((e,i)=>m[e.id]=i+1); return m; }
 function rankMapToday(){ const m={}; sortedToday().forEach((e,i)=>m[e.id]=i+1); return m; }
 function save(){ try{ localStorage.setItem("outranked_v1", JSON.stringify(state)); }catch(e){} }
@@ -657,7 +736,8 @@ function spark(hist){
 
 function render(){
   const isToday = view === "today";
-  const list = isToday ? sortedToday() : sorted();
+  const isSeason = view === "season";
+  const list = isToday ? sortedToday() : isSeason ? sortedSeason() : sorted();
 
   // crown
   if (isToday){
@@ -690,6 +770,31 @@ function render(){
         <div class="crown-right"><button class="take" data-open-bid>Take it — ${fmt(MIN_NEW)}</button></div>
       </div>`;
     }
+  } else if (isSeason){
+    const leader = list[0];
+    const monthName = new Date().toLocaleString("en-US",{month:"long",timeZone:"UTC"});
+    $("#crown").innerHTML = leader ? `
+    <div class="crown-card">
+      <div class="crown-emoji">🏆</div>
+      <div>
+        <div class="crown-name">${esc(leader.name)}</div>
+        <div class="crown-sub">Leading the ${monthName} Season · ends in <b class="num">${dur(msToMonthEndUTC())}</b></div>
+        <div class="crown-sub">The champion is engraved forever — then everyone starts even</div>
+        ${state.decree && state.decree.id===leader.id ? `<div class="decree">${esc(state.decree.text)}</div>` : ""}
+      </div>
+      <div class="crown-right">
+        <div class="crown-amt num">${fmt(leader.monthTotal)}</div>
+        <button class="take" data-take="${leader.id}">Take the season lead — ${fmt(leader.monthTotal+1)}<small>this month's bids only</small></button>
+      </div>
+    </div>` : `
+    <div class="crown-card">
+      <div class="crown-emoji">🏆</div>
+      <div>
+        <div class="crown-name">The ${monthName} Season is unclaimed</div>
+        <div class="crown-sub">First bid of the month leads the season. Ends in <b class="num">${dur(msToMonthEndUTC())}</b>.</div>
+      </div>
+      <div class="crown-right"><button class="take" data-open-bid>Open the season — ${fmt(MIN_NEW)}</button></div>
+    </div>`;
   } else if (!list.length){
     $("#crown").innerHTML = `
     <div class="crown-card">
@@ -726,17 +831,19 @@ function render(){
     if (q && !(e.name.toLowerCase().includes(q)||e.url.toLowerCase().includes(q))) return "";
     const rank = i+1;
     let mv = `<span class="mv same">–</span>`;
-    if (!isToday){
+    if (!isToday && !isSeason){
       const prev = prevRanks[e.id];
       if (prev && prev>rank) mv = `<span class="mv up">▲${prev-rank}</span>`;
       else if (prev && prev<rank) mv = `<span class="mv down">▼${rank-prev}</span>`;
     }
     const hot = e.history.length>3 && e.history.at(-1)-e.history.at(-4) > e.total*0.25;
-    const amt = isToday ? e.todayTotal : e.total;
+    const amt = isToday ? e.todayTotal : isSeason ? e.monthTotal : e.total;
     const sub = isToday
       ? `all-time ${fmt(e.total)}`
+      : isSeason
+      ? `all-time ${fmt(e.total)} · ${(e.clicks||0).toLocaleString()} clicks`
       : `${e.bids} bid${e.bids===1?"":"s"} · ${(e.clicks||0).toLocaleString()} clicks`;
-    const takeLabel = rank===1 ? (isToday?"Take today's #1":"Dethrone") : `Take #${rank}`;
+    const takeLabel = rank===1 ? (isToday?"Take today's #1":isSeason?"Take the season lead":"Dethrone") : `Take #${rank}`;
     const titles = (e.titles||[]).slice(0,2).map(t=>`<span class="badge title">${t}</span>`).join("");
     const more = (e.titles||[]).length>2 ? `<span class="badge title">+${e.titles.length-2}</span>` : "";
     return `
@@ -752,6 +859,7 @@ function render(){
             ${hot&&!inRivalry(e)?'<span class="badge hot">🔥 HOT</span>':""}
             ${titles}${more}
             ${e.streak>1?`<span class="badge title">👑 ${e.streak}-day streak</span>`:""}
+            ${e.presence>1?`<span class="badge flame" title="Consecutive days with a bid — miss a day and the flame dies">🔥 ${e.presence}d</span>`:""}
           </span>
           <span class="tiername">${tier(e).name}</span>
           <a class="url" href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>
@@ -774,11 +882,19 @@ function render(){
   setStat("statBids", state.stats.bids, v=>v.toLocaleString());
   setStat("statBiggest", state.stats.biggest, v=>fmt(v));
 
-  // hall of fame
-  $("#hall").innerHTML = (state.hall && state.hall.length)
-    ? `<span class="h-title">🏆 Hall of Fame</span>` + state.hall.slice(0,14).map(h =>
-        `<span class="trophy"><b>${esc(h.name)}</b>${h.date} · <span class="num">${fmt(h.amount)}</span></span>`).join("")
-    : "";
+  // hall of fame: records first, then season champions, then daily kings
+  const flameKing = state.entries.reduce((m,e)=> (e.presence||0) > (m.presence||0) ? e : m, {});
+  const records = [
+    state.stats.biggest ? `<span class="trophy"><b>📖 Biggest bid</b><span class="num">${fmt(state.stats.biggest)}</span></span>` : "",
+    state.longestReign && state.longestReign.ms ? `<span class="trophy"><b>📖 Longest reign</b>${esc(state.longestReign.name)} · <span class="num">${dur(state.longestReign.ms)}</span></span>` : "",
+    (flameKing.presence||0) > 1 ? `<span class="trophy"><b>📖 Hottest flame</b>${esc(flameKing.name)} · <span class="num">🔥 ${flameKing.presence}d</span></span>` : "",
+  ].join("");
+  const seasonTrophies = (state.seasons||[]).slice(0,6).map(sn =>
+    `<span class="trophy"><b>🏆 ${sn.month} champion</b>${esc(sn.name)} · <span class="num">${fmt(sn.amount)}</span></span>`).join("");
+  const dayTrophies = (state.hall||[]).slice(0,10).map(h =>
+    `<span class="trophy"><b>${esc(h.name)}</b>${h.date} · <span class="num">${fmt(h.amount)}</span></span>`).join("");
+  const shelf = records + seasonTrophies + dayTrophies;
+  $("#hall").innerHTML = shelf ? `<span class="h-title">🏆 Hall of Fame</span>` + shelf : "";
 
   // your empire (returning bidders see their standing + the next rung)
   let myName = null;
@@ -801,7 +917,7 @@ function render(){
   $("#tickerInner").innerHTML = items + items;
   $("#tickerInner").closest(".ticker").style.display = state.feed.length ? "" : "none";
 
-  if (!isToday) prevRanks = rankMap();
+  if (!isToday && !isSeason) prevRanks = rankMap();
 
   /* sticky mobile CTA always sells today's winnable fight */
   const kToday = sortedToday()[0];
@@ -809,6 +925,7 @@ function render(){
     ? `<button data-take="${kToday.id}">🔥 Take today's crown — ${fmt(kToday.todayTotal+1)}</button>`
     : `<button data-open-bid>🔥 Today's crown is free — ${fmt(MIN_NEW)}</button>`;
 
+  renderOracle();
   renderWatch();
   save();
 }
@@ -861,8 +978,9 @@ function openBid(targetId){
   if (bidTarget){
     const t = state.entries.find(e=>e.id===bidTarget);
     const isToday = view === "today";
-    const beat = isToday ? ensureToday(t).todayTotal : t.total;
-    const rank = isToday ? (sortedToday().indexOf(t)+1 || 1) : rankMap()[t.id];
+    const isSeason = view === "season";
+    const beat = isToday ? ensureToday(t).todayTotal : isSeason ? ensureSeason(t).monthTotal : t.total;
+    const rank = isToday ? (sortedToday().indexOf(t)+1 || 1) : isSeason ? (sortedSeason().indexOf(t)+1 || 1) : rankMap()[t.id];
     $("#modalTitle").textContent = rank===1 ? `Dethrone ${t.name}` : `Overtake ${t.name} (#${rank})`;
     $("#modalSub").textContent = isToday
       ? `They've bid ${fmt(beat)} today. ${fmt(beat+1)} takes the spot until midnight.`
@@ -1322,6 +1440,60 @@ function confetti(){
   })();
 }
 
+/* ============ the Oracle: the free spectator game ============ */
+/* Non-payers need a daily reason to come back. Pick who holds midnight;
+   build a streak. Lives entirely in this browser — free, honest, addictive. */
+function oracleState(){
+  try { return JSON.parse(localStorage.getItem("outranked_oracle") || "{}"); } catch(e){ return {}; }
+}
+function oracleSave(o){ try { localStorage.setItem("outranked_oracle", JSON.stringify(o)); } catch(e){} }
+function resolveOracle(){
+  const o = oracleState();
+  if (!o.pickDay || o.pickDay === todayStr() || o.resolved) return;
+  const winner = (state.hall || []).find(h => h.date === o.pickDay);
+  if (winner){
+    if (winner.name.toLowerCase() === String(o.pick).toLowerCase()){
+      o.streak = (o.streak || 0) + 1;
+      o.lastResult = `✅ Called it — ${winner.name} held midnight on ${o.pickDay}. Streak: ${o.streak}🔮`;
+    } else {
+      o.lastResult = `❌ ${winner.name} held midnight, not ${o.pick}. Streak reset.`;
+      o.streak = 0;
+    }
+  } else {
+    o.lastResult = null; /* day unverifiable (no crowned king) — no penalty */
+  }
+  o.resolved = true;
+  oracleSave(o);
+}
+function renderOracle(){
+  const el = $("#oracle");
+  if (!el) return;
+  const contenders = sortedToday().slice(0, 5);
+  if (contenders.length < 2){ el.classList.remove("show"); return; }
+  const o = oracleState();
+  const pickedToday = o.pickDay === todayStr();
+  el.innerHTML =
+    `<div class="o-head">🔮 The Oracle <span class="streak">${o.streak ? o.streak + "🔮 streak" : ""}</span></div>` +
+    `<div class="o-sub">${pickedToday
+      ? `Prophecy locked: <b>${esc(o.pick)}</b> holds midnight. Come back after the reset.`
+      : "Free game: who holds today's crown at midnight? Pick one — build your streak."}</div>` +
+    (pickedToday ? "" :
+      `<div class="o-picks">` + contenders.map(e =>
+        `<button class="o-pick" data-oracle="${esc(e.name)}">${esc(e.name)} · ${fmt(e.todayTotal)}</button>`).join("") + `</div>`) +
+    (o.lastResult && !pickedToday ? `<div class="o-result ${o.lastResult.startsWith("✅") ? "win" : "loss"}">${o.lastResult}</div>` : "");
+  el.classList.add("show");
+}
+document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-oracle]");
+  if (!btn) return;
+  const o = oracleState();
+  o.pick = btn.dataset.oracle; o.pickDay = todayStr(); o.resolved = false;
+  oracleSave(o);
+  renderOracle();
+  toast(`🔮 Prophecy locked: ${esc(o.pick)} holds midnight. Bold. You could also just… make it true.`);
+});
+resolveOracle();
+
 /* demo ribbon: visible until a real payment link is configured */
 if (!CONFIG.STRIPE_PAYMENT_LINK) $("#demoRibbon").classList.add("show");
 
@@ -1449,7 +1621,23 @@ async function mergeBoardFeed(){
       entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, topBid:0};
       state.entries.push(entry);
     }
-    touchToday(entry, amount);
+    /* Attribute by the payment's own timestamp: a ledger replay must not dump
+       last week's bids onto today's board. Presence streaks come out right
+       because the feed is processed oldest-first. */
+    (function(atSec){
+      const iso = new Date((atSec || Date.now()/1000) * 1000).toISOString();
+      const bidDay = iso.slice(0,10), bidMonth = iso.slice(0,7);
+      ensureToday(entry); ensureSeason(entry);
+      if (bidDay === todayStr()){
+        if (state.firstBloodDay !== todayStr()){ state.firstBloodDay = todayStr(); award(entry, "🩸 First Blood"); }
+        entry.todayTotal += amount;
+      }
+      if (bidMonth === monthStr()) entry.monthTotal += amount;
+      if (entry.lastBidDay !== bidDay){
+        entry.presence = (entry.lastBidDay === prevDayOf(bidDay)) ? (entry.presence || 0) + 1 : 1;
+        entry.lastBidDay = bidDay;
+      }
+    })(c.at);
     if (amount >= 500) award(entry, "🐋 Whale");
     entry.verified = true;
     state.applied.push(c.id); seen.add(c.id);

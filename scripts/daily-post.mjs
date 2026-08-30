@@ -123,7 +123,7 @@ async function board() {
 const nowUTC = new Date();
 const hourNow = nowUTC.getUTCHours();
 const mode = process.env.MODE ||
-  (hourNow < 7 ? "reset"
+  (hourNow < 7 ? ((nowUTC.getUTCDate() === 1 && nowUTC.getUTCMinutes() >= 10) ? "season" : "reset")
    : hourNow >= 22 ? "final"
    : (nowUTC.getUTCDay() === 0 && hourNow === 15) ? "week"
    : "ritual");
@@ -164,6 +164,33 @@ if (mode === "reset") {
       `${site}?r=final`
     );
   }
+} else if (mode === "season") {
+  // 1st of the month: crown last month's champion from the ledger itself.
+  let payload = null;
+  try { payload = await (await fetch(BOARD_URL, { headers: { accept: "application/json" } })).json(); } catch {}
+  const bids = payload && (Array.isArray(payload) ? payload : payload.bids);
+  if (!Array.isArray(bids) || !bids.length) { console.log("No ledger data for a season coronation — staying quiet."); process.exit(0); }
+  const lastMonth = new Date(Date.UTC(nowUTC.getUTCFullYear(), nowUTC.getUTCMonth() - 1, 1));
+  const key = lastMonth.toISOString().slice(0, 7);
+  const monthName = lastMonth.toLocaleString("en-US", { month: "long", timeZone: "UTC" });
+  const totals = new Map();
+  for (const bid of bids) {
+    if (new Date(bid.at * 1000).toISOString().slice(0, 7) !== key) continue;
+    const n = decodeRef(bid.ref).name;
+    totals.set(n, (totals.get(n) || 0) + (+bid.amount || 0));
+  }
+  const ranked = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+  if (!ranked.length) { console.log("Last month had no bids — staying quiet."); process.exit(0); }
+  const [champ, champTotal] = ranked[0];
+  const runner = ranked[1];
+  const lines = [
+    `🏆 SEASON CORONATION`,
+    ``,
+    `${champ} is the ${monthName} Season Champion with ${usd(champTotal)} — engraved in the record books forever.`,
+  ];
+  if (runner) lines.push(``, `${runner[0]} finished ${usd(champTotal - runner[1])} behind. A whole month, ${usd(champTotal - runner[1])} short.`);
+  lines.push(``, `The new season starts now. Every listing back to zero. Every crown up for grabs.`, ``, `${site}?r=season`);
+  await post(lines.join("\n"));
 } else if (mode === "week") {
   // Sunday hall-of-fame recap: the week's daily kings, computed from the
   // ledger itself, plus any active streak worth taunting about.
