@@ -10,6 +10,7 @@ import {
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
+  solveDiscountForTotal,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -672,6 +673,52 @@ t('property: allocation always reconciles across random shapes', () => {
     const target = Math.round((rnd() - 0.2) * 2000000);
     const out = allocateLinePrices(lines, target);
     eq(out.reduce((a, b) => a + b, 0), target, `iter ${i}:`);
+  }
+});
+
+/* --------------------------------------------------- discount solver ----- */
+
+t('back-solving a target total lands on it, tax included', () => {
+  const est = { items: [{ id: '1', qty: 1, unitCost: 10000, category: 'material', markup: null }] };
+  for (const [mode, rate] of [['all', 0.0725], ['materials', 0.09], ['none', 0]]) {
+    const settings = { ...S, taxMode: mode, taxRate: rate };
+    for (const target of [1234567, 100000, 500000]) {
+      const d = solveDiscountForTotal(est, settings, target);
+      ok(d !== null, `${mode}/${target}: solver gave up on a reachable target`);
+      const got = priceEstimate({ ...est, discount: { type: 'fixed', value: d / 100 } }, settings).totalCents;
+      ok(Math.abs(got - target) <= 1,
+        `${mode} tax ${rate}: asked ${target}, landed ${got} (naive subtraction is what misses here)`);
+    }
+  }
+});
+
+t('a target above the undiscounted total is refused, not faked', () => {
+  const est = { items: [{ id: '1', qty: 1, unitCost: 100, category: 'labor', markup: null }] };
+  eq(solveDiscountForTotal(est, S, 99999999), null);
+  eq(solveDiscountForTotal(est, S, -5), null, 'a negative target is not a discount');
+});
+
+t('a target equal to the current total needs no discount', () => {
+  const est = { items: [{ id: '1', qty: 4, unitCost: 250, category: 'labor', markup: null }] };
+  const total = priceEstimate(est, S).totalCents;
+  eq(solveDiscountForTotal(est, S, total), 0);
+});
+
+t('property: the discount solver hits arbitrary targets', () => {
+  let seed = 4242;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = 0; i < 60; i++) {
+    const est = { items: [
+      { id: '1', qty: 1 + Math.floor(rnd() * 20), unitCost: 50 + Math.round(rnd() * 900), category: 'labor', markup: null },
+      { id: '2', qty: 1, unitCost: 100 + Math.round(rnd() * 3000), category: 'material', markup: null },
+    ] };
+    const settings = { ...S, taxRate: rnd() * 0.12, overhead: rnd() * 0.2, contingency: rnd() * 0.1 };
+    const full = priceEstimate(est, settings).totalCents;
+    const target = Math.round(full * (0.3 + rnd() * 0.6));
+    const d = solveDiscountForTotal(est, settings, target);
+    ok(d !== null, `iter ${i}: unreachable target inside range`);
+    const got = priceEstimate({ ...est, discount: { type: 'fixed', value: d / 100 } }, settings).totalCents;
+    ok(Math.abs(got - target) <= 1, `iter ${i}: asked ${target}, landed ${got}`);
   }
 });
 

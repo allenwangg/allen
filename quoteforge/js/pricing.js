@@ -644,3 +644,41 @@ export function allocateLinePrices(lineCents, targetCents) {
     return share;
   });
 }
+
+/**
+ * Solve for the fixed discount that makes an estimate total EXACTLY a target.
+ *
+ * Subtracting (currentTotal - target) looks right and is wrong: tax is charged
+ * on the after-discount base, so removing a dollar of price removes slightly
+ * more than a dollar of total. A contractor asking to land on $15,000 landed
+ * on $14,974.36 — on the one feature whose entire purpose is hitting a round
+ * number. Bisected against the real pipeline for the same reason the markup
+ * solver is: total is monotonic in discount, and the answer stays correct
+ * however the pipeline changes.
+ *
+ * @returns {number|null} discount in CENTS, or null if the target is
+ *   unreachable (above the undiscounted total, or below zero).
+ */
+export function solveDiscountForTotal(estimate, settings, targetCents) {
+  if (!Number.isFinite(targetCents) || targetCents < 0) return null;
+
+  const totalAt = (discountCents) => priceEstimate(
+    { ...estimate, discount: { type: 'fixed', value: discountCents / 100 } },
+    settings,
+  ).totalCents;
+
+  const undiscounted = totalAt(0);
+  if (targetCents > undiscounted) return null;   // cannot discount upward
+  if (targetCents === undiscounted) return 0;
+
+  let lo = 0;                 // total = undiscounted
+  let hi = undiscounted;      // total at or near zero
+  for (let i = 0; i < 60; i++) {
+    const mid = Math.round((lo + hi) / 2);
+    if (totalAt(mid) > targetCents) lo = mid;
+    else hi = mid;
+    if (hi - lo <= 1) break;
+  }
+  // Prefer whichever endpoint lands nearer the target.
+  return Math.abs(totalAt(lo) - targetCents) <= Math.abs(totalAt(hi) - targetCents) ? lo : hi;
+}

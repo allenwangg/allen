@@ -12,6 +12,7 @@ import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
+  solveDiscountForTotal,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -208,7 +209,7 @@ function renderItems(est, priced) {
       </div>`;
     wrap.onclick = (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
-      if (act === 'assembly') $('#dlgAssembly').showModal();
+      if (act === 'assembly') { renderAssemblies(); $('#dlgAssembly').showModal(); }
       if (act === 'pricebook') openPriceBook();
       if (act === 'blank') focusNewLine(store.addItem());
     };
@@ -411,11 +412,13 @@ function wireAdjustments() {
     const target = toCents($('#fOverride').value);
     if (!target) return;
     const est = store.active();
-    const priced = priceEstimate(est, store.state.settings);
-    const current = priced.totalCents + priced.discountCents; // undiscounted total
-    const needed = current - target;
-    if (needed <= 0) {
-      toast('That is above the current total — raise a line price instead.', { bad: true });
+    // Solved, not subtracted: tax is charged on the after-discount base, so
+    // taking (total - target) off the price undershoots the target every time
+    // sales tax applies — on the one feature that exists to hit a round number.
+    const undiscounted = { ...est, discount: null };
+    const needed = solveDiscountForTotal(undiscounted, store.state.settings, target);
+    if (needed === null || needed <= 0) {
+      toast('That is at or above the current total — raise a line price instead.', { bad: true });
       $('#fOverride').value = '';
       return;
     }
@@ -1086,6 +1089,64 @@ function wireJobs() {
 
 /* -------------------------------------------------------------- settings -- */
 
+/**
+ * Run a DOM rebuild without losing the caret.
+ *
+ * Any innerHTML rebuild under an active cursor destroys the focused node, so
+ * the next keystroke lands on document instead of the field. In this app that
+ * is not merely annoying: the bare-key shortcuts ('n' = new estimate, '1'-'6'
+ * = switch tab) then fire, so typing "45" into a markup box puts 4 in the
+ * field and navigates away on the 5.
+ *
+ * Focus is re-found by id where the element has one, otherwise by its data
+ * attributes, both of which are stable across a rebuild.
+ */
+/**
+ * Skip a rebuild entirely while the container holds the caret.
+ *
+ * Re-rendering a NUMBER input under the cursor cannot be made safe by
+ * restoring focus: the caret position is not restorable on number inputs
+ * (setSelectionRange throws), so each keystroke lands at a browser-chosen
+ * offset and digits interleave — typing "45" over a "0" produced "540".
+ * Not rebuilding is deterministic. Derived hints refresh on the next render
+ * once focus leaves.
+ */
+function rebuildUnlessFocused(containerSel, rebuild) {
+  const container = $(containerSel);
+  if (container && container.contains(document.activeElement)) return;
+  rebuild();
+}
+
+function preservingFocus(rebuild) {
+  const el = document.activeElement;
+  let selector = null;
+  let start = null;
+  let end = null;
+
+  if (el && el !== document.body) {
+    if (el.id) selector = `#${CSS.escape(el.id)}`;
+    else {
+      const keys = Object.keys(el.dataset || {});
+      if (keys.length) {
+        selector = keys
+          .map((k) => `[data-${k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}="${CSS.escape(el.dataset[k])}"]`)
+          .join('');
+      }
+    }
+    try { start = el.selectionStart; end = el.selectionEnd; } catch { /* not a text input */ }
+  }
+
+  rebuild();
+
+  if (!selector) return;
+  const next = document.querySelector(selector);
+  if (!next || next === document.activeElement) return;
+  next.focus();
+  if (start != null && next.setSelectionRange && next.type !== 'number') {
+    try { next.setSelectionRange(start, end); } catch { /* not selectable */ }
+  }
+}
+
 function renderSettings() {
   const s = store.state.settings;
   const co = store.state.company;
@@ -1107,7 +1168,7 @@ function renderSettings() {
   $('#targetHint').textContent =
     `Needs ${formatPercent(marginToMarkup(target), 0)} markup on cost.`;
 
-  $('#catMarkups').innerHTML = CATEGORIES.map((c) => {
+  rebuildUnlessFocused('#catMarkups', () => { $('#catMarkups').innerHTML = CATEGORIES.map((c) => {
     const v = s.categoryMarkup[c] ?? s.defaultMarkup;
     return `
       <div class="field">
@@ -1116,10 +1177,10 @@ function renderSettings() {
                value="${(v * 100).toFixed(0)}">
         <span class="hint">= ${formatPercent(markupToMargin(v), 0)} margin</span>
       </div>`;
-  }).join('');
+  }).join(''); });
 
-  renderMilestoneEditor();
-  renderTermsEditor();
+  preservingFocus(renderMilestoneEditor);
+  preservingFocus(renderTermsEditor);
 
   $('#storageNote').textContent = storage.__ephemeral
     ? 'Heads up: this browser is blocking storage, so nothing will persist after you close the tab.'
@@ -1339,22 +1400,43 @@ function wireShortcuts() {
 
 /* ---------------------------------------------------------------- toasts -- */
 
-let toastTimer = null;
-
+/**
+ * Each toast owns its own dismissal timer.
+ *
+ * A single shared timer meant every new toast cancelled the previous one's
+ * removal, so stale toasts lingered — and a lingering toast's Undo button is
+ * actively dangerous, because store.undo() reverses the MOST RECENT action,
+ * not the one the toast names. Clicking "Undo" under "Removed Demolition
+ * labor" would silently undo whatever the user did after it.
+ *
+ * Undo is therefore also disarmed the moment any further mutation lands, so
+ * the button can only ever reverse the action it describes.
+ */
 function toast(message, { bad = false, undo = false, ms = 4200 } = {}) {
   const host = $('#toasts');
   const el = document.createElement('div');
   el.className = `toast${bad ? ' bad' : ''}`;
   el.innerHTML = `<span>${esc(message)}</span>`;
+
   if (undo) {
+    const depthAtIssue = store.undoStack.length;
     const btn = document.createElement('button');
     btn.textContent = 'Undo';
-    btn.onclick = () => { store.undo(); el.remove(); };
+    btn.onclick = () => {
+      // Only safe while this toast's action is still the top of the stack.
+      if (store.undoStack.length === depthAtIssue) store.undo();
+      else toast('Too late to undo that one — something else changed since.', { bad: true });
+      el.remove();
+    };
     el.append(btn);
+    const off = store.subscribe(() => {
+      if (store.undoStack.length !== depthAtIssue) { btn.remove(); off(); }
+    });
+    el.addEventListener('remove-cleanup', off);
   }
+
   host.append(el);
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.remove(), ms);
+  setTimeout(() => el.remove(), ms);
   // Never let toasts stack past a readable few.
   while (host.children.length > 3) host.firstChild.remove();
 }
@@ -1382,8 +1464,12 @@ function renderChangeBadge(est) {
   const badge = $('#coBadge');
   if (!est || !est.changeOrders?.length) { badge.classList.add('hidden'); return; }
   const c = summarizeContract(est, store.state.settings);
+  const count = c.unapprovedCount || c.approvedCount;
+  // Every change order rejected means nothing to report — a green "0" badge
+  // is noise that never clears.
+  if (!count) { badge.classList.add('hidden'); return; }
   badge.classList.remove('hidden');
-  badge.textContent = c.unapprovedCount || c.approvedCount;
+  badge.textContent = count;
   badge.classList.toggle('ok', c.unapprovedCount === 0);
   badge.title = c.unapprovedCount
     ? `${c.unapprovedCount} change order${c.unapprovedCount === 1 ? '' : 's'} awaiting approval`

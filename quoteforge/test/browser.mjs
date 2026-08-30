@@ -423,6 +423,58 @@ console.log('\n  mobile (390x844)');
   await page.context().close();
 }
 
+/* ============================================== audit-found UI bugs ====== */
+console.log('\n  audit-found UI defects');
+{
+  const page = await newPage();
+  await page.goto(`${base}/quoteforge/`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(300);
+
+  /* Settings editors rebuild innerHTML on every keystroke. Without focus
+     preservation the second character lands on document and fires a bare-key
+     shortcut — typing "45" navigates away instead of entering a number. */
+  await page.locator('.tab[data-tab="settings"]').click();
+  await page.waitForTimeout(300);
+  const markup = page.locator('[data-catmk="labor"]');
+  await markup.click();
+  await markup.fill('');
+  await page.keyboard.type('45', { delay: 60 });
+  await page.waitForTimeout(250);
+  check('typing a two-digit markup keeps both digits',
+    (await page.locator('[data-catmk="labor"]').inputValue()) === '45',
+    `(got "${await page.locator('[data-catmk="labor"]').inputValue()}")`);
+  check('typing in settings does not fire a tab shortcut',
+    (await page.locator('.tab[data-tab="settings"]').getAttribute('aria-selected')) === 'true',
+    '(a stray digit switched tabs)');
+
+  // Same class of bug in the terms editor, where 'n' would open a new estimate.
+  const term = page.locator('[data-term="0"]');
+  await term.click();
+  await term.fill('');
+  await page.keyboard.type('none', { delay: 50 });
+  await page.waitForTimeout(250);
+  check('typing a word into a term keeps every letter',
+    (await page.locator('[data-term="0"]').inputValue()) === 'none',
+    `(got "${await page.locator('[data-term="0"]').inputValue()}")`);
+  check('typing "n" in a term does not create a new estimate',
+    (await page.locator('#estSelect option').count()) === 1);
+
+  /* The empty-state assembly button opened a dialog nobody had populated. */
+  // A brand-new estimate starts empty — the state the button lives in.
+  await page.locator('#btnNew').click();
+  await page.waitForTimeout(400);
+  check('a new estimate shows the empty state', (await page.locator('.empty-state').count()) === 1);
+  await page.locator('[data-act="assembly"]').click();
+  await page.waitForTimeout(300);
+  check('the empty-state assembly dialog is populated, not blank',
+    (await page.locator('.assembly-card').count()) === 5,
+    '(opening it without rendering leaves an empty modal)');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+
+  await page.context().close();
+}
+
 /* ===================================================== audit page ======== */
 console.log('\n  audit offer page');
 {

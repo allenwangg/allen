@@ -251,8 +251,18 @@ await page.waitForTimeout(200);
 await page.locator('[data-cif="qty"]').first().fill('3');
 await page.locator('[data-cif="unitCost"]').first().fill('400');
 await page.waitForTimeout(350);
-const stmt2 = await page.locator('#stmtPrint').textContent();
-check('unauthorized work is quarantined, not billed',
+let stmt2 = await page.locator('#stmtPrint').textContent();
+// A DRAFT is the contractor's own working note. Printing it on the client's
+// statement asks them to react to a price nobody has quoted them.
+check('a draft change order is hidden from the client statement',
+  !/Not yet agreed/.test(stmt2) && !/Awaiting your approval/i.test(stmt2),
+  '(a draft leaked onto the client document)');
+
+// Once SENT, it must appear — quarantined, and excluded from the total.
+await page.locator('[data-costatus="sent"]').click();
+await page.waitForTimeout(350);
+stmt2 = await page.locator('#stmtPrint').textContent();
+check('a sent change order is quarantined, not billed',
   /Awaiting your approval/i.test(stmt2) && /Not yet agreed/.test(stmt2));
 // Read the contract panel FRESH here — it has moved since it was last read.
 const liveTotal = await page.locator('#contractPanel .figure.total .value').textContent();
