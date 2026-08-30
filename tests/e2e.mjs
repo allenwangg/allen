@@ -140,6 +140,40 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log('\n--- sample mode (fresh profile) ---');
+{
+  const sctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
+  const sp = await sctx.newPage();
+  sp.on('pageerror', e => errors.push('SAMPLE PAGEERROR: ' + e.message));
+  await sp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await sp.waitForTimeout(700);
+  const cta = await sp.$('[data-action="load-sample"]');
+  console.log('tour CTA on empty Today:', !!cta);
+  if (!cta) throw new Error('sample-mode CTA missing from empty state');
+  await sp.click('[data-action="load-sample"]');
+  await sp.waitForTimeout(2500);
+  if (!(await sp.$('[data-sample-banner]'))) throw new Error('sample banner missing after load');
+  await sp.evaluate(() => { location.hash = '#insights'; });
+  await sp.waitForTimeout(2500);
+  const sampleFindings = await sp.$$eval('.insight', els => els.length);
+  console.log('sample insights rendered:', sampleFindings);
+  if (sampleFindings < 2) throw new Error('sample data must light up at least 2 insights, got ' + sampleFindings);
+  // Save must be refused while the sample is loaded.
+  await sp.evaluate(() => { location.hash = '#log'; });
+  await sp.waitForTimeout(400);
+  await sp.click('[data-action="save-entry"]');
+  await sp.waitForTimeout(400);
+  const toastText = await sp.$eval('#toast', e => e.textContent);
+  if (!/sample data/i.test(toastText)) throw new Error('save was not refused in sample mode: ' + toastText);
+  console.log('save refused with honest toast:', true);
+  await sp.click('[data-action="clear-sample"]');
+  await sp.waitForTimeout(800);
+  const left = await sp.evaluate(async () => (await (await import('./js/store.js')).store.allEntries()).length);
+  if (left !== 0) throw new Error('clear-sample left ' + left + ' entries behind');
+  console.log('clear-sample restores clean first run:', true);
+  await sctx.close();
+}
+
 console.log('\n--- dark mode ---');
 await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });

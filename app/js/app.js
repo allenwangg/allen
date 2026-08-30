@@ -47,6 +47,13 @@ const state = {
   storageMode: null,
   dirty: false,
   sampleMode: false,
+  // Bumped on every entry mutation. discover() runs the full hypothesis grid
+  // (measured 636ms on two years of data) and recompute() fires on every save
+  // and slider release, so insights are recomputed only when the underlying
+  // entries actually changed — not when a draft slider or a theme toggle did.
+  entriesRev: 0,
+  _insightsRev: -1,
+  _insightsTier: null,
   // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
   // only ~140px tall on a phone and the trend line becomes unreadable. The
   // views pick chart dimensions from this instead.
@@ -90,9 +97,14 @@ function recompute() {
   // view — a Pro user who just upgraded should see results immediately rather
   // than waiting for a recompute, and the gating happens at render time.
   if (can(state.entitlement, 'insights')) {
-    state.insights = discover(state.entries);
-    buildPairCache();
+    if (state.entriesRev !== state._insightsRev || state._insightsTier !== 'pro') {
+      state.insights = discover(state.entries);
+      buildPairCache();
+      state._insightsRev = state.entriesRev;
+      state._insightsTier = 'pro';
+    }
   } else {
+    state._insightsTier = 'free';
     state.insights = state.entries.length < 21
       ? { status: 'insufficient-data', findings: [], have: state.entries.length, needed: 21,
           message: `Log ${Math.max(0, 21 - state.entries.length)} more days to unlock personal correlations.` }
@@ -218,6 +230,7 @@ const actions = {
     if (!confirm(`Delete your entry for ${state.draft.date}? This cannot be undone.`)) return;
     await store.deleteEntry(state.draft.date);
     state.entries = state.entries.filter((e) => e.date !== state.draft.date);
+    state.entriesRev++;
     state.draft = emptyEntry(state.draft.date);
     state.dirty = false;
     recompute();
@@ -298,6 +311,7 @@ const actions = {
     await store.setMeta('profile', SAMPLE_PROFILE);
     state.sampleMode = true;
     state.entries = await store.allEntries();
+    state.entriesRev++;
     state.profile = { ...SAMPLE_PROFILE };
     await loadDraft(dateKey());
     recompute();
@@ -308,6 +322,7 @@ const actions = {
   'clear-sample': async () => {
     await store.clearAll();
     state.entries = [];
+    state.entriesRev++;
     state.sampleMode = false;
     state.profile = { age: 35, weightKg: 75 };
     state.entitlementRaw = null;
@@ -322,7 +337,8 @@ const actions = {
     if (!confirm('Delete every entry and setting on this device? This cannot be undone. Export first if you want a backup.')) return;
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
-    state.entries = []; state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75 };
+    state.entries = []; state.entriesRev++;
+    state.entitlementRaw = null; state.profile = { age: 35, weightKg: 75 };
     state.draft = emptyEntry();
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
@@ -382,6 +398,7 @@ async function saveDraft() {
   const i = state.entries.findIndex((e) => e.date === entry.date);
   if (i >= 0) state.entries[i] = entry; else state.entries.push(entry);
   state.entries.sort((a, b) => (a.date < b.date ? -1 : 1));
+  state.entriesRev++;
   state.dirty = false;
   recompute();
   return true;
@@ -471,6 +488,7 @@ function wire() {
       const payload = JSON.parse(await file.text());
       const { imported, problems } = await store.importAll(payload, validateEntry);
       state.entries = await store.allEntries();
+      state.entriesRev++;
       state.profile = (await store.getMeta('profile')) || state.profile;
       // Rebuild the draft from the store: the import may have replaced the
       // very day the draft mirrors, and saving the stale pre-import draft

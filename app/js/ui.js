@@ -380,6 +380,8 @@ function insightCard(f, state) {
     <div class="insight-head">
       <span class="pill ${caution ? 'pill-info' : good ? 'pill-good' : 'pill-bad'}">${caution ? 'Likely a context effect' : good ? 'Working for you' : 'Costing you'}</span>
       <span class="pill pill-info">${esc(f.effect)} effect</span>
+      ${f.deseasonalized ? '<span class="pill pill-info" title="This correlation was measured after removing your day-of-week rhythm from both series, so it is not just your weekend pattern.">weekday-adjusted</span>' : ''}
+      ${f.detrended ? '<span class="pill pill-info" title="This correlation was measured after removing the slow trend from both series, so it is not just two habits drifting together over months.">trend-adjusted</span>' : ''}
       <span class="subtle">${f.lag === 0 ? 'same day' : `${f.lag}-day lag`} · n=${f.n}</span>
     </div>
     <div class="insight-body">
