@@ -4,16 +4,19 @@ name: Tests
 # ledger reader against a mock, so a green check here means the board actually
 # works — not merely that it built.
 on:
+  # A commit on a PR branch is already covered by the pull_request event. Listing
+  # those branches under push as well starts a second run for the same commit —
+  # and a shared concurrency group only cancels one of them, leaving a
+  # "cancelled" check on the PR. So push covers the default branches only.
   push:
-    branches: [main, master, "claude/**"]
+    branches: [main, master]
   pull_request:
   workflow_dispatch:
 
-# push and pull_request both fire for the same commit on a PR branch. Keying on
-# github.ref does NOT dedupe them (push sees refs/heads/..., the PR sees
-# refs/pull/N/merge), so key on the head commit itself — identical for both.
+# Successive pushes to the same branch supersede each other; the older run is
+# no longer interesting once a newer commit exists.
 concurrency:
-  group: tests-${{ github.event.pull_request.head.sha || github.sha }}
+  group: tests-${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
