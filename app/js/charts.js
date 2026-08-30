@@ -20,6 +20,9 @@ export const esc = (s) => String(s ?? '')
 
 const n = (x) => (Number.isFinite(x) ? Math.round(x * 100) / 100 : 0);
 
+/** Rough advance width for the tabular label font, good enough for collision tests. */
+const approxTextWidth = (text) => String(text).length * 6.6;
+
 /* ------------------------------------------------------------------ *
  * Line / area chart with a smoothed overlay
  * ------------------------------------------------------------------ */
@@ -107,6 +110,15 @@ export function lineChart(points, opts = {}) {
     + (smoothPath ? `<path d="${smoothPath}" class="line-smooth" fill="none"/>` : '')
     + dots + xLabels
     + '</svg>';
+}
+
+/** Fold a value back inside [lo, hi] by reflection, then clamp as a backstop. */
+function reflectInto(v, lo, hi) {
+  if (hi <= lo) return lo;
+  let x = v;
+  if (x < lo) x = lo + (lo - x);
+  if (x > hi) x = hi - (x - hi);
+  return Math.max(lo, Math.min(hi, x));
 }
 
 function shortDate(key) {
@@ -216,8 +228,20 @@ export function barChart(items, opts = {}) {
     return `<text x="${pad.l - 10}" y="${n(yy + barHeight / 2 + 4)}" text-anchor="end" class="bar-label">${esc(it.label)}</text>`
       + `<rect x="${n(bx)}" y="${n(yy)}" width="${n(Math.max(w, 1))}" height="${barHeight}" rx="5" class="${cls}">`
       + `<title>${esc(it.label)}: ${esc(it.display ?? n(v))}</title></rect>`
-      + `<text x="${n(v < 0 ? bx - 7 : bx + w + 7)}" y="${n(yy + barHeight / 2 + 4)}" `
-      + `text-anchor="${v < 0 ? 'end' : 'start'}" class="bar-value">${esc(it.display ?? n(v))}</text>`;
+      // A long negative bar pushes its value label left into the row-label
+      // gutter, where the two overlap into unreadable glyph soup
+      // ("68.0 (F-4d9)"). When there is no room outside the bar, put the label
+      // inside it instead.
+      + (() => {
+          const outsideX = v < 0 ? bx - 7 : bx + w + 7;
+          const fits = v < 0 ? outsideX - approxTextWidth(it.display ?? n(v)) > pad.l + 4
+                             : outsideX + approxTextWidth(it.display ?? n(v)) < width - 2;
+          const x = fits ? outsideX : (v < 0 ? bx + 7 : bx + w - 7);
+          const anchor = fits ? (v < 0 ? 'end' : 'start') : (v < 0 ? 'start' : 'end');
+          const cls = fits ? 'bar-value' : 'bar-value bar-value-inside';
+          return `<text x="${n(x)}" y="${n(yy + barHeight / 2 + 4)}" `
+            + `text-anchor="${anchor}" class="${cls}">${esc(it.display ?? n(v))}</text>`;
+        })();
   }).join('');
 
   const axis = signed ? `<line x1="${n(zeroX)}" y1="${pad.t}" x2="${n(zeroX)}" y2="${n(height - pad.b)}" class="grid"/>` : '';
@@ -259,13 +283,15 @@ export function scatterChart(pairs, opts = {}) {
       jx = Math.cos(angle) * ring * 3.1;
       jy = Math.sin(angle) * ring * 3.1;
     }
-    // Clamp into the plot rectangle. Coarse 1-5 scales stack 40+ coincident
-    // pairs, and an unclamped spiral of ring*3.1px then throws dots over the
-    // axis labels and out of the viewBox entirely — measured 21 of 89 dots
-    // outside the axes on real sample data.
+    // Keep jittered dots inside the plot rectangle. Coarse 1-5 scales stack
+    // 40+ coincident pairs, and an unbounded spiral of ring*3.1px throws dots
+    // over the axis labels and out of the viewBox (measured 21 of 89 on real
+    // sample data). Reflect rather than clamp: clamping stacks every
+    // over-jittered dot onto the boundary as a solid line, which reads as a
+    // data feature that is not there.
     const r = 2.7;
-    const cx = Math.max(pad.l + r, Math.min(pad.l + iw - r, sx(px) + jx));
-    const cy = Math.max(pad.t + r, Math.min(pad.t + ih - r, sy(py) + jy));
+    const cx = reflectInto(sx(px) + jx, pad.l + r, pad.l + iw - r);
+    const cy = reflectInto(sy(py) + jy, pad.t + r, pad.t + ih - r);
     return `<circle cx="${n(cx)}" cy="${n(cy)}" r="${r}" class="scatter-dot"/>`;
   }).join('');
 
