@@ -12,7 +12,7 @@ vm.createContext(sandbox);
 vm.runInContext(src, sandbox);
 const courses = sandbox.window.COURSES;
 
-const ART = new Set(['anchor','balance','bell','book','brain','bridge','clock','coin','compass','dialog','eye','flame','fork','graph','hourglass','key','ladder','layers','lens','lightbulb','map','mirror','mountain','network','orbit','path','puzzle','pyramid','seed','shield','target','wave']);
+const ART = new Set(['anchor','atom','balance','bell','book','brain','bridge','camera','cell','clock','coin','column','compass','crown','crystal','dialog','dna','door','eye','feather','flame','flask','fork','funnel','gavel','gear','globe','graph','grid','heart','hourglass','key','ladder','layers','leaf','lens','lightbulb','lock','loop','magnet','map','mask','microscope','mirror','mountain','network','note','orbit','palette','path','pen','pill','puzzle','pyramid','seed','shield','ship','spectrum','target','telescope','tree','wave']);
 const TYPES = new Set(['intro','concept','example','quote','mcq','truefalse','reveal','recap']);
 const INTERACTIVE = new Set(['mcq','truefalse','reveal']);
 

@@ -35933,5 +35933,2812 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "career",
+    "title": "Building a Career",
+    "tagline": "What compounds, how luck arrives, and when to stop.",
+    "category": "Business",
+    "description": "Careers are not built by picking the right passion at 22. They are built from skills that stay scarce, contacts who can describe you, decisions matched to how reversible they are, and a definition of enough. The evidence, plainly.",
+    "lessons": [
+      {
+        "id": "career-capital",
+        "title": "What Actually Compounds",
+        "summary": "Career capital before passion, why some skills stop paying, and how much of your performance is really yours.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Same Job, Three Different Answers",
+            "body": "In 1997 Amy Wrzesniewski and colleagues asked 196 people how they saw their work. The answers split into near-equal thirds: a job (a paycheque), a career (a ladder), or a calling (part of the point of living). Then they looked inside one occupation — administrative assistants at a college. The same three-way split appeared.",
+            "art": "mirror"
+          },
+          {
+            "type": "concept",
+            "title": "Job, Career, Craft",
+            "body": "A job pays for the life you have elsewhere. A career is a ladder, and the next rung is the reward. A craft is different again: the work itself is the reward, and you measure yourself against the standard of the work rather than the rung. Most people hold all three at different times, and the label can change without the desk changing.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Wrzesniewski's team surveyed administrative assistants doing near-identical work. What did they find?",
+            "choices": [
+              "Almost all described it as a job; the work was too routine to feel like more",
+              "The same near-equal split into job, career and calling reappeared",
+              "The longest-serving had all shifted towards calling"
+            ],
+            "answer": 1,
+            "explain": "Roughly equal thirds, inside a single occupation. The orientation was not handed out with the job title — which is why 'find the right field and meaning will follow' is weaker advice than it sounds."
+          },
+          {
+            "type": "concept",
+            "title": "Career Capital",
+            "body": "Cal Newport's argument in his 2012 book So Good They Can't Ignore You: stop asking what you love and ask what you can build that is rare and valuable. Those skills are career capital, and you spend them on the things that actually make work good — autonomy, mastery, and problems worth solving.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Newport's career-capital argument rests on controlled trials comparing people who followed passion with people who built skill first.",
+            "answer": false,
+            "explain": "It rests on interviews and cases chosen after the fact — nobody can randomise people into careers. The mechanism is plausible and the advice is often useful, but treat it as a well-argued hypothesis rather than a measured effect."
+          },
+          {
+            "type": "example",
+            "title": "The Ground Moves Under You",
+            "body": "David Autor, Frank Levy and Richard Murnane showed in 2003 why some hard-won skills stop paying. Work that follows explicit rules — the routine middle of the labour market — is exactly what machines absorb first. Demand shifted outward to the two ends: non-routine analytical work, and non-routine work with people.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You have a skill that took years to learn. What is the test for whether it will still be scarce in ten years?",
+            "answer": "Not how hard it was to learn — how hard it is to write down. Anything you can fully specify as rules is the thing that gets automated or offshored. Skills built on judgement, taste, and trust with particular people resist that for much longer."
+          },
+          {
+            "type": "example",
+            "title": "Stars Who Fell to Earth",
+            "body": "Boris Groysberg and colleagues tracked 1,052 star Wall Street analysts across 78 banks. When a star changed firms, performance dropped immediately and stayed down for roughly five years. The exceptions had moved with their team, or to a firm with better support. Some of their brilliance had never been theirs alone.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does the star-analyst result suggest about your own performance?",
+            "choices": [
+              "Talent is fixed, so a bad move simply exposes people who were never that good",
+              "Part of your output is produced by your team, tools and standing, and does not travel in your suitcase",
+              "High performers should never change employers"
+            ],
+            "answer": 1,
+            "explain": "The stars did not get worse overnight. They lost the colleagues, systems and reputations that had quietly been doing some of the work. Portability is something you build on purpose, or lose in the move."
+          },
+          {
+            "type": "concept",
+            "title": "Reputation Is a Slow Asset",
+            "body": "Reputation is the compound interest of doing what you said you would. It accrues invisibly, in rooms you are not in, out of people describing you to strangers. It takes years to build because it is made of repeated observations — and it can be spent in a week, which is why small breaches cost more than they feel.",
+            "art": "seed"
+          },
+          {
+            "type": "quote",
+            "text": "Be so good they can't ignore you.",
+            "by": "Steve Martin, advice to aspiring performers"
+          },
+          {
+            "type": "recap",
+            "title": "What Actually Compounds",
+            "points": [
+              "Wrzesniewski, 1997: job, career and calling split into near-equal thirds even within one occupation — orientation is not issued with the job title.",
+              "Newport's career capital: build rare and valuable skills first, then spend them on autonomy and better problems. The evidence is case studies, not trials.",
+              "Autor, Levy and Murnane, 2003: skills reducible to explicit rules stop paying. Judgement, taste and trust do not codify easily.",
+              "Groysberg: star analysts' performance dropped for about five years after a move — some of your output belongs to your context, not your suitcase.",
+              "Reputation compounds slowly out of repeated observations and can be spent fast."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Wrzesniewski's 1997 study find about how people see their work?",
+            "back": "Near-equal thirds — job, career, calling — and the same split reappeared within a single occupation."
+          },
+          {
+            "front": "What is career capital?",
+            "back": "Newport's term: rare and valuable skills built first, then spent on autonomy, mastery and problems worth solving."
+          },
+          {
+            "front": "What happened to star analysts who changed firms?",
+            "back": "Groysberg found performance dropped at once and stayed down about five years — unless they moved with their team."
+          },
+          {
+            "front": "Which skills stop paying?",
+            "back": "Autor, Levy and Murnane, 2003: work reducible to explicit rules. Demand shifted to non-routine analytical and interpersonal work."
+          }
+        ]
+      },
+      {
+        "id": "how-opportunity-arrives",
+        "title": "How Opportunity Arrives",
+        "summary": "The real numbers behind networked hiring, the experiment that tested weak ties causally, and why visibility beats volume.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Job You Never Saw Advertised",
+            "body": "Somewhere right now a role is being shaped around a person somebody already trusts. It will be posted eventually, because policy says so, and hundreds will apply to a decision that has largely been made. This is not a conspiracy. It is what happens when hiring is an expensive guess and someone offers a shortcut.",
+            "art": "map"
+          },
+          {
+            "type": "concept",
+            "title": "How Much of It Runs on Contacts",
+            "body": "You have heard that 80% of jobs are never advertised. Nobody can produce a source for that number. What the research shows is smaller and still large: reviewing decades of surveys in 2004, Yannis Ioannides and Linda Loury put the share of jobs found through personal contacts at roughly a third to a half.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The widely quoted claim that 80% of jobs are filled through a hidden job market traces back to a specific large study.",
+            "answer": false,
+            "explain": "It traces back to nothing anyone can produce. The honest version — a third to a half of jobs found through contacts, varying by country and occupation — is less dramatic and still means the queue is not where most of the action is."
+          },
+          {
+            "type": "concept",
+            "title": "Granovetter's Odd Finding",
+            "body": "In 1973 Mark Granovetter reported that among Boston professionals who found work through a person, the tip usually came from an acquaintance rather than a close friend. Close friends walk through your rooms and already know your news. Acquaintances stand somewhere else, so what reaches you through them is genuinely new.",
+            "art": "bridge"
+          },
+          {
+            "type": "example",
+            "title": "Twenty Million People, Randomised",
+            "body": "For years LinkedIn quietly varied how many weak ties its People You May Know tool suggested. Rajkumar and colleagues reported the result in Science in 2022: across roughly 20 million users, 2 billion new connections and 600,000 job changes, moderately weak ties — around ten mutual contacts — produced the most job moves.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did the LinkedIn study settle an argument that fifty years of surveys could not?",
+            "choices": [
+              "It had far more participants than any earlier survey",
+              "It randomly varied who people met, so the tie came first and the job came after",
+              "It measured salaries rather than self-reported satisfaction"
+            ],
+            "answer": 1,
+            "explain": "Size was never the problem; direction was. In a survey, people with wide networks may simply be more mobile or ambitious. Randomising the suggestions makes the tie a cause rather than a symptom. The same experiment also drew criticism, because the users were never told."
+          },
+          {
+            "type": "concept",
+            "title": "Visibility Beats Volume",
+            "body": "Two hundred applications is not two hundred chances. It is one weak bet repeated, because every application arrives carrying the same missing information about you. A referral does not improve the odds on that bet — it changes what the employer knows before they gamble.",
+            "art": "eye"
+          },
+          {
+            "type": "example",
+            "title": "What a Referral Actually Buys",
+            "body": "Stephen Burks, Bo Cowgill, Mitchell Hoffman and Michael Housman studied referral hiring in 2015 across call centres, trucking firms and a tech company. Referred workers were not measurably more productive — but they were likelier to be hired, much likelier to stay, and more profitable overall. The referrer's private knowledge is the product.",
+            "art": "key"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Most of your contacts would happily pass you an opportunity. So why don't they?",
+            "answer": "Because they do not know what to look for. Granovetter found most tips arrived as a by-product of ordinary conversation, not in answer to a request. If nobody can say in one sentence what you do and what you want next, there is nothing for them to recognise on your behalf."
+          },
+          {
+            "type": "concept",
+            "title": "Weak Ties Need Maintenance",
+            "body": "A weak tie is not a stranger. It is someone who would recognise your name — and that state decays quietly. The cheap upkeep is specific and occasional: send the thing they would find useful, congratulate the actual achievement, answer the question you are best placed to answer. Asking for nothing is what keeps the tie available.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Based on this lesson, which move most improves your odds of hearing about good roles?",
+            "choices": [
+              "Apply to many more postings, faster",
+              "Deepen ties with the three colleagues you already speak to every day",
+              "Make it easy for occasional contacts to describe what you do and what you want"
+            ],
+            "answer": 2,
+            "explain": "Volume repeats the same weak bet. Daily colleagues already share your information, so their tips are your news arriving late. The lever is the loose ring of people standing somewhere else — and they can only act on you if they can describe you."
+          },
+          {
+            "type": "recap",
+            "title": "How Opportunity Arrives",
+            "points": [
+              "The 80% hidden-jobs figure has no source. Roughly a third to a half of jobs come through personal contacts (Ioannides and Loury, 2004).",
+              "Granovetter, 1973: the tip usually comes from an acquaintance, because acquaintances stand where you do not.",
+              "Science, 2022: randomised weak-tie suggestions across ~20 million LinkedIn users — moderately weak ties, around ten mutual contacts, produced the most job changes.",
+              "Referrals work by transmitting private information: referred workers stayed longer and were more profitable without being more productive.",
+              "So make yourself describable in one sentence, and keep occasional ties warm by being useful rather than by asking."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Where does the '80% of jobs are hidden' figure come from?",
+            "back": "No traceable source. Research puts jobs found through personal contacts at roughly a third to a half (Ioannides and Loury, 2004)."
+          },
+          {
+            "front": "What did the 2022 LinkedIn experiment show?",
+            "back": "Randomised weak-tie suggestions across ~20 million users: moderately weak ties, around ten mutual contacts, produced the most job changes."
+          },
+          {
+            "front": "What does a referral actually buy an employer?",
+            "back": "Burks et al., 2015: referred workers were not more productive but stayed longer and were more profitable — the referrer's private knowledge."
+          },
+          {
+            "front": "Why don't your contacts pass you opportunities?",
+            "back": "Usually because they cannot describe what you do and want. Most tips arrive as a by-product of conversation, not in answer to a request."
+          }
+        ]
+      },
+      {
+        "id": "deciding-well",
+        "title": "Doors, Offers and Numbers",
+        "summary": "Reversible versus irreversible moves, forecasting from the record rather than the plan, and what the anchoring evidence says about salary talk.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Kinds of Door",
+            "body": "In his 2015 letter to Amazon shareholders, Jeff Bezos split decisions in two. Type 1 decisions are one-way doors: walk through, and you cannot get back. Type 2 are two-way doors: walk through, look around, walk back out. His complaint was that organisations run every decision through the slow Type 1 process.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "Most Career Doors Swing Both Ways",
+            "body": "Taking the job, moving cities, trying the smaller company — these feel terminal and rarely are. Closer to one-way: burning a bridge, signing a long non-compete, spending your thirties on something you already know is wrong. Match the deliberation to the reversibility, and decide the reversible ones fast.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "By Bezos's split, which of these is closest to a one-way door?",
+            "choices": [
+              "Joining a startup that might fail",
+              "Leaving on terms that make a former manager unwilling to vouch for you",
+              "Relocating for a role in a new city"
+            ],
+            "answer": 1,
+            "explain": "Startups fail and cities can be left; both are recoverable, and the cost is time. Standing with people who would otherwise have spoken for you is the asset that does not come back on request."
+          },
+          {
+            "type": "concept",
+            "title": "The Outside View",
+            "body": "Ask how your plan will go and you picture the plan going well. Ask instead: of the last hundred people who tried roughly this, how did it turn out? Daniel Kahneman and Amos Tversky called the second question the outside view. It is almost always more accurate, and almost always less flattering.",
+            "art": "lens"
+          },
+          {
+            "type": "example",
+            "title": "Nine Projects Out of Ten",
+            "body": "Bent Flyvbjerg's team examined 258 transport projects across 20 countries. Costs were underestimated in nine out of ten. Rail overran by 45% on average, bridges and tunnels by 34%, roads by 20% — and the record had not improved across seventy years of data.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Flyvbjerg found that cost forecasting improved steadily as planners accumulated experience.",
+            "answer": false,
+            "explain": "No improvement across seventy years. Optimism is not the only cause — there are incentives to underbid to win approval — but the practical lesson holds: your case is not special, so start from the record for cases like it and adjust from there."
+          },
+          {
+            "type": "concept",
+            "title": "Anchors in a Salary Conversation",
+            "body": "Whoever names a number first shapes the range everyone then argues inside. The counter-move when they go first is not to haggle against their figure but to re-anchor: state your own number with a reason attached, so the conversation restarts from a second point instead of drifting from theirs.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "Precise Numbers Hold Better",
+            "body": "Malia Mason and colleagues found in 2013 that precise opening offers move less than round ones: ask for 63,500 and the other side concedes less ground than if you ask for 65,000, because a precise number implies you know something. Daniel Ames and Mason later found a range works too — if your target sits at its bottom.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "They open with a number well below your target. What does the evidence favour?",
+            "choices": [
+              "Split the difference quickly, to look reasonable",
+              "Name your own precise figure with a justification, resetting the range",
+              "Refuse to discuss numbers until they improve the offer"
+            ],
+            "answer": 1,
+            "explain": "Splitting the difference silently accepts their number as the midpoint. Re-anchoring with a precise, justified figure — 63,500 rather than 'more' — restarts the range. Refusing to engage just leaves their anchor sitting there unopposed."
+          },
+          {
+            "type": "concept",
+            "title": "Do Women Ask? The Answer Moved",
+            "body": "Linda Babcock's 2003 book Women Don't Ask reported that women negotiated far less often than men. In 2018 Benjamin Artz, Amanda Goodall and Andrew Oswald used Australian survey data on around 4,600 employees and found women asked for raises just as often, and got them less often. Which reading holds where is still contested.",
+            "art": "dialog"
+          },
+          {
+            "type": "example",
+            "title": "The Parts of an Offer That Aren't Money",
+            "body": "Salary is the number you can compare, which is why it swallows the conversation. Alois Stutzer and Bruno Frey found that people with long commutes report persistently lower life satisfaction, and the extra pay does not appear to compensate. Ask also what you will learn, who you will report to, and what the job opens next.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two offers, one spreadsheet, and it will not settle. What question actually decides it?",
+            "answer": "Which one leaves you with more options in two years? Compensation gets spent. Skills, standing and the people who now know your work are what you carry to the next door — so weight the offer that widens the range of things you could do next."
+          },
+          {
+            "type": "recap",
+            "title": "Doors, Offers and Numbers",
+            "points": [
+              "Bezos, 2015: decide two-way doors fast; save the slow process for genuine one-way doors like a burned bridge.",
+              "The outside view beats the plan: Flyvbjerg's 258 projects overran nine times in ten, with no improvement over seventy years.",
+              "Anchoring rules salary talk. Precise figures hold better than round ones (Mason et al., 2013); if they go first, re-anchor rather than split.",
+              "Whether women ask less is contested — Babcock (2003) said yes; Artz, Goodall and Oswald (2018) found equal asking and less granting.",
+              "Judge an offer by what it opens: learning, manager, people, and options. Long commutes reliably cost wellbeing that pay does not buy back."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is a one-way door decision?",
+            "back": "Bezos, 2015: a choice you cannot walk back. Reversible Type 2 doors should be decided fast; only one-way doors deserve slow deliberation."
+          },
+          {
+            "front": "What is the outside view?",
+            "back": "Kahneman and Tversky: forecast from the record of similar cases, not from your plan. Flyvbjerg found 9 in 10 transport projects overran."
+          },
+          {
+            "front": "How should you open on salary?",
+            "back": "Precise beats round — Mason et al., 2013: 63,500 concedes less ground than 65,000. If they anchor first, re-anchor rather than split."
+          },
+          {
+            "front": "What decides between two similar offers?",
+            "back": "Which leaves more options in two years. Pay is spent; skills, standing and reach carry forward — and long commutes reliably cost wellbeing."
+          }
+        ]
+      },
+      {
+        "id": "the-long-game",
+        "title": "The Long Game",
+        "summary": "Burnout as a systems problem, what sabbaticals and reinvention actually look like, ageing in knowledge work, and defining enough.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Burnout Got a Definition",
+            "body": "In 2019 the World Health Organization put burn-out into the ICD-11 — and pointedly declined to call it a medical condition. It is listed as an occupational phenomenon: a syndrome resulting from chronic workplace stress that has not been successfully managed. The definition points at the workplace, not the person.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Three Symptoms, Six Causes",
+            "body": "Christina Maslach's measure has three parts: exhaustion, cynical distance from the work, and a collapsing sense of your own effectiveness. With Michael Leiter she mapped six mismatches that produce it — workload, control, reward, community, fairness and values. Only the first is about hours.",
+            "art": "layers"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Someone is burning out on an ordinary 40-hour week. What does the Maslach framework tell you to look at?",
+            "choices": [
+              "Their personal resilience — the hours rule out a work cause",
+              "Mismatches in control, fairness, community, reward or values",
+              "Whether they chose the wrong profession entirely"
+            ],
+            "answer": 1,
+            "explain": "Workload is one of six mismatches. Work that is fair, autonomous and consistent with your values is survivable at volume; work that is none of those corrodes at any volume. Reading it as a personal failing hides the part that can actually be fixed."
+          },
+          {
+            "type": "example",
+            "title": "What a Sabbatical Does",
+            "body": "A 2010 study led by Oranit Davidson followed 129 academics through a sabbatical against a matched group who stayed. Stress and burnout fell during the leave and wellbeing rose. Some of the gain survived the return — mostly for people who detached properly and had real control over how the time was spent.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In that sabbatical study, every benefit vanished the moment people returned to work.",
+            "answer": false,
+            "explain": "Some gains persisted, and the difference lay in how the leave was spent. People who genuinely detached and controlled their own time kept more of it. A break spent half-working is a break that mostly just refills the inbox."
+          },
+          {
+            "type": "concept",
+            "title": "Reinvention Has a Shape",
+            "body": "Herminia Ibarra interviewed professionals making mid-career changes for her 2003 book Working Identity. Almost none reasoned their way to a new self and then executed the plan. They ran small experiments — side projects, courses, borrowed time in another world — and worked out afterwards what they had become.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Ibarra's research on career transitions suggests which sequence?",
+            "choices": [
+              "Decide who you want to be, plan the steps, then act",
+              "Act in small experiments, then work out who you have become",
+              "Wait until you are financially secure, then change everything at once"
+            ],
+            "answer": 1,
+            "explain": "The people who changed successfully tested possible selves in small, cheap ways before committing, and revised the story afterwards. Planning first assumes you already hold an answer that only doing can produce."
+          },
+          {
+            "type": "example",
+            "title": "Founders Are Older Than the Myth",
+            "body": "Pierre Azoulay and colleagues matched US Census records to startup outcomes in a 2020 study. The average age of a founder of a fast-growing new firm was 45. A 50-year-old founder was roughly twice as likely as a 30-year-old to build a top-growth company. Experience keeps compounding well past the legend.",
+            "art": "mountain"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If mental speed peaks young, why do so many people do their best work later?",
+            "answer": "Because abilities peak at different ages. Hartshorne and Germine's 2015 data put raw processing speed around 18, short-term memory in the mid-twenties, reading other people's emotions in the forties and fifties, and vocabulary later still. Careers lean on the late ones."
+          },
+          {
+            "type": "concept",
+            "title": "Enough Has to Be a Number",
+            "body": "A ladder with no top is a treadmill with a view. Decide in advance what enough looks like — the income, the hours, the responsibility you actually want — and write it down while nobody is offering you anything. Otherwise the answer is always the next rung, and the next rung is always available.",
+            "art": "target"
+          },
+          {
+            "type": "quote",
+            "text": "I've got something he can never have ... the knowledge that I've got enough.",
+            "by": "Joseph Heller, as recounted by Kurt Vonnegut in The New Yorker, 2005"
+          },
+          {
+            "type": "recap",
+            "title": "The Long Game",
+            "points": [
+              "WHO ICD-11, 2019: burn-out is an occupational phenomenon, not a medical condition — the cause is named as unmanaged chronic workplace stress.",
+              "Maslach: exhaustion, cynicism and lost effectiveness, driven by six mismatches. Workload is only one of them.",
+              "Sabbaticals lowered stress and burnout, and some gains persisted for people who detached and controlled the time (Davidson et al., 2010).",
+              "Reinvention runs experiment-first: Ibarra found people act their way into a new identity rather than plan their way in.",
+              "Ageing is not one curve. Fast-growth founders averaged 45 (Azoulay et al., 2020), and vocabulary and social reading peak decades after processing speed."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How does the WHO classify burn-out?",
+            "back": "ICD-11, 2019: an occupational phenomenon, not a medical condition — chronic workplace stress that has not been successfully managed."
+          },
+          {
+            "front": "What are Maslach's three dimensions of burnout?",
+            "back": "Exhaustion, cynical distance, and a collapsing sense of effectiveness — driven by six mismatches, only one of which is workload."
+          },
+          {
+            "front": "What does Ibarra's research say about reinvention?",
+            "back": "You act your way into a new identity: small experiments first, sense-making after. Planning first assumes you already know the answer."
+          },
+          {
+            "front": "What is the average age of a fast-growth startup founder?",
+            "back": "45, in Azoulay et al.'s 2020 census-matched study. A 50-year-old was about twice as likely as a 30-year-old to found a top-growth firm."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dance",
+    "title": "Why Humans Dance",
+    "tagline": "The oldest technology for being together.",
+    "category": "Arts & Science",
+    "description": "Keeping time with a beat is nearly unique to our species, and every culture builds something out of it. From the neuroscience of entrainment to sabar circles, the Ballets Russes and a Bronx block party — and a way of watching dance that goes past 'that looked hard'.",
+    "lessons": [
+      {
+        "id": "bodies-keep-time",
+        "title": "Why Bodies Keep Time",
+        "summary": "Beat entrainment is rare in the animal world, wired into motor circuits, and measurably changes how people treat each other.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Almost Nothing Else Dances",
+            "body": "Play a song with a strong pulse and your head starts nodding before you decide anything. Locking movement to a beat you hear is called entrainment, and startlingly little else on Earth does it. Adena Schachner's 2009 survey of thousands of animal videos found convincing evidence in parrots and one elephant — and none in dogs, cats or chimpanzees.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Your Motor Cortex Is Already Moving",
+            "body": "Listening to a beat is not a passive act. Jessica Grahn and Matthew Brett's 2007 brain-imaging work found that hearing a rhythm with a clear pulse lights up motor regions — the supplementary motor area, premotor cortex and basal ganglia — in people lying perfectly still. Hearing time and planning movement share machinery.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You lie motionless in a scanner while a drum loop plays. What does the imaging show?",
+            "choices": [
+              "Only auditory cortex; movement areas stay quiet until you actually move",
+              "Motor planning regions active — supplementary motor area, premotor cortex, basal ganglia — while you lie still",
+              "Mostly visual areas, because you picture the drummer",
+              "Nothing that can be told apart from silence"
+            ],
+            "answer": 1,
+            "explain": "Grahn and Brett found motor areas engaged by a pulsed rhythm in stationary listeners. Perceiving a beat is partly an act of covert movement — which is why staying still through good music takes effort."
+          },
+          {
+            "type": "example",
+            "title": "Snowball and Ronan",
+            "body": "Snowball, a sulphur-crested cockatoo, was filmed bobbing in time to the Backstreet Boys. Aniruddh Patel's team sped the track up and slowed it down, and Snowball adjusted. Ronan, a California sea lion trained by Peter Cook and Colleen Reichmuth, also learned to keep a beat — and sea lions do not imitate sounds the way parrots do.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Science has settled why humans and parrots can find a beat: it falls out of the brain circuitry for vocal learning.",
+            "answer": false,
+            "explain": "Patel proposed exactly that, and it predicted beat-keeping only in species that learn sounds by imitation. Then Ronan, who is not a vocal learner in that sense, kept time. The explanation is live and contested, not closed.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Moving Together Changes Behaviour",
+            "body": "Scott Wiltermuth and Chip Heath had people walk around a campus in step or out of step, then play economic games together. Those who had moved in synchrony cooperated more and reported feeling more connected — with strangers they had barely spoken to. The coordination came first; the goodwill followed.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Dancing in sync with strangers changes something measurable in your body within minutes. What?",
+            "answer": "Your pain threshold. Bronwyn Tarr's team had teenagers dance in or out of sync, at high or low effort, then tightened a blood-pressure cuff. Synchrony and exertion each independently raised what they could stand — and synchrony also raised how close they felt."
+          },
+          {
+            "type": "example",
+            "title": "Babies Move Before They Can Match",
+            "body": "Marcel Zentner and Tuomas Eerola played music, drumming and speech to 120 infants aged five months to two years. The babies moved far more to the music and the drumming than to the speech, and the closer their movement came to the tempo, the more they smiled. Not accurate yet. Already trying.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Taken together, what do the synchrony experiments suggest moving in time with others does?",
+            "choices": [
+              "It makes people better at whatever task they are doing together",
+              "It raises cooperation, felt closeness and pain threshold, even among strangers",
+              "It works only between people who already like each other",
+              "It lifts mood but leaves behaviour unchanged"
+            ],
+            "answer": 1,
+            "explain": "Wiltermuth and Heath got more cooperation from people who had merely walked in step; Tarr got higher pain thresholds and closeness from synchronised dancing. The effects show up between strangers and in behaviour, not just feeling."
+          },
+          {
+            "type": "concept",
+            "title": "How Big, and How Sure?",
+            "body": "Hold the size of these effects loosely. Meta-analysis of interpersonal synchrony experiments by Johanna Rennung and Anja Göritz in 2016 found the pro-social effect real but small to moderate. The popular mechanism — a flood of endorphins, proposed by Robin Dunbar — remains a hypothesis under test, not a settled fact.",
+            "art": "shield"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The bonding effect of dance comes mainly from the music, not from moving in time with other people.",
+            "answer": false,
+            "explain": "In Tarr's design everyone heard music; what varied was whether the movement was synchronised. Synchrony itself lifted pain threshold and closeness. Music matters, but the coordinated body is doing work of its own.",
+            "art": "bell"
+          },
+          {
+            "type": "recap",
+            "title": "Why Bodies Keep Time",
+            "points": [
+              "Entrainment — locking movement to a heard pulse — is rare: parrots and an elephant in Schachner's 2009 survey, plus Ronan the sea lion; not dogs, cats or chimpanzees.",
+              "Hearing a beat activates motor planning areas in a motionless listener (Grahn and Brett, 2007).",
+              "Synchronised movement raises cooperation and felt closeness (Wiltermuth and Heath, 2009) and pain threshold (Tarr, 2015) — among strangers.",
+              "Effect sizes are small to moderate, and the endorphin explanation is contested. Dance as bonding technology is well evidenced; the mechanism is not."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is beat entrainment, and how common is it?",
+            "back": "Locking movement to a heard pulse. Schachner's 2009 video survey found it in parrots and one elephant — not in dogs, cats or chimpanzees."
+          },
+          {
+            "front": "What did Grahn and Brett find in 2007?",
+            "back": "A rhythm with a clear pulse activates motor areas — supplementary motor area, premotor cortex, basal ganglia — in listeners lying still."
+          },
+          {
+            "front": "What did Tarr's 2015 dance study measure?",
+            "back": "Synchrony and exertion each independently raised pain threshold, and synchrony also raised how close dancers felt to the group."
+          },
+          {
+            "front": "Why does Ronan the sea lion matter?",
+            "back": "She keeps a beat but is not a vocal learner like a parrot, so Patel's vocal-learning explanation of entrainment stays contested."
+          }
+        ]
+      },
+      {
+        "id": "grammars-of-movement",
+        "title": "Grammars of Movement",
+        "summary": "West African polyrhythm, India's codified gesture, flamenco's compás — and the distinction between dance you watch and dance you join.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Drum Asks a Question",
+            "body": "In a sabar circle in Dakar, the dancer does not follow the drums. The lead drummer plays a bàkk, a phrase built from the rhythms of spoken Wolof, and a dancer steps into the ring to answer it with her body before rejoining the crowd. The music and the dance are two halves of one conversation.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Polyrhythm and Polycentrism",
+            "body": "Many West African traditions layer several rhythms at once, and the dancer answers more than one. Hips, shoulders, head and feet can each ride a different strand — dance scholars call this polycentrism. Knees stay bent and the torso stays loose, so the body can be pulled in several directions at the same time.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In a Ghanaian Ewe ensemble one instrument holds everything together. Which — and why does the dancer care?",
+            "answer": "The gankogui, a double iron bell. It repeats one short unchanging pattern, the timeline, that every drummer and dancer measures against. Lose the bell and the layers scatter; find it and you know where the cycle begins."
+          },
+          {
+            "type": "example",
+            "title": "A Grammar for the Hands",
+            "body": "India's classical forms carry codified gesture systems. The Abhinaya Darpana, a manual attributed to Nandikeshvara, catalogues 28 single-hand gestures and 24 two-hand ones. A dancer in Bharatanatyam or Odissi wields them as vocabulary: one hand shape can mean a deer, a flag or a refusal, depending on what surrounds it.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A Bharatanatyam dancer makes the same hand shape twice in one piece and it means two different things. How?",
+            "choices": [
+              "The gestures are improvised, so their meaning is personal to each dancer",
+              "Each hand shape carries many assigned meanings; context, arm position and the story fix which one applies",
+              "One of the two uses must be an error",
+              "Meaning shifts with the dancer's mood rather than with the text"
+            ],
+            "answer": 1,
+            "explain": "The vocabulary is codified, not improvised, and it is deliberately many-to-one: a single mudra has a list of sanctioned meanings, and the surrounding gesture, gaze and narrative select from that list."
+          },
+          {
+            "type": "concept",
+            "title": "Pure Rhythm, Pure Story",
+            "body": "Indian classical repertoire separates nritta — abstract dance, all rhythm and geometry, carrying no story — from nritya, expressive dance that means something, and natya, full dramatic theatre. Knowing which is in front of you tells you where to look: at the feet and the lines, or at the face.",
+            "art": "key"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The eight forms recognised as Indian classical dance are regional variations on one national style.",
+            "answer": false,
+            "explain": "Bharatanatyam (Tamil Nadu), Kathak (north India), Kathakali and Mohiniyattam (Kerala), Kuchipudi (Andhra Pradesh), Odissi (Odisha), Manipuri (Manipur) and Sattriya (Assam) have distinct repertoires, music, languages and teaching lineages.",
+            "art": "map"
+          },
+          {
+            "type": "example",
+            "title": "Flamenco Runs on Compás",
+            "body": "Flamenco is made of cante (song), toque (guitar), baile (dance) and jaleo — the palmas and shouts of everyone else present. Its engine is compás, a repeating rhythmic cycle. The soleá and bulería cycle counts to twelve with the weight on 3, 6, 8, 10 and 12, so the heels land where the count is loud.",
+            "art": "clock"
+          },
+          {
+            "type": "quote",
+            "text": "The duende does not come at all unless he sees that death is possible.",
+            "by": "Federico García Lorca, 'Play and Theory of the Duende' (1933)"
+          },
+          {
+            "type": "reveal",
+            "prompt": "The palmas are counting to twelve, but the dancer's feet keep landing somewhere else. Is she lost?",
+            "answer": "Almost certainly not. Contratiempo — playing against the accents — is expected, and the compás keeps running underneath whether anyone steps on it or not. Leaving the count and returning to it exactly is a large part of the craft."
+          },
+          {
+            "type": "concept",
+            "title": "Participatory or Presentational",
+            "body": "Thomas Turino's distinction travels everywhere. Participatory performance has no audience: everyone present is a dancer, entry is easy, and the aim is to keep the thing going. Presentational performance is made by some people for others who watch. Judge each on its own terms, and never one by the other's.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "At a wedding, guests join a line dance anyone can enter, the same pattern repeats for twenty minutes, and nobody is sitting and watching. In Turino's terms, this is:",
+            "choices": [
+              "Presentational dance performed badly",
+              "Participatory performance — easy entry and long repetition are features, not flaws",
+              "Folk dance, a third category outside Turino's scheme",
+              "A rehearsal for a presentational piece"
+            ],
+            "answer": 1,
+            "explain": "Participatory dance is designed for people to join. Repetition gives latecomers a way in, and there is no audience to bore. Grading it as a show misses what it is for."
+          },
+          {
+            "type": "recap",
+            "title": "Grammars of Movement",
+            "points": [
+              "West African traditions layer rhythms and the dancer answers several at once; a fixed timeline, like the Ewe gankogui bell, keeps everyone aligned.",
+              "India's classical forms codify gesture — 28 single-hand and 24 two-hand mudras in the Abhinaya Darpana — and separate abstract nritta from expressive nritya.",
+              "Flamenco is built on compás; the soleá and bulería cycle runs to twelve, accented on 3, 6, 8, 10 and 12. UNESCO listed flamenco as intangible heritage in 2010.",
+              "Turino's split — participatory versus presentational — tells you what a dance is trying to do before you judge how well it does it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is compás?",
+            "back": "Flamenco's repeating rhythmic cycle. The soleá and bulería cycle counts to twelve, accented on 3, 6, 8, 10 and 12."
+          },
+          {
+            "front": "What does the Abhinaya Darpana catalogue?",
+            "back": "A codified gesture vocabulary: 28 single-hand and 24 two-hand mudras, whose meaning is selected by context, arm position and story."
+          },
+          {
+            "front": "Participatory versus presentational dance?",
+            "back": "Turino's split: participatory has no audience — everyone dances and repetition invites entry. Presentational is made by some for others to watch."
+          },
+          {
+            "front": "What holds a West African drum ensemble together?",
+            "back": "A timeline. In Ewe ensembles the gankogui double bell repeats one fixed pattern that drummers and dancers alike measure against."
+          }
+        ]
+      },
+      {
+        "id": "courts-rebels-chance",
+        "title": "Courts, Rebels and Chance",
+        "summary": "Ballet from Louis XIV's court to Petipa and Diaghilev, then the modern dance revolt that threw out story, shoes and finally the choreographer's own choices.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The King Who Danced the Sun",
+            "body": "In 1653 the fourteen-year-old Louis XIV appeared in Le Ballet de la Nuit as Apollo, the rising sun, gilded head to heel. Court ballet was politics you could watch: rank, order, and the king at the centre of it. Eight years later he founded the Académie Royale de Danse, and dancing acquired rules.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Why Ballet Speaks French",
+            "body": "Because the codifying happened at the French court. Pierre Beauchamp, Louis's dance master, is credited with fixing the five positions of the feet in the late 1600s, and the vocabulary that grew around them — plié, tendu, jeté, arabesque — travelled wherever the technique went. Class is still taught in French in Havana and Tokyo.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why do dancers in Havana, Tokyo and Moscow all use French words in the studio?",
+            "choices": [
+              "France produced the greatest dancers, so other countries copied its stars",
+              "The technique was codified at the French court and the names travelled with the system",
+              "French was the language of diplomacy when ballet spread across Europe",
+              "The Paris-based Ballets Russes renamed the steps in the early 1900s"
+            ],
+            "answer": 1,
+            "explain": "The naming came from the codification, not from prestige or diplomacy. Beauchamp's positions and the terms built on them were the system itself, so the words shipped with the training everywhere it went."
+          },
+          {
+            "type": "concept",
+            "title": "The Romantic Turn",
+            "body": "By the 1830s ballet wanted the supernatural: sylphs, ghosts, women who vanish at a touch. Marie Taglioni danced La Sylphide in Paris in 1832 in a soft white skirt, rising onto the tips of her toes so the creature seemed to weigh nothing. Gaslight, tulle and pointe sold one illusion — a body released from the ground.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Marie Taglioni invented dancing on pointe for La Sylphide in 1832.",
+            "answer": false,
+            "explain": "Dancers had been getting onto their toes for decades: Charles Didelot's flying machine of the 1790s hoisted them there on wires, and dancers were rising unaided by the 1820s. Taglioni's achievement was to make pointe expressive rather than a stunt.",
+            "art": "ladder"
+          },
+          {
+            "type": "example",
+            "title": "Petipa's Imperial Machine",
+            "body": "At the Imperial Theatres in St Petersburg, Marius Petipa built ballet's largest structures: The Sleeping Beauty in 1890, The Nutcracker in 1892 with Lev Ivanov, and the 1895 Swan Lake that fixed the version companies still dance. Tchaikovsky wrote to counts and timings Petipa specified, bar by bar.",
+            "art": "pyramid"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A grand pas de deux is not one dance but a fixed sequence of sections. What are they?",
+            "answer": "An entrée and adagio — the sustained partnered opening — then a solo variation for the man, a variation for the woman, and a coda that brings them back together at top speed. Once you know the shape, you can hear each section arriving."
+          },
+          {
+            "type": "example",
+            "title": "Paris, 29 May 1913",
+            "body": "Serge Diaghilev's Ballets Russes premiered Le Sacre du printemps at the Théâtre des Champs-Élysées: Stravinsky's hammering score, Nijinsky's turned-in, stamping choreography, no beautiful line to fall back on. The audience made so much noise the dancers could not hear the orchestra. How much of it was a riot is still argued over.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What made the Ballets Russes so influential after 1909?",
+            "choices": [
+              "It was the first company to put women on pointe",
+              "It commissioned score, design and choreography together, pulling in artists like Stravinsky and Picasso",
+              "It abandoned classical technique in favour of free natural movement",
+              "It was the official touring company of the Russian state"
+            ],
+            "answer": 1,
+            "explain": "Diaghilev produced total works: Stravinsky's scores, Picasso's designs for Parade in 1917, choreography by Fokine, Nijinsky, Nijinska and Balanchine. It was a private company based in western Europe and never performed in Russia. Free natural movement was Duncan's rebellion, not his."
+          },
+          {
+            "type": "concept",
+            "title": "Barefoot",
+            "body": "Isadora Duncan (1877-1927) threw out the corset, the shoes and the story, dancing to concert music in a loose tunic with her cues taken from waves and wind. Martha Graham turned the next rebellion into a technique: contraction and release driven from the pelvis and the breath, floor work instead of flight. Her Lamentation (1930) is danced inside a tube of jersey.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Cunningham Tosses a Coin",
+            "body": "Merce Cunningham used chance procedures — coin tosses, the I Ching — to decide the order of phrases, their direction in space and who danced them. With John Cage he also split dance from music: each was made separately and they simply met in performance. No story, no centre; you choose where to look.",
+            "art": "coin"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In Cunningham's work the choreography is set to the music, as in most Western concert dance.",
+            "answer": false,
+            "explain": "Dancers often heard the score for the first time at the premiere. Cunningham and Cage made movement and sound independently, to agreed durations, so the two occupy the same stretch of time without either following the other.",
+            "art": "clock"
+          },
+          {
+            "type": "recap",
+            "title": "Courts, Rebels and Chance",
+            "points": [
+              "Ballet began as court spectacle — Louis XIV in Le Ballet de la Nuit, 1653 — and was codified at his Académie, which is why the vocabulary is French.",
+              "Romantic ballet (La Sylphide, 1832) used pointe and gaslight to sell weightlessness; pointe was not invented then, only made expressive.",
+              "Petipa's St Petersburg works and Diaghilev's Ballets Russes are the two poles of the tradition: imperial scale, then collaboration with Stravinsky, Picasso and Nijinsky.",
+              "Modern dance rebelled in stages: Duncan dropped the shoes and the plot, Graham built contraction and release, Cunningham used chance and cut dance loose from music."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why is ballet's vocabulary French?",
+            "back": "It was codified at Louis XIV's court; Beauchamp fixed the five positions in the late 1600s and the names travelled with the technique."
+          },
+          {
+            "front": "What was new about the Ballets Russes?",
+            "back": "Diaghilev commissioned score, design and choreography together — Stravinsky, Picasso, Nijinsky — and never performed in Russia."
+          },
+          {
+            "front": "What is Cunningham's use of chance?",
+            "back": "Coin tosses and the I Ching set order, direction and casting; with Cage, dance and music were made separately and met in performance."
+          },
+          {
+            "front": "What did Petipa build in St Petersburg?",
+            "back": "The Sleeping Beauty (1890), The Nutcracker (1892, with Ivanov) and the 1895 Swan Lake that companies still dance today."
+          }
+        ]
+      },
+      {
+        "id": "vernacular-and-now",
+        "title": "Vernacular, and How to Watch",
+        "summary": "From the Savoy Ballroom to the Bronx: the Black American lineage behind most social dance, choreography as composition, and a practical way of looking.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Lenox Avenue, 1926",
+            "body": "The Savoy Ballroom opened on Lenox Avenue in Harlem in 1926 with a block-long floor and two bandstands, so the music never stopped. Out of its competitive corner came the Lindy Hop: a partner dance with a breakaway, the moment the two of you let go and improvise. Almost everything after it inherits something from that floor.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Culture in Motion",
+            "body": "Social dances do not appear from nowhere; they descend, borrow and mutate. The Charleston feeds the Lindy Hop, the Lindy's breakaway gives partners room to solo, and that solo space runs forward into rock and roll dancing, the funk styles and hip-hop. The through-line of this lineage is overwhelmingly Black American.",
+            "art": "path"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In a 1935 Savoy contest Frankie Manning did something that changed partner dancing. What?",
+            "answer": "He and Frieda Washington rehearsed the first air step — an over-the-back aerial — and sprang it on Shorty Snowden's team in competition. The Lindy Hop suddenly had a ceiling as well as a floor, and aerials became a competitive language of their own."
+          },
+          {
+            "type": "example",
+            "title": "The Break, 1973",
+            "body": "At a Bronx party on 11 August 1973, DJ Kool Herc noticed that dancers were waiting for one thing: the break, the few bars where the band drops out and the drums carry alone. So he cued two copies of the same record and looped it. The dancers who came alive there were b-boys and b-girls.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where does the term b-boy come from?",
+            "choices": [
+              "From Bronx boys, after the borough where the dance began",
+              "From the break — the drum-only passage DJs looped for them to dance to",
+              "From battle boys, because the dance is competitive",
+              "From breakdancing, a name the dancers coined for themselves"
+            ],
+            "answer": 1,
+            "explain": "Break boy and break girl, after the section Herc extended. Breakdancing came later and largely from the press; practitioners generally say breaking, b-boying or b-girling."
+          },
+          {
+            "type": "concept",
+            "title": "Not Everything Is Hip-Hop",
+            "body": "Locking and popping get filed under hip-hop and did not come from it. Don Campbell built locking in Los Angeles in the late 1960s, and his crew The Lockers carried it onto television. Popping grew in Fresno with Boogaloo Sam and the Electric Boogaloos. They are Californian funk styles, born to different music and a different scene.",
+            "art": "map"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Popping and locking are breaking moves that developed in the Bronx alongside early hip-hop.",
+            "answer": false,
+            "explain": "Both are West Coast funk styles that predate or run parallel to hip-hop: locking from Don Campbell in 1960s Los Angeles, popping from Fresno. Lumping them in erases two separate lineages and the people who built them.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "Choreography Is Composition",
+            "body": "A choreographer works with a composer's tools. A motif — a shape, a gesture, a phrase — gets repeated, reversed, enlarged, shrunk, handed to five bodies in canon or crushed into unison. Add spatial design and dynamics, and what looks like a blur of steps becomes a theme with variations you can follow.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Who Made That Dance?",
+            "body": "In September 2019 Jalaiah Harmon, then fourteen, choreographed the Renegade in Atlanta and posted it online. It spread through millions of videos while she went uncredited, until a New York Times piece in February 2020 named her. Social dance still travels faster than credit for it does.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A dancer and a drummer share one beat. Name the places a step can land.",
+            "answer": "On the beat; ahead of it, pushing; behind it, laid back; or on a subdivision nobody is playing, so the body supplies a line the band left out. Where a dancer puts weight in time is a choice — and most of what makes one dancer look unlike another."
+          },
+          {
+            "type": "concept",
+            "title": "How to Watch",
+            "body": "Try this. Pick one dancer and stay with them for a whole phrase. Watch where the weight travels, not the arms. Ask what is repeating and what is being varied. Listen for what they are doing to the music rather than with it. Then ask Turino's question: is this made for me, or am I meant to join?",
+            "art": "eye"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Two dancers perform the same phrase and hit every step, but one looks far better. What most likely differs?",
+            "choices": [
+              "The better one is simply more flexible",
+              "Timing and weight — where in the beat each step lands and how the weight travels between steps",
+              "The better one knows more steps",
+              "Nothing you could learn to see; it is innate charisma"
+            ],
+            "answer": 1,
+            "explain": "Steps are the easy part to copy. Placement in time and the path of the weight are what make a phrase read as pushed, laid back, heavy or light — and they are visible once you know to look for them."
+          },
+          {
+            "type": "recap",
+            "title": "Vernacular, and How to Watch",
+            "points": [
+              "The Savoy Ballroom (1926) and the Lindy Hop's breakaway set the pattern for partner dances with room to improvise; Frankie Manning's 1935 air step added aerials.",
+              "Breaking is named for the break Kool Herc looped from 11 August 1973 onward; locking and popping are separate Californian funk styles, not Bronx hip-hop.",
+              "Choreography is composition: motif, repetition, variation, canon, unison, spatial design and dynamics.",
+              "Watch one dancer, follow the weight, track repetition and variation, hear what they do to the music — and ask whether the dance wants an audience or a participant."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Where does the term b-boy come from?",
+            "back": "The break — the drum-only passage Kool Herc looped from two copies of a record at Bronx parties from 11 August 1973."
+          },
+          {
+            "front": "Are popping and locking hip-hop dances?",
+            "back": "No. Locking began with Don Campbell in 1960s Los Angeles and popping in Fresno with Boogaloo Sam — Californian funk styles."
+          },
+          {
+            "front": "What did Frankie Manning do in 1935?",
+            "back": "With Frieda Washington he performed the first Lindy Hop air step in a Savoy contest, opening aerials as a competitive language."
+          },
+          {
+            "front": "What should you watch instead of the steps?",
+            "back": "Timing and weight: whether a step lands on, ahead of or behind the beat, and how the weight travels between steps."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "film",
+    "title": "How Film Works",
+    "tagline": "The grammar behind every shot, cut and note.",
+    "category": "Arts & Science",
+    "description": "Films move you on purpose, using a grammar most viewers never consciously see. Learn how framing, cutting, sound and structure manufacture meaning — and how to watch for the machinery without losing the pleasure.",
+    "lessons": [
+      {
+        "id": "the-shot",
+        "title": "The Shot",
+        "summary": "What a single frame decides before anyone speaks: what is excluded, which lens, where the focus sits, how high the camera stands, whether it moves, and how hard the light falls.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Every Frame Is a Choice",
+            "body": "A camera does one thing: it decides what you are allowed to see. Before a word is spoken, someone chose where to stand, how close, how high, and what to leave outside the edge. That choice is the first sentence a film says to you, and most viewers never hear it.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Frame Is a Fence",
+            "body": "A frame includes and excludes in the same gesture, and the excluded part does not disappear — it hovers. Horror lives out there: a doorway held a beat too long, a scream from off-screen. Whatever you are not shown, your mind builds, and it builds worse.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A character sits alone in a wide, mostly empty frame. Nothing else about the scene changes. What have you already been told?",
+            "answer": "That she is small in her situation. Scale inside the frame reads as power: the more empty space a figure floats in, the more exposed she looks. Fill the frame with her face instead and the same actor becomes unavoidable."
+          },
+          {
+            "type": "concept",
+            "title": "Focal Length Rewrites a Face",
+            "body": "Lenses are not neutral. A wide lens pushed close stretches the nose forward and shoves the ears back — a face that reads unstable, comic or menacing. A long lens from across the room flattens the same face into calm, composed planes. Same actor, same light, different psychology.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A director wants a character to feel cornered and slightly grotesque in close-up. Which choice fits?",
+            "choices": [
+              "A wide lens, very close to the face",
+              "A long lens, from across the room",
+              "Any lens — distortion comes from the actor, not the glass",
+              "A soft light placed directly behind the camera"
+            ],
+            "answer": 0,
+            "explain": "Wide glass up close exaggerates whatever is nearest it; a long lens does the opposite and flattens. The 'lenses are neutral' option is the misconception worth killing — the glass changes the geometry of a face before the performance does anything."
+          },
+          {
+            "type": "concept",
+            "title": "Focus Is a Pointing Finger",
+            "body": "Depth of field is how much of the image is sharp. Shallow focus leaves one plane crisp and dissolves everything else, so your eye has nowhere to wander. Pulling focus from one face to another walks your attention across a room without a cut and without moving the camera.",
+            "art": "target"
+          },
+          {
+            "type": "example",
+            "title": "Kane's Deep Focus",
+            "body": "In Citizen Kane (1941), cinematographer Gregg Toland held foreground and far background sharp at once. Through a window, young Charles plays in the snow while, huge in the foreground, adults sign his childhood away. Nothing cuts. You choose where to look, and the choosing is the point.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Shallow focus and deep focus are interchangeable technical settings — either can carry the same meaning.",
+            "answer": false,
+            "explain": "Focus is authorship. Shallow focus makes the decision for you and isolates one subject; deep focus, as Toland shot it, leaves two competing actions sharp in a single frame and hands the decision to you. Different arrangements of attention build different scenes."
+          },
+          {
+            "type": "concept",
+            "title": "Height Is Status",
+            "body": "Put the camera below eye level and a person gains mass: the ceiling appears, the jaw leads, you look up. Put it above and the same person shrinks toward the floor. Eye level reads as neutral, which is itself a claim — it says we are equals here, and it can be a lie.",
+            "art": "pyramid"
+          },
+          {
+            "type": "concept",
+            "title": "Movement Is Tone",
+            "body": "A locked-off static frame says: observe. A smooth dolly says: something is being revealed on purpose. Handheld says: nobody is in control, the camera included. The Steadicam, invented by Garrett Brown in 1975, glides like a ghost — it walks with a character and takes the human wobble out.",
+            "art": "path"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A scene is shot handheld, from slightly below the subject's eyeline. What is the frame most likely telling you?",
+            "choices": [
+              "Chaos, and a figure with power inside it",
+              "Calm authority, watched from a respectful distance",
+              "That the scene is a flashback",
+              "Nothing — rig and height are crew conveniences, not choices"
+            ],
+            "answer": 0,
+            "explain": "A low angle grants stature; handheld withholds control, so the two together read as command inside disorder. The last option is the common misconception: camera height and rig get argued over for hours precisely because audiences read them without noticing."
+          },
+          {
+            "type": "concept",
+            "title": "From High-Key to Chiaroscuro",
+            "body": "High-key lighting fills the shadows — sitcoms, comedies, safety. Low-key lighting lets shadow win: one hard key, deep blacks, half a face eaten by dark. Film noir built a moral world out of that ratio. Light does not merely make an image visible; it decides how much you are allowed to know.",
+            "art": "flame"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The frame includes and excludes at once — off-screen space does real work.",
+              "Focal length changes the psychology of a face; depth of field points your eye.",
+              "Camera height reads as status; camera movement reads as tone.",
+              "The lighting ratio, from high-key to chiaroscuro, sets how much you are allowed to see."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does a wide lens do to a face in close-up?",
+            "back": "Exaggerates whatever is nearest it — nose forward, ears back — reading as unstable or menacing. A long lens flattens the same face into calm."
+          },
+          {
+            "front": "What is deep focus, and which film made it famous?",
+            "back": "Foreground and background sharp at once. Gregg Toland shot it for Citizen Kane (1941), letting two actions compete inside one frame."
+          },
+          {
+            "front": "Camera below eye level — what does it say?",
+            "back": "Status. The subject gains mass and you look up at them. Above eye level shrinks them; eye level claims a neutrality that is itself a choice."
+          },
+          {
+            "front": "High-key versus low-key lighting?",
+            "back": "High-key fills the shadows: comedy, safety. Low-key lets shadow win — hard key, deep blacks, the chiaroscuro of film noir."
+          }
+        ]
+      },
+      {
+        "id": "the-cut",
+        "title": "The Cut",
+        "summary": "Why meaning appears in the join between two shots — the Kuleshov experiment, the invisible rules of continuity, montage as collision, and cutting rate as a pulse.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Soup and the Face",
+            "body": "Around 1918, Soviet filmmaker Lev Kuleshov cut one neutral shot of the actor Ivan Mozzhukhin against three different images: a bowl of soup, a girl in a coffin, a woman on a divan. Audiences praised his hunger, his grief, his desire. The face never changed. They were reading the cut.",
+            "art": "brain"
+          },
+          {
+            "type": "concept",
+            "title": "Meaning Lives in the Join",
+            "body": "A shot on its own is mostly information. Put two shots together and a third thing appears that is in neither of them: a cause, a judgment, a feeling. Editing is not tidying footage. It is where a film makes its claims, and where the audience quietly agrees to make them too.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Kuleshov's original experiment survives on film, so we can check exactly what those audiences saw.",
+            "answer": false,
+            "explain": "The footage is lost. Most of what we know comes secondhand, largely from Vsevolod Pudovkin's 1929 account written years after the fact, and modern replications have produced mixed results. The effect is widely accepted in spirit; the original experiment is not something anyone can re-examine."
+          },
+          {
+            "type": "concept",
+            "title": "Continuity: Hiding the Seam",
+            "body": "Classical editing spends enormous effort making cuts invisible. A match on action carries a movement across the join; screen direction stays consistent; a glance gets answered. The aim is that you never register a change of camera — only a continuous world you are being moved through.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "The 180-Degree Rule",
+            "body": "Draw an imaginary line between two people talking. Keep the camera on one side of it and she stays frame-left facing right, he stays frame-right facing left, cut after cut, and the geography holds. Cross the line and they suddenly appear to face the same way, as if one had turned around.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Mid-argument, an editor cuts to a shot taken from the far side of the axis. What does the audience feel?",
+            "choices": [
+              "A jolt of spatial confusion — the actors seem to have swapped sides",
+              "Nothing; the rule only applies to action sequences",
+              "That time has jumped forward",
+              "Greater intimacy, because the camera is closer"
+            ],
+            "answer": 0,
+            "explain": "Crossing the line flips screen direction, and viewers register the wrongness even when they cannot name it. That is exactly why directors break it on purpose — to make a scene feel like it has come off its hinges."
+          },
+          {
+            "type": "concept",
+            "title": "Eyeline and the Invisible Default",
+            "body": "Shot-reverse-shot is the most common figure in narrative film: her face, his face, her face. It runs on the eyeline match — she looks off-screen, and the next shot shows what someone looking that way would see. You stitch the two into one room without being asked to.",
+            "art": "dialog"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A character glances off-screen left. Cut to a burning house — filmed three months earlier, three hundred miles away. Why does your brain accept it?",
+            "answer": "Because an eyeline is a promise and the cut appears to keep it. Given a look and then a thing, you assume the look landed on the thing. Continuity editing runs on that reflex: space in film is assembled, never found."
+          },
+          {
+            "type": "concept",
+            "title": "Montage: Collision, Not Continuity",
+            "body": "Soviet filmmakers of the 1920s wanted the opposite of invisible. Sergei Eisenstein cut for collision — shots that clash so an idea strikes out of the contact. In Battleship Potemkin (1925), the Odessa Steps sequence stretches a massacre far past real time by hammering fragments together.",
+            "art": "flame"
+          },
+          {
+            "type": "quote",
+            "text": "Montage is an idea that arises from the collision of independent shots — shots even opposite to one another.",
+            "by": "Sergei Eisenstein"
+          },
+          {
+            "type": "concept",
+            "title": "Cutting Rate Is a Pulse",
+            "body": "Average shot length is exactly what it sounds like. Cornell psychologist James Cutting's survey of 150 Hollywood films found averages near 10 seconds in the 1930s falling toward roughly 4 seconds by 2010. Fast cutting does not manufacture tension by itself; it shortens how long you are allowed to look.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A director wants a fight to feel overwhelming rather than legible. Which tool from this lesson fits best?",
+            "choices": [
+              "Cut fast, in fragments, so no shot lasts long enough to read",
+              "Hold one long shot and let the whole action play out",
+              "Match on action at every join",
+              "Answer every glance with an eyeline match"
+            ],
+            "answer": 0,
+            "explain": "Short shots deny you time to assemble the space, which is the sensation of being overwhelmed. A long take does the opposite: it makes violence legible, and often more disturbing. Neither is better filmmaking — they are different claims about what you should feel."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Kuleshov: meaning arises from juxtaposition, not from the shot alone — though the original footage is lost.",
+              "Continuity editing hides the seam with match on action, the 180-degree rule and eyeline matches.",
+              "Shot-reverse-shot is the invisible default of narrative film.",
+              "Montage traditions cut for collision instead of smoothness.",
+              "Cutting rate sets a pulse: average shot lengths have fallen from about 10 seconds to about 4."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did the Kuleshov effect demonstrate?",
+            "back": "That meaning comes from juxtaposition — one neutral face read as hunger, grief or desire depending on the shot cut beside it."
+          },
+          {
+            "front": "What does the 180-degree rule protect?",
+            "back": "Screen direction. Staying on one side of the axis keeps left-right geography stable across cuts; crossing it makes actors seem to swap sides."
+          },
+          {
+            "front": "Why does an eyeline match work?",
+            "back": "A look off-screen followed by an object reads as one seeing the other, so unrelated footage fuses into a single believable space."
+          },
+          {
+            "front": "What is average shot length?",
+            "back": "The mean duration of a film's shots. Hollywood averages fell from near 10 seconds in the 1930s to about 4 seconds by 2010."
+          }
+        ]
+      },
+      {
+        "id": "sound",
+        "title": "Sound",
+        "summary": "The three channels of a soundtrack, the line between the world and the telling, why score reaches you first, and how silence and off-screen sound build what the frame never shows.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Half of What You See",
+            "body": "Turn the sound off during a scene you love and watch it die. Turn the picture off instead and the scene mostly survives. Sound carries far more of a film's feeling than almost anyone notices — and going unnoticed is precisely the condition it needs in order to work.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Three Channels, Three Jobs",
+            "body": "A soundtrack is built from three separable layers: dialogue, effects and music. Each rides its own faders. Dialogue carries information, effects build the world, music tells you how to feel about both. A mixer can raise one and starve another, scene by scene, line by line.",
+            "art": "layers"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In a finished feature, how much of what you hear was actually recorded while the camera was rolling?",
+            "answer": "Often very little. Dialogue is frequently re-recorded later in a booth (ADR). Footsteps, cloth and props are performed to picture by Foley artists — named for Jack Foley at Universal — and rooms get their air and echo added in the mix."
+          },
+          {
+            "type": "concept",
+            "title": "Diegetic and Non-Diegetic",
+            "body": "Ask one question of any sound: could a character hear it? If yes, it is diegetic — the car radio, the gunshot, the rain on the roof. If no, it is non-diegetic — the orchestra swelling behind a kiss, a narrator's voice. Two worlds running at once, and audiences track both effortlessly.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A song playing from a car radio inside the scene counts as non-diegetic music.",
+            "answer": false,
+            "explain": "It is diegetic: the characters can hear it, so it belongs to the world rather than to the telling. The distinction changes who the music is for — a radio characterises the driver, while a score speaks only to you."
+          },
+          {
+            "type": "example",
+            "title": "When the Line Breaks",
+            "body": "In Blazing Saddles (1974), Bart rides across the desert to a sweeping big-band theme — and then rides straight past Count Basie and his orchestra, playing it in the sand. The joke only works because you had already filed the music as non-diegetic. Comedy and horror both love puncturing that membrane.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "The Score Gets There First",
+            "body": "Music reaches you ahead of your reasoning. Two alternating low notes under a swimmer — John Williams's theme for Jaws (1975) — tell you a scene is a hunt while the picture still shows an ordinary afternoon. Score is a film's fastest channel for danger, longing or irony.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A shot shows a woman smiling at a party. Under it, the score plays low, slow strings. What has the film done?",
+            "choices": [
+              "Told you the smile is not what it looks like",
+              "Nothing — music is decoration laid over the real scene",
+              "Made the moment diegetic",
+              "Signalled that a flashback is beginning"
+            ],
+            "answer": 0,
+            "explain": "Score is a claim about how to read an image, and it usually wins: your feeling about a moment arrives before your account of it. 'Music is decoration' is the misconception — swap the strings for a waltz and the identical smile plays as happiness."
+          },
+          {
+            "type": "concept",
+            "title": "Silence Is the Loudest Choice",
+            "body": "Film trains you to expect a constant bed of sound, so taking it away is an act of violence. Stanley Kubrick's 2001: A Space Odyssey (1968) plays its spacewalks with almost nothing but breath, because vacuum carries no sound — and that absence makes one scrape of a helmet enormous.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Building Rooms You Never See",
+            "body": "Sound design draws space beyond the frame: traffic three floors below, a corridor's hard reverb, a door closing somewhere to the left. Reverb alone reports a room's size and hardness. Films buy whole geographies this way without paying for one extra set.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two shots of the same actor's face, identical picture. Under one, a hospital corridor; under the other, distant surf. What changed?",
+            "answer": "The location, the stakes and probably the genre — with no new picture at all. Sound is the cheapest, fastest way to relocate an image, which is why the mix is where a great many films get quietly rewritten."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Dialogue, effects and music are three separate channels, balanced against each other in the mix.",
+              "Diegetic sound belongs to the characters' world; non-diegetic belongs to the telling — and breaking the line is a deliberate pleasure.",
+              "Score arrives ahead of your reasoning and tells you how to read the image.",
+              "Silence registers as an event because film normally runs on a constant bed of sound.",
+              "Off-screen sound and reverb build spaces the frame never shows."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Diegetic or non-diegetic: an orchestra swelling behind a kiss?",
+            "back": "Non-diegetic. No character can hear it, so it belongs to the telling. A radio playing inside the scene would be diegetic."
+          },
+          {
+            "front": "What do Foley artists do?",
+            "back": "Perform footsteps, cloth and prop sounds in sync with the picture on a stage. The craft is named for Jack Foley at Universal."
+          },
+          {
+            "front": "Why is silence powerful in film?",
+            "back": "Films run on a constant bed of sound, so removing it registers as an event — as in the near-silent spacewalks of 2001 (1968)."
+          },
+          {
+            "front": "What does reverb tell an audience?",
+            "back": "The size and hardness of a space. Sound design builds rooms, corridors and streets that the frame never has to show."
+          }
+        ]
+      },
+      {
+        "id": "structure-and-authorship",
+        "title": "Structure and Authorship",
+        "summary": "How films are shaped — three acts and the alternatives — why show-don't-tell is really blocking, whether a director can be called an author, and how to watch a film twice.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Shape, and Who Made It",
+            "body": "By the end of a film you can usually feel whether it was shaped or merely assembled. That shape has conventions, alternatives, and a long argument attached about who is responsible for it. This lesson covers both: how stories get built, and who gets the credit for the building.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "The Three-Act Paradigm",
+            "body": "Setup, confrontation, resolution, hinged on two turning points: an event that launches the problem and a second that forces the ending. Screenwriter Syd Field laid it out with page numbers in Screenplay (1979), and studios have used it as a scheduling tool ever since. It is a convention, not a law.",
+            "art": "pyramid"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Three-act structure is an ancient rule of drama, first set down by Aristotle.",
+            "answer": false,
+            "explain": "Aristotle's Poetics argues that a tragedy needs a beginning, a middle and an end, which is not the same thing. The three-act screenplay paradigm — with turning points landing near specific page counts — is a modern industry convention popularised by Syd Field in 1979."
+          },
+          {
+            "type": "concept",
+            "title": "Other Shapes Are Available",
+            "body": "Kishotenketsu, a four-part structure used across Chinese, Japanese and Korean storytelling, runs introduction, development, twist, reconciliation — the fourth part re-reads the third instead of winning a fight. Films also run on episodic drift, circular repetition, or one long day.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A story ends by revealing a connection that reframes everything, with no antagonist and no confrontation. What is going on?",
+            "choices": [
+              "Kishotenketsu, where a twist is reconciled rather than resolved",
+              "Three-act structure, arriving at its second turning point",
+              "Nothing structural — the film simply has no shape",
+              "A montage sequence"
+            ],
+            "answer": 0,
+            "explain": "Conflict is not the only engine. Kishotenketsu's third part introduces something apparently unrelated, and the fourth makes it cohere. 'It has no structure' is the reflex misreading — unfamiliar shape gets mistaken for absence of shape."
+          },
+          {
+            "type": "concept",
+            "title": "Show, Don't Tell, Means Blocking",
+            "body": "The slogan sounds like a writing-class cliche until you notice it is physical. Who sits and who stands. Who blocks the doorway. Who will not look up from a task while being told bad news. A camera can only photograph behaviour, so a scene's real dialogue is often where people put their bodies.",
+            "art": "eye"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A script says: 'MARA is furious but hiding it.' A camera cannot photograph 'hiding it'. What does the scene actually need?",
+            "answer": "An action that leaks. She restacks plates that are already stacked; she agrees half a second too fast; she takes the chair furthest from him. Give the audience the symptom and let them make the diagnosis — that inference is the pleasure."
+          },
+          {
+            "type": "concept",
+            "title": "The Auteur Argument",
+            "body": "In 1954, Francois Truffaut attacked the French film establishment in Cahiers du cinema and argued that a director's personality is the true subject of a film. Andrew Sarris carried the idea into English as 'auteur theory' in 1962, and it reorganised how films are catalogued, taught and sold.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "But Hundreds of People Made It",
+            "body": "Pauline Kael attacked the idea in 1963 in 'Circles and Squares', pointing out that a feature is written, shot, designed, performed, cut and scored by many hands, most of them uncredited in the argument. Whether the director's vision is the real through-line remains genuinely unsettled.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which statement best describes the state of the auteur debate?",
+            "choices": [
+              "Contested — directorial authorship is a useful lens and a disputed claim at the same time",
+              "Settled in the 1960s: the director is the sole author of a film",
+              "Settled in the 1960s: the screenwriter is the sole author of a film",
+              "Nobody argues about film authorship any more"
+            ],
+            "answer": 0,
+            "explain": "Sarris's case and Kael's rebuttal both survive, and live credit fights over cinematographers, editors and writers keep the question open. Treat 'auteur' as a way of reading a body of work, not as a settled finding about who made what."
+          },
+          {
+            "type": "quote",
+            "text": "The movies are like a machine that generates empathy.",
+            "by": "Roger Ebert"
+          },
+          {
+            "type": "concept",
+            "title": "Watch It Twice",
+            "body": "The first pass belongs to the story; you cannot analyse and be moved in the same breath. On the second pass, pick one channel and follow only it — where the camera stands, where the cuts land, what the score is claiming. One channel per viewing is enough to change how you see everything after.",
+            "art": "lens"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Three-act structure is a durable convention codified by Syd Field in 1979, not a law of drama.",
+              "Traditions like kishotenketsu build stories on recognition rather than conflict.",
+              "Show-don't-tell is physical: blocking and behaviour, because a camera photographs actions, not states.",
+              "The auteur question stays contested — a film carries a director's signature and hundreds of hands.",
+              "Watch once for the story, then again for one craft channel at a time."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Who codified the three-act paradigm for screenwriting?",
+            "back": "Syd Field, in Screenplay (1979): setup, confrontation, resolution, with turning points near set page counts. A convention, not a law."
+          },
+          {
+            "front": "What is kishotenketsu?",
+            "back": "A four-part structure used in Chinese, Japanese and Korean storytelling: introduction, development, twist, reconciliation — no conflict required."
+          },
+          {
+            "front": "Who launched and who attacked the auteur theory?",
+            "back": "Truffaut in Cahiers du cinema (1954), carried into English by Andrew Sarris (1962); Pauline Kael rebutted it in 'Circles and Squares' (1963)."
+          },
+          {
+            "front": "What does 'show, don't tell' mean on a set?",
+            "back": "Blocking and behaviour. A camera records actions, not inner states, so give the audience the symptom and let them make the diagnosis."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "poetry",
+    "title": "How to Read a Poem",
+    "tagline": "The machinery, so a poem stops being a puzzle.",
+    "category": "Literature",
+    "description": "Poems are not riddles with answers hidden at the back. Learn the four systems every poem runs on — sound, image, shape and voice — and the reading habits that make difficult pages open up.",
+    "lessons": [
+      {
+        "id": "sound",
+        "title": "The Ear Goes First",
+        "summary": "Metre as a felt pattern rather than arithmetic, why iambic pentameter fits English, what rhyme and half-rhyme buy, and the quiet structural work of repeated sounds.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Poems Are Instruments",
+            "body": "A poem is a set of instructions for making a noise. Before it means anything, it does something to your mouth and your breath. Every technical term ahead — metre, rhyme, assonance — is only a name for an effect you can already hear, once you agree to say the thing out loud.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "Metre Is a Pattern, Not a Sum",
+            "body": "Metre is a background beat that a line either keeps or breaks. The commonest English foot is the iamb: an unstressed syllable, then a stressed one — a-BOUT, de-STROY, the SUN. Nobody counts while reading. You feel the pattern, then you feel it broken, and the break is where meaning collects.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these words is a natural iamb — unstressed, then stressed?",
+            "choices": [
+              "forget",
+              "table",
+              "careful",
+              "yesterday"
+            ],
+            "answer": 0,
+            "explain": "For-GET rises onto its second syllable. TA-ble and CARE-ful fall the other way — those are trochees — and yesterday has three syllables. Metre is arranged out of stresses English already puts on ordinary words; poets do not invent them."
+          },
+          {
+            "type": "concept",
+            "title": "Five Beats, Just Above Speech",
+            "body": "Iambic pentameter is five iambs: ten syllables, five beats. 'The curfew tolls the knell of parting day' — Thomas Gray, 1751. The line dominates English verse because it sits just above ordinary talk: long enough to hold a complete thought, short enough for a single breath to carry it.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Shakespeare gives King Lear the line 'Never, never, never, never, never.' It is ten syllables of pentameter. Why does it hurt?",
+            "answer": "Because every foot is reversed. Five falling beats where the pattern promised rising ones — the metre collapses in the same motion the man does. Substitution like this is not an error; it is the effect the pattern exists to make possible."
+          },
+          {
+            "type": "concept",
+            "title": "Rhyme, and Rhyme Gone Wrong",
+            "body": "Full rhyme matches the vowel and everything after it: light, night. Half-rhyme misses on purpose — hall and hell, escaped and scooped. Wilfred Owen built 'Strange Meeting' out of such pairs in 1918, and the near-miss leaves every couplet sounding slightly wounded, which was exactly the point.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why would a poet choose half-rhyme over full rhyme?",
+            "choices": [
+              "To keep rhyme's binding while withholding its sense of resolution",
+              "Because half-rhyme is easier, and full rhyme is for skilled poets",
+              "To make the poem impossible to read aloud",
+              "Because half-rhyme makes no audible difference either way"
+            ],
+            "answer": 0,
+            "explain": "Full rhyme lands like a door shutting. Half-rhyme keeps two lines audibly tied but denies the click of closure — useful when the subject itself refuses to resolve, as in Owen's poems from the trenches."
+          },
+          {
+            "type": "concept",
+            "title": "Why Modern Poems Often Refuse Rhyme",
+            "body": "Rhyme organises a line, but it also steers it: you start choosing words that chime rather than words that are true. Much twentieth-century poetry dropped it to get nearer to speech and to stop poems sounding pre-decided. Refusing rhyme is not refusing music — the music moves into rhythm and vowel.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "The Quiet Structural Work",
+            "body": "Alliteration repeats consonants, assonance repeats vowels, and both bind words that grammar keeps apart. Old English verse is built on it: each line yokes two half-lines together by alliterating on the stressed syllables, as Beowulf does. Modern poets use the same glue to make a phrase feel inevitable.",
+            "art": "anchor"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Alliteration and assonance are ornaments — they add music but do no structural work.",
+            "answer": false,
+            "explain": "In Old English verse, alliteration is the structure: it is what holds the two halves of a line together, doing the job rhyme does elsewhere. Even in free verse, repeated sounds group words into units your ear treats as belonging together."
+          },
+          {
+            "type": "concept",
+            "title": "Read It Aloud, Always",
+            "body": "Reading aloud is the fastest diagnostic in poetry. Wherever you stumble, something is happening: a reversed foot, a line break fighting the sentence, a cluster of consonants slowing your mouth. Silent reading skips the evidence. Two minutes out loud beats an hour of staring at the page.",
+            "art": "key"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Metre is a felt pattern; the departures from it carry the meaning.",
+              "Iambic pentameter — five rising beats — sits just above English speech rhythm.",
+              "Half-rhyme binds lines without granting closure; refusing rhyme relocates the music.",
+              "Alliteration and assonance do structural work, not decoration.",
+              "Read aloud: your stumbles mark the places where the poem is doing something."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is an iamb?",
+            "back": "An unstressed syllable followed by a stressed one — for-GET, the SUN. Five in a row make a line of iambic pentameter."
+          },
+          {
+            "front": "Why does English verse favour iambic pentameter?",
+            "back": "It sits just above ordinary speech: long enough to hold a thought, short enough for one breath — 'The curfew tolls the knell of parting day.'"
+          },
+          {
+            "front": "What is half-rhyme?",
+            "back": "A deliberate near-miss, like escaped and scooped. Wilfred Owen built 'Strange Meeting' (1918) from such pairs, so each line sounds wounded."
+          },
+          {
+            "front": "What is the fastest diagnostic for a difficult poem?",
+            "back": "Read it aloud. Wherever you stumble, something is happening — a reversed foot, a break fighting the syntax, a slowed consonant cluster."
+          }
+        ]
+      },
+      {
+        "id": "image-and-figure",
+        "title": "Image and Figure",
+        "summary": "Why the concrete image is poetry's basic unit, how to evaluate a metaphor as a claim, Eliot's objective correlative, and when abstraction earns its place.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Poems Think in Things",
+            "body": "Ask someone what a poem is about and they reach for an abstraction: loss, time, love. Ask a poet how to write one and you get the opposite instruction — put a thing in front of me. Poetry's basic unit is not the idea but the image: something the senses could actually have met.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "The Concrete Image",
+            "body": "An image is a sensory particular: a wet plum, a stopped clock, a coat left on a chair. It works because it arrives before interpretation — you see it first, then decide what it means. That order is the entire trick, and reversing it is the commonest way a poem dies on the page.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which line is doing the work of a concrete image?",
+            "choices": [
+              "Her coat still hangs on the back of the door",
+              "She was overwhelmed by profound grief",
+              "Loss is the hardest of all the emotions",
+              "Sorrow filled the abstract spaces of memory"
+            ],
+            "answer": 0,
+            "explain": "Only the first hands your senses something to meet. The others name a feeling and ask you to take it on trust — they give the conclusion and skip the evidence, which is why they move nobody, however sincere the sentiment behind them."
+          },
+          {
+            "type": "concept",
+            "title": "Metaphor Makes a Claim",
+            "body": "A metaphor asserts that one thing is another. I. A. Richards, in 1936, named the halves: the tenor is what you are talking about, the vehicle is what you compare it to. Naming them makes a metaphor arguable — you can ask what the comparison imports, and what it quietly leaves out.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Take the metaphor 'grief is a house you keep walking through.' What does it claim, and what does it hide?",
+            "answer": "It claims grief is a place you move around inside, with rooms, habits and a door — not a state that simply passes. It hides ambush: a house does not jump you in a supermarket. Read any metaphor by asking what it brings and what it must leave out."
+          },
+          {
+            "type": "concept",
+            "title": "The Objective Correlative",
+            "body": "T. S. Eliot's phrase, from his 1919 essay on Hamlet, names the technique behind good imagery. Rather than stating an emotion, you find the situation and objects that will produce it in a reader. Get the objects right and the feeling arrives unstated — and, usefully, unarguable.",
+            "art": "target"
+          },
+          {
+            "type": "quote",
+            "text": "The only way of expressing emotion in the form of art is by finding an 'objective correlative'; in other words, a set of objects, a situation, a chain of events which shall be the formula of that particular emotion.",
+            "by": "T. S. Eliot, 'Hamlet and His Problems' (1919)"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The objective correlative is a rule forbidding a poem from ever naming an emotion directly.",
+            "answer": false,
+            "explain": "It describes how emotion gets transmitted; it is not a prohibition. Eliot's claim is that stating a feeling does not produce it, so find the objects that do. Plenty of strong poems name feelings — usually after earning the right with something you can see."
+          },
+          {
+            "type": "concept",
+            "title": "No Ideas but in Things",
+            "body": "The imagist rules published in 1913 demanded direct treatment of the thing and not one word that fails to contribute. Ezra Pound's 'In a Station of the Metro' is two lines long: faces in a crowd, petals on a wet black bough. William Carlos Williams later put the whole programme in five words — no ideas but in things.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "When Abstraction Earns Its Place",
+            "body": "Abstractions usually weaken a poem because they hand you a verdict instead of evidence. But a bare abstract line can be devastating once the poem has paid for it in images: the statement then reads as a conclusion drawn in front of you, rather than an assertion dropped on you.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A poem spends twelve lines in a hospital corridor, then ends: 'This is what love costs.' Why can that abstraction work?",
+            "choices": [
+              "The images came first, so the statement reads as a conclusion you helped reach",
+              "Because an abstraction always makes a stronger ending than an image",
+              "Because naming the emotion is what tells the reader the poem's subject",
+              "It cannot work — abstraction in poetry is always a flaw"
+            ],
+            "answer": 0,
+            "explain": "Position and payment are everything: the corridor did the arguing, and the last line merely signs it. 'Abstraction is always a flaw' is the absolutist misreading of the imagist rule, and it is the version most often taught."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The image is poetry's unit — a sensory particular that arrives before interpretation.",
+              "A metaphor is a claim about likeness; ask what it imports and what it conceals.",
+              "Eliot's objective correlative: find the objects that produce a feeling rather than naming it.",
+              "Imagism, 1913 — direct treatment of the thing, and no ideas but in things.",
+              "Abstraction can land, but usually only after images have paid for it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What are a metaphor's tenor and vehicle?",
+            "back": "I. A. Richards's terms (1936): the tenor is the subject, the vehicle is what it is compared to. Naming both lets you evaluate the claim."
+          },
+          {
+            "front": "Define the objective correlative.",
+            "back": "Eliot's 1919 term for the objects, situation or events that produce an emotion in a reader, instead of the poem naming the feeling outright."
+          },
+          {
+            "front": "What did the imagists demand in 1913?",
+            "back": "Direct treatment of the thing and no wasted word. Williams's later version: no ideas but in things."
+          },
+          {
+            "front": "When does abstraction work in a poem?",
+            "back": "When images have already earned it, so the abstract line reads as a conclusion you reached rather than a verdict handed down."
+          }
+        ]
+      },
+      {
+        "id": "shape",
+        "title": "The Shape on the Page",
+        "summary": "The line break as poetry's one unique tool, the sonnet's scheduled turn, free verse as different constraints, and the ghazal, haiku and villanelle on their own terms.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The One Tool Only Poetry Has",
+            "body": "Prose has sentences, paragraphs and chapters. Poetry has all of those plus one thing prose cannot use: the line. Where a line ends is a decision no rule of grammar makes for you, and it is the most reliable place to look when you want to know what a poem is actually doing.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "The Line Break Is a Second Voice",
+            "body": "A poem runs two systems at once: the sentence, which keeps going, and the line, which stops. When they agree, the line is end-stopped and the poem feels settled. When they disagree — enjambment — the sentence spills over the break and you get a half-beat of one meaning before the next line revises it.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Read this break slowly: 'I told him I was leaving / the room.' What just happened to you?",
+            "answer": "For a fraction of a second you read a marriage ending; then line two shrinks it to a doorway. That gap is enjambment at work — the line offers a provisional meaning and the sentence takes it back. Prose has no way to stage that hesitation."
+          },
+          {
+            "type": "concept",
+            "title": "The Sonnet's Hinge",
+            "body": "Fourteen lines with a turn built into them. In the Italian form, eight lines pose a problem and six respond, pivoting at line nine. The English form runs three quatrains and a closing couplet that can snap the argument shut. The sonnet survives because it is an argument with a scheduled change of mind.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the volta in a sonnet?",
+            "choices": [
+              "The turn — where the poem changes direction or reframes its problem",
+              "The closing rhyming couplet, in every sonnet form",
+              "The metre a sonnet must be written in",
+              "The opening line, which states the argument"
+            ],
+            "answer": 0,
+            "explain": "Volta means turn. In the Italian sonnet it usually falls at line nine, between octave and sestet; in the English form the final couplet often does the turning. Different placements, one machine: set up a problem, then change your mind in public."
+          },
+          {
+            "type": "concept",
+            "title": "Free Verse Has Rules Too",
+            "body": "Free verse abandons regular metre and rhyme, not shape. Walt Whitman's Leaves of Grass (1855) organises itself by long breath-units and repetition, and the imagists urged composing in the sequence of the musical phrase rather than of a metronome. The constraints move to line, cadence and syntax.",
+            "art": "wave"
+          },
+          {
+            "type": "quote",
+            "text": "Writing free verse is like playing tennis with the net down.",
+            "by": "Robert Frost"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Frost's jibe settles the matter: free verse is just poetry with the difficulty removed.",
+            "answer": false,
+            "explain": "It is a memorable argument from a poet with a stake in metre, not a verdict. Free verse relocates difficulty into line breaks, cadence and structure, and what it gains or gives up remains a live disagreement among working poets."
+          },
+          {
+            "type": "concept",
+            "title": "The Ghazal",
+            "body": "A ghazal is built from autonomous couplets, each closing on a repeated refrain, the radif, with a rhyme, the qafia, just before it. The opening couplet rhymes both its lines, and the poet often signs the final one with a pen name. It thrives across Persian, Urdu, Arabic and Turkish poetry, and in song.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "Haiku, on Its Own Terms",
+            "body": "Japanese haiku counts on — sound units, not English syllables — in a 5-7-5 shape, and turns on a season word, the kigo, and a cutting word, the kireji, that pivots the poem. Poets write haiku today all over the world; it is a working practice, not an antique.",
+            "art": "seed"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why do many English-language haiku run to fewer than seventeen syllables?",
+            "choices": [
+              "Japanese counts on, which are shorter units than English syllables",
+              "Because English-language poets are careless with the form",
+              "Because haiku has no rules of length at all",
+              "Because seventeen syllables will not fit on a single line"
+            ],
+            "answer": 0,
+            "explain": "An on is closer to a mora: the word haiku is three on but two syllables in English. A strict 5-7-5 in English therefore packs in noticeably more material than the Japanese form holds, so many poets chase the brevity and the seasonal pivot instead of the count."
+          },
+          {
+            "type": "concept",
+            "title": "The Villanelle",
+            "body": "Nineteen lines: five tercets and a quatrain, driven by two refrains that return in fixed order and land together at the close. Despite the antique feel, the fixed form was largely a nineteenth-century construction modelled on one 1606 poem by Jean Passerat. Dylan Thomas (1951) and Elizabeth Bishop (1976) made it modern.",
+            "art": "hourglass"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The line break is poetry's unique tool; enjambment stages a meaning and then revises it.",
+              "The sonnet works because a turn — the volta — is built into its schedule.",
+              "Free verse trades metre for other constraints: cadence, line, repetition.",
+              "The ghazal, haiku and villanelle are living forms with their own logics, not decorative shapes.",
+              "Knowing a poem's form tells you where to expect its pressure to fall."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is enjambment?",
+            "back": "A sentence running past the end of its line, so the line offers one meaning before the next revises it. End-stopped lines do the opposite."
+          },
+          {
+            "front": "What is a sonnet's volta?",
+            "back": "The turn. Italian sonnets pivot at line nine, between octave and sestet; English sonnets often turn in the closing couplet."
+          },
+          {
+            "front": "Name three features of a ghazal.",
+            "back": "Autonomous couplets; a repeated refrain (radif) with a rhyme (qafia) before it; a closing couplet often carrying the poet's pen name."
+          },
+          {
+            "front": "How long is a villanelle, and what drives it?",
+            "back": "Nineteen lines — five tercets and a quatrain — driven by two refrains that recur in fixed order and pair up at the end."
+          }
+        ]
+      },
+      {
+        "id": "reading-well",
+        "title": "Reading Well",
+        "summary": "Literal sense before figurative, who is speaking and to whom, ambiguity as a feature, the contested intentional fallacy, and how to build a reading habit that sticks.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Most Difficulty Is Local",
+            "body": "A poem that seems locked is usually not hiding a secret. It has an inverted sentence, a word used in an older sense, or a pronoun you handed to the wrong person. Difficulty in poetry is mostly local and mechanical, and it dissolves under ordinary patience rather than special insight.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Paraphrase First",
+            "body": "Before meaning, get the literal sense. Find the main verb. Put the sentence back into normal order. Look up every word you only half-know. Then say what happens in flat prose. If you cannot, you do not yet have a deep poem on your hands — you have an unparsed sentence.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Paradise Lost opens 'Of Man's first disobedience, and the fruit / Of that forbidden tree...'. Where is the main verb?",
+            "answer": "Six lines down: 'Sing Heav'nly Muse.' Milton, in 1667, front-loads the entire subject matter before the imperative that governs it. Locate that verb and the sentence turns ordinary — the difficulty was word order, not depth."
+          },
+          {
+            "type": "concept",
+            "title": "Then Ask What It Compares",
+            "body": "With the literal sense in hand, the figurative work becomes visible: which things are being likened, and what does the likeness buy? Doing this in the other order — hunting symbols before you know who is doing what to whom — is how readers invent meanings the poem never made.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You hit a line you cannot follow. What is the first move?",
+            "choices": [
+              "Work out the literal sense — subject, verb, word meanings",
+              "Decide what the poem symbolises",
+              "Look up what the poet said the poem was about",
+              "Assume the line is meant to be incomprehensible"
+            ],
+            "answer": 0,
+            "explain": "Paraphrase first, every time. Symbol-hunting before parsing produces confident nonsense, and reaching straight for the poet's stated intention skips the poem itself — a move with a name and a long argument attached to it."
+          },
+          {
+            "type": "concept",
+            "title": "Who Speaks, and to Whom",
+            "body": "The 'I' of a poem is a speaker, not a sworn statement by the poet. Robert Browning's 'My Last Duchess' (1842) is spoken by a duke calmly admitting he had his wife killed — to an envoy arranging his next marriage. Always ask who is talking, to whom, and with what interest.",
+            "art": "dialog"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When a poem says 'I', it is safe to assume the poet is speaking in their own voice.",
+            "answer": false,
+            "explain": "The speaker is a construction, sometimes a character with motives the poet does not share — Browning's duke, for instance. Even in openly autobiographical poems the 'I' is selected and shaped. Asking who speaks beats assuming."
+          },
+          {
+            "type": "concept",
+            "title": "Ambiguity Is Not a Fault",
+            "body": "William Empson's Seven Types of Ambiguity (1930) argued that a word or line holding several meanings at once is often the source of a poem's power rather than a defect to be cleared up. When two readings both genuinely hold, the honest move is to keep both — a poem can mean two things on purpose.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "The Intentional Fallacy",
+            "body": "In 1946, W. K. Wimsatt and Monroe Beardsley argued that an author's intention is neither reliably available nor decisive: the poem is what is on the page. The position is contested — historicist and reader-response critics push back hard — but it frees you to read what the words do.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A poet says her poem is 'about her father'. A reader argues it is at least as much about work. Who is right?",
+            "choices": [
+              "The question stays open — the poem's words are evidence her statement cannot overrule",
+              "The poet, always: she wrote it, so she decides what it means",
+              "The reader, always: a poet's intention is irrelevant to meaning",
+              "Neither — poems do not have meanings that can be argued about"
+            ],
+            "answer": 0,
+            "explain": "Wimsatt and Beardsley say intention does not settle it; their critics reply that biography and context are real evidence. The defensible position is that a poet's statement is one piece of evidence among several, and the text remains the strongest."
+          },
+          {
+            "type": "concept",
+            "title": "Build the Habit",
+            "body": "One poem a day, read twice — once silently, once aloud. Note the line you could not shake. Come back to the same poem a week later and see what has changed. Reading poetry is a skill of attention, and attention improves the way any trained thing does: short sessions, often repeated.",
+            "art": "seed"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Get the literal sense first; most difficulty is syntax and vocabulary, not depth.",
+              "Ask who is speaking, to whom, and with what interest — the 'I' is a construction.",
+              "Ambiguity can be the point; when two readings both hold, keep both.",
+              "The intentional fallacy is contested, but a poet's statement is evidence, not a verdict.",
+              "A poem a day, read twice, beats an occasional heroic effort."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the first thing to do with a difficult poem?",
+            "back": "Paraphrase it. Find the main verb, restore normal word order, look up half-known words, and say what happens in flat prose."
+          },
+          {
+            "front": "Why separate the speaker from the poet?",
+            "back": "The 'I' is a construction with its own motives — Browning's duke in 'My Last Duchess' (1842) confesses to murder while charming an envoy."
+          },
+          {
+            "front": "What did Empson argue in 1930?",
+            "back": "In Seven Types of Ambiguity, that several simultaneous meanings are often a poem's power rather than a defect to be resolved."
+          },
+          {
+            "front": "What is the intentional fallacy?",
+            "back": "Wimsatt and Beardsley's 1946 claim that authorial intention is neither available nor decisive. Contested — but it keeps you on the text."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "western-music-history",
+    "title": "The Story of Western Music",
+    "tagline": "A thousand years of composers solving problems.",
+    "category": "Music",
+    "description": "European art music told as a chain of practical problems: how to write a melody down, how to make many voices agree, how to build an argument out of keys. From a monk ruling lines on parchment to a Paris theatre in uproar in 1913.",
+    "lessons": [
+      {
+        "id": "notation-and-polyphony",
+        "title": "Before the Concert Hall",
+        "summary": "How ruled lines on parchment turned chant into an art of many voices, and turned worship into repertoire.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Monk Who Drew a Line",
+            "body": "Around 1025 a Benedictine monk named Guido d'Arezzo did something small and irreversible: he ruled horizontal lines on parchment and set notes on them. Pitch now had an address you could see. Everything the West built afterwards, from fugues to symphonies to opera, sits on that grid.",
+            "art": "book"
+          },
+          {
+            "type": "concept",
+            "title": "Chant Was a Feat of Memory",
+            "body": "Plainchant is one melodic line, sung in Latin, unaccompanied, with no fixed beat. There were thousands of chants, each tied to its day in the church year. Before notation could pin pitch down, a singer needed roughly a decade to hold the repertoire in his head, learned entirely by ear from another singer.",
+            "art": "path"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Chant books existed before Guido. If the marks above the words were not pitches, what were they?",
+            "answer": "Neumes: squiggles showing the shape of a melody you already knew. Rise here, dip there, linger on this syllable. They jogged the memory but never told you how far to move, so you could not learn an unfamiliar chant from the page."
+          },
+          {
+            "type": "concept",
+            "title": "Pitch Gets an Address",
+            "body": "Guido's staff tied each line and space to a specific pitch, with a letter clef marking the reference point. He also taught singers the syllables ut, re, mi, fa, sol, la, taken from a hymn whose lines each began one step higher. He claimed a boy could now learn an unknown chant in days.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did the staff change what music could be?",
+            "choices": [
+              "A melody could be reproduced exactly by someone who had never heard it",
+              "It recorded rhythm precisely for the first time",
+              "It introduced harmony into the church",
+              "It fixed a standard concert pitch across Europe"
+            ],
+            "answer": 0,
+            "explain": "Rhythm stayed vague for another two centuries. Harmony came from singers' practice, not from the staff. Standard pitch is a much later agreement. What the staff gave you was exact transmission across distance and time."
+          },
+          {
+            "type": "example",
+            "title": "Two Voices, Then Four",
+            "body": "Harmony began as an addition to chant. A treatise of about 900, Musica enchiriadis, describes organum: a second voice shadowing the chant a fourth or fifth away. By around 1200, at Notre-Dame in Paris, Pérotin sets Viderunt omnes for four voices, one holding a single chant syllable for minutes while three others move above it.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Western harmony started as an ornament attached to existing chant rather than as an invention from scratch.",
+            "answer": true,
+            "explain": "Organum adds voices to a chant that is already there. The inherited melody sits inside the texture as the tenor, the voice that holds. Harmony grew out of decorating something the church already sang."
+          },
+          {
+            "type": "concept",
+            "title": "If Voices Move Apart, Who Counts?",
+            "body": "Once four singers move independently, somebody has to specify when. Notre-Dame composers used rhythmic modes, fixed long-short patterns. By the 1320s Philippe de Vitry's Ars nova gave notes durations of their own, so rhythm could be written as freely as pitch. Notation had to grow to keep up with what it had made possible.",
+            "art": "clock"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why do historians point to Guillaume de Machaut's Messe de Nostre Dame, from around the 1360s, as a turning point?",
+            "answer": "It is the earliest surviving setting of the complete Mass Ordinary by one identifiable composer. A single named mind now shaped an hour of liturgy as one deliberate work, rather than a collection assembled over generations."
+          },
+          {
+            "type": "example",
+            "title": "The Mass That Supposedly Saved Music",
+            "body": "The Council of Trent, meeting from 1545 to 1563, worried that dense polyphony buried the sacred words. A famous story says Palestrina's Missa Papae Marcelli, published in 1567, was sung to the cardinals and persuaded them to spare polyphony. Historians treat this as a legend that grew a century later; the evidence is thin.",
+            "art": "shield"
+          },
+          {
+            "type": "concept",
+            "title": "Music Becomes Something You Own",
+            "body": "In Venice in 1501 Ottaviano Petrucci printed the Odhecaton, the first book of polyphonic music produced with movable type. Music could now be bought, shipped and collected. Josquin des Prez, who died in 1521, became something new: a composer with a reputation and a market beyond the church that paid him.",
+            "art": "coin"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Guido d'Arezzo's staff, around 1025, gave pitch a visible address and made exact transmission possible.",
+              "Harmony grew by adding voices to existing chant, from parallel organum to Pérotin's four-voice works at Notre-Dame.",
+              "Independent voices forced rhythm to be notated too, from the rhythmic modes to Vitry's Ars nova of the 1320s.",
+              "Machaut's Messe de Nostre Dame is the first complete Mass Ordinary by one named composer.",
+              "Printing from 1501 turned music into a portable object and the composer into a public figure."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Who fixed pitch to ruled lines, and roughly when?",
+            "back": "Guido d'Arezzo, around 1025: a staff with a letter clef, plus the singing syllables ut, re, mi, fa, sol, la."
+          },
+          {
+            "front": "What is organum?",
+            "back": "Early polyphony: one or more voices added to an existing chant, at first shadowing it a fourth or fifth away."
+          },
+          {
+            "front": "Why is Machaut's Messe de Nostre Dame a landmark?",
+            "back": "It is the earliest surviving complete Mass Ordinary by a single identifiable composer, from around the 1360s."
+          },
+          {
+            "front": "What did Petrucci print in Venice in 1501?",
+            "back": "The Odhecaton, the first book of polyphonic music set in movable type. Music became a purchasable object."
+          }
+        ]
+      },
+      {
+        "id": "continuo-to-sonata",
+        "title": "Bass Lines and Blueprints",
+        "summary": "Baroque composers built harmony upward from the bass and invented opera; Classical composers turned key relationships into drama.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Florence, 1600: Words First",
+            "body": "A circle of Florentine intellectuals, the Camerata, complained that polyphony drowned the poetry, with four voices singing different words at once. Their fix was one singer on top and a supporting bass underneath. Jacopo Peri's Euridice was staged in 1600; seven years later Monteverdi's L'Orfeo showed what the new form could carry.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "Basso Continuo: Chord Shorthand",
+            "body": "A Baroque score often gives only a bass line with numbers underneath it. A keyboard or lute player reads the figures and improvises the chords above, choosing voicing, spacing and ornament. Harmony becomes a moving background; melody becomes the thing you follow.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What problem was basso continuo built to solve?",
+            "choices": [
+              "Letting a single voice be heard clearly over a harmonic support",
+              "Making music loud enough for large public halls",
+              "Giving the orchestra a conductor to follow",
+              "Replacing written notation with pure improvisation"
+            ],
+            "answer": 0,
+            "explain": "The Camerata's complaint was that words were lost inside polyphony. Continuo puts one voice in the clear and hands the harmony to a player reading figures: improvisation inside a written frame, not instead of one."
+          },
+          {
+            "type": "concept",
+            "title": "Home Key and Away",
+            "body": "Out of this bass-driven writing came tonality: major and minor keys with a tonic that feels like home, cadences that land, and modulation that carries you elsewhere and back. Music gains something chant never had, a sense of direction, departure and arrival you can feel without being told.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In a Baroque continuo part, every chord is written out note for note, leaving the player nothing to decide.",
+            "answer": false,
+            "explain": "You get a bass line and figures, and you build the chords yourself. Two harpsichordists realising the same page produce noticeably different music, and both are playing what is written."
+          },
+          {
+            "type": "example",
+            "title": "Bach's Twenty-Four Keys, Twice",
+            "body": "Johann Sebastian Bach finished the first book of The Well-Tempered Clavier in 1722: a prelude and fugue in every major and minor key, twenty-four pairs of them. He did the whole thing again in 1742. The project was partly a demonstration, proof that a keyboard could be tuned to play in all of them.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "Well-Tempered Is Not Equal-Tempered",
+            "body": "Equal temperament makes all twelve semitones identical, so every key sounds the same apart from height. A well temperament makes every key usable while leaving each with its own colour, some brighter, some rougher. Which tuning Bach actually wanted is still argued over; his title names the family, not the recipe.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Well-tempered means that:",
+            "choices": [
+              "All twenty-four keys sound identical apart from pitch height",
+              "All twenty-four keys are playable, but each keeps a slightly different character",
+              "The keyboard is tuned to A at 440 hertz",
+              "Only the twelve major keys are usable"
+            ],
+            "answer": 1,
+            "explain": "Identical keys describe equal temperament, which became standard much later. A at 440 is a twentieth-century agreement. Bach's title claims usability across all keys, not sameness between them."
+          },
+          {
+            "type": "example",
+            "title": "Counterpoint's Summit, Then Silence",
+            "body": "A fugue states a subject, answers it a fifth away, then stacks entries until the same idea is sounding at several different moments at once. Bach pushed this furthest in The Art of Fugue, left unfinished at his death in 1750. In his own lifetime he was known mainly as an organist; the revival waited for Mendelssohn's 1829 performance of the St Matthew Passion.",
+            "art": "mountain"
+          },
+          {
+            "type": "quote",
+            "text": "I was cut off from the world, there was no one in my vicinity to confuse or torment me, and so I was forced to become original.",
+            "by": "Joseph Haydn"
+          },
+          {
+            "type": "concept",
+            "title": "Sonata Form as an Argument",
+            "body": "The Classical first movement works like a case being argued. An exposition sets out two ideas in two different keys, a conflict between home and elsewhere. A development pulls them apart and roves restlessly through keys. A recapitulation brings both back in the home key, so the disagreement is settled by arrival.",
+            "art": "bridge"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If sonata form is such a clear blueprint, why did nobody in Haydn's day call it that?",
+            "answer": "Because it was a habit long before it was a rule. Theorists codified the term in the 1840s, notably Adolf Bernhard Marx, describing patterns drawn out of finished music and then teaching that description back to students as a recipe."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Basso continuo, a bass line with figures, let one voice carry the words over improvised harmony, and made opera workable.",
+              "Tonality gave music a home key, so departure and return became audible drama.",
+              "Well-tempered means every key is usable with its own colour, not that all keys sound identical.",
+              "Bach carried counterpoint to its limit and spent decades as a specialist's name before the 1829 revival.",
+              "Sonata form stages two key areas as conflict resolved by recapitulation, and was named long after Haydn and Mozart used it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does a figured bass give the player?",
+            "back": "A bass line with numbers showing intervals above it. The player improvises the actual chords, voicing and ornaments."
+          },
+          {
+            "front": "How many preludes and fugues in each book of The Well-Tempered Clavier?",
+            "back": "Twenty-four, one in every major and minor key. Book I dates from 1722, Book II from 1742."
+          },
+          {
+            "front": "Well temperament versus equal temperament?",
+            "back": "Equal makes every key identical; well temperament makes every key usable while keeping distinct colours. Bach's exact tuning is still debated."
+          },
+          {
+            "front": "The three sections of sonata form?",
+            "back": "Exposition (two ideas in two keys), development (unstable and roving), recapitulation (both ideas returned in the home key)."
+          }
+        ]
+      },
+      {
+        "id": "romantic-expansion",
+        "title": "The Romantic Expansion",
+        "summary": "Beethoven strains the Classical frame until it breaks, and the century that follows fills the hall with stories, nations and ever more players.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Symphony That Outgrew Its Frame",
+            "body": "In 1804 Beethoven finished his Third Symphony. It ran close to fifty minutes, roughly double a typical Haydn symphony, and opened with two blunt chords instead of a graceful introduction. Early listeners complained it was exhausting. The scale of what a symphony could be had just changed.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Beethoven Works From a Seed",
+            "body": "Beethoven kept the Classical forms and loaded them past their design limits. The Fifth Symphony, premiered in 1808, grows most of its first movement from a four-note figure. In the Ninth, finished in 1824, he does what no major symphony had done and brings soloists and a chorus into the finale.",
+            "art": "seed"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Beethoven's Third Symphony still carries its original dedication to Napoleon Bonaparte.",
+            "answer": false,
+            "explain": "His pupil Ferdinand Ries recalled that when news arrived in 1804 that Napoleon had declared himself Emperor, Beethoven tore at the title page. It appeared in 1806 as Sinfonia eroica, composed to celebrate the memory of a great man."
+          },
+          {
+            "type": "concept",
+            "title": "Music That Tells You What It Is About",
+            "body": "Programme music asks the listener to follow a story. Berlioz handed out a printed scenario for his Symphonie fantastique in 1830, complete with an opium dream and a march to the scaffold, and a melody called the idée fixe returns in every movement to stand for the beloved. Liszt later coined the term symphonic poem for single-movement works of this kind.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "An idée fixe, as Berlioz used the term, is:",
+            "choices": [
+              "A recurring melody that stands for a person or an idea",
+              "A repeated bass pattern under changing harmony",
+              "A tempo held rigidly through a whole movement",
+              "An obsession with a single key"
+            ],
+            "answer": 0,
+            "explain": "The repeated bass pattern is a ground bass or ostinato, a much older and different device. Berlioz's idée fixe is thematic and dramatic: the same tune returns, transformed by whatever the story has done to it."
+          },
+          {
+            "type": "example",
+            "title": "Two Ways to Build an Opera",
+            "body": "Wagner and Verdi were both born in 1813 and solved opera in opposite directions. Wagner wrote continuous music with no seams, threaded with leitmotifs, and staged Der Ring des Nibelungen complete at Bayreuth in 1876, about fifteen hours across four evenings. Verdi kept separable numbers and human-sized melody: Rigoletto in 1851, La traviata in 1853, Otello in 1887.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "The Chord That Would Not Resolve",
+            "body": "Tristan und Isolde, first staged in 1865, opens with a chord that leans toward a resolution and then slips away from it, again and again, for hours. Wagner makes unresolved harmony the drama itself. Later composers pointed back at that opening as the moment tonality's floor began to give way.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Wagner wanted a Gesamtkunstwerk, a total work of art. What did that mean in practice?",
+            "answer": "Music, poetry and staging under one hand. He wrote his own librettos and built a theatre at Bayreuth, opened in 1876, with the orchestra sunk out of sight and the auditorium darkened so nothing in the room competed with the stage."
+          },
+          {
+            "type": "concept",
+            "title": "Folk Song Enters the Concert Hall",
+            "body": "As nations formed, composers gave them a concert-hall voice. Smetana wrote Má vlast between 1874 and 1879; in Russia a group known as The Five built on Orthodox chant and folk material; Sibelius wrote Finlandia in 1899. From 1905 Béla Bartók and Zoltán Kodály carried phonographs into villages and recorded thousands of peasant melodies.",
+            "art": "mirror"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did Bartók and Kodály's field recordings matter more than earlier written collections of folk tunes?",
+            "choices": [
+              "They captured songs as villagers actually sang them, not as city arrangers imagined them",
+              "They were the first written record of any folk melody",
+              "They proved folk music was older than art music",
+              "They were the first sound recordings ever made"
+            ],
+            "answer": 0,
+            "explain": "Earlier collectors wrote tunes down by ear and tidied them into piano-friendly shapes. A phonograph captures the scale, ornament and rhythm actually used, including everything that will not fit on a keyboard."
+          },
+          {
+            "type": "concept",
+            "title": "The Orchestra Swells",
+            "body": "Beethoven's symphonies wanted perhaps sixty players. Berlioz's Requiem of 1837 adds four brass groups at the corners of the church. Wagner had new instruments built for the Ring. Mahler's Eighth Symphony, premiered in Munich in 1910, involved around a thousand performers, and needed a hall big enough to sell that many seats.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Mahler chose the nickname Symphony of a Thousand for his Eighth.",
+            "answer": false,
+            "explain": "The impresario Emil Gutmann coined it to sell tickets for the 1910 Munich premiere. Mahler disliked the label, and it attached itself to the piece anyway."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Beethoven kept Classical forms and strained them: a fifty-minute Third, a four-note cell, a chorus in the Ninth.",
+              "Programme music gave listeners a story, and Berlioz's idée fixe returns the way a character would.",
+              "Wagner built continuous drama with leitmotifs and his own theatre; Verdi kept melody and separable numbers.",
+              "Nationalist composers brought folk material inside, and from 1905 Bartók and Kodály recorded it in the field.",
+              "The orchestra grew from roughly sixty players to the thousand-strong premiere of Mahler's Eighth in 1910."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What happened to the Eroica's dedication?",
+            "back": "Beethoven struck out Napoleon's name in 1804 after he crowned himself Emperor. It was published in 1806 in memory of a great man."
+          },
+          {
+            "front": "What is an idée fixe?",
+            "back": "Berlioz's recurring theme in the Symphonie fantastique (1830), standing for the beloved and transformed as the programme's story unfolds."
+          },
+          {
+            "front": "Wagner and Verdi: the core difference?",
+            "back": "Wagner writes continuous music woven from leitmotifs; Verdi keeps separable numbers and singable melody. Both were born in 1813."
+          },
+          {
+            "front": "How big was Mahler's Eighth at its premiere?",
+            "back": "Around a thousand performers, Munich, 1910. The nickname Symphony of a Thousand came from the promoter, not from Mahler."
+          }
+        ]
+      },
+      {
+        "id": "the-modern-rupture",
+        "title": "The Modern Rupture",
+        "summary": "Tonality loosens, then breaks; composers propose replacements; and recording quietly redefines what music is for.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Paris, 29 May 1913",
+            "body": "The Ballets Russes opened Stravinsky's Le Sacre du printemps at the Théâtre des Champs-Élysées, with Nijinsky's choreography and Pierre Monteux conducting. The score hammers irregular accents over grinding chords, and the dancers stamped instead of floating. The house erupted, and Monteux kept the orchestra playing.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "What Actually Happened That Night",
+            "body": "The riot is one of the best-known stories in music and one of the least reliable. Most of the vivid accounts were written years later by people with reputations at stake, and they contradict each other. Historians still argue how much of the jeering was aimed at Nijinsky's choreography rather than the score, and how far the disorder actually went.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Historians agree that the 1913 audience was rioting specifically against Stravinsky's music.",
+            "answer": false,
+            "explain": "They do not agree. The main eyewitness accounts were set down long afterwards and conflict with one another. The choreography, the rival factions in the hall and decades of retelling all shaped the story we inherited."
+          },
+          {
+            "type": "concept",
+            "title": "Debussy Loosens the Rules",
+            "body": "Debussy's Prélude à l'après-midi d'un faune, from 1894, opens with a solo flute sliding across a tritone and then declines for a long while to say what key you are in. He uses whole-tone and modal scales and parallel chords, valuing a chord for its colour rather than for where it is obliged to go next.",
+            "art": "wave"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Debussy's central harmonic move was to:",
+            "choices": [
+              "Abandon melody in favour of pure texture",
+              "Treat chords as colours rather than as steps toward a resolution",
+              "Write the first twelve-tone rows",
+              "Return to strict Baroque counterpoint"
+            ],
+            "answer": 1,
+            "explain": "His melodies are memorable, and the faun's flute line is famous on its own. What changed is the job harmony does: a chord gets chosen for how it sounds, not for the obligation it creates."
+          },
+          {
+            "type": "concept",
+            "title": "Schoenberg's Radical Fix",
+            "body": "If no note is home any more, why keep pretending one is? Around 1921 Arnold Schoenberg worked out a method: order all twelve pitches into a row, use every one before repeating any, and generate the piece by transposing, inverting and reversing that row. The first published works using it appeared in 1923.",
+            "art": "orbit"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why is twelve-tone music often described as the answer to a question audiences never asked?",
+            "answer": "It solves a composer's problem, how to organise music once tonality's gravity is gone, using a rule listeners cannot hear directly. A century on it remains a specialist language, admired more often than loved. Whether that is failure or simply a hard idiom is still argued."
+          },
+          {
+            "type": "quote",
+            "text": "I heard, and I wrote what I heard. I am the vessel through which Le Sacre passed.",
+            "by": "Igor Stravinsky"
+          },
+          {
+            "type": "concept",
+            "title": "Minimalism Answers Back",
+            "body": "In the 1960s came a counter-move: bring back pulse and plain harmony, and find the complexity in repetition. Steve Reich's Piano Phase, from 1967, has two players start in unison and lets one drift ahead, so a single figure grinds slowly out of alignment and back. Philip Glass's Einstein on the Beach, from 1976, runs about four and a half hours with no interval.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In Reich's phase music, what produces the shifting patterns?",
+            "choices": [
+              "Two identical parts played at fractionally different speeds until they realign",
+              "One instrument gradually fading beneath another",
+              "Modulating from one key to a distant one",
+              "Stacking several unrelated melodies at once"
+            ],
+            "answer": 0,
+            "explain": "Phasing needs no new material at all. One player nudges ahead a note at a time, so a single figure is heard against itself at every possible offset before the two lock back together."
+          },
+          {
+            "type": "concept",
+            "title": "Recording Changes the Question",
+            "body": "A ten-inch 78 held roughly three minutes a side, and songs were written to fit. The LP, introduced in 1948, offered about twenty-two minutes a side, so a symphony movement could run unbroken. Glenn Gould stopped performing in public in 1964 and argued that the studio, not the hall, was where the real work now happened.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The familiar three-minute length of a pop song reflects a musical law rather than an accident of technology.",
+            "answer": false,
+            "explain": "It reflects the capacity of a ten-inch 78 rpm disc. Writers shaped songs to fit the medium, listeners learned to expect that shape, and the shape outlived the format that caused it."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Debussy weakened harmony's obligations by treating chords as colours rather than as steps home.",
+              "The 1913 Rite of Spring premiere caused an uproar, but what the audience was reacting to is genuinely contested.",
+              "Schoenberg's twelve-tone method, worked out around 1921, replaced tonal gravity with an ordered row of all twelve pitches.",
+              "Minimalism answered with pulse and repetition: Reich's phasing, Glass's long unbroken evenings.",
+              "Recording reshaped music itself, from song lengths set by disc capacity to performance rethought as studio work."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What did Debussy change about harmony?",
+            "back": "He used chords for colour rather than function, with whole-tone and modal scales, so the pull toward a home key weakens."
+          },
+          {
+            "front": "What is a twelve-tone row?",
+            "back": "An ordering of all twelve pitches, used complete before any repeats, developed by transposition, inversion and reversal. Schoenberg, around 1921."
+          },
+          {
+            "front": "What is phasing?",
+            "back": "Two identical parts played at slightly different speeds so they slide out of sync and back. Reich's Piano Phase, 1967."
+          },
+          {
+            "front": "How reliable is the Rite of Spring riot story?",
+            "back": "Contested. Eyewitness accounts were written years later and conflict, and the choreography may have drawn as much anger as the music."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "world-music",
+    "title": "Music of the World",
+    "tagline": "Traditions with their own theory, on their own terms.",
+    "category": "Music",
+    "description": "Four musical systems that were never simplified versions of anything else: Indian raga and tala, West African timeline and cross-rhythm, the tuned ensembles and solitary instruments of Asia, and the human voice. Each is judged here by its own rules.",
+    "lessons": [
+      {
+        "id": "raga-and-tala",
+        "title": "India: Raga and Tala",
+        "summary": "Melody as a rule-bound character with a mood and an hour, rhythm as a turning cycle, and improvisation that is anything but free.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Not a Scale, a Character",
+            "body": "A tanpura begins to drone. The soloist plays a few notes, then a phrase, and any listener trained in the tradition already knows which raga this is. Not because of the notes alone, but because of how they were approached and left. A raga is closer to a character than to a scale.",
+            "art": "compass"
+          },
+          {
+            "type": "concept",
+            "title": "What a Raga Actually Specifies",
+            "body": "A raga fixes the notes used going up and the notes used coming down, and the two can differ. It fixes a signature phrase, the pakad, by which it is recognised. It names a note the melody leans on, the vadi. It dictates which ornaments each note takes, and which notes you may pass through but never rest on.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Two ragas use exactly the same set of pitches. Can they still be different ragas?",
+            "choices": [
+              "Yes, because the phrases, emphases and ornaments differ",
+              "No, the same notes means the same raga",
+              "Only if the drone is tuned differently",
+              "Only if they are played on different instruments"
+            ],
+            "answer": 0,
+            "explain": "Treating a raga as a scale is the usual first mistake. Marwa, Puriya and Sohini draw on the same notes and are never confused by a trained listener, because the identity lives in approach, ornament and phrase."
+          },
+          {
+            "type": "concept",
+            "title": "Music With an Hour On It",
+            "body": "Hindustani practice ties ragas to times of day. Bhairav belongs to dawn, Yaman to early evening, Malkauns to the deep night, Miyan ki Malhar to the monsoon. Nothing acoustic requires this. It is a shared convention, honoured in concerts and teaching, that gives a raga a place in the day as well as a mood.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "All Indian classical traditions assign ragas to particular times of day.",
+            "answer": false,
+            "explain": "Time theory is central to Hindustani music in the north. Carnatic practice in the south largely does not observe it, though some ragas there carry seasonal or ritual associations of their own."
+          },
+          {
+            "type": "concept",
+            "title": "The Drone Is the Reference Point",
+            "body": "A tanpura sounds the tonic, Sa, and usually the fifth, Pa, without stopping. Every pitch you hear is measured against it. Because the music never modulates to another key, intervals do not have to be compromised to work in twelve keys at once. A note can sit exactly where the ear wants it.",
+            "art": "anchor"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If the tonic never moves and there is no modulation, where does the tension come from?",
+            "answer": "From distance and delay. A phrase that circles a note far from Sa, refuses the obvious descent, and only then lands on Sa carries the weight a modulation carries elsewhere. The drama is arrival at a fixed centre, not travel between centres."
+          },
+          {
+            "type": "concept",
+            "title": "Tala: Time as a Circle",
+            "body": "A tala is a cycle of beats grouped in a fixed way. Teental has sixteen beats in four groups of four; jhaptal has ten; rupak has seven. The cycle turns without end, and beat one, the sam, is the point everything converges on. Teental's ninth beat, the khali or empty beat, is marked with a wave of the hand.",
+            "art": "orbit"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In a tala cycle, the sam is:",
+            "choices": [
+              "Beat one, the point of convergence",
+              "The fastest available subdivision",
+              "The pitch of the drone",
+              "The drummer's improvised solo"
+            ],
+            "answer": 0,
+            "explain": "Sam is where soloist, drummer and listener agree they are. Musicians spend long passages travelling away from it precisely so that the return lands with force."
+          },
+          {
+            "type": "example",
+            "title": "How a Performance Unfolds",
+            "body": "A Hindustani recital opens with alap: no drum, no pulse, the raga revealed note by note, sometimes for half an hour. Jor adds a pulse. Then the composition arrives with tabla and the cycles begin. A tihai, a phrase played three times over, is calculated so that its final stroke falls exactly on sam.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Gharana: Music as Lineage",
+            "body": "There is no central syllabus. Knowledge moves from teacher to student over years of daily proximity, the guru-shishya relationship. Named lineages such as Gwalior, Kirana, Jaipur-Atrauli and Maihar each carry their own repertoire, phrasing and preferences, and musicians still name the one they belong to.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "A student spends twelve years inside one gharana. What have they actually been learning?",
+            "answer": "Not mainly a list of pieces. They absorb how this lineage shapes a phrase, which ornaments it favours, how slowly it opens an alap, what counts as good taste. Judgements too fine to write down, transmitted by proximity and imitation."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A raga is a rule set with an identity: ascent and descent, a signature phrase, a leaning note, prescribed ornaments.",
+              "Hindustani practice links ragas to hours and seasons by convention; Carnatic practice largely does not.",
+              "The tanpura fixes the tonic, so tension comes from distance and delayed arrival rather than from modulation.",
+              "Tala is cyclic, and the sam, beat one, is the centre that phrases such as the tihai are calculated to hit.",
+              "Gharanas transmit taste as much as repertoire, through years of direct contact between teacher and student."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Name three things a raga specifies beyond its notes.",
+            "back": "A distinct ascent and descent, a signature phrase (pakad), a leaning note (vadi), and which ornaments each note takes."
+          },
+          {
+            "front": "What is the sam?",
+            "back": "Beat one of a tala cycle: the convergence point that soloist and drummer aim to land on together."
+          },
+          {
+            "front": "What does the tanpura do?",
+            "back": "Sounds the tonic Sa and usually Pa continuously, so every note is heard against a fixed reference. No modulation, so no compromised intervals."
+          },
+          {
+            "front": "What is a gharana?",
+            "back": "A teaching lineage in Hindustani music, such as Gwalior, Kirana, Jaipur-Atrauli or Maihar, with its own repertoire, phrasing and taste."
+          }
+        ]
+      },
+      {
+        "id": "timeline-and-cross-rhythm",
+        "title": "West Africa and the Diaspora",
+        "summary": "A bell that never changes, several true metres at once, drums that speak a tone language, and the long journey of all of it across an ocean.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Bell Never Changes",
+            "body": "In an Ewe drumming ensemble in Ghana, a small iron bell plays one short pattern, over and over, unchanged, for as long as the music lasts. It is not keeping time the way a metronome does. It is the fixed map that everyone else reads their position from.",
+            "art": "bell"
+          },
+          {
+            "type": "concept",
+            "title": "The Standard Pattern",
+            "body": "Write twelve equal pulses and put strokes on 1, 3, 5, 6, 8, 10 and 12. Seven strokes, unevenly spaced, so the pattern cannot be cut into two identical halves. That asymmetry means every point in the cycle sounds different, and you always know where you are. Relatives of it reappear as clave in Cuba and Brazil.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "Call and Response as Structure",
+            "body": "A leader sings or plays a phrase and the group answers with a fixed reply. The exchange builds the piece rather than decorating it. In Ewe ensembles the lead drum cues changes for drummers and dancers alike, so the form of a performance is negotiated live instead of laid out in advance.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is the bell pattern's job in the ensemble?",
+            "choices": [
+              "To carry the main melody",
+              "To hold a steady beat that the drummers play in unison with",
+              "To act as a fixed reference every other part measures itself against",
+              "To signal the end of each section"
+            ],
+            "answer": 2,
+            "explain": "It is neither tune nor metronome. Because the pattern is asymmetric, every stroke in it is identifiable, so a drummer playing an entirely different part can locate himself against it instantly."
+          },
+          {
+            "type": "concept",
+            "title": "Cross-Rhythm, Not Syncopation",
+            "body": "Syncopation means an accent displaced inside one agreed metre. The beat is still where it always was and you are playing off it. Cross-rhythm means three and two are running at the same time, both complete and both correct. Three even strokes fill the span of two, and neither one is the deviation.",
+            "art": "layers"
+          },
+          {
+            "type": "truefalse",
+            "statement": "What Western listeners call syncopation is essentially the same thing as West African cross-rhythm.",
+            "answer": false,
+            "explain": "Syncopation needs one agreed metre to be displaced against. Cross-rhythm has two or more metres genuinely present at once, with none of them designated as the real beat."
+          },
+          {
+            "type": "concept",
+            "title": "So Where Is Beat One?",
+            "body": "A bell player, a support drummer and a dancer may each feel a different downbeat, and each is right within their own part while staying locked to the bell. Scholars argue about how to describe this. Some call it polymetre; Kofi Agawu has warned that the label imports a puzzle from Western theory that the music does not pose.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two drummers in the same ensemble disagree about where beat one falls. Which of them is wrong?",
+            "answer": "Neither. Each part defines its own downbeat while staying locked to the bell, so more than one metre is genuinely present at once. The question of which is the real beat is imported from outside the music."
+          },
+          {
+            "type": "example",
+            "title": "The Drum That Speaks",
+            "body": "The Yoruba dùndún is an hourglass drum with cords running along its body. Squeezing it under the arm tightens the heads and bends the pitch. Yoruba is a tone language, in which pitch carries meaning, so the drum can reproduce the tone contour and rhythm of a spoken phrase. Listeners recover the sense through familiar formulas and context.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why can a talking drum convey language?",
+            "choices": [
+              "Each stroke stands for a letter of the alphabet",
+              "It plays a form of Morse code agreed between players",
+              "Yoruba is a tone language, so copying pitch contour and rhythm reproduces speech",
+              "Drummers memorise a fixed vocabulary of one-word signals"
+            ],
+            "answer": 2,
+            "explain": "There is no alphabet and no code book. The drum imitates the melody of speech itself, which is why the technique works for tone languages and not for languages that do not use pitch to distinguish words."
+          },
+          {
+            "type": "example",
+            "title": "Across the Atlantic",
+            "body": "Roughly twelve and a half million people were forced onto ships between the sixteenth and nineteenth centuries. Drums were banned in parts of British North America after the Stono Rebellion of 1739, so rhythm moved into hands, feet and voice: the ring shout, hambone, handclaps. In New Orleans, gatherings at Congo Square kept drumming audible into the 1840s.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Because drums were banned across much of British North America, African rhythmic practice did not survive there.",
+            "answer": false,
+            "explain": "It moved into whatever could not be confiscated: clapping, stamping, body percussion and the voice. Those practices run straight into the blues, gospel, jazz and the backbeat under most popular music since."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "An asymmetric bell timeline gives every position in the cycle a unique sound, so no conductor is needed.",
+              "Cross-rhythm means several complete metres at once, not accents displaced against one.",
+              "Whether polymetre is even the right description is disputed, and the disagreement is worth knowing about.",
+              "Tone languages let a pressure drum such as the dùndún reproduce the contour of speech.",
+              "Bans on drums pushed rhythm into hands, feet and voice, and the practice carried on into blues, jazz, samba and beyond."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Describe the standard bell pattern.",
+            "back": "Seven strokes over twelve pulses, on 1, 3, 5, 6, 8, 10 and 12. Asymmetric, so every position in the cycle is identifiable."
+          },
+          {
+            "front": "Cross-rhythm versus syncopation?",
+            "back": "Syncopation displaces accents within one metre; cross-rhythm runs two or more complete metres at once, with none subordinate."
+          },
+          {
+            "front": "How does a dùndún talking drum work?",
+            "back": "Squeezing tension cords bends the pitch, and because Yoruba is a tone language, the drum copies the pitch contour of speech."
+          },
+          {
+            "front": "What did drum bans in North America produce?",
+            "back": "Rhythm carried in the body and the voice: ring shout, hambone, handclaps, feeding directly into blues, gospel and jazz."
+          }
+        ]
+      },
+      {
+        "id": "tuned-ensembles-of-asia",
+        "title": "East and Southeast Asia",
+        "summary": "A bronze orchestra tuned as one instrument, melodies that exist only between two players, and traditions where a single note's colour carries the meaning.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "An Orchestra That Is One Instrument",
+            "body": "A Javanese gamelan is built and tuned as a single set. Carry a metallophone from one gamelan into another and it will be out of tune, because no two sets agree. Ensembles are named, sometimes treated with ceremony, and the instruments are understood not as separable items but as parts of one thing.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "Slendro and Pelog",
+            "body": "Gamelan use two tuning systems. Slendro has five tones spread roughly evenly across the octave. Pelog has seven unequal tones, from which five are normally drawn for a given piece. Neither lines up with Western semitones, and there is no standard reference pitch that all gamelan are tuned to.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why can you not simply retune a gamelan to match a piano?",
+            "choices": [
+              "Its intervals do not correspond to Western semitones, and each set carries its own tuning",
+              "Bronze instruments cannot be tuned at all",
+              "Gamelan music has no fixed pitches",
+              "The tuning is reset to the singer at every performance"
+            ],
+            "answer": 0,
+            "explain": "Slendro and pelog are not Western scales that drifted out of true. They are different divisions of the octave, and part of a set's identity is that its particular tuning belongs to it alone."
+          },
+          {
+            "type": "concept",
+            "title": "Ombak: The Wave in the Sound",
+            "body": "Many gamelan instruments are made in pairs and deliberately tuned slightly apart, so that a struck note pulses as the two frequencies beat against each other. The pulsing is called ombak, meaning wave. A pair tuned to an exact unison would be considered badly made.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The slight tuning difference between a gamelan's paired instruments is a defect tolerated for practical reasons.",
+            "answer": false,
+            "explain": "It is the intended sound. The shimmer, ombak, is what makes a struck note come alive, and tuners work to set its rate deliberately rather than to remove it."
+          },
+          {
+            "type": "concept",
+            "title": "Kotekan: The Part Nobody Plays",
+            "body": "In Balinese gamelan two players interlock. One takes polos, the other sangsih, and each fills the gaps the other leaves. The result is a rapid figure that neither player performs; it exists only in the combination. The style called gong kebyar took shape in north Bali around 1915, and kebyar means to burst open.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "You hear a dazzling fast figure in Balinese gamelan and ask one player to play it alone. What happens?",
+            "answer": "They cannot. Their own part is full of rests, because the other player's notes belong in exactly those gaps. What you heard was never in anyone's hands; it appears only when the two interlocking parts sound together."
+          },
+          {
+            "type": "concept",
+            "title": "The Guqin Needs No Audience",
+            "body": "The Chinese guqin, a seven-string zither, is played alone or for one or two friends, as a practice of self-cultivation rather than performance. Its tablature, in use since the Tang dynasty, tells you the string, the finger, the technique and the stopping position, but leaves rhythm largely open.",
+            "art": "book"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does guqin tablature deliberately leave out?",
+            "choices": [
+              "Which string to play",
+              "The rhythm",
+              "The right-hand technique",
+              "The stopping position on the string"
+            ],
+            "answer": 1,
+            "explain": "Because rhythm is not fixed, reviving an old piece, a process called dapu, means working out a convincing shape over weeks or months. Two players realising the same tablature can produce recognisably different music, and both count as valid."
+          },
+          {
+            "type": "example",
+            "title": "Timbre Carries the Meaning",
+            "body": "On the guqin a single pitch has many voices: an open string, a harmonic, a stopped note. Named slides and vibratos shape a note after it has been struck, and the sound of a finger travelling along silk is part of the music rather than noise around it. Guan Pinghu's recording of Flowing Water went onto the Voyager Golden Record in 1977.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "Shakuhachi: Breath and Silence",
+            "body": "The shakuhachi is an end-blown Japanese bamboo flute with five holes, named for its standard length of one shaku eight sun, about 54.5 centimetres. In the honkyoku repertoire the sound of the breath is part of the tone rather than a fault, and the silence between phrases, ma, is weighted as carefully as the notes.",
+            "art": "hourglass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "In shakuhachi honkyoku, audible breath noise is a flaw that players work to eliminate.",
+            "answer": false,
+            "explain": "The breath is treated as part of the tone, and deliberately rough attacks are used as expression. Players also shade pitch and colour by tilting the head, meri and kari, so a single note can be varied continuously."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A gamelan is tuned as one set; slendro and pelog map onto no Western scale, and no two gamelan agree.",
+              "Paired instruments are tuned slightly apart on purpose, so struck notes shimmer. That beating is called ombak.",
+              "Balinese kotekan splits a fast figure between two interlocking players, so nobody performs the melody you hear.",
+              "Guqin tablature fixes technique but not rhythm, so reviving a piece, dapu, is an act of interpretation.",
+              "In guqin and shakuhachi playing, the colour of a single note and the silence around it carry the meaning."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Slendro and pelog?",
+            "back": "Gamelan tuning systems. Slendro has five roughly even tones, pelog seven unequal ones. Neither matches Western semitones, and tunings vary by set."
+          },
+          {
+            "front": "What is ombak?",
+            "back": "The shimmer produced when paired gamelan instruments are tuned deliberately a little apart, so their notes beat against each other."
+          },
+          {
+            "front": "What is kotekan?",
+            "back": "Balinese interlocking parts, polos and sangsih, that between them produce a fast figure neither player performs alone."
+          },
+          {
+            "front": "What is dapu?",
+            "back": "Reconstructing a guqin piece from tablature that fixes technique but not rhythm. Months of interpretive work, with no single correct result."
+          }
+        ]
+      },
+      {
+        "id": "voice-and-what-is-shared",
+        "title": "Voice, and What Is Shared",
+        "summary": "Two notes from one throat, dissonance treated as a destination, and the honest limits of what research can call universal in music.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "One Throat, Two Notes",
+            "body": "A singer in Tuva, in southern Siberia, holds a low steady tone, and above it a clear whistling melody appears and moves independently of it. There is no second singer and no instrument. Both sounds are coming out of one throat at the same moment.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "How Overtone Singing Works",
+            "body": "Every sustained note already contains a stack of quieter harmonics above it. The singer adds nothing. They reshape tongue, lips and throat into a narrow filter that amplifies one of those harmonics until the ear separates it out as a melody. The styles have names: sygyt for the piercing whistle, kargyraa for the deep growl.",
+            "art": "lens"
+          },
+          {
+            "type": "concept",
+            "title": "The Extra Oscillator in Kargyraa",
+            "body": "In the deep style the ventricular folds, sitting just above the vocal folds, vibrate at half their rate, adding a tone an octave below the sung note. Imaging and acoustic studies have documented this. Tuvan singers themselves describe the sounds in terms of rivers, wind and animals; the landscape is the stated source.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In overtone singing, that high whistling melody is:",
+            "choices": [
+              "A harmonic already present in the voice, selectively amplified",
+              "A second set of vocal folds vibrating",
+              "Falsetto alternated very quickly with the low note",
+              "An effect added by the recording"
+            ],
+            "answer": 0,
+            "explain": "Nothing is added to the voice. The vocal tract is retuned into a sharp filter, so one member of the existing harmonic series is boosted far above its neighbours and the ear hears it as a separate line."
+          },
+          {
+            "type": "truefalse",
+            "statement": "The low rumble in kargyraa comes from the same vocal folds used in ordinary speech.",
+            "answer": false,
+            "explain": "A second structure is brought into play. The ventricular folds, sitting above the vocal folds, vibrate at half their rate, and that is what produces the added octave below."
+          },
+          {
+            "type": "concept",
+            "title": "Bulgaria: A Second That Rings",
+            "body": "In village singing of the Shope region, one voice holds a drone while another moves and ornaments above it, and the two meet on a major second and stay there. Sung in open chest voice, that interval beats and rings in the room. It is the destination, not a tension waiting to be resolved.",
+            "art": "bell"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Western theory calls a held major second a dissonance in need of resolution. What does this practice show?",
+            "answer": "That dissonance is a judgement made inside one system rather than a property of the interval. The same sound is a sought-after beauty in one tradition and an error to be corrected in another, and neither ear is malfunctioning."
+          },
+          {
+            "type": "example",
+            "title": "The Concert Version and the Village",
+            "body": "Filip Kutev founded a state ensemble in 1951 that arranged village songs for the stage, in fixed parts and in tune with each other. Recordings released as Le Mystère des Voix Bulgares carried the sound worldwide, and the second volume won a Grammy in 1990. The arranged version and the village practice are related, and are not the same thing.",
+            "art": "mirror"
+          },
+          {
+            "type": "concept",
+            "title": "Testing What Strangers Can Hear",
+            "body": "Samuel Mehr and colleagues, publishing in Current Biology in 2018, played thirty-six field recordings drawn from eighty-six mostly small-scale societies to around 750 listeners in sixty countries, and asked what each song was for. Listeners identified dance, lullaby and healing songs at above-chance rates from music entirely unfamiliar to them.",
+            "art": "graph"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In that experiment, which song function did listeners judge least reliably?",
+            "choices": [
+              "Dance songs",
+              "Lullabies",
+              "Healing songs",
+              "Love songs"
+            ],
+            "answer": 3,
+            "explain": "Dance, lullaby and healing came through above chance. Love songs did not fare nearly as well. Whatever acoustic signatures travel across cultures, courtship does not appear to carry an obvious one."
+          },
+          {
+            "type": "truefalse",
+            "statement": "Preferring consonant chords to dissonant ones has been shown to be a human universal.",
+            "answer": false,
+            "explain": "Josh McDermott and colleagues reported in Nature in 2016 that Tsimane' listeners in the Bolivian Amazon, with little exposure to Western music, rated consonant and dissonant chords about equally pleasant, while urban listeners preferred consonance."
+          },
+          {
+            "type": "concept",
+            "title": "World Music Is a Sales Category",
+            "body": "The term was settled at a meeting of independent record-label people in a London pub in June 1987, so that shops would have a rack to file everything else in. It sorts music by what it is not. A raga recital, a gamelan set and a Tuvan singer have nothing in common except that a shop in London needed a shelf.",
+            "art": "coin"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Overtone singing amplifies harmonics already present in the voice; kargyraa adds a lower octave via the ventricular folds.",
+              "Bulgarian village polyphony treats a held major second as the goal, showing that dissonance is a judgement inside a system.",
+              "Listeners worldwide identify dance, lullaby and healing songs above chance in unfamiliar music; love songs travel poorly.",
+              "Consonance preference is not universal, so some of what feels natural to a listener is learned rather than given.",
+              "World music is a 1987 retail category, and it flattens traditions that share nothing except not being Western."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How does overtone singing produce two pitches?",
+            "back": "The vocal tract becomes a narrow filter that amplifies one harmonic already present in the sung note until it is heard as a separate melody."
+          },
+          {
+            "front": "What makes kargyraa's low octave?",
+            "back": "The ventricular folds, sitting above the vocal folds, vibrate at half their rate, adding a tone an octave below the sung note."
+          },
+          {
+            "front": "What did Mehr and colleagues find in 2018?",
+            "back": "Around 750 listeners in 60 countries identified dance, lullaby and healing songs above chance in unfamiliar field recordings."
+          },
+          {
+            "front": "Where does the term world music come from?",
+            "back": "A June 1987 meeting of independent UK label staff in a London pub, creating a record-shop category defined by not being Western."
+          }
+        ]
+      }
+    ]
   }
 ];
