@@ -180,6 +180,118 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- a trial from start to verdict ---");
+{
+  // The trial engine is well tested as a function; what was never verified is
+  // that a trial actually COMPLETES in the app. Each scenario drives the real
+  // app to a finished trial and checks the screen against what the engine
+  // returned for the same data.
+  const SCENARIOS = [
+    ['genuine effect', { adhere: 1.0, contrast: 1.0, effect: 1.6 }, 'helped'],
+    ['no effect',      { adhere: 1.0, contrast: 1.0, effect: 0.0 }, 'no-effect'],
+    ['poor adherence', { adhere: 0.3, contrast: 1.0, effect: 1.6 }, 'not-run'],
+    ['no contrast',    { adhere: 1.0, contrast: 0.0, effect: 1.6 }, 'no-contrast'],
+  ];
+  for (const [name, cfg, expected] of SCENARIOS) {
+    const kctx = await browser.newContext();
+    const kp = await kctx.newPage();
+    kp.on('pageerror', e => errors.push('TRIAL PAGEERROR: ' + e.message));
+    await kp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+    await kp.waitForTimeout(600);
+    await kp.evaluate(async (cfg) => {
+      const { store } = await import('./js/store.js');
+      const { emptyEntry, addDays, dateKey, validateSymptoms } = await import('./js/model.js');
+      const { createTrial, armForDate, trialDays } = await import('./js/experiments.js');
+      function mul(s){return function(){s|=0;s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+      const syms = validateSymptoms([{ label: 'Migraine' }]);
+      await store.setMeta('symptoms', syms);
+      const id = syms[0].id;
+      const { trial } = createTrial({ leverId: 'no-late-caffeine', outcome: id, outcomeLabel: 'Migraine',
+        pairs: 7, startDate: addDays(dateKey(), -30), seed: 1234 });
+      await store.setMeta('trials', [trial]);
+      const r = mul(99); const rows = [];
+      for (let i = 0; i < trialDays(trial); i++) {
+        const date = addDays(trial.startDate, i);
+        const e = emptyEntry(date, syms);
+        const arm = armForDate(trial, date);
+        e.caffeineAfter2pm = arm === 'on' ? (r() < cfg.adhere ? 0 : 200) : (r() < cfg.contrast ? 200 : 0);
+        const exposure = e.caffeineAfter2pm > 0 ? 1 : 0;
+        e.symptoms[id] = Math.max(0, Math.min(4, Math.round(0.8 + exposure * cfg.effect + (r() - 0.5) * 1.2)));
+        rows.push(e);
+      }
+      await store.putMany(rows);
+    }, cfg);
+    await kp.evaluate(() => { location.hash = '#trials'; });
+    await kp.reload({ waitUntil: 'networkidle' });
+    await kp.waitForTimeout(2200);
+    const res = await kp.evaluate(async () => {
+      const { store } = await import('./js/store.js');
+      const { verdict } = await import('./js/experiments.js');
+      const v = verdict((await store.getMeta('trials'))[0], await store.allEntries());
+      return {
+        kind: v.kind,
+        engine: v.headline,
+        screen: document.querySelector('.insight h3')?.textContent?.trim() || null,
+        stillHiding: /No results until it finishes/i.test(document.querySelector('#main').textContent),
+      };
+    });
+    if (res.kind !== expected) throw new Error(`${name}: engine returned ${res.kind}, expected ${expected}`);
+    if (res.stillHiding) throw new Error(`${name}: a finished trial is still withholding its result`);
+    if (res.screen !== res.engine) {
+      throw new Error(`${name}: screen shows "${res.screen}" but the engine returned "${res.engine}"`);
+    }
+    console.log(`  ${name}: ${res.kind}`);
+    await kctx.close();
+  }
+
+  // Saving a finished trial must persist it and reach the report.
+  const fctx = await browser.newContext();
+  const fp = await fctx.newPage();
+  fp.on('pageerror', e => errors.push('TRIAL SAVE PAGEERROR: ' + e.message));
+  await fp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await fp.waitForTimeout(600);
+  await fp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, dateKey, validateSymptoms } = await import('./js/model.js');
+    const { createTrial, armForDate, trialDays } = await import('./js/experiments.js');
+    function mul(s){return function(){s|=0;s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+    const syms = validateSymptoms([{ label: 'Migraine' }]);
+    await store.setMeta('symptoms', syms);
+    const id = syms[0].id;
+    const { trial } = createTrial({ leverId: 'no-late-caffeine', outcome: id, outcomeLabel: 'Migraine',
+      pairs: 7, startDate: addDays(dateKey(), -30), seed: 1234 });
+    await store.setMeta('trials', [trial]);
+    const r = mul(99); const rows = [];
+    for (let i = 0; i < trialDays(trial); i++) {
+      const date = addDays(trial.startDate, i);
+      const e = emptyEntry(date, syms);
+      e.caffeineAfter2pm = armForDate(trial, date) === 'on' ? 0 : 200;
+      e.symptoms[id] = Math.max(0, Math.min(4, Math.round(0.8 + (e.caffeineAfter2pm > 0 ? 1.6 : 0) + (r() - 0.5) * 1.2)));
+      rows.push(e);
+    }
+    await store.putMany(rows);
+  });
+  await fp.evaluate(() => { location.hash = '#trials'; });
+  await fp.reload({ waitUntil: 'networkidle' });
+  await fp.waitForTimeout(2200);
+  await fp.click('[data-action="finish-trial"]');
+  await fp.waitForTimeout(1000);
+  const saved = await fp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const t = (await store.getMeta('trials'))[0];
+    return { status: t.status, kind: t.result?.kind };
+  });
+  if (saved.status !== 'complete' || !saved.kind) throw new Error('saving a finished trial did not persist it');
+  await fp.evaluate(() => { location.hash = '#report'; });
+  await fp.waitForTimeout(1200);
+  const rep = await fp.$eval('#print-report', e => e.textContent);
+  if (!/already tried/i.test(rep) || !/caffeine/i.test(rep)) {
+    throw new Error('a completed trial never reaches the doctor report');
+  }
+  console.log('  saved, persisted, and present in the report');
+  await fctx.close();
+}
+
 console.log("\n--- the example-data tour ---");
 {
   const tctx = await browser.newContext();
