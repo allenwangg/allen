@@ -69,8 +69,31 @@ t('malformed input returns null instead of throwing', () => {
 
 t('a truncated link is rejected, not half-read', () => {
   const code = encodeIntake(SAMPLE);
-  eq(decodeIntake(code.slice(0, code.length - 12)), null,
-    'a partial paste must fail cleanly rather than produce wrong numbers');
+  for (let n = 1; n < 20; n++) {
+    eq(decodeIntake(code.slice(0, code.length - n)), null, `cut ${n} chars:`);
+  }
+});
+
+t('NO single-character corruption is ever accepted', () => {
+  // This is the test that matters, and the one that was missing. Tail
+  // truncation always fails JSON.parse, so a truncation-only test cannot fail
+  // and proves nothing. A character altered in transit — a chat client eating
+  // one, someone retyping by hand — used to be accepted 408 ways, 90 of which
+  // silently carried DIFFERENT money into a report shown to the contractor.
+  const code = encodeIntake(SAMPLE);
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let accepted = 0;
+  for (let i = 0; i < code.length; i++) {
+    for (const ch of alphabet) {
+      if (ch === code[i]) continue;
+      if (decodeIntake(code.slice(0, i) + ch + code.slice(i + 1)) !== null) accepted++;
+    }
+  }
+  eq(accepted, 0, `${accepted} corrupted links were accepted — each can carry wrong money:`);
+});
+
+t('a valid link still decodes after all that', () => {
+  eq(decodeIntake(encodeIntake(SAMPLE)).quotedTotal, 42000);
 });
 
 t('a link from a future version is refused', () => {
@@ -116,8 +139,54 @@ t('cents are preserved and junk numbers are neutralised', () => {
 
 t('an absurd number of changes is capped rather than blowing up the link', () => {
   const many = Array.from({ length: 200 }, (_, i) => ({ title: `c${i}`, amount: 10, signed: false }));
-  const got = decodeIntake(encodeIntake({ ...SAMPLE, changes: many }));
-  eq(got.changes.length, 40);
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, changes: many })).changes.length, 40);
+});
+
+/**
+ * Build a link the way an ATTACKER would: by hand, never through encodeIntake.
+ * Testing caps only via the encoder proves nothing, because a hostile payload
+ * was never encoded by us in the first place.
+ */
+function forge(payload) {
+  const json = JSON.stringify(payload);
+  const bytes = new TextEncoder().encode(json);
+  let bin = ''; for (const b of bytes) bin += String.fromCharCode(b);
+  const body = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  let h = 0x811c9dc5;
+  for (let i = 0; i < body.length; i++) { h ^= body.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  const abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let sum = ''; for (let i = 0; i < 4; i++) sum += abc[(h >>> (i * 6)) & 63];
+  return sum + body;
+}
+
+t('the DECODER enforces its own caps against a hand-forged link', () => {
+  const hostile = forge([2, 'x'.repeat(20000), 'y'.repeat(20000), 5,
+    [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+    Array.from({ length: 5000 }, (_, i) => [`c${i}`.repeat(500), 1, 0])]);
+  const got = decodeIntake(hostile);
+  // Either refused outright for size, or accepted with every cap applied —
+  // never accepted whole.
+  if (got !== null) {
+    ok(got.title.length <= 120, `title came through at ${got.title.length} chars`);
+    ok(got.changes.length <= 40, `${got.changes.length} changes came through`);
+    ok(got.changes.every((c) => c.title.length <= 120), 'a change title exceeded the cap');
+  }
+  ok(got === null || got.changes.length <= 40);
+});
+
+t('absurd money magnitudes cannot reach the arithmetic', () => {
+  const got = decodeIntake(forge([2, 'j', '', 1e308, [1e308, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+    [['c', 1e308, 1]]]));
+  if (got !== null) {
+    ok(Number.isFinite(got.quotedTotal) && Math.abs(got.quotedTotal) <= 1e12,
+      `quotedTotal came through as ${got.quotedTotal}`);
+    ok(Number.isFinite(got.budget.labor) && Math.abs(got.budget.labor) <= 1e12);
+    ok(got.changes.every((c) => Number.isFinite(c.amount) && Math.abs(c.amount) <= 1e12));
+  }
+});
+
+t('a link longer than any real job is refused before parsing', () => {
+  eq(decodeIntake('A'.repeat(20000)), null);
 });
 
 console.log(`\n  intake link: ${passed} passed, ${failed} failed\n`);

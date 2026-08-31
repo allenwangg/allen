@@ -117,7 +117,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-166 unit assertions with no test framework and no install step, plus 202 browser
+178 unit assertions with no test framework and no install step, plus 204 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 and `test/security.mjs`. Both figures are what `./run-tests.sh --all` actually reports —
 re-read them from its output rather than trusting this line after a change. The pricing suite includes a
@@ -139,7 +139,7 @@ which is the path the contractor did not type themselves — then asserts nothin
 executes. It also asserts the inverse, that markup in a client name still renders as
 literal text, because escaping that eats the user's data is its own bug.
 
-### Three bugs the tests caught
+### Bugs the tests caught
 
 Worth recording, because both were invisible by inspection:
 

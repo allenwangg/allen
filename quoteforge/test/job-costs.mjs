@@ -311,6 +311,15 @@ check('overruns surface from the intake', /over budget|Over/i.test(
   const fromLink = await page.locator('#auditPrint').textContent();
   check('the audit builds straight from their link',
     /Bathroom — Cedar Ave/.test(fromLink) && /Replaced the subfloor/.test(fromLink));
+  // Free-text alone is a weak assertion: a budget/spent mix-up in the paste
+  // handler would keep it green while every number on the report was wrong.
+  // Check the figures the contractor gave actually survived.
+  check('their cost figures survive the paste, not just their words',
+    /28,500/.test(fromLink), '(what they charged must reach the report)');
+  const budgets = await page.locator('#budgetPanel').textContent();
+  check('their per-trade spend survives the paste',
+    /11,800/.test(budgets) && /9,000/.test(budgets),
+    '(a budget/spent mix-up would be invisible without this)');
 
   // A mangled link must fail readably, not silently produce wrong numbers.
   await page.locator('#btnAudit').click();

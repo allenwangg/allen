@@ -127,7 +127,16 @@ export class Store {
       const parsed = JSON.parse(raw);
       return migrate(parsed);
     } catch (err) {
-      console.warn('QuoteForge: could not read saved data, starting fresh.', err);
+      // Starting fresh is right, but boot() immediately saves over the same
+      // key — so without this the unreadable data (which may be recoverable by
+      // hand, or by a later fix) is destroyed within a second of the failure.
+      // Set it aside first; it is the user's only copy.
+      try {
+        const corrupt = this.storage.getItem(STORAGE_KEY);
+        if (corrupt) this.storage.setItem(`${STORAGE_KEY}.corrupt`, corrupt);
+      } catch { /* nothing further to try */ }
+      console.warn('QuoteForge: could not read saved data. The unreadable copy was kept '
+        + `under "${STORAGE_KEY}.corrupt" — export it before clearing site data.`, err);
       return initialState();
     }
   }
@@ -515,8 +524,20 @@ function withFreshIds(est) {
   };
 }
 
+/**
+ * A CSV cell, safe to open in a spreadsheet.
+ *
+ * Quoting alone is not enough. Excel, Sheets and LibreOffice treat a leading
+ * =, +, -, @, tab or CR as the start of a FORMULA, so a line description of
+ * `=cmd|'/c calc'!A1` executes when the operator opens their own export. These
+ * descriptions are not all self-authored: they arrive from imported estimate
+ * files and from intake links other people send. Prefixing with an apostrophe
+ * is the standard neutralisation — spreadsheets treat the rest as literal text
+ * and hide the quote.
+ */
 function csvCell(v) {
-  const s = String(v ?? '');
+  let s = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
@@ -900,7 +921,11 @@ Object.assign(Store.prototype, {
 
     const budget = input.budget || {};
     const spent = input.spent || {};
-    const budgetTotal = cats.reduce((a, c) => a + num(budget[c]), 0);
+    // Only positive budgets become line items, so only positive budgets may
+    // count toward the total the markup is derived from — otherwise a negative
+    // figure skews the markup and the reconstruction stops matching what the
+    // contractor said they charged.
+    const budgetTotal = cats.reduce((a, c) => a + Math.max(0, num(budget[c])), 0);
     const quoted = num(input.quotedTotal);
 
     // Recover the markup the contractor actually used: the one that turns
@@ -911,22 +936,24 @@ Object.assign(Store.prototype, {
     const burdened = budgetTotal * (1 + overhead);
     const impliedMarkup = burdened > 0 ? (quoted - burdened) / burdened : 0;
 
-    const est = this.createEstimate({
+    const created = todayISO();
+    const estimate = newEstimate({
       title: input.title || 'Audited job',
       status: 'accepted',
+      createdAt: created,
+      updatedAt: created,
       client: { name: input.client || '', email: '', phone: '', address: '' },
       scopeSummary: 'Reconstructed from the contractor\'s own figures for a margin audit.',
-      // The audit reconstructs a job at exactly what was charged, so the job's
-      // own settings must not add anything on top: no contingency the client
-      // never paid, and no sales tax — the quoted figure the contractor gives
-      // is already the number on their invoice, and tax is collected and
-      // remitted rather than earned.
-      settings: { contingency: 0, taxMode: 'none', taxRate: 0 },
+      // Overhead is pinned alongside contingency and tax. Without it, changing
+      // the global overhead rate silently reprices every audit already
+      // delivered — and the implied markup above was derived against THIS
+      // rate, so the reconstruction would stop matching what they charged.
+      settings: { contingency: 0, taxMode: 'none', taxRate: 0, overhead },
     });
 
-    const items = cats
+    estimate.items = cats
       .filter((c) => num(budget[c]) > 0)
-      .map((c) => ({
+      .map((c) => normalizeItem({
         description: `${CATEGORY_TITLES[c]} — as estimated`,
         category: c,
         unit: 'ls',
@@ -934,36 +961,57 @@ Object.assign(Store.prototype, {
         unitCost: num(budget[c]),
         markup: impliedMarkup,
       }));
-    if (items.length) this.addItems(items);
 
-    for (const c of cats) {
-      if (num(spent[c]) === 0) continue;
-      this.addActual({
-        date: todayISO(),
+    estimate.actuals = cats
+      .filter((c) => num(spent[c]) !== 0)
+      .map((c) => ({
+        id: uid('ac'),
+        date: created,
         category: c,
         description: `${CATEGORY_TITLES[c]} — actually paid`,
         amount: num(spent[c]),
-      });
-    }
+      }));
 
-    for (const ch of input.changes || []) {
-      if (!num(ch.amount)) continue;
-      const co = this.addChangeOrder({ title: ch.title || 'Change', reason: ch.reason || '' });
-      // The figure the contractor gives is the PRICE of the change, not a cost
-      // to build up from. Overhead is divided back out so the pipeline's own
-      // overhead pass lands exactly on the amount they named — otherwise a
-      // \$2,400 change reconstructs as \$2,640 and the audit misquotes them
-      // back to themselves.
-      this.addChangeOrderItem(co.id, {
-        description: ch.title || 'Additional work',
-        category: 'labor',
-        unit: 'ls',
-        qty: 1,
-        unitCost: num(ch.amount) / (1 + overhead),
-        markup: 0,
-      });
-      if (ch.signed) this.setChangeOrderStatus(co.id, 'approved');
-    }
+    estimate.changeOrders = (input.changes || [])
+      .filter((ch) => num(ch.amount))
+      .map((ch, i) => ({
+        id: uid('co'),
+        number: `CO-${String(i + 1).padStart(2, '0')}`,
+        title: ch.title || 'Change',
+        reason: ch.reason || '',
+        status: ch.signed ? 'approved' : 'draft',
+        createdAt: created,
+        decidedAt: ch.signed ? created : '',
+        daysAdded: 0,
+        discount: null,
+        signature: null,
+        items: [normalizeItem({
+          description: ch.title || 'Additional work',
+          category: 'labor',
+          unit: 'ls',
+          qty: 1,
+          // The figure the contractor gives is the PRICE of the change, not a
+          // cost to build up from. Overhead is divided back out so the
+          // pipeline's own overhead pass lands exactly on the amount they
+          // named — otherwise a $2,400 change reconstructs as $2,640 and the
+          // audit misquotes them back to themselves.
+          unitCost: num(ch.amount) / (1 + overhead),
+          markup: 0,
+        })],
+      }));
+
+    // ONE undo step for the whole build. Assembling this through the granular
+    // add* methods pushed a snapshot per sub-step, so a single Ctrl+Z after
+    // "Build the audit" silently demoted the last signed change order to draft
+    // instead of undoing the build — leaving a job that looked correct and was
+    // not.
+    this.update((st) => {
+      estimate.number = `Q-${st.nextNumber}`;
+      st.nextNumber += 1;
+      st.estimates.unshift(estimate);
+      st.activeId = estimate.id;
+      st.activeChangeOrderId = estimate.changeOrders[0]?.id || null;
+    }, { label: 'build audit' });
 
     return { estimate: this.active(), impliedMarkup };
   },

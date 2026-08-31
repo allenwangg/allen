@@ -797,6 +797,86 @@ t('zero-cost categories are not given empty lines', () => {
   eq(s.active().items.length, 1, 'a category with no budget should not appear at all');
 });
 
+/* ------------------------------------------ second audit: new surface ---- */
+
+t('a CSV cell starting with = is neutralised, not executed', () => {
+  const s = mkStore();
+  s.createEstimate();
+  // These arrive from imported files and intake links, not only from the user.
+  for (const attack of ["=cmd|'/c calc'!A1", '+1+1', '-2+3', '@SUM(A1)', '\t=1+1']) {
+    s.addItem({ description: attack, qty: 1, unitCost: 10, category: 'material' });
+  }
+  const csv = s.exportCSV(priceEstimate(s.active(), s.state.settings));
+  for (const attack of ['=cmd', '+1+1', '-2+3', '@SUM']) {
+    ok(csv.includes(`'${attack}`) || csv.includes(`"'${attack}`),
+      `${attack} reached the CSV unneutralised — it executes on open`);
+  }
+});
+
+t('the actuals CSV neutralises formulas too', () => {
+  const s = mkStore();
+  s.createEstimate();
+  s.addItem({ description: 'L', qty: 1, unitCost: 100, category: 'labor' });
+  s.addActual({ description: '=1+1', category: 'labor', amount: 50 });
+  ok(s.exportActualsCSV(compareActuals(s.active(), s.state.settings)).includes("'=1+1"));
+});
+
+t('unreadable saved data is set aside, not destroyed', () => {
+  const warn = console.warn; console.warn = () => {};
+  try {
+    const storage = memStorage({ [STORAGE_KEY]: '{corrupt not json' });
+    const s = new Store({ storage });
+    s.createEstimate({ title: 'New work' });
+    s.save({ immediate: true });
+    eq(storage.getItem(`${STORAGE_KEY}.corrupt`), '{corrupt not json',
+      'the only copy of the user data must be preserved before it is overwritten:');
+  } finally { console.warn = warn; }
+});
+
+t('an audit job holds its price when global overhead changes', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'J', quotedTotal: 42000, budget: { labor: 12000, material: 9000 }, spent: {} });
+  const before = priceEstimate(s.active(), s.state.settings).totalCents;
+  s.patchSettings({ overhead: 0.35 });
+  eq(priceEstimate(s.active(), s.state.settings).totalCents, before,
+    'a delivered audit must not silently reprice when a setting moves:');
+  eq(before, 4200000);
+});
+
+t('a negative category budget cannot break the reconstruction', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'J', quotedTotal: 30000, budget: { labor: 12000, material: -5000 }, spent: {} });
+  eq(priceEstimate(s.active(), s.state.settings).totalCents, 3000000,
+    'only positive budgets become lines, so only positive budgets may set the markup:');
+});
+
+t('building an audit is a single undo step', () => {
+  const s = mkStore();
+  const before = s.state.estimates.length;
+  s.createAuditJob({
+    title: 'K', quotedTotal: 42000,
+    budget: { labor: 12000, material: 9000 }, spent: { labor: 15200 },
+    changes: [{ title: 'A', amount: 2400, signed: false }, { title: 'B', amount: 800, signed: true }],
+  });
+  eq(s.active().changeOrders.length, 2);
+  eq(s.active().changeOrders.filter((c) => c.status === 'approved').length, 1);
+
+  s.undo();
+  eq(s.state.estimates.length, before,
+    'one Ctrl+Z used to demote a signed change order instead of undoing the build:');
+});
+
+t('an audited job still numbers its change orders uniquely', () => {
+  const s = mkStore();
+  s.createAuditJob({
+    title: 'K', quotedTotal: 9000, budget: { labor: 5000 }, spent: {},
+    changes: [{ title: 'A', amount: 100 }, { title: 'B', amount: 200 }, { title: 'C', amount: 300 }],
+  });
+  const numbers = s.active().changeOrders.map((c) => c.number);
+  eq(numbers.join(','), 'CO-01,CO-02,CO-03');
+  eq(new Set(numbers).size, 3);
+});
+
 
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

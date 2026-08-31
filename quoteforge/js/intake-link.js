@@ -16,8 +16,20 @@
  * so an older link can never be silently misread by newer code.
  */
 
-export const INTAKE_VERSION = 1;
+export const INTAKE_VERSION = 2;
 export const INTAKE_CATEGORIES = ['labor', 'material', 'subcontractor', 'equipment', 'other'];
+
+/**
+ * Limits enforced on DECODE, not just encode.
+ *
+ * An attacker never runs the encoder — they craft the string. Capping only on
+ * the way out is security theatre: it constrains the honest path and leaves
+ * the hostile one wide open.
+ */
+const MAX_CODE_LENGTH = 8000;    // a real job encodes to well under 400 chars
+const MAX_CHANGES = 40;
+const MAX_TEXT = 120;
+const MAX_MONEY = 1e12;          // a trillion-dollar remodel is not the use case
 
 /* ------------------------------------------------------ base64url (utf-8) -- */
 
@@ -42,25 +54,57 @@ function fromBase64Url(encoded) {
   return new TextDecoder().decode(bytes);
 }
 
+/**
+ * FNV-1a over the payload, as four base64url characters.
+ *
+ * This is an integrity check, not a signature — it defends against a link
+ * mangled in transit, which is the realistic failure: an email client wrapping
+ * a line, a chat app eating a character, someone retyping it by hand. Without
+ * it a single altered character is accepted hundreds of ways, and in a fifth
+ * of those it silently carries DIFFERENT money into a report the contractor
+ * will be shown. Confidently wrong is far worse than refusing to load.
+ */
+function checksum(text) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let out = '';
+  for (let i = 0; i < 4; i++) out += alphabet[(h >>> (i * 6)) & 63];
+  return out;
+}
+
 /* ------------------------------------------------------------- encoding --- */
 
-const round2 = (v) => Math.round((Number(v) || 0) * 100) / 100;
+/**
+ * Money to two decimals, with anything non-finite or absurd flattened to zero.
+ * An unclamped 1e308 overflows the cents arithmetic downstream to Infinity and
+ * the audit then reports "$0.00 found" rather than failing visibly.
+ */
+const round2 = (v) => {
+  const n = Number(v);
+  if (!Number.isFinite(n) || Math.abs(n) > MAX_MONEY) return 0;
+  return Math.round(n * 100) / 100;
+};
 
 /** Pack a job summary into a compact, URL-safe string. */
 export function encodeIntake(input) {
   const payload = [
     INTAKE_VERSION,
-    String(input.title || '').slice(0, 120),
-    String(input.client || '').slice(0, 120),
+    String(input.title || '').slice(0, MAX_TEXT),
+    String(input.client || '').slice(0, MAX_TEXT),
     round2(input.quotedTotal),
     INTAKE_CATEGORIES.map((c) => round2(input.budget?.[c])),
     INTAKE_CATEGORIES.map((c) => round2(input.spent?.[c])),
     (input.changes || [])
       .filter((c) => Number(c.amount))
-      .slice(0, 40)
-      .map((c) => [String(c.title || '').slice(0, 120), round2(c.amount), c.signed ? 1 : 0]),
+      .slice(0, MAX_CHANGES)
+      .map((c) => [String(c.title || '').slice(0, MAX_TEXT), round2(c.amount), c.signed ? 1 : 0]),
   ];
-  return toBase64Url(JSON.stringify(payload));
+  const body = toBase64Url(JSON.stringify(payload));
+  return checksum(body) + body;
 }
 
 /**
@@ -70,9 +114,16 @@ export function encodeIntake(input) {
  */
 export function decodeIntake(encoded) {
   if (!encoded || typeof encoded !== 'string') return null;
+  const raw = encoded.trim();
+  // Refuse anything oversized before doing any work on it.
+  if (raw.length < 5 || raw.length > MAX_CODE_LENGTH) return null;
+
+  const body = raw.slice(4);
+  if (checksum(body) !== raw.slice(0, 4)) return null;   // mangled in transit
+
   let parsed;
   try {
-    parsed = JSON.parse(fromBase64Url(encoded.trim()));
+    parsed = JSON.parse(fromBase64Url(body));
   } catch {
     return null;
   }
@@ -81,19 +132,23 @@ export function decodeIntake(encoded) {
   const [, title, client, quoted, budgetArr, spentArr, changesArr] = parsed;
   if (!Array.isArray(budgetArr) || !Array.isArray(spentArr)) return null;
 
+  // Every cap the encoder applies is re-applied here, because a hostile link
+  // was never produced by the encoder in the first place.
+  const text = (v) => (typeof v === 'string' ? v.slice(0, MAX_TEXT) : '');
   const unpack = (arr) => Object.fromEntries(
-    INTAKE_CATEGORIES.map((c, i) => [c, Number(arr[i]) || 0]),
+    INTAKE_CATEGORIES.map((c, i) => [c, round2(arr[i])]),
   );
 
   return {
-    title: typeof title === 'string' ? title : '',
-    client: typeof client === 'string' ? client : '',
-    quotedTotal: Number(quoted) || 0,
+    title: text(title),
+    client: text(client),
+    quotedTotal: round2(quoted),
     budget: unpack(budgetArr),
     spent: unpack(spentArr),
     changes: (Array.isArray(changesArr) ? changesArr : [])
       .filter((c) => Array.isArray(c))
-      .map((c) => ({ title: String(c[0] ?? ''), amount: Number(c[1]) || 0, signed: c[2] === 1 })),
+      .slice(0, MAX_CHANGES)
+      .map((c) => ({ title: text(c[0]), amount: round2(c[1]), signed: c[2] === 1 })),
   };
 }
 

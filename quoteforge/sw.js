@@ -10,7 +10,8 @@
  * opens instantly and offline, and a newer version is picked up on the next
  * load after one online visit. Bumping CACHE evicts everything older.
  */
-const CACHE = 'quoteforge-v1';
+const CACHE_PREFIX = 'quoteforge-';
+const CACHE = `${CACHE_PREFIX}v2`;
 
 const SHELL = [
   './',
@@ -38,7 +39,12 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      // Only ever delete OUR OWN older caches. A GitHub Pages user site shares
+      // one origin with every other project on it, so deleting every cache
+      // here would wipe the offline data of unrelated apps.
+      .then((keys) => Promise.all(keys
+        .filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE)
+        .map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

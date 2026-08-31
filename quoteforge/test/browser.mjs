@@ -458,8 +458,11 @@ console.log('\n  offline');
   check('the app cold-loads with the network off',
     (await page.locator('.items tbody tr').count()) > 5,
     '(the "works offline" claim depends on this)');
+  // /\$[\d,]+/ matches "$0.00" — the exact output a broken offline load
+  // produces — so it could not fail on the failure it exists to catch.
+  const offlineTotal = await page.locator('.figure.total .value').textContent();
   check('and it still prices the job offline',
-    /\$[\d,]+/.test(await page.locator('.figure.total .value').textContent()));
+    /\$[1-9][\d,]*\.\d\d/.test(offlineTotal), `(got "${offlineTotal}")`);
   await ctx.setOffline(false);
   await ctx.close();
 }
