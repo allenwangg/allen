@@ -180,6 +180,65 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- working with the network off ---");
+{
+  // Local-first is the app's central promise: no account, no server, and it
+  // keeps working on a train. That has to be exercised, not asserted.
+  const octx = await browser.newContext();
+  const op = await octx.newPage();
+  op.on('pageerror', e => errors.push('OFFLINE PAGEERROR: ' + e.message));
+  await op.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await op.waitForTimeout(1500);
+  await op.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_PROFILE } = await import('./js/sample.js');
+    await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    await store.setMeta('profile', SAMPLE_PROFILE);
+    await store.putMany(generateSampleData());
+  });
+  const cached = await op.evaluate(async () => {
+    const keys = await caches.keys();
+    if (!keys.length) return { files: 0 };
+    return { version: keys[0], files: (await caches.open(keys[0]).then((c) => c.keys())).length };
+  });
+  if (cached.files < 10) throw new Error('the service worker cached only ' + cached.files + ' files');
+
+  await octx.setOffline(true);
+  await op.reload({ waitUntil: 'domcontentloaded' });
+  await op.waitForTimeout(2000);
+
+  for (const view of ['today', 'log', 'insights', 'trials', 'report', 'settings']) {
+    await op.evaluate((v) => { location.hash = '#' + v; }, view);
+    await op.waitForTimeout(view === 'insights' ? 2500 : 800);
+    const r = await op.evaluate(() => {
+      const t = document.querySelector('#main').textContent;
+      return { len: t.length, broke: /Something went wrong/.test(t) };
+    });
+    if (r.broke) throw new Error(view + ' fails to render offline');
+    if (r.len < 200) throw new Error(view + ' renders almost nothing offline (' + r.len + ' chars)');
+  }
+
+  // Logging a day is the thing you most need to work on a train.
+  await op.evaluate(() => { location.hash = '#log'; });
+  await op.waitForTimeout(700);
+  const saved = await op.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { dateKey } = await import('./js/model.js');
+    const slider = document.querySelector('[data-field="steps"]');
+    slider.value = 12300;                       // on the 100-step grid
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
+    slider.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 300));
+    document.querySelector('[data-action="save-entry"]').click();
+    await new Promise((r) => setTimeout(r, 900));
+    return (await store.getEntry(dateKey()))?.steps;
+  });
+  if (saved !== 12300) throw new Error('could not save a day offline (steps came back ' + saved + ')');
+  console.log(`  ${cached.files} files cached; six views render and a day saves with the network off`);
+  await octx.setOffline(false);
+  await octx.close();
+}
+
 console.log("\n--- injection through user-supplied text ---");
 {
   // Symptom labels and notes are user text rendered into innerHTML on six
