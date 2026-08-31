@@ -330,7 +330,7 @@ function factorLogCard(state) {
     const v = state.draft.factors?.[fac.id] ?? 0;
     return `<div class="sym-row">
       <div class="sym-label" id="fac-${esc(fac.id)}">${esc(fac.label)}</div>
-      <div class="seg sym-seg" role="group" aria-labelledby="fac-${esc(fac.id)}">
+      <div class="seg sym-seg fac-seg" role="group" aria-labelledby="fac-${esc(fac.id)}">
         ${AMOUNT.map((a) => `<button type="button" id="fac-${esc(fac.id)}-${a.value}"
           data-factor="${esc(fac.id)}" data-value="${a.value}"
           aria-pressed="${Number(v) === a.value}" title="${esc(a.label)}">${esc(a.short)}</button>`).join('')}

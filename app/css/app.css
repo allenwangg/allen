@@ -276,6 +276,10 @@ textarea { min-height: 76px; resize: vertical; }
 .sym-seg button { min-width: 38px; font-size: .82rem; padding: 7px 4px; }
 .sym-seg button[aria-pressed="true"][data-value="0"] { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
 .sym-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--bad); border-color: var(--bad); color: #fff; }
+/* A factor is not a symptom. Colouring "a lot of dairy" red would have the app
+   pre-judging the answer to the exact question the user is asking it, before
+   any evidence exists. Neutral until the analysis says otherwise. */
+.fac-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--info); border-color: var(--info); color: #fff; }
 @media (max-width: 520px) { .sym-row { grid-template-columns: 1fr; gap: 6px; } }
 .seg button {
   flex: 1 1 auto; min-width: 42px; appearance: none; font: inherit; cursor: pointer;
