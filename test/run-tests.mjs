@@ -624,6 +624,76 @@ await test("simulated traffic never runs on a live board", async () => {
 await ctx.close();
 
 // ---------- Stripe ledger API (unit) ----------
+await test("going live stops the page calling itself a demo and drops fabricated champions", async () => {
+  // Own context: goLive() wipes the board, which must not bleed into the shared page.
+  const dctx = await browser.newContext();
+  const dp = await dctx.newPage();
+  await dp.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await dp.waitForTimeout(400);
+  const shape = await dp.evaluate(async () => {
+    const seededSeasons = (state.seasons || []).length;
+    CONFIG.BOARD_FEED_URL = "stub://demo-copy";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      { id: "cs_copy_1", ref: encodeRef("Real Payer", "real.io", ""), amount: 50,
+        at: Math.floor(Date.now() / 1000) },
+    ] }) });
+    await mergeBoardFeed();
+    return {
+      seededSeasons,
+      seasonsAfter: (state.seasons || []).length,
+      hallAfter: (state.hall || []).length,
+      foot: document.querySelector("#footMode").textContent,
+      rule: document.querySelector("#ruleDefend").textContent,
+    };
+  });
+  await dctx.close();
+  assert(shape.seededSeasons > 0, "demo board should seed Season champions for this test to mean anything");
+  assert(shape.seasonsAfter === 0,
+    `live board still shows ${shape.seasonsAfter} fabricated Season champions`);
+  assert(shape.hallAfter === 0, "live board still shows a fabricated Hall of Fame");
+  assert(!/demo|simulated|no card required/i.test(shape.foot),
+    `live board still calls itself a demo in the footer: "${shape.foot}"`);
+  assert(!/automatically/i.test(shape.rule),
+    `live board still promises automatic re-bidding it cannot perform: "${shape.rule}"`);
+});
+
+await test("a committed defend budget rides the ledger and offers a one-tap retake", async () => {
+  const dctx = await browser.newContext();
+  const dp = await dctx.newPage();
+  await dp.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await dp.waitForTimeout(400);
+  const shape = await dp.evaluate(async () => {
+    localStorage.setItem("outranked_name", "Defender Co");
+    const now = Math.floor(Date.now() / 1000);
+    let bids = [
+      { id: "cs_def_1", ref: encodeRef("Defender Co", "def.io", "", 100), amount: 50, at: now },
+      { id: "cs_def_2", ref: encodeRef("Rival Inc", "rival.io", ""), amount: 80, at: now },
+    ];
+    CONFIG.BOARD_FEED_URL = "stub://defend";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids }) });
+    await mergeBoardFeed();
+    const mine = state.entries.find(e => e.name === "Defender Co");
+    const bar = document.querySelector("#defendBar");
+    const inBudget = { hidden: bar.hidden, msg: document.querySelector("#defendMsg").textContent,
+                       target: bar.dataset.target };
+    // Now the rival jumps far beyond the committed budget: the watch must go quiet
+    // rather than nag about a fight this bidder never agreed to pay for.
+    bids = bids.concat([{ id: "cs_def_3", ref: encodeRef("Rival Inc", "rival.io", ""), amount: 5000, at: now }]);
+    await mergeBoardFeed();
+    return { defend: mine && mine.defend, inBudget, overBudgetHidden: bar.hidden,
+             rivalId: (state.entries.find(e => e.name === "Rival Inc") || {}).id };
+  });
+  await dctx.close();
+  assert(shape.defend === 100, `defend budget should survive the ledger round-trip, got ${shape.defend}`);
+  assert(shape.inBudget.hidden === false, "defend watch should surface when the retake is within budget");
+  assert(/\$31\b/.test(shape.inBudget.msg),
+    `retake should be priced to win at $31, got "${shape.inBudget.msg}"`);
+  assert(shape.inBudget.target === shape.rivalId,
+    "defend button should aim at the listing that passed us");
+  assert(shape.overBudgetHidden === true,
+    "defend watch must go quiet once the retake costs more than the committed budget");
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -721,6 +791,34 @@ await test("ledger reader paginates Stripe, keeps only paid sessions, and leaks 
     `unexpected fields exposed: ${Object.keys(bids[0])}`);
   const board = fresh.rank(bids);
   assert(board[0].name === "Whale Co" && board[0].total === 900, `ranking wrong: ${JSON.stringify(board[0])}`);
+});
+
+await test("a zero-decimal currency is not credited 100x", async () => {
+  // Stripe quotes JPY in whole yen, not sen. Dividing every amount by 100 was
+  // crediting a JPY payer a hundred times what they actually sent.
+  const mock = createServer((req, res) => {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ has_more: false, data: [
+      { id: "cs_jpy", payment_status: "paid", amount_total: 5000, currency: "jpy", created: 10,
+        client_reference_id: "b64." + b64("Tokyo Co|tokyo.jp|") },
+      { id: "cs_usd", payment_status: "paid", amount_total: 5000, currency: "usd", created: 20,
+        client_reference_id: "b64." + b64("Dollar Co|dollar.com|") },
+      { id: "cs_kwd", payment_status: "paid", amount_total: 5000, currency: "kwd", created: 30,
+        client_reference_id: "b64." + b64("Kuwait Co|kw.co|") },
+    ] }));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+  delete require.cache[require.resolve(join(root, "api", "_board.js"))];
+  const fresh = require(join(root, "api", "_board.js"));
+  const bids = await fresh.fetchBids("sk_test_x");
+  mock.close();
+  delete process.env.STRIPE_API_BASE;
+
+  const by = Object.fromEntries(bids.map(b => [b.id, b.amount]));
+  assert(by.cs_jpy === 5000, `JPY 5000 is 5000 yen, credited as ${by.cs_jpy}`);
+  assert(by.cs_usd === 50, `USD 5000 cents is $50, credited as ${by.cs_usd}`);
+  assert(by.cs_kwd === 5, `KWD is three-decimal: 5000 fils is 5 dinar, credited as ${by.cs_kwd}`);
 });
 
 await test("public ledger page renders a listing's payments without leaking full session IDs", async () => {
