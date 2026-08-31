@@ -1787,6 +1787,7 @@
         '<option value="on"' + (s.sound !== false ? ' selected' : '') + '>On</option>' +
         '<option value="off"' + (s.sound === false ? ' selected' : '') + '>Off</option></select></label>' +
       '<div class="modal-row"><button class="btn primary" id="set-save">Save</button><button class="btn ghost" id="set-close">Cancel</button></div>' +
+      (installable() ? '<div class="install-row"><div><b>Install Prism</b><br><span class="install-note">Add it to your home screen — it opens full-screen and works offline.</span></div><button class="btn ghost" id="set-install">Install</button></div>' : '') +
       '<details class="backup"><summary>Backup &amp; restore</summary>' +
         '<p class="backup-note">Progress lives in this browser. Copy a backup to move it to another device.</p>' +
         '<div class="modal-row"><button class="btn ghost" id="bk-copy">Copy backup</button><button class="btn ghost" id="bk-paste">Restore…</button></div>' +
@@ -1812,6 +1813,15 @@
       applyTheme();
       close();
       route();
+    };
+    var inst = document.getElementById('set-install');
+    if (inst) inst.onclick = function () {
+      var btn = this;
+      btn.disabled = true;
+      promptInstall().then(function (ok) {
+        if (ok) { btn.textContent = 'Installed ✓'; }
+        else { btn.disabled = false; }
+      });
     };
     document.getElementById('bk-copy').onclick = function () {
       var data = Store.exportData();
@@ -1893,6 +1903,30 @@
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') renderSearch();
     else renderHome();
+  }
+
+  /* ---- installable app ----
+     Registered only over http(s): the single-file build and file:// copies have
+     no sw.js beside them, and a failed registration there is noise, not news. */
+  var installPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    installPrompt = e;
+  });
+  window.addEventListener('appinstalled', function () { installPrompt = null; });
+  function installable() { return !!installPrompt; }
+  function promptInstall() {
+    if (!installPrompt) return Promise.resolve(false);
+    var p = installPrompt;
+    installPrompt = null;
+    p.prompt();
+    return p.userChoice.then(function (c) { return c && c.outcome === 'accepted'; },
+      function () { return false; });
+  }
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* offline support unavailable */ });
+    });
   }
 
   window.addEventListener('hashchange', route);

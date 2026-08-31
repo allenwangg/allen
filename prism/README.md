@@ -16,6 +16,7 @@ Prism is a visual micro-learning app in the spirit of [Imprint](https://imprinta
 - **Adaptive practice** — quick-fire quiz remixes drawn from lessons you've completed, weighted toward the lessons your review history marks as shakiest, per course or across the library; a **match-the-pairs bonus round** after every lesson; **mid-lesson resume** so leaving never loses your place; a 30-day XP history and a first-visit tour.
 - **32 hand-drawn SVG illustrations** set in soft pastel scenes and tinted per course; four themes (system / light / **pastel** / dark); full keyboard controls (1–4 to answer, Enter to continue, Esc to exit).
 - **Swipe to advance** — cards follow your finger, tilt, and fly out past the threshold or spring back; **a mastery map** on every course page shows what you have actually retained (Solid / Growing / Shaky) from how your review cards are holding up, not merely what you have visited.
+- **Installs like an app, works with no signal** — a web app manifest and a service worker put Prism on your home screen, full-screen and offline: the whole library, your progress and every review are available on a plane. The worker precaches the app shell as one atomic set and is stamped with a content hash at ship time, so new content never serves stale code.
 - **Mobile-first ergonomics** — safe-area insets, touch-action tuning, and layouts audited at phone widths; **backup & restore** moves progress between devices via the clipboard.
 - **Zero dependencies, no build step required** — plain HTML/CSS/JS. Progress persists in `localStorage`.
 
@@ -59,5 +60,7 @@ node test/perf.mjs       # timings at full library size (load, search, stats, me
 | `js/sfx.js` | Synthesized WebAudio sound effects |
 | `js/data/courses.js` | All course content (structured card data) |
 | `css/app.css` | Design system: tokens for all four themes, every component |
+| `sw.js` | Service worker: precached shell, offline routing, versioned caches |
+| `manifest.webmanifest` | Install metadata: icons, shortcuts, standalone display |
 
 Keyboard shortcuts: `1–4` answer/grade · `Enter`/`Space` continue/flip · `Esc` exit.

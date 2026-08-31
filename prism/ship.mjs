@@ -1,7 +1,8 @@
 // Prism — merge any newly-authored courses, validate, rebuild and report.
 // Usage: node ship.mjs [stagedDir]   (default: the session scratchpad staging dir)
-import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync, mkdirSync, renameSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,6 +29,9 @@ function complete(c) {
 }
 
 const added = [], updated = [], rejected = [];
+// Merged files move to applied/ so a later run cannot re-apply a stale copy over
+// a hand-edit in courses.js. Incomplete ones stay put for the author to finish.
+const applied = join(staged, 'applied');
 if (existsSync(staged)) {
   for (const f of readdirSync(staged).filter(f => /^course-.*\.json$/.test(f)).sort()) {
     let c;
@@ -36,6 +40,8 @@ if (existsSync(staged)) {
     if (!complete(c)) { rejected.push(c.id || f); continue; }
     if (byId.has(c.id)) { courses[byId.get(c.id)] = c; updated.push(c.id); }
     else { courses.push(c); byId.set(c.id, courses.length - 1); added.push(c.id); }
+    mkdirSync(applied, { recursive: true });
+    renameSync(join(staged, f), join(applied, f));
   }
 }
 
@@ -56,6 +62,17 @@ console.log(`added ${added.length}${added.length ? ': ' + added.join(', ') : ''}
 if (updated.length) console.log(`updated ${updated.length}: ${updated.join(', ')}`);
 if (rejected.length) console.log(`REJECTED (incomplete, left staged): ${rejected.join(', ')}`);
 console.log(`library: ${courses.length} courses · ${nl} lessons · ${nc} cards · ${nr} flashcards`);
+
+// stamp the service worker with a hash of everything it precaches, so shipping
+// new content retires every previously cached copy instead of serving it forever
+const SW = join(root, 'sw.js');
+let sw = readFileSync(SW, 'utf8');
+const shell = [...sw.matchAll(/^  '\.\/(.+)',?$/gm)].map(m => m[1]).filter(f => f && existsSync(join(root, f)));
+const hash = createHash('sha256');
+for (const f of shell) hash.update(readFileSync(join(root, f)));
+const stamp = hash.digest('hex').slice(0, 12);
+const stamped = sw.replace(/var VERSION = '[^']*';/, `var VERSION = '${stamp}';`);
+if (stamped !== sw) { writeFileSync(SW, stamped); console.log(`sw.js stamped ${stamp} (${shell.length} precached files)`); }
 
 execSync('node ' + join(root, 'validate.mjs'), { stdio: 'inherit' });
 execSync('node ' + join(root, 'build.mjs'), { stdio: 'inherit' });

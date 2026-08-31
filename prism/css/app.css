@@ -562,6 +562,17 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 
 /* ---------------- backup ---------------- */
 
+/* install prompt — only rendered when the browser says the app is installable,
+   so it never sits there as a button that does nothing */
+.install-row {
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  margin-top: 16px; padding: 12px 14px; font-size: 13px;
+  border: 1px solid var(--accent-line); border-radius: 14px;
+  background: var(--accent-soft);
+}
+.install-row .btn { flex: none; }
+.install-note { color: var(--mut); }
+
 .backup { margin-top: 16px; font-size: 13px; }
 .backup summary { cursor: pointer; font-weight: 700; color: var(--mut); }
 .backup summary:hover { color: var(--ink); }
