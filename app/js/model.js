@@ -32,8 +32,31 @@ export const SEVERITY = [
   { value: 4, label: 'Very bad', short: 'Bad' },
 ];
 export const SEVERITY_MAX = 4;
+export const MAX_SYMPTOMS = 12;
 
-/** A symptom id is a slug the user never sees; the label is theirs. */
+/**
+ * A symptom id is opaque and permanent; the label is the user's and is freely
+ * editable.
+ *
+ * Deriving the id from the label was a data-corruption bug. validateSymptoms
+ * dedupes on id, so "Joint pain (knee)" and "joint-pain-knee" both slugged to
+ * the same id and the second was silently dropped — and on import, a symptom
+ * with no id got a label-derived one that could collide with an unrelated
+ * existing symptom and merge two different histories into one series.
+ *
+ * An opaque id also means renaming a symptom keeps its history, which is what
+ * anyone would expect.
+ */
+export function newSymptomId(existingIds = [], rand = Math.random) {
+  const taken = new Set(existingIds);
+  for (let i = 0; i < 50; i++) {
+    const id = 's_' + rand().toString(36).slice(2, 10).padEnd(8, '0');
+    if (!taken.has(id)) return id;
+  }
+  return 's_' + Date.now().toString(36);
+}
+
+/** Legacy slug form, kept only so ids already on disk still validate. */
 export function symptomId(label) {
   const base = String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 32);
   return 's_' + (base || 'symptom');
@@ -48,7 +71,9 @@ export function validateSymptoms(raw) {
     if (!item || typeof item !== 'object') continue;
     const label = typeof item.label === 'string' ? item.label.trim().slice(0, 60) : '';
     if (!label) continue;
-    const id = typeof item.id === 'string' && /^s_[a-z0-9-]{1,32}$/.test(item.id) ? item.id : symptomId(label);
+    const id = typeof item.id === 'string' && /^s_[a-z0-9-]{1,32}$/.test(item.id)
+      ? item.id
+      : newSymptomId([...seen]);
     if (seen.has(id)) continue;
     seen.add(id);
     out.push({
@@ -66,7 +91,7 @@ export function validateSymptoms(raw) {
   const primaries = out.filter((x) => x.primary);
   if (primaries.length > 1) for (const x of primaries.slice(1)) x.primary = false;
   if (out.length && !primaries.length) out[0].primary = true;
-  return out.slice(0, 12);
+  return out.slice(0, MAX_SYMPTOMS);
 }
 
 /** Severity map on an entry, cleaned. */
@@ -74,11 +99,21 @@ export function validateSymptomRatings(raw, symptoms) {
   const known = new Set((symptoms || []).map((s) => s.id));
   const out = {};
   if (!raw || typeof raw !== 'object') return out;
-  for (const [id, v] of Object.entries(raw)) {
+  let kept = 0;
+  for (const [id, v] of Object.entries(Object(raw))) {
+    // Shape check runs even when no symptom list is available. Guarding the
+    // whitelist behind `known.size` meant a null list disabled it entirely,
+    // and an import file could write unbounded arbitrary keys into every
+    // entry. Import order is catalogue-then-entries, so a null list still has
+    // to mean "shape-check only" rather than "drop everything" — otherwise
+    // restoring a backup would erase its own ratings.
+    if (!/^s_[a-z0-9-]{1,32}$/.test(id)) continue;
     if (known.size && !known.has(id)) continue;      // dropped symptom
+    if (kept >= MAX_SYMPTOMS) break;
     const n = Number(v);
     if (!Number.isFinite(n)) continue;
     out[id] = clamp(Math.round(n), 0, SEVERITY_MAX);
+    kept++;
   }
   return out;
 }
@@ -187,7 +222,7 @@ export function emptyEntry(key = dateKey(), symptoms = []) {
  * Returns { entry, errors } — never throws, because a bad import should
  * degrade gracefully rather than nuke the user's history.
  */
-export function validateEntry(raw) {
+export function validateEntry(raw, symptoms = null) {
   const errors = [];
   if (!raw || typeof raw !== 'object') return { entry: null, errors: ['not an object'] };
   if (typeof raw.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.date)) {
@@ -199,7 +234,7 @@ export function validateEntry(raw) {
     createdAt: Number(raw.createdAt) || Date.now(),
     updatedAt: Date.now(),
     notes: typeof raw.notes === 'string' ? raw.notes.slice(0, 2000) : '',
-    symptoms: validateSymptomRatings(raw.symptoms, null),
+    symptoms: validateSymptomRatings(raw.symptoms, symptoms),
   };
   for (const [name, f] of Object.entries(FIELDS)) {
     const val = raw[name];

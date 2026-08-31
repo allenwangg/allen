@@ -11,13 +11,13 @@ found while validating it, because both are the kind that ship silently.
 ## The pipeline
 
 Outcomes are the things you want explained: the symptoms you named, plus mood,
-energy, sleep quality, stress and the two heart measures. **Each symptom is
-corrected as its own family**, separately from the wellness outcomes. Pooling
-them would mean that tracking a second symptom makes the app worse at
-explaining the first, which is exactly backwards — the symptoms are the reason
-anyone is here. This is the standard primary/secondary-endpoint split: FDR is
-still controlled at q within every family, and no family's power depends on how
-many other questions you happen to be asking.
+energy, sleep quality, stress and the two heart measures. **One
+Benjamini–Hochberg correction covers all of them.**
+
+An earlier version corrected within each symptom separately, reasoning that
+pooling would mean tracking a second symptom made the app worse at explaining
+the first. That reasoning was about thresholds on paper and did not survive
+measurement — see Guard 8.
 
 For every (driver, outcome, lag) combination, where lag ∈ {0, 1, 2} days:
 
@@ -201,6 +201,30 @@ guards existed, fooled this engine).
   a habit that helps only over months will not appear. That is the accepted cost
   of not reporting eleven false things in order to catch one slow true one.
 - **Three lags only.** Effects with a longer delay are invisible.
+
+## Guard 8 — one error budget, not six
+
+Splitting the correction per symptom gave each symptom its own 10% false-
+discovery budget, and the person sees the union of those budgets. Measured over
+40 datasets containing no real effect:
+
+| scheme | noise datasets leaking a finding | recall on a planted effect |
+|---|---|---|
+| per-symptom families | 3–4 of 40 | 100% |
+| one global correction | **0 of 40** | 98–100% |
+
+Holding the effect fixed while growing the symptom count from 1 to 10 — 288 to
+666 hypotheses — the global correction kept **100% recall at every count with
+zero leaks**, while the family split leaked at every count above one.
+
+The dilution the split was designed to prevent does not happen, because the
+permutation tail gives a genuine effect a p-value around 1e-8, which clears
+q/m with enormous margin even at 666 tests. The split was solving a problem
+that only exists for effects too weak to be worth reporting, and paying for it
+with fabricated findings.
+
+The symptom groups survive in the UI, but only as reporting ("48 relationships
+tested for your migraine, none held up"). They are not correction boundaries.
 
 ## Where correlation stops
 

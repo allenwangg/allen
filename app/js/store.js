@@ -187,25 +187,48 @@ export const store = {
 
   /** Full export — the user's data is theirs, and saying so converts. */
   async exportAll() {
-    const [entries, profile, entitlement] = await Promise.all([
-      this.allEntries(), this.getMeta('profile'), this.getMeta('entitlement'),
+    const [entries, profile, symptoms, trials] = await Promise.all([
+      this.allEntries(), this.getMeta('profile'), this.getMeta('symptoms'), this.getMeta('trials'),
     ]);
     return {
       app: 'VitalArc',
       exportedAt: new Date().toISOString(),
-      schemaVersion: 3,
+      schemaVersion: 4,
       profile,
-      entitlement,
+      // Without the catalogue, a reimport restores every 0-4 rating and loses
+      // every definition — the entries keep orphaned s_* keys that resolve to
+      // no outcome and no label, which is a silent total loss of the feature's
+      // meaning. It is the export's most important field, not an extra.
+      symptoms,
+      trials,
       entries,
     };
   },
 
   async importAll(payload, validate) {
     if (!payload || !Array.isArray(payload.entries)) throw new Error('Not a VitalArc export file.');
+
+    // Catalogue first: the entries reference it, and validateSymptomRatings
+    // needs it to know which ids are real.
+    if (Array.isArray(payload.symptoms)) {
+      const local = (await this.getMeta('symptoms')) || [];
+      const incoming = payload.symptoms;
+      const byId = new Map();
+      for (const s of incoming) if (s && s.id) byId.set(s.id, s);
+      // A local rename wins: the user renamed it here for a reason.
+      for (const s of local) if (s && s.id) byId.set(s.id, { ...byId.get(s.id), ...s });
+      await this.setMeta('symptoms', [...byId.values()]);
+    }
+    if (Array.isArray(payload.trials)) {
+      const local = (await this.getMeta('trials')) || [];
+      const seen = new Set(local.map((t) => t && t.id));
+      await this.setMeta('trials', [...local, ...payload.trials.filter((t) => t && t.id && !seen.has(t.id))]);
+    }
     const good = [];
     const problems = [];
+    const catalogue = (await this.getMeta('symptoms')) || null;
     for (const raw of payload.entries) {
-      const { entry, errors } = validate(raw);
+      const { entry, errors } = validate(raw, catalogue);
       if (entry) { good.push(entry); if (errors.length) problems.push({ date: raw.date, errors }); }
       else problems.push({ date: raw && raw.date, errors });
     }

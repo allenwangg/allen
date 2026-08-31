@@ -6,7 +6,7 @@
  * beyond swapping innerHTML and restoring focus.
  */
 
-import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, symptomId } from './model.js';
+import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
@@ -386,7 +386,10 @@ const actions = {
     const input = document.getElementById('new-symptom');
     const label = (input?.value || '').trim();
     if (!label) { toast('Give it a name first.'); return; }
-    if (state.symptoms.some((s) => s.id === symptomId(label))) { toast('You already track that.'); return; }
+    // Compare labels, not ids. Ids are opaque now, so an id derived from the
+    // label matches nothing and this check silently stopped working.
+    const norm = (x) => x.trim().toLowerCase();
+    if (state.symptoms.some((s) => norm(s.label) === norm(label))) { toast('You already track that.'); return; }
     const next = validateSymptoms([...state.symptoms, { label }]);
     if (next.length === state.symptoms.length) { toast('You can track up to 12 symptoms.'); return; }
     state.symptoms = next;
@@ -495,7 +498,7 @@ async function saveDraft() {
     toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
-  const { entry } = validateEntry(state.draft);
+  const { entry } = validateEntry(state.draft, state.symptoms);
   if (!entry) { toast('Could not save — invalid date.'); return false; }
   try {
     await store.putEntry(entry);

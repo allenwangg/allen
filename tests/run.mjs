@@ -64,8 +64,9 @@ t('validateSymptoms dedupes, trims, and elects one primary', () => {
     { label: 'Migraine' }, { label: 'Bloating' }, { label: '   ' },
     { label: 'Migraine' }, { label: 'x'.repeat(200) },
   ]);
-  eq(out.length, 3);
-  eq(out[0].id, 's_migraine');
+  eq(out.length, 4, 'labels are no longer deduped by slug; only blanks are dropped');
+  ok(/^s_[a-z0-9]+$/.test(out[0].id), 'ids are opaque, not slugs');
+  eq(new Set(out.map((x) => x.id)).size, out.length, 'ids must be distinct');
   eq(out.filter((x) => x.primary).length, 1, 'exactly one primary');
   ok(out[2].label.length <= 60, 'labels are bounded');
 });
@@ -73,14 +74,26 @@ t('validateSymptoms caps the list', () => {
   const many = Array.from({ length: 40 }, (_, i) => ({ label: 'sym' + i }));
   ok(validateSymptoms(many).length <= 12);
 });
-t('symptomId is a safe slug', () => {
-  eq(symptomId('Joint pain!! (left knee)'), 's_joint-pain-left-knee');
-  ok(/^s_[a-z0-9-]+$/.test(symptomId('  ??  ')) || symptomId('  ??  ') === 's_symptom');
+t('two differently-written symptoms never merge', () => {
+  // A label-derived id merged "Joint pain (knee)" and "joint-pain-knee" into
+  // one series and silently dropped the second symptom.
+  const out = validateSymptoms([{ label: 'Joint pain (knee)' }, { label: 'joint-pain-knee' }]);
+  eq(out.length, 2);
+  ok(out[0].id !== out[1].id);
+});
+t('a hostile import cannot write arbitrary keys into an entry', () => {
+  const junk = Object.fromEntries(Array.from({ length: 50 }, (_, i) => ['s_junk' + i, 3])
+    .concat([['__proto__', 1], ['not a valid id', 2], ['s_ok', 9]]));
+  const { entry } = validateEntry({ date: '2026-01-01', symptoms: junk });
+  ok(Object.keys(entry.symptoms).length <= 12, 'must be capped');
+  for (const k of Object.keys(entry.symptoms)) ok(/^s_[a-z0-9-]{1,32}$/.test(k), 'bad id kept: ' + k);
+  ok(Object.values(entry.symptoms).every((v) => v >= 0 && v <= SEVERITY_MAX), 'ratings clamped');
 });
 t('symptom ratings are clamped and unknown ids dropped', () => {
   const syms = validateSymptoms([{ label: 'Migraine' }]);
-  const r = validateSymptomRatings({ s_migraine: 99, s_nope: 2, junk: 'x' }, syms);
-  eq(r.s_migraine, SEVERITY_MAX);
+  const id = syms[0].id;
+  const r = validateSymptomRatings({ [id]: 99, s_nope: 2, junk: 'x' }, syms);
+  eq(r[id], SEVERITY_MAX);
   eq(r.s_nope, undefined);
 });
 t('a logged day defaults its symptoms to none, not to missing', () => {
@@ -88,67 +101,82 @@ t('a logged day defaults its symptoms to none, not to missing', () => {
   // Leaving it absent would build a series made only of bad days, which
   // correlates with nothing.
   const syms = validateSymptoms([{ label: 'Migraine' }]);
-  eq(emptyEntry('2026-01-01', syms).symptoms.s_migraine, 0);
+  eq(emptyEntry('2026-01-01', syms).symptoms[syms[0].id], 0);
 });
 t('symptoms survive the validateEntry round-trip', () => {
-  const { entry } = validateEntry({ date: '2026-01-01', symptoms: { s_migraine: 3 } });
-  eq(entry.symptoms.s_migraine, 3);
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const { entry } = validateEntry({ date: '2026-01-01', symptoms: { [syms[0].id]: 3 } }, syms);
+  eq(entry.symptoms[syms[0].id], 3);
 });
 
-t('a symptom is explained, and noise symptoms stay silent', () => {
-  const syms = validateSymptoms([{ label: 'Migraine' }, { label: 'Bloating' }, { label: 'Joint pain' }]);
-  const es = synth(120, 11, (e, i, r) => {
-    e.sleepHours = 6 + r() * 2.5;
-    e.steps = Math.round(3000 + r() * 8000);
-    e.exerciseMinutes = Math.round(r() * 60);
-    e.proteinGrams = Math.round(70 + r() * 60);
-    e.produceServings = Math.round(r() * 6);
-    e.ultraProcessed = Math.round(r() * 6);
-    e.fiberGrams = Math.round(12 + r() * 20);
-    e.alcoholUnits = Math.round(r() * 4);
-    e.caffeineAfter2pm = Math.round(r() * 4) * 50;
-    e.sunlightMinutes = Math.round(r() * 70);
-    e.stress = 1 + Math.floor(r() * 5);
-    e.mood = 1 + Math.floor(r() * 5);
-    e.energy = 1 + Math.floor(r() * 5);
-    e.sleepQuality = 1 + Math.floor(r() * 5);
-    e.symptoms = {
-      s_migraine: 0,
-      s_bloating: r() < 0.3 ? 1 + Math.floor(r() * 3) : 0,
-      's_joint-pain': r() < 0.25 ? 1 + Math.floor(r() * 3) : 0,
-    };
-  });
-  const rn = mulberry32(78);
-  for (let i = 1; i < es.length; i++) {
-    es[i].symptoms.s_migraine = Math.max(0, Math.min(4,
-      Math.round(es[i - 1].alcoholUnits * 0.75 + (rn() - 0.5) * 1.4)));
-  }
-  const res = discover(es, { symptoms: syms });
-  const hit = res.findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === 's_migraine');
-  ok(hit, 'the planted symptom driver must be found');
-  ok(hit.r > 0.5, 'and at roughly its true strength, got ' + hit.r);
-  ok(!res.findings.some((f) => f.outcome === 's_bloating' || f.outcome === 's_joint-pain'),
-     'symptoms with no real driver must stay silent');
-});
-
-t('each symptom is corrected as its own family', () => {
-  // Pooling every symptom into one BH family would mean that tracking a second
-  // symptom makes the app worse at explaining the first. Each family must be
-  // sized by its own hypotheses only.
+t('SYMPTOMS: a real driver is found and noise symptoms stay silent', () => {
+  // Sampled across many datasets, not one seed. The single-seed version of
+  // this test passed while the engine was leaking fabricated findings on
+  // 3-4 of every 40 noise datasets, which is exactly the failure a one-seed
+  // test cannot see.
   const syms = validateSymptoms([{ label: 'A' }, { label: 'B' }, { label: 'C' }]);
-  const es = synth(90, 12, (e, i, r) => {
+  const ids = syms.map((x) => x.id);
+  const primary = ids[0];
+  const build = (seed, plant) => {
+    const es = synth(150, seed, (e, i, r) => {
+      e.sleepHours = 6 + r() * 2.5;
+      e.steps = Math.round(3000 + r() * 8000);
+      e.exerciseMinutes = Math.round(r() * 60);
+      e.proteinGrams = Math.round(70 + r() * 60);
+      e.produceServings = Math.round(r() * 6);
+      e.ultraProcessed = Math.round(r() * 6);
+      e.fiberGrams = Math.round(12 + r() * 20);
+      e.alcoholUnits = Math.round(r() * 4);
+      e.caffeineAfter2pm = Math.round(r() * 4) * 50;
+      e.sunlightMinutes = Math.round(r() * 70);
+      e.stress = 1 + Math.floor(r() * 5);
+      e.mood = 1 + Math.floor(r() * 5);
+      e.energy = 1 + Math.floor(r() * 5);
+      e.sleepQuality = 1 + Math.floor(r() * 5);
+      e.symptoms = {};
+      for (const id of ids) e.symptoms[id] = r() < 0.25 ? 1 + Math.floor(r() * 4) : 0;
+    });
+    if (plant) {
+      const rn = mulberry32(seed * 7 + 3);
+      for (let i = 1; i < es.length; i++) {
+        es[i].symptoms[primary] = Math.max(0, Math.min(4,
+          Math.round(es[i - 1].alcoholUnits * plant + (rn() - 0.5) * 1.6)));
+      }
+    }
+    return es;
+  };
+
+  let hits = 0, leaks = 0;
+  const T = 15;
+  for (let s = 0; s < T; s++) {
+    const found = discover(build(70000 + s, 0.5), { symptoms: syms }).findings;
+    if (found.some((f) => f.outcome === primary && f.driver === 'alcoholUnits')) hits++;
+    const noise = discover(build(80000 + s, 0), { symptoms: syms }).findings;
+    if (noise.some((f) => f.outcome.startsWith('s_'))) leaks++;
+  }
+  console.log(`\n  [symptoms] planted driver found ${hits}/${T}; noise datasets leaking ${leaks}/${T}`);
+  ok(hits / T >= 0.8, `recall too low: ${hits}/${T}`);
+  ok(leaks === 0, `fabricated symptom findings on noise: ${leaks}/${T}`);
+});
+
+t('ONE correction covers everything the user is shown', () => {
+  // Reverted from a per-symptom split. Each family having its own 10% error
+  // budget meant the user saw the union of six budgets, and the engine leaked
+  // fabricated findings on noise; measurement showed the split bought no
+  // recall in exchange. Groups survive for reporting only.
+  const syms = validateSymptoms([{ label: 'A' }, { label: 'B' }, { label: 'C' }]);
+  const ids = syms.map((x) => x.id);
+  const es = synth(120, 12, (e, i, r) => {
     e.sleepHours = 6 + r() * 2.5;
     e.steps = Math.round(3000 + r() * 8000);
     e.alcoholUnits = Math.round(r() * 4);
     e.mood = 1 + Math.floor(r() * 5);
-    e.symptoms = { s_a: Math.floor(r() * 3), s_b: Math.floor(r() * 3), s_c: Math.floor(r() * 3) };
+    e.symptoms = {};
+    for (const id of ids) e.symptoms[id] = Math.floor(r() * 3);
   });
   const res = discover(es, { symptoms: syms });
-  const symFamilies = res.families.filter((f) => f.kind === 'symptom');
-  eq(symFamilies.length, 3, 'one family per symptom');
-  const sizes = new Set(symFamilies.map((f) => f.tested));
-  eq(sizes.size, 1, 'each symptom family is the same size regardless of the others');
-  ok(symFamilies[0].tested < res.tested, 'a family must be smaller than the pooled grid');
+  eq(res.families.filter((f) => f.kind === 'symptom').length, 3, 'one reporting group per symptom');
+  eq(res.families.reduce((a, f) => a + f.tested, 0), res.tested, 'groups partition the grid exactly');
 });
 
 /* ================= curves ================= */
@@ -873,7 +901,7 @@ t('does not flag ordinary mood', () => {
 });
 t('flags a symptom that has been severe for two weeks', () => {
   const syms = validateSymptoms([{ label: 'Migraine' }]);
-  const es = safetySeries(20, (e) => { e.symptoms.s_migraine = 4; e.mood = 4; }, syms);
+  const es = safetySeries(20, (e) => { e.symptoms[syms[0].id] = 4; e.mood = 4; }, syms);
   ok(checkFlags(es, { symptoms: syms }, '2026-08-30').some((f) => f.id.startsWith('persistent-symptom')));
 });
 t('a dismissed flag stays quiet, then returns', () => {
@@ -888,7 +916,7 @@ t('no rule ever names a condition or reassures', () => {
     e.bodyweightKg = 90 - (i / n) * 12;
     e.restingHR = 55 + Math.round((i / n) * 25);
     e.mood = 1;
-    e.symptoms.s_migraine = 4;
+    e.symptoms[syms[0].id] = 4;
   }, syms);
   const flags = checkFlags(extreme, { symptoms: syms }, '2026-08-30');
   ok(flags.length > 0, 'setup check: this person should be flagged');
@@ -903,7 +931,7 @@ t('never shows more than two flags at once', () => {
     e.bodyweightKg = 90 - (i / n) * 12;
     e.restingHR = 55 + Math.round((i / n) * 25);
     e.mood = 1;
-    e.symptoms.s_a = 4; e.symptoms.s_b = 4;
+    for (const sy of syms) e.symptoms[sy.id] = 4;
   }, syms);
   ok(checkFlags(es, { symptoms: syms }, '2026-08-30').length <= 2);
 });
@@ -927,7 +955,7 @@ t('flags do not fire on people who are simply unwell-ish', () => {
       e.bodyweightKg = 78 + Math.sin(i / 9) * 0.9 + (rnd() - 0.5) * 1.2;
       e.restingHR = Math.round(60 + Math.sin(i / 13) * 3 + (rnd() - 0.5) * 5);
       e.mood = 2 + Math.floor(rnd() * 4);
-      e.symptoms.s_migraine = rnd() < 0.25 ? 1 + Math.floor(rnd() * 3) : 0;
+      e.symptoms[syms[0].id] = rnd() < 0.25 ? 1 + Math.floor(rnd() * 3) : 0;
     }, syms);
     if (checkFlags(es, { symptoms: syms }, '2026-08-30').length) flagged++;
   }

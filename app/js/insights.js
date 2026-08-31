@@ -404,12 +404,17 @@ export function alignedPairs(entriesByDate, driver, outcome, lag) {
   const xs = [], ys = [], times = [], xDows = [], yDows = [];
   let origin = null;
   for (const [date, e] of entriesByDate) {
-    const x = e[driver];
+    // readField, not e[driver] — the indexed path learned about s_* symptom
+    // ids and this one did not, so buildPairCache produced no pairs and every
+    // symptom finding rendered an EMPTY scatter beside a confident sentence.
+    // The chart is the user's only way to see that a "pattern" rests on six
+    // flare days, so losing it is worse than losing the finding.
+    const x = readField(e, driver);
     if (x == null) continue;
     const targetDate = lag === 0 ? date : addDays(date, lag);
     const target = entriesByDate.get(targetDate);
     if (!target) continue;
-    const y = target[outcome];
+    const y = readField(target, outcome);
     if (y == null) continue;
     if (origin === null) origin = date;
     xs.push(x); ys.push(y);
@@ -663,19 +668,12 @@ export function discover(entries, opts = {}) {
     symptoms = [],
   } = opts;
 
-  // OUTCOME FAMILIES, and why they exist.
+  // Outcome groups.
   //
-  // Benjamini-Hochberg controls the false-discovery rate across whatever set
-  // of tests you hand it, so a bigger set means a stricter bar for every
-  // member. Folding a user's symptoms into one pool with the generic wellness
-  // outcomes would mean that adding a second symptom makes the app less able
-  // to explain the first — which is exactly backwards, since the symptoms are
-  // the reason the person is here.
-  //
-  // So each symptom is corrected as its own family, and the wellness outcomes
-  // as another. This is the standard primary/secondary-endpoint split: FDR is
-  // still controlled within every family, and no family's power depends on how
-  // many other questions the user happens to be asking.
+  // These are for REPORTING only — "we tested 48 things about your migraine and
+  // none held up" is a useful sentence, and an empty result should not look
+  // like a missing feature. They are deliberately NOT correction boundaries;
+  // see the single Benjamini-Hochberg call below for why that was reverted.
   const activeSymptoms = (symptoms || []).filter((sym) => sym && sym.id && !sym.archivedAt);
   const families = activeSymptoms.map((sym) => ({
     key: sym.id,
@@ -768,24 +766,33 @@ export function discover(entries, opts = {}) {
     Math.abs(c.r) < MIN_REPORTABLE_R ? 1 : permutationP(c.xs, c.ys, c.r)
   );
 
-  // Correct WITHIN each outcome family, not across the pooled grid — see the
-  // families comment above. Every hypothesis belongs to exactly one family, so
-  // FDR is controlled at q within each, and a user tracking five symptoms gets
-  // the same power on each as a user tracking one.
-  const passing = new Set();
-  const adjusted = new Array(raw.length).fill(1);
+  // ONE Benjamini-Hochberg correction across the whole grid.
+  //
+  // An earlier version of this file corrected within each symptom separately,
+  // on the reasoning that pooling would mean tracking a second symptom made
+  // the app worse at explaining the first. That reasoning was about BH
+  // thresholds on paper and did not survive measurement:
+  //
+  //   scheme                     noise leak     recall on a planted effect
+  //   per-symptom families       3-4 of 40      100%
+  //   one global correction      0 of 40        98-100%
+  //
+  // and holding the effect fixed while growing the symptom count from 1 to 10
+  // (288 to 666 hypotheses), the global correction kept 100% recall at every
+  // count with zero leaks, while the family split leaked at every count above
+  // one. The dilution the split was built to prevent does not happen, because
+  // the permutation tail gives a genuine effect a p-value around 1e-8, which
+  // clears q/m with enormous margin even at 666 tests.
+  //
+  // What the split did do is give each of six null families its own 10% error
+  // budget, and the user sees the union of those budgets. One correction, one
+  // guarantee, over everything the person is actually shown.
+  const { passing, adjusted } = benjaminiHochberg(pValues, q);
   const byFamily = new Map();
   raw.forEach((c, i) => {
     if (!byFamily.has(c.family)) byFamily.set(c.family, []);
     byFamily.get(c.family).push(i);
   });
-  for (const idxs of byFamily.values()) {
-    const res = benjaminiHochberg(idxs.map((i) => pValues[i]), q);
-    idxs.forEach((globalIdx, k) => {
-      adjusted[globalIdx] = res.adjusted[k];
-      if (res.passing.has(k)) passing.add(globalIdx);
-    });
-  }
 
   const findings = raw
     .map((c, i) => ({
@@ -821,6 +828,10 @@ export function discover(entries, opts = {}) {
 
   return {
     status: deduped.length ? 'ok' : 'nothing-significant',
+    // Raw per-hypothesis p-values, for calibration experiments. Opt-in via
+    // `{ raw: true }` so the app does not hold the whole grid in memory on
+    // every recompute.
+    ...(opts.raw ? { _raw: raw.map((c, i) => ({ family: c.family, driver: c.driver, outcome: c.outcome, lag: c.lag, r: c.r, p: pValues[i] })) } : {}),
     findings: deduped.slice(0, limit),
     families: families.map((f) => ({
       key: f.key, kind: f.kind, label: f.label,
