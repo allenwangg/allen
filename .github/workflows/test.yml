@@ -1,0 +1,41 @@
+name: Tests
+
+# The suite drives the real page in headless Chromium and exercises the Stripe
+# ledger reader against a mock, so a green check here means the board actually
+# works — not merely that it built.
+on:
+  # A commit on a PR branch is already covered by the pull_request event. Listing
+  # those branches under push as well starts a second run for the same commit —
+  # and a shared concurrency group only cancels one of them, leaving a
+  # "cancelled" check on the PR. So push covers the default branches only.
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+# Successive pushes to the same branch supersede each other; the older run is
+# no longer interesting once a newer commit exists.
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright + Chromium
+        working-directory: outranked
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Run the suite
+        working-directory: outranked
+        run: node test/run-tests.mjs
