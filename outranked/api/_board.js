@@ -48,6 +48,9 @@ async function fetchBids(key) {
   for (let page = 0; page < MAX_PAGES; page++) {
     if (Date.now() > deadline) { partial = true; break; }
     const qs = new URLSearchParams({ limit: "100" });
+    // Needed to see refunds and disputes: neither changes payment_status, so
+    // without the charge a refunded bid would hold its rank forever.
+    qs.append("expand[]", "data.payment_intent.latest_charge");
     if (startingAfter) qs.set("starting_after", startingAfter);
 
     const r = await fetch(`${STRIPE_API}?${qs}`, {
@@ -59,7 +62,13 @@ async function fetchBids(key) {
     const rows = body.data || [];
     for (const s of rows) {
       if (s.payment_status !== "paid") continue;
-      const amount = majorUnits(s.amount_total || 0, s.currency);
+      const charge = s.payment_intent && s.payment_intent.latest_charge;
+      // A lost dispute means the money is gone; rank must go with it.
+      if (charge && charge.disputed) continue;
+      const refunded = charge ? (charge.amount_refunded || 0) : 0;
+      const net = (s.amount_total || 0) - refunded;
+      if (net <= 0) continue;
+      const amount = majorUnits(net, s.currency);
       if (amount < 1) continue;
       bids.push({
         id: s.id,

@@ -181,6 +181,10 @@
       "pass": true
     },
     {
+      "name": "the leaderboard shows names, and never scrolls sideways, on phones",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -205,18 +209,26 @@
       "pass": true
     },
     {
+      "name": "a refunded or disputed payment loses its rank",
+      "pass": true
+    },
+    {
+      "name": "a hostile listing name cannot hijack the marketing robot's posts",
+      "pass": true
+    },
+    {
       "name": "public ledger page renders a listing's payments without leaking full session IDs",
       "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 100,
-    "medianDOMContentLoadedms": 74.2,
-    "medianLoadms": 12502.8,
+    "medianFCPms": 116,
+    "medianDOMContentLoadedms": 78,
+    "medianLoadms": 12471.7,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 97655,
-    "gzipBytes": 29235
+    "htmlBytes": 99155,
+    "gzipBytes": 29738
   }
 }

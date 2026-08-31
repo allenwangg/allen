@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { readFileSync, writeFileSync, statSync, existsSync } from "node:fs";
 import { gzipSync } from "node:zlib";
-import { fileURLToPath } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Resolve Playwright from wherever it lives: a global install (this dev
@@ -694,6 +694,33 @@ await test("a committed defend budget rides the ledger and offers a one-tap reta
     "defend watch must go quiet once the retake costs more than the committed budget");
 });
 
+await test("the leaderboard shows names, and never scrolls sideways, on phones", async () => {
+  // .who carries min-width:0 so its ellipsis works, which also let the 1fr track
+  // collapse: measured 0px wide at 320 and 16px at 360, i.e. a leaderboard
+  // showing every listing's rank and price and none of their names.
+  for (const width of [320, 360, 390, 430]) {
+    const mctx = await browser.newContext({ viewport: { width, height: 800 } });
+    const mp = await mctx.newPage();
+    await mp.goto(url + "?nosim", { waitUntil: "networkidle" });
+    await mp.waitForTimeout(300);
+    const m = await mp.evaluate(() => {
+      const row = document.querySelector(".row:not(.msg)");
+      const who = row && row.querySelector(".who");
+      const nm = row && row.querySelector(".nm");
+      return {
+        whoW: who ? Math.round(who.getBoundingClientRect().width) : -1,
+        nmText: nm ? (nm.textContent || "").trim() : "",
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    await mctx.close();
+    assert(m.whoW >= 120,
+      `at ${width}px the listing name column is ${m.whoW}px — the board would show no names`);
+    assert(m.nmText.length > 0, `at ${width}px the top listing rendered no name`);
+    assert(m.overflow <= 0, `at ${width}px the page scrolls sideways by ${m.overflow}px`);
+  }
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -819,6 +846,61 @@ await test("a zero-decimal currency is not credited 100x", async () => {
   assert(by.cs_jpy === 5000, `JPY 5000 is 5000 yen, credited as ${by.cs_jpy}`);
   assert(by.cs_usd === 50, `USD 5000 cents is $50, credited as ${by.cs_usd}`);
   assert(by.cs_kwd === 5, `KWD is three-decimal: 5000 fils is 5 dinar, credited as ${by.cs_kwd}`);
+});
+
+await test("a refunded or disputed payment loses its rank", async () => {
+  // Stripe does not change payment_status on a refund or a lost dispute, so
+  // without reading the charge a refunded bid would hold the crown forever.
+  const mock = createServer((req, res) => {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ has_more: false, data: [
+      { id: "cs_kept", payment_status: "paid", amount_total: 10000, currency: "usd", created: 10,
+        client_reference_id: "b64." + b64("Honest Co|honest.io|"),
+        payment_intent: { latest_charge: { amount_refunded: 0, disputed: false } } },
+      { id: "cs_refunded", payment_status: "paid", amount_total: 90000, currency: "usd", created: 20,
+        client_reference_id: "b64." + b64("Refund Co|refund.io|"),
+        payment_intent: { latest_charge: { amount_refunded: 90000, disputed: false } } },
+      { id: "cs_partial", payment_status: "paid", amount_total: 10000, currency: "usd", created: 30,
+        client_reference_id: "b64." + b64("Partial Co|partial.io|"),
+        payment_intent: { latest_charge: { amount_refunded: 4000, disputed: false } } },
+      { id: "cs_disputed", payment_status: "paid", amount_total: 50000, currency: "usd", created: 40,
+        client_reference_id: "b64." + b64("Chargeback Co|cb.io|"),
+        payment_intent: { latest_charge: { amount_refunded: 0, disputed: true } } },
+    ] }));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+  delete require.cache[require.resolve(join(root, "api", "_board.js"))];
+  const fresh = require(join(root, "api", "_board.js"));
+  const bids = await fresh.fetchBids("sk_test_x");
+  mock.close();
+  delete process.env.STRIPE_API_BASE;
+
+  const ids = bids.map(b => b.id);
+  assert(!ids.includes("cs_refunded"), "a fully refunded payment still holds a place on the board");
+  assert(!ids.includes("cs_disputed"), "a disputed (charged-back) payment still holds a place on the board");
+  const partial = bids.find(b => b.id === "cs_partial");
+  assert(partial && partial.amount === 60,
+    `a partial refund should leave only what was kept ($60), got ${partial && partial.amount}`);
+  const kept = bids.find(b => b.id === "cs_kept");
+  assert(kept && kept.amount === 100, `an untouched $100 payment should stand, got ${kept && kept.amount}`);
+});
+
+await test("a hostile listing name cannot hijack the marketing robot's posts", async () => {
+  // $5 buys a listing name, and that name is pasted into a post published from
+  // the operator's own X account. It must not be able to tag someone, link
+  // anywhere, or reshape the post. (The sanitiser lives in its own module
+  // because daily-post.mjs runs its whole posting flow at import time.)
+  const { safeName } = await import(pathToFileURL(join(root, "scripts", "safe-name.mjs")).href);
+  const hostile = "@jack http://evil.example" + String.fromCharCode(10) + "FREE #crypto $TSLA evil.co";
+  const got = safeName(hostile);
+  assert(!/@/.test(got), `mention survived into a post: "${got}"`);
+  assert(!/https?:|evil/.test(got), `link survived into a post: "${got}"`);
+  assert(!/[\n\r]/.test(got), `newline survived, letting a name restructure the post: "${got}"`);
+  assert(!/#|[$]/.test(got), `hashtag or cashtag survived into a post: "${got}"`);
+  assert(safeName("x".repeat(400)).length === 30, "names must be hard-capped at 30 chars");
+  assert(safeName("ShipFast") === "ShipFast", "an ordinary name must pass through untouched");
+  assert(safeName("") === "Anonymous", "an empty name must fall back, not render blank");
 });
 
 await test("public ledger page renders a listing's payments without leaking full session IDs", async () => {
