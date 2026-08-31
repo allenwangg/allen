@@ -58,6 +58,7 @@ jobs:
           node test/features.mjs
           node test/polish.mjs
           node test/pwa.mjs
+          node test/contrast.mjs
 
       # Not a gate — the numbers are printed so a regression is visible in the log.
       - name: Performance snapshot

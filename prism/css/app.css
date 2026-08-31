@@ -19,9 +19,9 @@
   --accent-line: hsl(var(--ah) 60% 50% / .35);
   --good: #1e9e6a;
   --good-soft: #1e9e6a1c;
-  --bad: #d64550;
+  --bad: #d1404b;   /* AA on surface */
   --bad-soft: #d6455019;
-  --gold: #b3790e;
+  --gold: #a26800;   /* AA on surface */
   --on-status: #ffffff;
   --flame: #b55015;
   --think: #6a48c8;
@@ -822,7 +822,7 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
   --surface: #ffffff;
   --surface-2: #f6f1f8;
   --ink: #3b3552;
-  --mut: #7a7392;
+  --mut: #736c8b;   /* AA on surface */
   --line: #ece4f2;
   --accent: hsl(var(--ah) 58% 56%);
   --accent-strong: hsl(var(--ah) 52% 44%);
@@ -830,9 +830,9 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
   --accent-line: hsl(var(--ah) 55% 62% / .38);
   --good: #3aa07a;
   --good-soft: #3aa07a1f;
-  --bad: #d9738a;
+  --bad: #b9536a;   /* AA on surface */
   --bad-soft: #d9738a1f;
-  --gold: #b8863a;
+  --gold: #9d6b1f;   /* AA on surface */
   --on-status: #ffffff;
   --flame: #d1734a;
   --think: #8a6fd0;
