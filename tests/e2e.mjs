@@ -180,6 +180,99 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- the symptom lifecycle ---");
+{
+  const lctx = await browser.newContext();
+  const lp = await lctx.newPage();
+  lp.on('pageerror', e => errors.push('LIFECYCLE PAGEERROR: ' + e.message));
+  await lp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await lp.waitForTimeout(700);
+
+  const ids = await lp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, dateKey, validateSymptoms } = await import('./js/model.js');
+    const syms = validateSymptoms([{ label: 'Migraine' }]);
+    await store.setMeta('symptoms', syms);
+    const rows = []; let d = addDays(dateKey(), -29);
+    // Severity cycles 1..3 so no day holds the default of 0 — otherwise
+    // "the past day shows its own rating" passes even when it is showing
+    // today's blank draft.
+    for (let i = 0; i < 30; i++) { const e = emptyEntry(d, syms); e.symptoms[syms[0].id] = (i % 3) + 1; rows.push(e); d = addDays(d, 1); }
+    await store.putMany(rows);
+    return { migraine: syms[0].id };
+  });
+  await lp.reload({ waitUntil: 'networkidle' });
+  await lp.waitForTimeout(1200);
+
+  // Editing a past day must load THAT day's ratings.
+  await lp.evaluate(() => { location.hash = '#log'; });
+  await lp.waitForTimeout(600);
+  const past = await lp.evaluate(async (ids) => {
+    const { store } = await import('./js/store.js');
+    const { addDays, dateKey } = await import('./js/model.js');
+    const target = addDays(dateKey(), -6);
+    const stored = (await store.getEntry(target)).symptoms[ids.migraine];
+    const input = document.getElementById('log-date');
+    input.value = target;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 900));
+    const pressed = [...document.querySelectorAll(`[data-symptom="${ids.migraine}"]`)]
+      .find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.value;
+    return { stored, shown: pressed == null ? null : Number(pressed) };
+  }, ids);
+  if (past.stored === 0) throw new Error('test setup: pick a day whose rating is not the default');
+  if (past.shown !== past.stored) {
+    throw new Error(`editing a past day shows ${past.shown} but that day stored ${past.stored}`);
+  }
+  console.log('  a past day loads its own ratings:', past.stored);
+
+  // Adding a symptom must not backfill fabricated zeros onto old days.
+  await lp.evaluate(() => { location.hash = '#settings'; });
+  await lp.waitForTimeout(600);
+  await lp.fill('#new-symptom', 'Nausea');
+  await lp.click('[data-action="add-symptom"]');
+  await lp.waitForTimeout(900);
+  const added = await lp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { addDays, dateKey } = await import('./js/model.js');
+    const syms = await store.getMeta('symptoms');
+    const nausea = syms.find((s) => s.label === 'Nausea').id;
+    const old = await store.getEntry(addDays(dateKey(), -20));
+    return { count: syms.length, backfilled: nausea in (old.symptoms || {}) };
+  });
+  if (added.count !== 2) throw new Error('adding a symptom did not persist');
+  if (added.backfilled) {
+    throw new Error('a new symptom backfilled zeros onto days before it existed — inventing observations');
+  }
+  console.log('  a new symptom does not invent history:', true);
+
+  // Removing a symptom must keep the days already logged.
+  await lp.evaluate(() => { window.confirm = () => true; });
+  await lp.click(`[data-action="remove-symptom"][data-id="${ids.migraine}"]`);
+  await lp.waitForTimeout(900);
+  const removed = await lp.evaluate(async (ids) => {
+    const { store } = await import('./js/store.js');
+    const { addDays, dateKey } = await import('./js/model.js');
+    const e = await store.getEntry(addDays(dateKey(), -6));
+    return { catalogue: (await store.getMeta('symptoms')).length, kept: e.symptoms[ids.migraine] };
+  }, ids);
+  if (removed.catalogue !== 1) throw new Error('removing a symptom did not persist');
+  if (removed.kept === undefined) throw new Error('removing a symptom destroyed the days already logged');
+  console.log('  removing a symptom keeps its history:', removed.kept);
+
+  // And nothing may break afterwards — orphaned ids must not surface.
+  for (const view of ['today', 'insights', 'report', 'history', 'log']) {
+    await lp.evaluate((v) => { location.hash = '#' + v; }, view);
+    await lp.waitForTimeout(view === 'insights' ? 1800 : 600);
+    const t = await lp.$eval('#main', (e) => e.textContent);
+    if (/Something went wrong/.test(t)) throw new Error(view + ' throws after a symptom is removed');
+    if (/\bundefined\b/.test(t)) throw new Error(view + ' renders "undefined" after a symptom is removed');
+    if (/s_[a-z0-9]{6,}/.test(t)) throw new Error(view + ' leaks an orphaned symptom id');
+  }
+  console.log('  every view survives the removal');
+  await lctx.close();
+}
+
 console.log("\n--- phone layout and touch targets ---");
 {
   const mctx = await browser.newContext({
