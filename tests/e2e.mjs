@@ -180,6 +180,64 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- phone layout and touch targets ---");
+{
+  const mctx = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    colorScheme: 'dark',
+  });
+  const mp = await mctx.newPage();
+  mp.on('pageerror', e => errors.push('MOBILE PAGEERROR: ' + e.message));
+  await mp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await mp.waitForTimeout(600);
+
+  // ASSERT THE HARNESS FIRST. Touch emulation can silently fail to apply, and
+  // then every measurement below is of a desktop rendering at a narrow
+  // viewport — which looks like a real failure and is not. An earlier version
+  // of this check reported seventeen undersized sliders that were correctly
+  // sized on any actual phone.
+  const emulation = await mp.evaluate(() => ({
+    coarse: matchMedia('(pointer: coarse)').matches,
+    touchPoints: navigator.maxTouchPoints,
+  }));
+  if (!emulation.coarse || emulation.touchPoints < 1) {
+    throw new Error('touch emulation is not active (' + JSON.stringify(emulation) + '); measurements would be meaningless');
+  }
+
+  await mp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_PROFILE } = await import('./js/sample.js');
+    await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    await store.setMeta('profile', SAMPLE_PROFILE);
+    await store.putMany(generateSampleData());
+  });
+
+  for (const view of ['today', 'log', 'insights', 'trials', 'report', 'settings']) {
+    await mp.evaluate((v) => { location.hash = '#' + v; }, view);
+    await mp.reload({ waitUntil: 'networkidle' });
+    await mp.waitForTimeout(view === 'insights' ? 2500 : 900);
+    const r = await mp.evaluate(() => ({
+      coarse: matchMedia('(pointer: coarse)').matches,
+      overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+      small: [...document.querySelectorAll('#main button, #main input, #main select')]
+        .filter((e) => {
+          const b = e.getBoundingClientRect();
+          return b.width > 0 && b.height < 32;
+        })
+        .map((e) => `${e.tagName}${e.type ? '[' + e.type + ']' : ''} ${Math.round(e.getBoundingClientRect().height)}px`),
+    }));
+    if (!r.coarse) throw new Error(`${view}: touch emulation was lost mid-run`);
+    if (r.overflow) throw new Error(`${view}: the page scrolls sideways at 390px`);
+    if (r.small.length) {
+      throw new Error(`${view}: ${r.small.length} controls under 32px tall on a phone — ${r.small.slice(0, 3).join(', ')}`);
+    }
+    console.log(`  ${view}: no sideways scroll, all controls >= 32px`);
+  }
+  await mctx.close();
+}
+
 console.log("\n--- the report, printed ---");
 for (const scheme of ['light', 'dark']) {
   // The report is the thing you hand a doctor, and printing it from dark mode

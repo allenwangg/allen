@@ -429,6 +429,26 @@ textarea { min-height: 76px; resize: vertical; }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); }
 .empty-state h3 { color: var(--text); }
 
+/* TOUCH TARGETS.
+ *
+ * Measured on the log screen at 390px: seventeen range inputs 22px tall, the
+ * segmented buttons at 41px, and the day arrows at 35px. The sliders are the
+ * app's primary input and 22px is genuinely hard to grab on a phone. Everything
+ * interactive gets at least 44px of vertical target on a coarse pointer, which
+ * costs nothing on a mouse because the query does not apply there. */
+@media (pointer: coarse) {
+  input[type="range"] { height: 44px; }
+  input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: -10px; }
+  input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; }
+  .seg button { min-height: 44px; }
+  .sym-seg button { min-height: 44px; min-width: 44px; }
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 40px; padding: 8px 14px; }
+  input[type="number"], input[type="text"], input[type="date"], select { min-height: 44px; }
+  /* The day arrows sit beside a date input; keep the row from wrapping. */
+  .card-head .btn-sm { min-width: 44px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
