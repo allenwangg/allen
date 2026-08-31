@@ -540,9 +540,16 @@ export function indexEntries(sorted) {
 /** Read a field, transparently resolving `s_*` ids to the symptom map. */
 export function readField(entry, field) {
   if (!entry) return null;
-  if (field.charCodeAt(0) === 115 && field.charCodeAt(1) === 95) {   // "s_"
-    const v = entry.symptoms ? entry.symptoms[field] : undefined;
-    return v === undefined ? null : v;
+  if (field.charCodeAt(1) === 95) {                      // "s_" or "f_"
+    const c = field.charCodeAt(0);
+    if (c === 115) {                                      // symptom
+      const v = entry.symptoms ? entry.symptoms[field] : undefined;
+      return v === undefined ? null : v;
+    }
+    if (c === 102) {                                      // factor
+      const v = entry.factors ? entry.factors[field] : undefined;
+      return v === undefined ? null : v;
+    }
   }
   const v = entry[field];
   return v === undefined ? null : v;
@@ -666,7 +673,14 @@ export function discover(entries, opts = {}) {
     limit = 12,
     detrend: detrend_enabled = true,
     symptoms = [],
+    factors = [],
   } = opts;
+
+  // A user's own suspected causes are drivers alongside the built-in habits.
+  // Without them the app can only answer questions it thought of, which is no
+  // use to someone whose actual suspicion is dairy or a warm bedroom.
+  const activeFactors = (factors || []).filter((f) => f && f.id && !f.archivedAt);
+  const allDrivers = [...drivers, ...activeFactors.map((f) => f.id)];
 
   // Outcome groups.
   //
@@ -701,7 +715,7 @@ export function discover(entries, opts = {}) {
   }
 
   const raw = [];
-  for (const driver of drivers) {
+  for (const driver of allDrivers) {
     for (const outcome of outcomes) {
       if (driver === outcome) continue;
       for (const lag of lags) {
@@ -823,7 +837,7 @@ export function discover(entries, opts = {}) {
     const key = `${f.driver}|${f.outcome}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    deduped.push({ ...f, text: phrase(f, activeSymptoms) });
+    deduped.push({ ...f, text: phrase(f, activeSymptoms, activeFactors) });
   }
 
   return {
@@ -919,21 +933,30 @@ export function isLowerBetter(field) {
   // feeling fine". Omitting this inverted the verdict on every symptom
   // finding, so "more alcohol, more migraine" was reported as working for you.
   if (field.startsWith('s_')) return true;
+  // A user-defined factor has no inherent direction — the whole reason for
+  // tracking it is not knowing whether it helps or hurts. It is only ever a
+  // driver, so this is asked about it purely for the confound caution, and the
+  // honest answer there is "no idea".
+  if (field.startsWith('f_')) return false;
   return LOWER_IS_BETTER.has(field);
 }
 
 /** Display label for a field or a user-defined symptom. */
-export function labelFor(field, symptoms) {
+export function labelFor(field, symptoms, factors) {
   if (field.startsWith('s_')) {
     const s = (symptoms || []).find((x) => x.id === field);
     return s ? s.label : 'that symptom';
   }
+  if (field.startsWith('f_')) {
+    const f = (factors || []).find((x) => x.id === field);
+    return f ? f.label : 'that factor';
+  }
   return FIELDS[field]?.label || field;
 }
 
-export function phrase(f, symptoms = []) {
-  const dLabel = labelFor(f.driver, symptoms).toLowerCase();
-  const oLabel = labelFor(f.outcome, symptoms).toLowerCase();
+export function phrase(f, symptoms = [], factors = []) {
+  const dLabel = labelFor(f.driver, symptoms, factors).toLowerCase();
+  const oLabel = labelFor(f.outcome, symptoms, factors).toLowerCase();
   const when = f.lag === 0 ? 'the same day' : f.lag === 1 ? 'the next day' : `${f.lag} days later`;
 
   const outcomeBetterWhenHigher = !isLowerBetter(f.outcome);
@@ -941,7 +964,7 @@ export function phrase(f, symptoms = []) {
   const good = outcomeBetterWhenHigher === outcomeRises;
 
   // A symptom is rated 0-4, so its delta is in points like the other scales.
-  const unit = f.outcome.startsWith('s_') || FIELDS[f.outcome]?.unit === '/5'
+  const unit = f.outcome.startsWith('s_') || f.outcome.startsWith('f_') || FIELDS[f.outcome]?.unit === '/5'
     ? ' points'
     : ` ${FIELDS[f.outcome]?.unit || ''}`.trimEnd();
   const magnitude = f.practical

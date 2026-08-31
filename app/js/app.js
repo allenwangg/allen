@@ -6,13 +6,13 @@
  * beyond swapping innerHTML and restoring focus.
  */
 
-import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms } from './model.js';
+import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
-import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS } from './sample.js';
+import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
 import * as views from './ui.js';
 
 const VIEWS = {
@@ -46,6 +46,7 @@ const state = {
   dirty: false,
   sampleMode: false,
   symptoms: [],
+  factors: [],
   trials: [],
   trialDraft: { leverId: null, outcome: null, pairs: DEFAULT_PAIRS },
   trialVerdict: null,
@@ -59,6 +60,7 @@ const state = {
   entriesRev: 0,
   _insightsRev: -1,
   _insightsSymptoms: null,
+  _insightsFactors: null,
   // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
   // only ~140px tall on a phone and the trend line becomes unreadable. The
   // views pick chart dimensions from this instead.
@@ -108,11 +110,15 @@ function recompute() {
   // which call discover() directly — kept passing. Leaving it out of the key
   // meant adding or removing a symptom would not recompute.
   const symptomsKey = state.symptoms.map((x) => x.id).join(',');
-  if (state.entriesRev !== state._insightsRev || symptomsKey !== state._insightsSymptoms) {
-    state.insights = discover(state.entries, { symptoms: state.symptoms });
+  const factorsKey = state.factors.map((x) => x.id).join(',');
+  if (state.entriesRev !== state._insightsRev
+      || symptomsKey !== state._insightsSymptoms
+      || factorsKey !== state._insightsFactors) {
+    state.insights = discover(state.entries, { symptoms: state.symptoms, factors: state.factors });
     buildPairCache();
     state._insightsRev = state.entriesRev;
     state._insightsSymptoms = symptomsKey;
+    state._insightsFactors = factorsKey;
   }
 
   state.weekday = weekdayPattern(state.visible, (e) => scoreDay(e, ctx).score);
@@ -130,7 +136,7 @@ function recompute() {
 
   const running = state.trials.find((t) => t.status === 'running');
   state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
-    ? verdict(running, state.entries)
+    ? verdict(running, state.entries, state.factors)
     : null;
 }
 
@@ -345,6 +351,7 @@ const actions = {
     const outcome = d.outcome || (state.symptoms.find((s) => !s.archivedAt)?.id) || 'energy';
     const sym = state.symptoms.find((s) => s.id === outcome);
     const { trial, error } = createTrial({
+      factors: state.factors,
       leverId: d.leverId || 'no-late-caffeine',
       outcome,
       outcomeLabel: sym ? sym.label : (FIELDS[outcome]?.label || outcome),
@@ -361,7 +368,7 @@ const actions = {
   'finish-trial': async (el) => {
     const t = state.trials.find((x) => x.id === el.dataset.id);
     if (!t) return;
-    t.result = state.trialVerdict || verdict(t, state.entries);
+    t.result = state.trialVerdict || verdict(t, state.entries, state.factors);
     t.status = 'complete';
     t.endedAt = Date.now();
     await store.setMeta('trials', state.trials);
@@ -393,6 +400,32 @@ const actions = {
   },
 
   'dismiss-crisis': () => { state.crisis = false; render(); },
+
+  'add-factor': async () => {
+    const input = document.getElementById('new-factor');
+    const label = (input?.value || '').trim();
+    if (!label) { toast('Give it a name first.'); return; }
+    const norm = (x) => x.trim().toLowerCase();
+    if (state.factors.some((f) => norm(f.label) === norm(label))) { toast('You already track that.'); return; }
+    const next = validateFactors([...state.factors, { label }]);
+    if (next.length === state.factors.length) { toast('You can track up to 12 of these.'); return; }
+    state.factors = next;
+    await store.setMeta('factors', state.factors);
+    if (!state.draft.factors) state.draft.factors = {};
+    for (const f of state.factors) if (state.draft.factors[f.id] === undefined) state.draft.factors[f.id] = 0;
+    recompute(); render();
+    toast(`Now tracking ${label}`);
+  },
+
+  'remove-factor': async (el) => {
+    const fac = state.factors.find((f) => f.id === el.dataset.id);
+    if (!fac) return;
+    if (!confirm(`Stop tracking ${fac.label}? Days you already logged keep their entries.`)) return;
+    state.factors = validateFactors(state.factors.filter((f) => f.id !== el.dataset.id));
+    await store.setMeta('factors', state.factors);
+    recompute(); render();
+    toast(`Stopped tracking ${fac.label}`);
+  },
 
   'add-symptom': async () => {
     const input = document.getElementById('new-symptom');
@@ -439,7 +472,9 @@ const actions = {
     // Without the catalogue the generated ratings are orphaned ids, and the
     // tour would demonstrate the app without its main feature.
     await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    await store.setMeta('factors', SAMPLE_FACTORS);
     state.symptoms = SAMPLE_SYMPTOMS;
+    state.factors = SAMPLE_FACTORS;
     state.sampleMode = true;
     state.entries = await store.allEntries();
     state.entriesRev++;
@@ -456,8 +491,9 @@ const actions = {
     state.entriesRev++;
     state.sampleMode = false;
     state.symptoms = [];
+    state.factors = [];
     state.profile = { age: 35, weightKg: 75, heightCm: null };
-    state.draft = emptyEntry(dateKey(), state.symptoms);
+    state.draft = emptyEntry(dateKey(), state.symptoms, state.factors);
     state.dirty = false;
     recompute();
     go('log');
@@ -469,7 +505,7 @@ const actions = {
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
     state.entries = []; state.entriesRev++; state.profile = { age: 35, weightKg: 75, heightCm: null };
-    state.draft = emptyEntry(dateKey(), state.symptoms);
+    state.draft = emptyEntry(dateKey(), state.symptoms, state.factors);
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
     // beforeunload nagged about "unsaved changes" that no longer exist.
@@ -504,8 +540,12 @@ function download(filename, content, mime) {
 
 async function loadDraft(date) {
   const existing = await store.getEntry(date);
-  const blank = emptyEntry(date, state.symptoms);
-  state.draft = existing ? { ...blank, ...existing, symptoms: { ...blank.symptoms, ...(existing.symptoms || {}) } } : blank;
+  const blank = emptyEntry(date, state.symptoms, state.factors);
+  state.draft = existing
+    ? { ...blank, ...existing,
+        symptoms: { ...blank.symptoms, ...(existing.symptoms || {}) },
+        factors: { ...blank.factors, ...(existing.factors || {}) } }
+    : blank;
   state.dirty = false;
   recompute();
 }
@@ -515,7 +555,7 @@ async function saveDraft() {
     toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
-  const { entry } = validateEntry(state.draft, state.symptoms);
+  const { entry } = validateEntry(state.draft, state.symptoms, state.factors);
   if (!entry) { toast('Could not save — invalid date.'); return false; }
   try {
     await store.putEntry(entry);
@@ -549,6 +589,17 @@ function wire() {
       await actions[el.dataset.action](el);
       return;
     }
+    // Factor amount taps.
+    const fac = ev.target.closest('[data-factor][data-value]');
+    if (fac) {
+      ev.preventDefault();
+      if (!state.draft.factors) state.draft.factors = {};
+      state.draft.factors[fac.dataset.factor] = Number(fac.dataset.value);
+      state.dirty = true;
+      recompute(); render();
+      return;
+    }
+
     // Symptom severity taps.
     const sym = ev.target.closest('[data-symptom][data-value]');
     if (sym) {
@@ -606,7 +657,7 @@ function wire() {
 
   const running = state.trials.find((t) => t.status === 'running');
   state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
-    ? verdict(running, state.entries)
+    ? verdict(running, state.entries, state.factors)
     : null;
       updateLiveScore(t);
       return;
@@ -751,18 +802,20 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode, symptoms, trials, dismissedFlags] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
     store.getMeta('sampleMode'),
     store.getMeta('symptoms'),
+    store.getMeta('factors'),
     store.getMeta('trials'),
     store.getMeta('dismissedFlags'),
   ]);
 
   state.sampleMode = !!sampleMode;
   state.symptoms = validateSymptoms(symptoms || []);
+  state.factors = validateFactors(factors || []);
   state.trials = Array.isArray(trials) ? trials : [];
   state.dismissedFlags = (dismissedFlags && typeof dismissedFlags === 'object') ? dismissedFlags : {};
   state.entries = entries || [];

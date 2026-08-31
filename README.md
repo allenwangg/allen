@@ -16,7 +16,7 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 119 unit tests + the copy guard, no dependencies
+npm test          # 128 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run stamp-sw  # before deploying — see below
 ```
@@ -27,14 +27,19 @@ No build step. The app is ES modules served as they are.
 
 - **Your symptoms, named by you.** Migraine, bloating, joint pain, brain fog,
   low mood — whatever it actually is. Rated daily in one tap each.
+- **Your suspicions, named by you.** Dairy, a stuffy bedroom, screens after ten,
+  the days you drive to work. The twenty built-in habits are a guess at what
+  matters for most people; these are for what you actually think is going on,
+  and they enter the analysis exactly like the built-in ones.
 - **Finds what moves with them.** Lagged rank correlations across your own log,
   with time trends and weekly rhythms removed first, permutation-based
   p-values, and multiple-comparison correction done *per symptom* so tracking a
   second one never costs accuracy on the first.
 - **Tests a suspicion properly.** Block-randomised n-of-1 trials: pick one
-  change, pre-register what you are measuring, and get an exact randomisation
-  test at the end. This is the only part of the app that can support the
-  sentence "this helped".
+  change — including one of your own factors, as "avoid it" versus "carry on" —
+  pre-register what you are measuring, and get an exact randomisation test at
+  the end. This is the only part of the app that can support the sentence
+  "this helped".
 - **Knows when to send you elsewhere.** Conservative flags for patterns worth
   raising with a doctor — never a diagnosis, never reassurance.
 - **Prints for an appointment.** Chief complaint and timeline first, then
@@ -55,7 +60,7 @@ app/
   index.html            app shell
   css/app.css           design system, light + dark
   js/
-    model.js            day schema, symptoms, validation
+    model.js            day schema, symptoms, factors, validation
     engine.js           habit scoring from dose-response curves
     insights.js         correlation discovery and the statistics
     experiments.js      n-of-1 trial design, analysis and verdicts
@@ -66,7 +71,7 @@ app/
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  119 unit tests, a copy guard, a browser walkthrough
+tests/                  128 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.

@@ -10,6 +10,11 @@ found while validating it, because both are the kind that ship silently.
 
 ## The pipeline
 
+Drivers are the twenty built-in habits **plus any factors the user has named**
+— dairy, late screens, a long commute. Without those, the engine can only ever
+answer questions it thought of, which is no use to someone whose actual
+suspicion is not on the list.
+
 Outcomes are the things you want explained: the symptoms you named, plus mood,
 energy, sleep quality, stress and the two heart measures. **One
 Benjamini–Hochberg correction covers all of them.**

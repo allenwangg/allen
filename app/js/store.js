@@ -187,8 +187,9 @@ export const store = {
 
   /** Full export — the user's data is theirs, and saying so converts. */
   async exportAll() {
-    const [entries, profile, symptoms, trials] = await Promise.all([
-      this.allEntries(), this.getMeta('profile'), this.getMeta('symptoms'), this.getMeta('trials'),
+    const [entries, profile, symptoms, factors, trials] = await Promise.all([
+      this.allEntries(), this.getMeta('profile'), this.getMeta('symptoms'),
+      this.getMeta('factors'), this.getMeta('trials'),
     ]);
     return {
       app: 'VitalArc',
@@ -200,6 +201,7 @@ export const store = {
       // no outcome and no label, which is a silent total loss of the feature's
       // meaning. It is the export's most important field, not an extra.
       symptoms,
+      factors,
       trials,
       entries,
     };
@@ -219,6 +221,13 @@ export const store = {
       for (const s of local) if (s && s.id) byId.set(s.id, { ...byId.get(s.id), ...s });
       await this.setMeta('symptoms', [...byId.values()]);
     }
+    if (Array.isArray(payload.factors)) {
+      const local = (await this.getMeta('factors')) || [];
+      const byId = new Map();
+      for (const f of payload.factors) if (f && f.id) byId.set(f.id, f);
+      for (const f of local) if (f && f.id) byId.set(f.id, { ...byId.get(f.id), ...f });
+      await this.setMeta('factors', [...byId.values()]);
+    }
     if (Array.isArray(payload.trials)) {
       const local = (await this.getMeta('trials')) || [];
       const seen = new Set(local.map((t) => t && t.id));
@@ -227,8 +236,9 @@ export const store = {
     const good = [];
     const problems = [];
     const catalogue = (await this.getMeta('symptoms')) || null;
+    const factorList = (await this.getMeta('factors')) || null;
     for (const raw of payload.entries) {
-      const { entry, errors } = validate(raw, catalogue);
+      const { entry, errors } = validate(raw, catalogue, factorList);
       if (entry) { good.push(entry); if (errors.length) problems.push({ date: raw.date, errors }); }
       else problems.push({ date: raw && raw.date, errors });
     }

@@ -16,7 +16,7 @@
  * to find, plus a weekend rhythm so the weekday view has a story too.
  */
 
-import { emptyEntry, addDays, dateKey, validateSymptoms } from './model.js';
+import { emptyEntry, addDays, dateKey, validateSymptoms, validateFactors } from './model.js';
 
 /** Deterministic PRNG — the same example data every time, and testable. */
 function mulberry32(seed) {
@@ -41,13 +41,22 @@ export const SAMPLE_SYMPTOMS = validateSymptoms([
   { id: 's_bloating', label: 'Bloating' },
 ]);
 
-export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTOMS) {
+/**
+ * One suspicion, with a real answer waiting in the data. The tour needs to
+ * show that you can test your own hunch, not just the habits I chose.
+ */
+export const SAMPLE_FACTORS = validateFactors([
+  { id: 'f_dairy', label: 'Dairy' },
+  { id: 'f_screens', label: 'Screens after 10pm' },
+]);
+
+export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTOMS, factors = SAMPLE_FACTORS) {
   const rnd = mulberry32(20260830);
   const entries = [];
   let d = addDays(endDate, -(SAMPLE_DAYS - 1));
 
   for (let i = 0; i < SAMPLE_DAYS; i++) {
-    const e = emptyEntry(d, symptoms);
+    const e = emptyEntry(d, symptoms, factors);
     const p = i / (SAMPLE_DAYS - 1);            // slow improvement over the window
     const [y, m, dd] = d.split('-').map(Number);
     const dow = new Date(y, m - 1, dd).getDay();
@@ -110,7 +119,22 @@ export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTO
     e.symptoms.s_bloating = clamp04(Math.round(e.ultraProcessed * 1.3 - 5.8 + (rb() - 0.5) * 1.3));
   }
 
-  // Planted effect 4: late caffeine degrades that night's sleep quality.
+  // Planted effect 4: dairy is a real headache trigger for this person, on top
+  // of the drinking. Screens after 10pm is a red herring — a suspicion the data
+  // does not support, which is the more common outcome and worth showing.
+  const rd = mulberry32(777005);
+  for (const e of entries) {
+    e.factors.f_dairy = Math.max(0, Math.min(3, Math.round(rd() * 3.4 - 0.7)));
+    e.factors.f_screens = Math.max(0, Math.min(3, Math.round(rd() * 3.2 - 0.4)));
+  }
+  const rh2 = mulberry32(777006);
+  for (let i = 1; i < entries.length; i++) {
+    entries[i].symptoms.s_headache = clamp04(Math.round(
+      entries[i - 1].alcoholUnits * 0.55 + entries[i].factors.f_dairy * 0.55 + (rh2() - 0.5) * 1.4
+    ));
+  }
+
+  // Planted effect 5: late caffeine degrades that night's sleep quality.
   const rq = mulberry32(777002);
   for (const e of entries) {
     const base = 2.6 + (e.sleepHours - 6.5) * 0.35;

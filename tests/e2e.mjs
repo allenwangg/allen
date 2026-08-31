@@ -639,7 +639,22 @@ console.log("\n--- the example-data tour ---");
   if (!cards.some(c => /headache|bloating/i.test(c))) {
     throw new Error('the tour shows no symptom finding — it misses the whole point');
   }
-  console.log('  includes a symptom explanation:', true);
+  // The tour must also show that YOUR OWN suspicion can be tested, and that
+  // one of them came back clean — ruling a hunch out is the more common and
+  // more useful outcome, and a tour that only ever confirms is a sales pitch.
+  if (!cards.some(c => /dairy/i.test(c))) {
+    throw new Error('the tour never demonstrates a user-defined factor');
+  }
+  if (cards.some(c => /screens after 10pm/i.test(c))) {
+    throw new Error('the tour reports the red-herring factor — it should come back clean');
+  }
+  console.log('  includes a symptom explanation and a user factor:', true);
+
+  const facRows = await tp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    return ((await store.getMeta('factors')) || []).length;
+  });
+  if (facRows < 2) throw new Error('the tour did not load its factors');
 
   await tp.evaluate(() => { location.hash = '#log'; });
   await tp.waitForTimeout(700);
@@ -659,9 +674,10 @@ console.log("\n--- the example-data tour ---");
     return {
       entries: (await store.allEntries()).length,
       symptoms: ((await store.getMeta('symptoms')) || []).length,
+      factors: ((await store.getMeta('factors')) || []).length,
     };
   });
-  if (left.entries !== 0 || left.symptoms !== 0) {
+  if (left.entries !== 0 || left.symptoms !== 0 || left.factors !== 0) {
     throw new Error('clearing the tour left ' + JSON.stringify(left) + ' behind');
   }
   console.log('  clears to a genuinely empty app:', true);

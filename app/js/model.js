@@ -7,7 +7,7 @@
  */
 
 /** Schema version. Bump when the shape of a DayEntry changes; add a migration. */
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 /* ------------------------------------------------------------------ *
  * Symptoms — the things you actually have.
@@ -22,6 +22,79 @@ export const SCHEMA_VERSION = 4;
  * than as columns, because the set changes over time and old entries must
  * survive a symptom being added or retired.
  * ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ *
+ * Factors — the things you suspect.
+ *
+ * Symptoms let you name what is wrong. Factors are the other half: the thing
+ * you privately think might be causing it. The twenty habit fields are a
+ * reasonable guess at what matters for most people, and they are useless to
+ * someone whose actual suspicion is dairy, a particular medication's timing, a
+ * long commute, a room that is too warm, or their mother visiting.
+ *
+ * Without these, the app can only ever answer questions it thought of. A
+ * factor is stored exactly like a symptom — sparse map, opaque id, editable
+ * label — but it enters the analysis as a DRIVER rather than an outcome.
+ * ------------------------------------------------------------------ */
+
+/** How much of it there was. Deliberately vague: factors are not measurable. */
+export const AMOUNT = [
+  { value: 0, label: 'None',    short: '—' },
+  { value: 1, label: 'A little', short: 'Bit' },
+  { value: 2, label: 'Some',     short: 'Some' },
+  { value: 3, label: 'A lot',    short: 'Lot' },
+];
+export const AMOUNT_MAX = 3;
+export const MAX_FACTORS = 12;
+
+export function newFactorId(existingIds = [], rand = Math.random) {
+  const taken = new Set(existingIds);
+  for (let i = 0; i < 50; i++) {
+    const id = 'f_' + rand().toString(36).slice(2, 10).padEnd(8, '0');
+    if (!taken.has(id)) return id;
+  }
+  return 'f_' + Date.now().toString(36);
+}
+
+export function validateFactors(raw) {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const label = typeof item.label === 'string' ? item.label.trim().slice(0, 60) : '';
+    if (!label) continue;
+    const id = typeof item.id === 'string' && /^f_[a-z0-9-]{1,32}$/.test(item.id)
+      ? item.id
+      : newFactorId([...seen]);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({
+      id,
+      label,
+      createdAt: Number(item.createdAt) || Date.now(),
+      archivedAt: Number(item.archivedAt) || null,
+    });
+  }
+  return out.slice(0, MAX_FACTORS);
+}
+
+export function validateFactorAmounts(raw, factors) {
+  const known = new Set((factors || []).map((f) => f.id));
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  let kept = 0;
+  for (const [id, v] of Object.entries(Object(raw))) {
+    if (!/^f_[a-z0-9-]{1,32}$/.test(id)) continue;
+    if (known.size && !known.has(id)) continue;
+    if (kept >= MAX_FACTORS) break;
+    const n = Number(v);
+    if (!Number.isFinite(n)) continue;
+    out[id] = clamp(Math.round(n), 0, AMOUNT_MAX);
+    kept++;
+  }
+  return out;
+}
 
 /** Severity scale. 0 is a real observation ("didn't have it today"), not a gap. */
 export const SEVERITY = [
@@ -202,8 +275,8 @@ export function daysBetween(a, b) {
 }
 
 /** A blank day, pre-filled with sensible defaults so logging is fast. */
-export function emptyEntry(key = dateKey(), symptoms = []) {
-  const e = { date: key, v: SCHEMA_VERSION, createdAt: Date.now(), updatedAt: Date.now(), notes: '', symptoms: {} };
+export function emptyEntry(key = dateKey(), symptoms = [], factors = []) {
+  const e = { date: key, v: SCHEMA_VERSION, createdAt: Date.now(), updatedAt: Date.now(), notes: '', symptoms: {}, factors: {} };
   for (const [name, f] of Object.entries(FIELDS)) e[name] = f.default;
   // A logged day with a symptom left untouched means "didn't have it", which
   // is real information — a symptom series made only of the bad days would be
@@ -214,6 +287,11 @@ export function emptyEntry(key = dateKey(), symptoms = []) {
   if (Array.isArray(symptoms)) {
     for (const s of symptoms) if (s && s.id && !s.archivedAt) e.symptoms[s.id] = 0;
   }
+  // Same reasoning as symptoms: an untouched factor on a logged day means
+  // "none of that today", which is an observation the analysis needs.
+  if (Array.isArray(factors)) {
+    for (const f of factors) if (f && f.id && !f.archivedAt) e.factors[f.id] = 0;
+  }
   return e;
 }
 
@@ -222,7 +300,7 @@ export function emptyEntry(key = dateKey(), symptoms = []) {
  * Returns { entry, errors } — never throws, because a bad import should
  * degrade gracefully rather than nuke the user's history.
  */
-export function validateEntry(raw, symptoms = null) {
+export function validateEntry(raw, symptoms = null, factors = null) {
   const errors = [];
   if (!raw || typeof raw !== 'object') return { entry: null, errors: ['not an object'] };
   if (typeof raw.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.date)) {
@@ -235,6 +313,7 @@ export function validateEntry(raw, symptoms = null) {
     updatedAt: Date.now(),
     notes: typeof raw.notes === 'string' ? raw.notes.slice(0, 2000) : '',
     symptoms: validateSymptomRatings(raw.symptoms, symptoms),
+    factors: validateFactorAmounts(raw.factors, factors),
   };
   for (const [name, f] of Object.entries(FIELDS)) {
     const val = raw[name];

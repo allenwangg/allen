@@ -89,7 +89,47 @@ export const LEVERS = [
     blockDays: 3 },
 ];
 
-export const getLever = (id) => LEVERS.find((l) => l.id === id) || null;
+/**
+ * A user-tracked factor becomes a lever: "avoid it" versus "carry on".
+ *
+ * This is the point of the whole feature. Observing that your dairy days are
+ * worse can only ever be a hypothesis; deliberately not having it on randomly
+ * chosen blocks is what turns that into an answer. Without this, the app can
+ * only run experiments on the twenty habits I happened to think of.
+ */
+export function factorLever(factor) {
+  if (!factor || !factor.id) return null;
+  const name = factor.label.toLowerCase();
+  return {
+    id: `factor:${factor.id}`,
+    label: `Avoid ${name}`,
+    field: factor.id,
+    on: { op: 'lte', value: 0 },
+    off: { op: 'gte', value: 1 },
+    onText: `no ${name}`,
+    offText: `${name} as usual`,
+    note: 'Only worth testing if this is normally part of most weeks — otherwise the OFF blocks will not differ from the ON ones.',
+    userDefined: true,
+  };
+}
+
+/** All levers available to this user: the built-ins plus their own factors. */
+export function leversFor(factors = []) {
+  return [...LEVERS, ...(factors || []).filter((f) => f && !f.archivedAt).map(factorLever)];
+}
+
+export const getLever = (id, factors = []) => leversFor(factors).find((l) => l.id === id) || null;
+
+/** Read a lever's field, resolving user factors out of the sparse map. */
+export function readLeverField(entry, field) {
+  if (!entry) return null;
+  if (field.startsWith('f_')) {
+    const v = entry.factors ? entry.factors[field] : undefined;
+    return v === undefined ? null : v;
+  }
+  const v = entry[field];
+  return v === undefined ? null : v;
+};
 
 const meets = (value, rule) => {
   if (value == null || !rule) return false;
@@ -118,8 +158,8 @@ function rng(seed) {
  */
 export const floorP = (pairs) => 2 / Math.pow(2, pairs);
 
-export function createTrial({ leverId, outcome, outcomeLabel, pairs = DEFAULT_PAIRS, blockDays, startDate, seed }) {
-  const lever = getLever(leverId);
+export function createTrial({ leverId, outcome, outcomeLabel, pairs = DEFAULT_PAIRS, blockDays, startDate, seed, factors = [] }) {
+  const lever = getLever(leverId, factors);
   if (!lever) return { error: 'Unknown lever.' };
   if (!outcome) return { error: 'Pick something to measure first.' };
   if (pairs < MIN_PAIRS) {
@@ -195,8 +235,8 @@ export function daysRemaining(t, today = dateKey()) {
  * drank). Both are measured from the logged data, not from self-report about
  * self-report.
  */
-export function adherence(t, entries) {
-  const lever = getLever(t.leverId);
+export function adherence(t, entries, factors = []) {
+  const lever = getLever(t.leverId, factors);
   const byDate = new Map(entries.map((e) => [e.date, e]));
   let onTotal = 0, onMet = 0, offTotal = 0, offContrast = 0, logged = 0;
 
@@ -204,7 +244,7 @@ export function adherence(t, entries) {
     const e = byDate.get(date);
     if (!e) continue;
     logged++;
-    const v = e[lever.field];
+    const v = readLeverField(e, lever.field);
     if (arm === 'on') { onTotal++; if (meets(v, lever.on)) onMet++; }
     else { offTotal++; if (meets(v, lever.off)) offContrast++; }
   }
@@ -225,6 +265,10 @@ export function adherence(t, entries) {
 
 const readOutcome = (entry, field) => {
   if (!entry) return null;
+  if (field.startsWith('f_')) {
+    const v = entry.factors ? entry.factors[field] : undefined;
+    return v === undefined ? null : v;
+  }
   if (field.startsWith('s_')) {
     const v = entry.symptoms ? entry.symptoms[field] : undefined;
     return v === undefined ? null : v;
@@ -336,9 +380,9 @@ function lowerIsBetter(outcome) {
  * an app that treats that as a failure teaches people to keep testing until
  * something turns up, which is how you manufacture a false positive.
  */
-export function verdict(t, entries) {
-  const lever = getLever(t.leverId);
-  const adh = adherence(t, entries);
+export function verdict(t, entries, factors = []) {
+  const lever = getLever(t.leverId, factors);
+  const adh = adherence(t, entries, factors);
   const res = analyze(t, entries);
   const unit = t.outcome.startsWith('s_') ? '' : (FIELDS[t.outcome]?.unit === '/5' ? ' points' : '');
   const outcomeName = (t.outcomeLabel || t.outcome).toLowerCase();

@@ -7,9 +7,9 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY } from './model.js';
+import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
-import { LEVERS, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { LEVERS, leversFor, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
@@ -135,7 +135,7 @@ function symptomCard(state, symptoms) {
 /** One thing worth doing today — or the trial's instruction, which outranks it. */
 function todayFocus(state, running) {
   if (running) {
-    const lever = getLever(running.leverId);
+    const lever = getLever(running.leverId, state.factors);
     const arm = schedule(running).find((d) => d.date === dateKey())?.arm;
     if (arm) {
       return `<div class="card">
@@ -231,6 +231,7 @@ export function logView(state) {
   }).join('');
 
   const symptomCard = symptomLogCard(state);
+  const factorCard = factorLogCard(state);
 
   const d = parseDateKey(entry.date);
   const isToday = entry.date === dateKey();
@@ -254,6 +255,7 @@ export function logView(state) {
     <p class="subtle" style="margin-top:10px">The score updates as you type. Everything saves locally on this device — nothing is uploaded.</p>
   </div>
   ${symptomCard}
+  ${factorCard}
   ${groups}
   <div class="card">
     <div class="field"><div class="field-head"><label for="notes">Notes</label></div>
@@ -300,6 +302,44 @@ function symptomLogCard(state) {
   return `<div class="card">
     <div class="card-head"><h3>Symptoms</h3><div class="spacer"></div>
       <span class="subtle">Left alone means you didn't have it</span></div>
+    ${rows}
+  </div>`;
+}
+
+/**
+ * The daily factor card.
+ *
+ * Same shape as the symptom card, and for the same reason: someone tracking
+ * three suspicions should not face three more sliders. Amounts are coarse on
+ * purpose — "some dairy" is the honest resolution for this kind of thing, and
+ * a 0-10 scale would invite precision the observation cannot carry.
+ */
+function factorLogCard(state) {
+  const active = (state.factors || []).filter((f) => !f.archivedAt);
+  if (!active.length) {
+    return `<div class="card">
+      <div class="card-head"><h3>Things you suspect</h3></div>
+      <p class="muted">If you have a hunch — dairy, a warm bedroom, screen time late, a long
+      commute — track it here and the app will check whether your log agrees with you. The
+      built-in habits below are a guess at what matters for most people; this is for what
+      matters to you.</p>
+      <button class="btn btn-sm" data-action="goto" data-view="settings">Add something</button>
+    </div>`;
+  }
+  const rows = active.map((fac) => {
+    const v = state.draft.factors?.[fac.id] ?? 0;
+    return `<div class="sym-row">
+      <div class="sym-label" id="fac-${esc(fac.id)}">${esc(fac.label)}</div>
+      <div class="seg sym-seg" role="group" aria-labelledby="fac-${esc(fac.id)}">
+        ${AMOUNT.map((a) => `<button type="button" id="fac-${esc(fac.id)}-${a.value}"
+          data-factor="${esc(fac.id)}" data-value="${a.value}"
+          aria-pressed="${Number(v) === a.value}" title="${esc(a.label)}">${esc(a.short)}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="card-head"><h3>Things you suspect</h3><div class="spacer"></div>
+      <span class="subtle">Left alone means none of it</span></div>
     ${rows}
   </div>`;
 }
@@ -418,8 +458,8 @@ function insightCard(f, state) {
   // labelFor/isLowerBetter, not FIELDS/LOWER_IS_BETTER — a user-defined
   // symptom is in neither, so the axis read "s_pdyd4jt8" and the verdict came
   // out inverted (more alcohol, more migraine, labelled "working for you").
-  const driverLabel = labelFor(f.driver, state.symptoms);
-  const outcomeLabel = labelFor(f.outcome, state.symptoms);
+  const driverLabel = labelFor(f.driver, state.symptoms, state.factors);
+  const outcomeLabel = labelFor(f.outcome, state.symptoms, state.factors);
   const good = (!isLowerBetter(f.outcome)) === (f.r > 0);
   // Beneficial-looking correlations from harmful drivers (alcohol lowering
   // stress) are most likely confounds; the pill must not endorse the habit.
@@ -675,7 +715,7 @@ export function reportView(state) {
       <div class="table-wrap"><table class="table">
         <thead><tr><th>Change</th><th>Measured</th><th>Result</th><th class="num">p</th></tr></thead>
         <tbody>${trials.map((t) => {
-          const lever = getLever(t.leverId);
+          const lever = getLever(t.leverId, state.factors);
           return `<tr>
             <td>${esc(lever?.label || t.leverId)}</td>
             <td>${esc(t.outcomeLabel || t.outcome)}</td>
@@ -729,7 +769,7 @@ export function reportView(state) {
 }
 
 /** Human label for a field or symptom id. */
-const fieldLabel = (id, state) => labelFor(id, state.symptoms);
+const fieldLabel = (id, state) => labelFor(id, state.symptoms, state.factors);
 /* ================================================================== *
  * SETTINGS
  * ================================================================== */
@@ -752,6 +792,27 @@ export function settingsView(state) {
   return `
   <div class="card">
     <h1>Settings</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Things you suspect</h3></div>
+    <p class="muted">The twenty habits this app tracks by default are a guess at what matters for
+    most people. If your hunch is dairy, a stuffy bedroom, or the days you drive to work, add it
+    here — it goes into the analysis exactly like the built-in ones, and can be tested properly
+    as a trial.</p>
+    ${(state.factors || []).filter((f) => !f.archivedAt).length
+      ? (state.factors || []).filter((f) => !f.archivedAt).map((fac) => `<div class="sym-row">
+          <div class="sym-label">${esc(fac.label)}</div>
+          <div style="text-align:right">
+            <button class="btn btn-ghost btn-sm" data-action="remove-factor" data-id="${esc(fac.id)}">Remove</button>
+          </div>
+        </div>`).join('')
+      : '<p class="muted">Nothing yet.</p>'}
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <input type="text" id="new-factor" maxlength="60" placeholder="e.g. dairy, late screens, driving"
+        style="flex:1;min-width:200px" aria-label="Something you suspect">
+      <button class="btn" data-action="add-factor">Add</button>
+    </div>
   </div>
 
   <div class="card">
@@ -864,8 +925,9 @@ function newTrialCard(state) {
     </div>`;
   }
   const pairs = state.trialDraft?.pairs || DEFAULT_PAIRS;
-  const leverId = state.trialDraft?.leverId || LEVERS[0].id;
-  const lever = getLever(leverId);
+  const levers = leversFor(state.factors);
+  const leverId = state.trialDraft?.leverId || levers[0].id;
+  const lever = getLever(leverId, state.factors);
   const blockDays = lever.blockDays || 2;
   const days = pairs * 2 * blockDays;
 
@@ -875,7 +937,7 @@ function newTrialCard(state) {
       <div class="field">
         <div class="field-head"><label for="trial-lever">Change one thing</label></div>
         <select id="trial-lever" data-trial="leverId">
-          ${LEVERS.map((l) => `<option value="${esc(l.id)}" ${l.id === leverId ? 'selected' : ''}>${esc(l.label)}</option>`).join('')}
+          ${levers.map((l) => `<option value="${esc(l.id)}" ${l.id === leverId ? 'selected' : ''}>${esc(l.label)}${l.userDefined ? ' (yours)' : ''}</option>`).join('')}
         </select>
         ${lever.note ? `<p class="subtle" style="margin-top:6px">${esc(lever.note)}</p>` : ''}
       </div>
@@ -915,7 +977,7 @@ function trialOutcomeOptions(state) {
 }
 
 function activeTrialCard(state, t) {
-  const lever = getLever(t.leverId);
+  const lever = getLever(t.leverId, state.factors);
   const left = daysRemaining(t, dateKey());
   const done = left === 0;
   const todayArm = schedule(t).find((d) => d.date === dateKey())?.arm;
@@ -980,7 +1042,7 @@ function verdictBlock(v) {
 }
 
 function pastTrialRow(state, t) {
-  const lever = getLever(t.leverId);
+  const lever = getLever(t.leverId, state.factors);
   const v = t.result;
   const tone = v?.kind === 'helped' ? 'pill-good' : v?.kind === 'hurt' ? 'pill-bad' : 'pill-info';
   return `<div class="sym-row">

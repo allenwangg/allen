@@ -3,12 +3,12 @@
  * Covers the two things that must not break: scoring monotonicity and the
  * statistical honesty of the insight engine.
  */
-import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX } from '../app/js/model.js';
+import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX, validateFactors, validateFactorAmounts, AMOUNT_MAX } from '../app/js/model.js';
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
-import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
+import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, leversFor, factorLever, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
@@ -893,6 +893,82 @@ t('the trial verdict never says randomisation rules a confound out', () => {
   const all = `${v.headline} ${v.body} ${v.caveat || ''}`;
   ok(!/cannot explain|rules? out|proves/i.test(all), 'overclaimed causality: ' + all);
   ok(/by luck|still|single|one experiment/i.test(all), 'must admit the single-trial limit');
+});
+
+/* ================= factors ================= */
+t('factors validate like symptoms and cap out', () => {
+  const out = validateFactors([{ label: 'Dairy' }, { label: 'Late screens' }, { label: '  ' }]);
+  eq(out.length, 2);
+  ok(/^f_[a-z0-9]+$/.test(out[0].id), 'factor ids are opaque and namespaced');
+  eq(new Set(out.map((x) => x.id)).size, 2);
+  ok(validateFactors(Array.from({ length: 40 }, (_, i) => ({ label: 'f' + i }))).length <= 12);
+  const amounts = validateFactorAmounts({ [out[0].id]: 99, f_nope: 1, junk: 'x' }, out);
+  eq(amounts[out[0].id], AMOUNT_MAX);
+  eq(amounts.f_nope, undefined);
+});
+t('a logged day defaults its factors to none', () => {
+  const facs = validateFactors([{ label: 'Dairy' }]);
+  eq(emptyEntry('2026-01-01', [], facs).factors[facs[0].id], 0);
+});
+
+t('FACTORS: your own suspicion is tested, and a wrong one stays silent', () => {
+  // The point of the feature: before this, the app could only answer questions
+  // it had thought of. Someone whose actual suspicion is dairy got nothing.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const facs = validateFactors([{ label: 'Dairy' }, { label: 'Loud office' }]);
+  const sid = syms[0].id, dairy = facs[0].id, office = facs[1].id;
+  const es = synth(150, 5, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.energy = 1 + Math.floor(r() * 5);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.factors = { [dairy]: r() < 0.4 ? 1 + Math.floor(r() * 3) : 0,
+                  [office]: r() < 0.5 ? 1 + Math.floor(r() * 3) : 0 };
+    e.symptoms = { [sid]: 0 };
+  });
+  const rn = mulberry32(88);
+  for (let i = 1; i < es.length; i++) {
+    es[i].symptoms[sid] = Math.max(0, Math.min(4,
+      Math.round(es[i - 1].factors[dairy] * 1.05 + (rn() - 0.5) * 1.4)));
+  }
+  const res = discover(es, { symptoms: syms, factors: facs });
+  const hit = res.findings.find((f) => f.driver === dairy && f.outcome === sid);
+  ok(hit, 'the planted user factor must be found');
+  ok(!res.findings.some((f) => f.driver === office), 'the innocent factor must stay silent');
+  ok(!/[sf]_[a-z0-9]{6,}/.test(hit.text), 'raw ids must not leak into the sentence: ' + hit.text);
+  ok(/dairy/i.test(hit.text) && /migraine/i.test(hit.text), 'both must be named: ' + hit.text);
+});
+
+t('a factor becomes a trial lever and returns an honest verdict', () => {
+  // Correlation on a suspicion is still only a hypothesis. Being able to
+  // deliberately avoid it on random blocks is what makes it answerable.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const facs = validateFactors([{ label: 'Dairy' }]);
+  const sid = syms[0].id, did = facs[0].id;
+  eq(leversFor(facs).length, LEVERS.length + 1, 'the user factor joins the lever list');
+  const lever = factorLever(facs[0]);
+  ok(/^factor:/.test(lever.id) && lever.userDefined);
+
+  const run = (effect) => {
+    const { trial } = createTrial({ leverId: lever.id, outcome: sid, outcomeLabel: 'Migraine',
+      pairs: 7, startDate: '2026-05-01', seed: 4242, factors: facs });
+    const r = mulberry32(31);
+    const es = [];
+    for (let i = 0; i < trialDays(trial); i++) {
+      const date = addDays(trial.startDate, i);
+      const e = emptyEntry(date, syms, facs);
+      e.factors[did] = armForDate(trial, date) === 'on' ? 0 : 1 + Math.floor(r() * 3);
+      e.symptoms[sid] = Math.max(0, Math.min(4,
+        Math.round(0.7 + e.factors[did] * effect * 0.6 + (r() - 0.5) * 1.3)));
+      es.push(e);
+    }
+    return verdict(trial, es, facs);
+  };
+  eq(run(1.5).kind, 'helped', 'a real cause must be detected');
+  eq(run(0).kind, 'no-effect', 'an innocent suspicion must come back clean');
 });
 
 /* ================= safety ================= */
