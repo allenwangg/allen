@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 52 tests, run on CI |
+| Automated test suite | none public | ✅ 55 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -51,7 +51,7 @@ product titles, public click counts):
 | Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
 | Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 52/52 passing
+## 2. Functional correctness — 55/55 passing
 
 `node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
 the Stripe ledger reader exercised against a mock Stripe. This suite also runs
@@ -103,15 +103,18 @@ PASS  live Stripe ledger takes over the board and clears the demo seeds
 PASS  simulated traffic never runs on a live board
 PASS  going live stops the page calling itself a demo and drops fabricated champions
 PASS  a committed defend budget rides the ledger and offers a one-tap retake
+PASS  the leaderboard shows names, and never scrolls sideways, on phones
 PASS  API decodes both the encoded and legacy reference formats
 PASS  API ranks by cumulative payment, breaking ties by who paid first
 PASS  a cheap bid cannot hijack an established listing's link or decree
 PASS  a genuinely larger bid does take over the decree
 PASS  ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII
 PASS  a zero-decimal currency is not credited 100x
+PASS  a refunded or disputed payment loses its rank
+PASS  a hostile listing name cannot hijack the marketing robot's posts
 PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-52/52 tests passed
+55/55 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -120,10 +123,10 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **100 ms** |
-| DOMContentLoaded | **74 ms** |
+| First Contentful Paint | **116 ms** |
+| DOMContentLoaded | **78 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
-| Page weight | **95.4 KB raw / 28.5 KB gzipped** |
+| Page weight | **96.8 KB raw / 29.0 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
 | Backend | **none** — the board is computed from the Stripe ledger |
 

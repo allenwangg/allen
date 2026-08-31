@@ -20,6 +20,7 @@
 // unreachable, the robot stays quiet rather than inventing a milestone.
 
 import crypto from "node:crypto";
+import { safeName } from "./safe-name.mjs";
 
 const {
   X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET,
@@ -72,14 +73,15 @@ async function post(text) {
 /* ---------- read the board straight from the payment ledger ---------- */
 function decodeRef(ref) {
   if (!ref) return { name: "Anonymous" };
-  if (!/^b64\./.test(ref)) return { name: ref.split("_")[0] || "Anonymous" };
+  if (!/^b64\./.test(ref)) return { name: safeName(ref.split("_")[0]) };
   const body = ref.slice(4);
   if (!/^[A-Za-z0-9\-_]+$/.test(body)) return { name: "Anonymous" };
   try {
     const raw = Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
-    return { name: (raw.split("|")[0] || "Anonymous").slice(0, 30) };
+    return { name: safeName(raw.split("|")[0]) };
   } catch { return { name: "Anonymous" }; }
 }
+
 
 async function board() {
   let payload;
