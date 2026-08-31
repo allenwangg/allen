@@ -141,8 +141,10 @@ $('#costWrap').innerHTML = `
     <tbody>${INTAKE_CATEGORIES.map((c) => `
       <tr>
         <td style="padding-left:10px;color:var(--text-2)">${LABELS[c]}</td>
-        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-budget="${c}" placeholder="0"></td>
-        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-spent="${c}" placeholder="0"></td>
+        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-budget="${c}"
+              placeholder="0" aria-label="${LABELS[c]} — what you estimated"></td>
+        <td style="width:34%"><input class="num" type="number" step="0.01" min="0" data-spent="${c}"
+              placeholder="0" aria-label="${LABELS[c]} — what you actually paid"></td>
       </tr>`).join('')}</tbody>
   </table>`;
 
@@ -150,8 +152,8 @@ function addChange() {
   const row = document.createElement('div');
   row.className = 'change-row';
   row.innerHTML = `
-    <input data-ctitle placeholder="e.g. rot under the tub, extra outlets">
-    <input data-camount class="num" type="number" step="0.01" placeholder="Worth">
+    <input data-ctitle placeholder="e.g. rot under the tub, extra outlets" aria-label="What changed">
+    <input data-camount class="num" type="number" step="0.01" placeholder="Worth" aria-label="What it was worth">
     <label class="signed"><input type="checkbox" data-csigned> They signed</label>
     <button class="btn sm icon ghost" data-del title="Remove">✕</button>`;
   $('#changes').append(row);

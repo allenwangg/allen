@@ -14,9 +14,13 @@
   --border-strong: #cfc9c1;
   --text:          #1c1917;
   --text-2:        #57534e;
-  --text-3:        #8a8378;
+  --text-3:        #736c62;
 
   --accent:        #c2410c;
+  /* Text that sits ON the accent. The dark palette lightens the accent, so
+     white on it falls to 2.26:1 — this pairs ink with the light accent and
+     white with the dark one. */
+  --on-accent:     #ffffff;
   --accent-soft:   #fff1e9;
   --accent-line:   #f5c9ae;
 
@@ -36,6 +40,13 @@
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
   --row-h: 34px;
+
+  /* Measured at runtime by app.js. Hardcoding these drifted the moment a
+     button was added to the toolbar: the tabs overlapped the topbar and the
+     table header landed on top of the rows it labels. They also change on a
+     phone, where the topbar wraps to two lines. */
+  --topbar-h: 54px;
+  --chrome-h: 95px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -48,9 +59,10 @@
     --border-strong: #4a453f;
     --text:          #f2efeb;
     --text-2:        #b5aca2;
-    --text-3:        #8b8279;
+    --text-3:        #9d948a;
 
     --accent:        #fb923c;
+    --on-accent:     #1c1917;
     --accent-soft:   #2c1d12;
     --accent-line:   #6b3f1e;
 
@@ -69,8 +81,8 @@
 :root[data-theme="dark"] {
   --bg:#171614; --surface:#201e1b; --surface-2:#262320; --surface-3:#2e2a26;
   --border:#383430; --border-strong:#4a453f;
-  --text:#f2efeb; --text-2:#b5aca2; --text-3:#8b8279;
-  --accent:#fb923c; --accent-soft:#2c1d12; --accent-line:#6b3f1e;
+  --text:#f2efeb; --text-2:#b5aca2; --text-3:#9d948a;
+  --accent:#fb923c; --on-accent:#1c1917; --accent-soft:#2c1d12; --accent-line:#6b3f1e;
   --good:#4ade80; --good-soft:#142a1c; --warn:#fbbf24; --warn-soft:#2c2312;
   --bad:#f87171; --bad-soft:#2e1717;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
@@ -194,7 +206,7 @@ a { color: var(--accent); }
 .btn.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-weight: 550;
 }
 .btn.primary:hover { filter: brightness(1.07); background: var(--accent); }
@@ -222,7 +234,7 @@ kbd {
   padding: 0 18px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: sticky; top: 47px; z-index: 39;
+  position: sticky; top: var(--topbar-h); z-index: 39;
 }
 .tab {
   padding: 9px 14px;
@@ -277,7 +289,6 @@ kbd {
 
 /* ------------------------------------------------------------ items grid - */
 
-#itemsWrap, #actualsWrap, #coEditor { overflow-x: auto; }
 
 .items {
   width: 100%;
@@ -292,7 +303,7 @@ kbd {
   padding: 7px 8px;
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
-  position: sticky; top: 84px; z-index: 5;
+  position: sticky; top: var(--chrome-h); z-index: 5;
 }
 .items td {
   padding: 0 4px;
@@ -354,7 +365,7 @@ kbd {
 
 /* ----------------------------------------------------------- profit rail - */
 
-.profit-rail { position: sticky; top: 96px; }
+.profit-rail { position: sticky; top: calc(var(--chrome-h) + 12px); }
 
 .figure {
   display: flex; align-items: baseline; justify-content: space-between;
@@ -704,6 +715,17 @@ table.pr-table tr.group-head td {
 .status-chip.accepted { background: var(--good-soft); color: var(--good); border-color: transparent; }
 .status-chip.declined { background: var(--bad-soft);  color: var(--bad);  border-color: transparent; }
 
+/* Horizontal scroll ONLY where the grid genuinely cannot fit. An
+   overflow-x container is also a scroll container for position:sticky, so
+   applying it unconditionally re-anchored the sticky table header to this box
+   instead of the viewport — which pushed the header 95px DOWN, into the middle
+   of the rows it labels. Scoped to narrow viewports, and stickiness is dropped
+   there because it cannot resolve correctly inside a scroll container. */
+@media (max-width: 900px) {
+  #itemsWrap, #actualsWrap, #coEditor { overflow-x: auto; }
+  .items th { position: static; }
+}
+
 /* ---------------------------------------------------------------- print -- */
 
 /* Screen-hidden print targets. */
@@ -786,7 +808,7 @@ table.pr-table tr.group-head td {
   display: inline-grid; place-items: center;
   min-width: 17px; height: 17px; padding: 0 5px;
   border-radius: 999px;
-  background: var(--warn); color: #fff;
+  background: var(--warn); color: var(--on-warn, #1c1917);
   font-size: 10.5px; font-weight: 700;
   vertical-align: 1px;
 }

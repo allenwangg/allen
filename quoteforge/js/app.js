@@ -67,6 +67,8 @@ function boot() {
   });
 
   // A debounced save can still be pending when the tab goes away.
+  measureChrome();
+  window.addEventListener('resize', measureChrome);
   registerServiceWorker();
 
   window.addEventListener('pagehide', () => store.save({ immediate: true }));
@@ -75,6 +77,25 @@ function boot() {
   });
 
   render();
+}
+
+/**
+ * Publish the real heights of the sticky chrome as CSS variables.
+ *
+ * These were hardcoded and drifted the moment a button was added to the
+ * toolbar — the tabs sat 7px over the topbar and the table header landed on
+ * top of the rows it labels. Measuring also handles the phone layout, where
+ * the topbar wraps to two lines and no fixed number could be right for both.
+ */
+function measureChrome() {
+  const topbar = $('.topbar');
+  const tabs = $('.tabs');
+  if (!topbar || !tabs) return;
+  const top = Math.round(topbar.getBoundingClientRect().height);
+  const both = top + Math.round(tabs.getBoundingClientRect().height);
+  const root = document.documentElement.style;
+  root.setProperty('--topbar-h', `${top}px`);
+  root.setProperty('--chrome-h', `${both}px`);
 }
 
 /**
@@ -242,24 +263,27 @@ function renderItems(est, priced) {
     const marginClass = l.margin < 0 ? 'bad' : l.margin < 0.1 ? 'warn' : 'good';
     return `
 <tr data-id="${esc(item.id)}"${item.optional ? ' class="optional"' : ''}>
-  <td><input data-f="description" value="${esc(item.description)}" placeholder="Description"></td>
+  <td><input data-f="description" value="${esc(item.description)}" placeholder="Description"
+             aria-label="Description for line ${esc(item.description || 'item')}"></td>
   <td style="width:132px">
-    <select data-f="category">
+    <select data-f="category" aria-label="Category">
       ${CATEGORIES.map((c) => `<option value="${c}"${c === item.category ? ' selected' : ''}>${CATEGORY_LABELS[c]}</option>`).join('')}
     </select>
   </td>
-  <td style="width:86px"><input data-f="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}"></td>
+  <td style="width:86px"><input data-f="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}"
+             aria-label="Quantity"></td>
   <td style="width:72px">
-    <select data-f="unit">
+    <select data-f="unit" aria-label="Unit">
       ${UNITS.map((u) => `<option value="${u}"${u === item.unit ? ' selected' : ''}>${u}</option>`).join('')}
     </select>
   </td>
-  <td style="width:92px"><input data-f="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}"></td>
+  <td style="width:92px"><input data-f="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}"
+             aria-label="Unit cost"></td>
   <td style="width:74px">
     <input data-f="markup" class="num" type="number" step="1"
            value="${item.markup === null || item.markup === undefined ? '' : (item.markup * 100).toFixed(0)}"
            placeholder="${((store.state.settings.categoryMarkup[item.category] ?? store.state.settings.defaultMarkup) * 100).toFixed(0)}"
-           title="Markup %. Blank uses your category default.">
+           aria-label="Markup percent" title="Markup %. Blank uses your category default.">
   </td>
   <td class="computed">
     ${formatMoney(l.priceCents)}
@@ -695,6 +719,7 @@ function renderPriceBookList() {
         <span class="pb-cost">
           <input class="num pb-cost-input" type="number" step="0.01" min="0"
                  value="${i.unitCost}" data-cost="${esc(i.sku)}"
+                 aria-label="Your cost for ${esc(i.description)} per ${esc(i.unit)}"
                  title="Your cost per ${esc(i.unit)}">
           <span class="faint tiny">/${esc(i.unit)}</span>
           ${i.edited || i.custom
@@ -1293,9 +1318,9 @@ function renderMilestoneEditor() {
   $('#milestoneEditor').innerHTML = `
     ${est.milestones.map((m, i) => `
       <div style="display:grid;grid-template-columns:1fr 62px 28px;gap:6px;align-items:center;margin-bottom:6px">
-        <input value="${esc(m.label)}" data-ms="${i}" data-msf="label" placeholder="Milestone">
+        <input value="${esc(m.label)}" data-ms="${i}" data-msf="label" placeholder="Milestone" aria-label="Milestone name">
         <input class="num" type="number" step="1" min="0" max="100" data-ms="${i}" data-msf="percent"
-               value="${((Number(m.percent) || 0) * 100).toFixed(0)}">
+               value="${((Number(m.percent) || 0) * 100).toFixed(0)}" aria-label="Milestone percent">
         <button class="btn sm ghost" data-msdel="${i}" title="Remove">✕</button>
       </div>
       <div class="tiny faint" style="margin:-3px 0 8px 2px">${formatMoney(schedule[i]?.amountCents || 0)}</div>
@@ -1334,7 +1359,7 @@ function renderTermsEditor() {
   $('#termsEditor').innerHTML = `
     ${(est.terms || []).map((t, i) => `
       <div style="display:grid;grid-template-columns:1fr 28px;gap:6px;margin-bottom:6px">
-        <textarea data-term="${i}" rows="2" style="font-size:12px">${esc(t)}</textarea>
+        <textarea data-term="${i}" rows="2" style="font-size:12px" aria-label="Contract term ${i + 1}">${esc(t)}</textarea>
         <button class="btn sm ghost" data-termdel="${i}" title="Remove">✕</button>
       </div>`).join('')}
     <button class="btn sm" data-termreset style="margin-top:4px">Restore default terms</button>`;
@@ -1681,19 +1706,19 @@ function renderCOEditor(est, contract) {
       const l = priced.lines.find((x) => x.id === item.id);
       return `
       <tr data-coitem="${esc(item.id)}">
-        <td><input data-cif="description" value="${esc(item.description)}" placeholder="Description"></td>
+        <td><input data-cif="description" value="${esc(item.description)}" placeholder="Description" aria-label="Description"></td>
         <td style="width:132px">
-          <select data-cif="category">
+          <select data-cif="category" aria-label="Category">
             ${CATEGORIES.map((cat) => `<option value="${cat}"${cat === item.category ? ' selected' : ''}>${CATEGORY_LABELS[cat]}</option>`).join('')}
           </select>
         </td>
-        <td style="width:86px"><input data-cif="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}"></td>
+        <td style="width:86px"><input data-cif="qty" class="num" type="number" step="0.01" value="${esc(item.qty)}" aria-label="Quantity"></td>
         <td style="width:72px">
-          <select data-cif="unit">
+          <select data-cif="unit" aria-label="Unit">
             ${UNITS.map((u) => `<option value="${u}"${u === item.unit ? ' selected' : ''}>${u}</option>`).join('')}
           </select>
         </td>
-        <td style="width:92px"><input data-cif="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}"></td>
+        <td style="width:92px"><input data-cif="unitCost" class="num" type="number" step="0.01" value="${esc(item.unitCost)}" aria-label="Unit cost"></td>
         <td class="computed">${formatMoney(l?.priceCents || 0)}</td>
         <td class="col-actions" style="width:34px">
           <div class="row-tools"><button class="btn sm icon ghost" data-coidel title="Delete line">✕</button></div>
@@ -1910,14 +1935,14 @@ function renderActualsGrid(est, c) {
   <tbody>
     ${c.entries.map((a) => `
       <tr data-ac="${esc(a.id)}">
-        <td><input data-acf="date" type="date" value="${esc(a.date)}"></td>
+        <td><input data-acf="date" type="date" value="${esc(a.date)}" aria-label="Date"></td>
         <td>
-          <select data-acf="category">
+          <select data-acf="category" aria-label="Category">
             ${CATEGORIES.map((cat) => `<option value="${cat}"${cat === a.category ? ' selected' : ''}>${CATEGORY_LABELS[cat]}</option>`).join('')}
           </select>
         </td>
-        <td><input data-acf="description" value="${esc(a.description)}" placeholder="Sub invoice, receipt, payroll…"></td>
-        <td><input data-acf="amount" class="num" type="number" step="0.01" value="${esc(a.amount)}"></td>
+        <td><input data-acf="description" value="${esc(a.description)}" placeholder="Sub invoice, receipt, payroll…" aria-label="What it was"></td>
+        <td><input data-acf="amount" class="num" type="number" step="0.01" value="${esc(a.amount)}" aria-label="Amount"></td>
         <td class="col-actions">
           <div class="row-tools"><button class="btn sm icon ghost" data-acdel title="Delete">✕</button></div>
         </td>
@@ -2084,9 +2109,9 @@ function wireAuditIntake() {
       <tr>
         <td>${label}</td>
         <td style="width:150px"><input class="num" type="number" step="0.01" min="0"
-              data-budget="${key}" placeholder="0"></td>
+              data-budget="${key}" placeholder="0" aria-label="${label} — estimated cost"></td>
         <td style="width:150px"><input class="num" type="number" step="0.01" min="0"
-              data-spent="${key}" placeholder="0"></td>
+              data-spent="${key}" placeholder="0" aria-label="${label} — actually paid"></td>
       </tr>`).join('');
     $('#aChanges').innerHTML = '';
     addChangeRow();
@@ -2211,8 +2236,8 @@ function addChangeRow() {
   const row = document.createElement('div');
   row.className = 'change-row';
   row.innerHTML = `
-    <input data-ctitle placeholder="What changed — e.g. rot under the tub">
-    <input data-camount class="num" type="number" step="0.01" placeholder="Worth">
+    <input data-ctitle placeholder="What changed — e.g. rot under the tub" aria-label="What changed">
+    <input data-camount class="num" type="number" step="0.01" placeholder="Worth" aria-label="What the change was worth">
     <label class="signed"><input type="checkbox" data-csigned> Signed</label>
     <button class="btn sm icon ghost" data-delchange title="Remove">✕</button>`;
   $('#aChanges').append(row);
