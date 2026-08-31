@@ -721,6 +721,87 @@ await test("the leaderboard shows names, and never scrolls sideways, on phones",
   }
 });
 
+await test("a Stripe outage must not empty a live board", async () => {
+  const octx2 = await browser.newContext();
+  const op = await octx2.newPage();
+  await op.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await op.waitForTimeout(400);
+  const shape = await op.evaluate(async () => {
+    const now = Math.floor(Date.now() / 1000);
+    let payload = { configured: true, bids: [
+      { id: "d1", ref: encodeRef("Steady Co", "steady.io", ""), amount: 300, at: now },
+    ] };
+    CONFIG.BOARD_FEED_URL = "stub://outage";
+    window.fetch = async () => ({ json: async () => payload });
+    await mergeBoardFeed();
+    const healthy = state.entries.length;
+    // Stripe falls over: the endpoint answers 200 with an empty list and an error.
+    payload = { configured: true, error: "stripe_unavailable", bids: [] };
+    await mergeBoardFeed();
+    return { healthy, afterOutage: state.entries.length,
+             notice: (document.querySelector("#demoRibbon").textContent || "").slice(0, 24) };
+  });
+  await octx2.close();
+  assert(shape.healthy === 1, `board should hold 1 listing before the outage, got ${shape.healthy}`);
+  assert(shape.afterOutage === 1,
+    `a Stripe outage wiped the board to ${shape.afterOutage} listings — real payments vanished`);
+  assert(/Ledger unreachable/.test(shape.notice),
+    `the outage should be stated, got "${shape.notice}"`);
+});
+
+await test("a live board refuses to invent a payment when checkout is unwired", async () => {
+  // STRIPE_SECRET_KEY (Vercel) and the Payment Link (CONFIG) are separate
+  // switches. With only the first set, the bid form used to fake a local bid
+  // and toast "Paid" for money nobody sent.
+  const hctx = await browser.newContext();
+  const hp = await hctx.newPage();
+  await hp.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await hp.waitForTimeout(400);
+  const shape = await hp.evaluate(async () => {
+    CONFIG.BOARD_FEED_URL = "stub://halfconf";
+    CONFIG.STRIPE_PAYMENT_LINK = "";            // operator forgot this half
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      { id: "h1", ref: encodeRef("Paying Co", "pay.io", ""), amount: 100,
+        at: Math.floor(Date.now() / 1000) },
+    ] }) });
+    await mergeBoardFeed();
+    const before = state.entries.length;
+    document.querySelector("#fName").value = "Freeloader";
+    document.querySelector("#fAmt").value = "250";
+    document.querySelector("#bidForm").dispatchEvent(new Event("submit", { cancelable: true }));
+    await new Promise(r => setTimeout(r, 60));
+    return { before, after: state.entries.length,
+             err: (document.querySelector("#bidErr").textContent || "") };
+  });
+  await hctx.close();
+  assert(shape.after === shape.before,
+    "a live board accepted a free bid — it invented a payment nobody made");
+  assert(/checkout isn't connected/i.test(shape.err),
+    `the operator's missing Payment Link should be stated, got "${shape.err}"`);
+});
+
+await test("the Oracle still offers a game on a dead board", async () => {
+  const qctx = await browser.newContext();
+  const qp = await qctx.newPage();
+  await qp.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await qp.waitForTimeout(400);
+  const shape = await qp.evaluate(async () => {
+    CONFIG.BOARD_FEED_URL = "stub://quiet";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [] }) });
+    await mergeBoardFeed();                       // live board, nobody has bid
+    renderOracle();
+    const el = document.querySelector("#oracle");
+    return { today: sortedToday().length, shown: el.classList.contains("show"),
+             picks: el.querySelectorAll("[data-oracle]").length,
+             text: (el.textContent || "").slice(0, 90) };
+  });
+  await qctx.close();
+  assert(shape.today === 0, "this test needs an empty board to mean anything");
+  assert(shape.shown,
+    "the Oracle vanished on a quiet day — the only free reason to return disappears when it is needed most");
+  assert(shape.picks === 2, `a dead board should still offer a yes/no prophecy, got ${shape.picks} options`);
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -809,7 +890,11 @@ await test("ledger reader paginates Stripe, keeps only paid sessions, and leaks 
   delete process.env.STRIPE_API_BASE;
 
   assert(bids.length === 2, `expected 2 paid, non-zero bids across 2 pages, got ${bids.length}`);
-  assert(bids[0].id === "cs_d" && bids[1].id === "cs_a", `bids should be oldest-first: ${bids.map(b => b.id)}`);
+  assert(bids[0].id === fresh.refId("cs_d") && bids[1].id === fresh.refId("cs_a"),
+    `bids should be oldest-first: ${bids.map(b => b.id)}`);
+  // The ledger page promises the full records stay in Stripe; this endpoint must
+  // not undercut that by publishing raw session IDs cross-origin.
+  assert(!/cs_[a-z]/.test(JSON.stringify(bids)), "a raw Stripe session ID escaped the ledger reader");
   assert(bids[1].amount === 900, `amount should convert cents to dollars, got ${bids[1].amount}`);
   const serialized = JSON.stringify(bids);
   assert(!/buyer@example\.com|Real Person|customer_details/.test(serialized),
@@ -843,9 +928,10 @@ await test("a zero-decimal currency is not credited 100x", async () => {
   delete process.env.STRIPE_API_BASE;
 
   const by = Object.fromEntries(bids.map(b => [b.id, b.amount]));
-  assert(by.cs_jpy === 5000, `JPY 5000 is 5000 yen, credited as ${by.cs_jpy}`);
-  assert(by.cs_usd === 50, `USD 5000 cents is $50, credited as ${by.cs_usd}`);
-  assert(by.cs_kwd === 5, `KWD is three-decimal: 5000 fils is 5 dinar, credited as ${by.cs_kwd}`);
+  const jpy = by[fresh.refId("cs_jpy")], usd = by[fresh.refId("cs_usd")], kwd = by[fresh.refId("cs_kwd")];
+  assert(jpy === 5000, `JPY 5000 is 5000 yen, credited as ${jpy}`);
+  assert(usd === 50, `USD 5000 cents is $50, credited as ${usd}`);
+  assert(kwd === 5, `KWD is three-decimal: 5000 fils is 5 dinar, credited as ${kwd}`);
 });
 
 await test("a refunded or disputed payment loses its rank", async () => {
@@ -877,12 +963,12 @@ await test("a refunded or disputed payment loses its rank", async () => {
   delete process.env.STRIPE_API_BASE;
 
   const ids = bids.map(b => b.id);
-  assert(!ids.includes("cs_refunded"), "a fully refunded payment still holds a place on the board");
-  assert(!ids.includes("cs_disputed"), "a disputed (charged-back) payment still holds a place on the board");
-  const partial = bids.find(b => b.id === "cs_partial");
+  assert(!ids.includes(fresh.refId("cs_refunded")), "a fully refunded payment still holds a place on the board");
+  assert(!ids.includes(fresh.refId("cs_disputed")), "a disputed (charged-back) payment still holds a place on the board");
+  const partial = bids.find(b => b.id === fresh.refId("cs_partial"));
   assert(partial && partial.amount === 60,
     `a partial refund should leave only what was kept ($60), got ${partial && partial.amount}`);
-  const kept = bids.find(b => b.id === "cs_kept");
+  const kept = bids.find(b => b.id === fresh.refId("cs_kept"));
   assert(kept && kept.amount === 100, `an untouched $100 payment should stand, got ${kept && kept.amount}`);
 });
 
@@ -936,8 +1022,12 @@ await test("public ledger page renders a listing's payments without leaking full
   assert(bodyOut.includes("$525"), "total should aggregate both payments ($500 + $25)");
   assert(bodyOut.includes("Rank <b>#1</b>"), "rank missing or wrong");
   assert((bodyOut.match(/<tr><td>/g) || []).length === 2, "should list exactly the listing's 2 payments");
-  assert(!bodyOut.includes("cs_ledger_alpha_00001"), "full session ID leaked — must be truncated");
-  assert(bodyOut.includes("cs_ledger_al…"), "truncated session ID missing");
+  assert(!/cs_ledger/.test(bodyOut), "a raw Stripe session ID leaked onto the public ledger page");
+  // Rows still carry a stable per-payment reference, so a bidder can check a row
+  // against their own receipt — it just cannot be walked back to Stripe.
+  const board = require(join(root, "api", "_board.js"));
+  assert(bodyOut.includes(board.refId("cs_ledger_alpha_00001").slice(0, 12) + "…"),
+    "per-payment reference missing from the ledger page");
   assert(!bodyOut.includes("x@y.z"), "customer PII leaked into the public ledger page");
 });
 

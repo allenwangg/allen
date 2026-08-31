@@ -16,6 +16,13 @@ const STRIPE_API = (process.env.STRIPE_API_BASE || "https://api.stripe.com") + "
 // do run out of room, say so (`partial`) rather than publishing a wrong board.
 // Ceiling: 5,000 paid sessions. Past that, add a cached aggregate (Vercel KV or a
 // nightly snapshot committed to the repo) and only page back to the snapshot.
+const crypto = require("crypto");
+/* Stable per-session public reference: same input always yields the same id, so
+   replaying the ledger stays idempotent, but it reveals nothing about Stripe. */
+function refId(sessionId) {
+  return crypto.createHash("sha256").update(String(sessionId)).digest("hex").slice(0, 20);
+}
+
 const MAX_PAGES = 50;
 const TIME_BUDGET_MS = 7000; // stay well inside the function timeout
 
@@ -71,7 +78,11 @@ async function fetchBids(key) {
       const amount = majorUnits(net, s.currency);
       if (amount < 1) continue;
       bids.push({
-        id: s.id,
+        // The ledger page tells visitors the full records stay in Stripe. That
+        // was only true of the page: this endpoint published every raw session
+        // ID cross-origin. A stable digest keeps the client's dedup working
+        // without publishing Stripe's own identifiers.
+        id: refId(s.id),
         ref: typeof s.client_reference_id === "string" ? s.client_reference_id.slice(0, 200) : "",
         amount,
         at: s.created,
@@ -137,4 +148,4 @@ function rank(bids) {
   return [...byName.values()].sort((a, b) => b.total - a.total || a.last - b.last);
 }
 
-module.exports = { fetchBids, decodeRef, rank };
+module.exports = { fetchBids, decodeRef, rank, refId };

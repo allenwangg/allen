@@ -1391,6 +1391,14 @@ $("#bidForm").addEventListener("submit", e=>{
     return;
   }
 
+  /* The ledger going live and the Pay button being wired are two separate
+     switches: STRIPE_SECRET_KEY lives in Vercel, the Payment Link in CONFIG.
+     With only the first set, the board would show real payments while this path
+     silently invented a free one and toasted "Paid" for money nobody sent. */
+  if (state.live){
+    err.textContent = "Checkout isn't connected yet — the operator still has to paste the Stripe Payment Link.";
+    err.classList.add("show"); return;
+  }
   const res = placeBid({name,url,amount,defendBudget});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
   if (decree){
@@ -1552,6 +1560,27 @@ function resolveOracle(){
   const o = oracleState();
   if (!o.pickDay || o.pickDay === todayStr() || o.resolved) return;
   const winner = (state.hall || []).find(h => h.date === o.pickDay);
+  /* The quiet-day answers are about whether the board moved at all, so they are
+     scored against the absence of a king rather than against a name. */
+  if (o.pick === NOBODY || o.pick === CHALLENGER){
+    const tookIt = !!winner && (!o.incumbent ||
+      winner.name.toLowerCase() !== String(o.incumbent).toLowerCase());
+    const right = o.pick === NOBODY ? !winner : tookIt;
+    if (right){
+      o.streak = (o.streak || 0) + 1;
+      o.lastResult = (o.pick === NOBODY
+        ? `✅ Called it — the board stayed empty on ${o.pickDay}. Streak: ${o.streak}🔮`
+        : `✅ Called it — ${winner.name} took the crown on ${o.pickDay}. Streak: ${o.streak}🔮`);
+    } else {
+      o.lastResult = (o.pick === NOBODY
+        ? `❌ ${winner.name} claimed ${o.pickDay} after all. Streak reset.`
+        : `❌ Nobody took it on ${o.pickDay}. Streak reset.`);
+      o.streak = 0;
+    }
+    o.resolved = true;
+    oracleSave(o);
+    return;
+  }
   if (winner){
     if (winner.name.toLowerCase() === String(o.pick).toLowerCase()){
       o.streak = (o.streak || 0) + 1;
@@ -1566,13 +1595,39 @@ function resolveOracle(){
   o.resolved = true;
   oracleSave(o);
 }
+/* Two standing answers so the quiet-day game can still be scored at midnight.
+   Names are capped at 30 chars on the way in, so neither can be impersonated. */
+const CHALLENGER = "Someone takes the crown";
+const NOBODY = "Nobody bids at all";
 function renderOracle(){
   const el = $("#oracle");
   if (!el) return;
   const contenders = sortedToday().slice(0, 5);
-  if (contenders.length < 2){ el.classList.remove("show"); return; }
   const o = oracleState();
   const pickedToday = o.pickDay === todayStr();
+  /* The Oracle is the only reason to come back without paying, so it must not
+     vanish on exactly the quiet days it exists to carry. With nobody to rank,
+     it asks the only question a dead board still has. */
+  if (contenders.length < 2){
+    el.innerHTML =
+      `<div class="o-head">🔮 The Oracle <span class="streak">${o.streak ? o.streak + "🔮 streak" : ""}</span></div>` +
+      `<div class="o-sub">${pickedToday
+        ? `Prophecy locked: <b>${esc(o.pick)}</b>. Come back after the reset.`
+        : (contenders.length === 1
+            ? `Free game: does <b>${esc(contenders[0].name)}</b> still hold the crown at midnight, or does someone take it?`
+            : "Free game: does anyone claim the crown before midnight?")}</div>` +
+      (pickedToday ? "" :
+        `<div class="o-picks">` +
+        (contenders.length === 1
+          ? `<button class="o-pick" data-oracle="${esc(contenders[0].name)}">${esc(contenders[0].name)} holds</button>` +
+            `<button class="o-pick" data-oracle="${esc(CHALLENGER)}">Someone takes it</button>`
+          : `<button class="o-pick" data-oracle="${esc(CHALLENGER)}">Yes — someone bids</button>` +
+            `<button class="o-pick" data-oracle="${esc(NOBODY)}">No — it stays empty</button>`) +
+        `</div>`) +
+      (o.lastResult && !pickedToday ? `<div class="o-result ${o.lastResult.startsWith("✅") ? "win" : "loss"}">${esc(o.lastResult)}</div>` : "");
+    el.classList.add("show");
+    return;
+  }
   el.innerHTML =
     `<div class="o-head">🔮 The Oracle <span class="streak">${o.streak ? o.streak + "🔮 streak" : ""}</span></div>` +
     `<div class="o-sub">${pickedToday
@@ -1589,6 +1644,7 @@ document.addEventListener("click", e => {
   if (!btn) return;
   const o = oracleState();
   o.pick = btn.dataset.oracle; o.pickDay = todayStr(); o.resolved = false;
+  o.incumbent = (sortedToday()[0] || {}).name || "";
   oracleSave(o);
   renderOracle();
   toast(`🔮 Prophecy locked: ${esc(o.pick)} holds midnight. Bold. You could also just… make it true.`);
@@ -1671,6 +1727,26 @@ function decodeRef(ref){
    and its simulated traffic are cleared exactly once, and never come back. */
 /* If the ledger read had to stop early, say so rather than quietly showing
    totals that understate what people actually paid. */
+/* A Stripe outage is temporary and the board keeps its last good standings, so
+   this says what is actually happening rather than letting the page look empty
+   or stale for no stated reason. Restores the ribbon it borrowed. */
+let ribbonOriginal = null;
+function ledgerTrouble(on){
+  const r = $("#demoRibbon");
+  if (!r) return;
+  if (ribbonOriginal === null) ribbonOriginal = r.innerHTML;
+  if (on){
+    if (state.ledgerTrouble) return;
+    state.ledgerTrouble = true;
+    r.innerHTML = "<b>Ledger unreachable</b> — Stripe isn't answering right now, so this is the last confirmed board rather than an empty one. It catches up on its own.";
+    r.classList.add("show");
+  } else if (state.ledgerTrouble){
+    state.ledgerTrouble = false;
+    r.innerHTML = ribbonOriginal;
+    if (state.live || CONFIG.STRIPE_PAYMENT_LINK) r.classList.remove("show");
+  }
+}
+
 function partialNotice(){
   const r = $("#demoRibbon");
   if (!r) return;
@@ -1714,6 +1790,12 @@ async function mergeBoardFeed(){
   catch(e){ return; }                    /* not deployed or offline — keep local state */
   const confirmed = Array.isArray(payload) ? payload : (payload && payload.bids);
   if (!Array.isArray(confirmed)) return;
+  /* /api/board answers 200 with an empty list when Stripe itself is unreachable.
+     Going live on that would hand goLive() an empty ledger and wipe a board of
+     real payments to $0 for the length of the outage — so an errored payload is
+     treated as "no news", never as "the ledger is empty". */
+  if (!Array.isArray(payload) && payload.error){ ledgerTrouble(true); return; }
+  ledgerTrouble(false);
   if (payload && payload.partial) partialNotice();
   const wasDemo = !state.live;
   if (!Array.isArray(payload) && payload.configured) goLive();

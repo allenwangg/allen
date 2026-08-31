@@ -76,8 +76,9 @@ module.exports = async (req, res) => {
       </div>
       <table><tr><th>Date (UTC)</th><th>Stripe session</th><th style="text-align:right">Amount</th></tr>${rows}</table>
       <p class="note">Each row is a completed Stripe Checkout payment. The leaderboard is computed from
-      these records — there is no other way onto it. Session IDs are truncated for brevity;
-      the full records live in Stripe's systems, not ours.</p>
+      these records — there is no other way onto it. Each reference is a one-way digest
+      of the payment, stable enough to check a row against but carrying nothing back:
+      the payment records themselves live in Stripe's systems, not ours.</p>
       <a class="back" href="/">Back to the board</a></div>`));
   } catch {
     res.setHeader("cache-control", "no-store");

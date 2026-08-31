@@ -185,6 +185,18 @@
       "pass": true
     },
     {
+      "name": "a Stripe outage must not empty a live board",
+      "pass": true
+    },
+    {
+      "name": "a live board refuses to invent a payment when checkout is unwired",
+      "pass": true
+    },
+    {
+      "name": "the Oracle still offers a game on a dead board",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -222,13 +234,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 116,
-    "medianDOMContentLoadedms": 78,
-    "medianLoadms": 12471.7,
+    "medianFCPms": 100,
+    "medianDOMContentLoadedms": 72.9,
+    "medianLoadms": 12449.1,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 99155,
-    "gzipBytes": 29738
+    "htmlBytes": 103574,
+    "gzipBytes": 31064
   }
 }
