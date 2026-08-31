@@ -46,6 +46,11 @@ node test/polish.mjs     # 13 checks: swipe gestures, mastery map, announcements
 node test/perf.mjs       # timings at full library size (load, search, stats, memory)
 ```
 
+Every suite is path-independent, so it runs from any checkout. CI
+(`.github/workflows/prism.yml`) validates content, runs all four suites in
+headless Chromium and rebuilds the single-file bundle on every change under
+`prism/`.
+
 ## Architecture
 
 | File | Role |

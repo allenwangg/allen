@@ -1,8 +1,9 @@
 // Prism PWA checks — manifest, icons, service worker, and genuine offline use.
 import { createServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
-import { join, extname } from 'node:path';
-const root = '/home/user/allen/prism';
+import { dirname, join, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT_CORE || 'playwright-core');
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript',
   '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml' };
