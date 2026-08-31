@@ -10,7 +10,7 @@ import {
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
-  solveDiscountForTotal, summarizePortfolio,
+  solveDiscountForTotal, summarizePortfolio, checkIntake,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -874,6 +874,65 @@ t('the dominant leak is the largest one', () => {
   ], S);
   eq(pf.dominant.cents, Math.max(...pf.leaks.map((l) => l.cents)));
   eq(pf.leaks[0].key, pf.dominant.key, 'leaks must be sorted with the dominant first:');
+});
+
+/* --------------------------------------------------- intake checks ------- */
+
+const HEALTHY = {
+  quotedTotal: 42000,
+  budget: { labor: 12000, material: 9000 },
+  spent: { labor: 12500, material: 9100 },
+  changes: [{ title: 'x', amount: 1200, signed: true }],
+};
+
+t('a healthy job raises nothing — no crying wolf', () => {
+  eq(checkIntake(HEALTHY).length, 0);
+});
+
+t('a dropped digit in what they charged is flagged', () => {
+  const w = checkIntake({ ...HEALTHY, quotedTotal: 4200 });
+  ok(w.some((x) => x.level === 'warn' && x.field === 'quotedTotal'),
+    'the classic typo must be caught before it becomes a report');
+});
+
+t('a genuinely loss-making job is noted, not alarmed about', () => {
+  // Sold under cost but not absurdly so: real, and not a typo.
+  const w = checkIntake({ ...HEALTHY, quotedTotal: 20000 });
+  ok(w.some((x) => x.field === 'quotedTotal' && x.level === 'note'),
+    'contractors do lose money; the tool should say so without shouting');
+  ok(!w.some((x) => x.field === 'quotedTotal' && x.level === 'warn'));
+});
+
+t('a figure in the wrong row is flagged', () => {
+  const w = checkIntake({ ...HEALTHY, spent: { labor: 98000, material: 9100 } });
+  ok(w.some((x) => x.level === 'warn' && x.field === 'spent.labor'));
+});
+
+t('a negative cost is flagged', () => {
+  ok(checkIntake({ ...HEALTHY, spent: { labor: -500, material: 9100 } })
+    .some((x) => x.level === 'warn' && /negative/i.test(x.message)));
+});
+
+t('a change larger than the whole contract is flagged', () => {
+  ok(checkIntake({ ...HEALTHY, changes: [{ title: 'x', amount: 99000 }] })
+    .some((x) => x.level === 'warn' && x.field === 'changes'));
+});
+
+t('an unfinished job is noted rather than warned', () => {
+  const w = checkIntake({ ...HEALTHY, spent: { labor: 900, material: 0 } });
+  ok(w.some((x) => x.field === 'spent' && x.level === 'note'));
+});
+
+t('an incomplete form raises nothing — the form already blocks it', () => {
+  eq(checkIntake({ quotedTotal: 0, budget: {}, spent: {} }).length, 0);
+  eq(checkIntake({ quotedTotal: 42000, budget: {}, spent: {} }).length, 0);
+});
+
+t('checks never throw on hostile or missing input', () => {
+  for (const bad of [{}, { quotedTotal: NaN, budget: null }, { quotedTotal: Infinity, budget: { labor: NaN } },
+    { quotedTotal: 100, budget: { labor: 50 }, changes: null }]) {
+    ok(Array.isArray(checkIntake(bad)), `threw or returned non-array for ${JSON.stringify(bad)}`);
+  }
 });
 
 

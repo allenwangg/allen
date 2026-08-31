@@ -98,6 +98,8 @@
       </div>
     </section>
 
+    <div class="checks" id="checks"></div>
+
     <div style="display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap">
       <button class="btn primary lg" id="btnFinish" style="padding:12px 24px">Create my summary</button>
       <span class="tiny faint" id="finishNote"></span>
@@ -125,6 +127,7 @@
 
 <script type="module">
 import { encodeIntake, INTAKE_CATEGORIES } from './js/intake-link.js';
+import { checkIntake } from './js/pricing.js';
 
 const $ = (s) => document.querySelector(s);
 const LABELS = {
@@ -163,6 +166,38 @@ function read(attr) {
   return Object.fromEntries([...document.querySelectorAll(`[data-${attr}]`)]
     .map((el) => [el.dataset[attr], Number(el.value) || 0]));
 }
+
+function currentInput() {
+  return {
+    title: $('#fTitle').value.trim(),
+    client: $('#fClient').value.trim(),
+    quotedTotal: Number($('#fQuoted').value) || 0,
+    budget: read('budget'),
+    spent: read('spent'),
+    changes: [...document.querySelectorAll('.change-row')].map((r) => ({
+      title: r.querySelector('[data-ctitle]').value.trim(),
+      amount: Number(r.querySelector('[data-camount]').value) || 0,
+      signed: r.querySelector('[data-csigned]').checked,
+    })),
+  };
+}
+
+/**
+ * Catch a likely typo while the contractor is still looking at the form.
+ * Nobody else will see these numbers before they become a report, so this is
+ * the last point at which a dropped digit can be caught cheaply.
+ */
+function renderChecks() {
+  const checks = checkIntake(currentInput());
+  $('#checks').innerHTML = checks.map((c) => `
+    <div class="check ${c.level === 'warn' ? 'warn' : ''}">
+      <span class="tag">${c.level === 'warn' ? 'Check' : 'Note'}</span>
+      <span>${c.message.replace(/[&<>"']/g, (m) => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]))}</span>
+    </div>`).join('');
+}
+document.addEventListener('input', renderChecks);
+document.addEventListener('change', renderChecks);
 
 $('#btnFinish').onclick = () => {
   const quoted = Number($('#fQuoted').value) || 0;

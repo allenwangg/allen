@@ -875,3 +875,27 @@ table.pr-table tr.group-head td {
 @media (max-width: 620px) {
   .change-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ------------------------------------------------------ intake warnings --- */
+
+.checks { display: grid; gap: 6px; margin: 12px 0 0; }
+.check {
+  display: grid; grid-template-columns: auto 1fr; gap: 10px;
+  align-items: baseline;
+  padding: 9px 12px; border-radius: var(--radius-s);
+  font-size: 13px; line-height: 1.45;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.check.warn {
+  background: var(--warn-soft);
+  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+  color: var(--text);
+}
+.check .tag {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-3); white-space: nowrap;
+}
+.check.warn .tag { color: var(--warn); }

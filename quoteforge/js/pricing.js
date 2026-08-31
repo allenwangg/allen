@@ -799,3 +799,97 @@ export function summarizePortfolio(estimates, settings) {
     jobsMissingActuals: jobs.filter((j) => !j.hasActuals).length,
   };
 }
+
+/* ==================================================== intake plausibility == */
+
+/**
+ * Check a job summary for figures that are probably typos.
+ *
+ * The audit is only as good as what goes in, and the inputs arrive from memory
+ * and a bank statement — sometimes from a contractor filling a form alone with
+ * no one to sanity-check them. A dropped zero in "what you charged" produces a
+ * report that is confident, specific, and completely wrong, which is worse than
+ * no report at all on something someone paid for.
+ *
+ * These are warnings, never blocks. Every one of them has a legitimate case:
+ * contractors really do lose money on jobs, and really do have a trade come in
+ * at triple the estimate. The point is to make someone look twice, not to
+ * refuse their numbers.
+ *
+ * @returns {Array<{level:'warn'|'note', field:string, message:string}>}
+ */
+export function checkIntake(input) {
+  const out = [];
+  const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  const quoted = num(input.quotedTotal);
+  const budget = input.budget || {};
+  const spent = input.spent || {};
+
+  const budgetTotal = CATEGORIES.reduce((a, c) => a + Math.max(0, num(budget[c])), 0);
+  const spentTotal = CATEGORIES.reduce((a, c) => a + num(spent[c]), 0);
+
+  if (quoted <= 0 || budgetTotal <= 0) return out;   // the form already blocks these
+
+  // A dropped digit is the classic error, and it is very visible: the price
+  // ends up at or below a fraction of the cost it was built from.
+  if (quoted < budgetTotal * 0.5) {
+    out.push({
+      level: 'warn',
+      field: 'quotedTotal',
+      message: `Charged ${formatMoney(toCents(quoted))} against ${formatMoney(toCents(budgetTotal))} `
+        + 'of estimated cost. That is possible, but a missing digit looks the same — worth a second look.',
+    });
+  } else if (quoted < budgetTotal) {
+    out.push({
+      level: 'note',
+      field: 'quotedTotal',
+      message: 'This job was sold below its own estimated cost, so it lost money before it started.',
+    });
+  }
+
+  // A single trade at several times its estimate is usually a typo or a
+  // wrong-column entry rather than a genuine overrun.
+  for (const c of CATEGORIES) {
+    const b = Math.max(0, num(budget[c]));
+    const s = num(spent[c]);
+    if (b > 0 && s > b * 3) {
+      out.push({
+        level: 'warn',
+        field: `spent.${c}`,
+        message: `${CATEGORY_LABELS[c]} came in at ${(s / b).toFixed(1)}x its estimate `
+          + `(${formatMoney(toCents(s))} against ${formatMoney(toCents(b))}). Check the figure went in the right row.`,
+      });
+    }
+    if (s < 0 || b < 0) {
+      out.push({
+        level: 'warn',
+        field: `spent.${c}`,
+        message: `${CATEGORY_LABELS[c]} carries a negative figure. Costs are entered as positives here.`,
+      });
+    }
+  }
+
+  // Costs recorded but the total is implausibly small next to the contract.
+  if (spentTotal > 0 && spentTotal < budgetTotal * 0.2) {
+    out.push({
+      level: 'note',
+      field: 'spent',
+      message: 'Recorded spend is far below the estimate — if the job is unfinished, margin fade '
+        + 'will read better than it will turn out.',
+    });
+  }
+
+  for (const ch of input.changes || []) {
+    const amount = num(ch.amount);
+    if (amount > quoted) {
+      out.push({
+        level: 'warn',
+        field: 'changes',
+        message: `A change worth ${formatMoney(toCents(amount))} is larger than the whole `
+          + `${formatMoney(toCents(quoted))} contract. Check the amount.`,
+      });
+    }
+  }
+
+  return out;
+}

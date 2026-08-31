@@ -12,7 +12,7 @@ import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
-  solveDiscountForTotal, summarizePortfolio,
+  solveDiscountForTotal, summarizePortfolio, checkIntake,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -2092,11 +2092,17 @@ function wireAuditIntake() {
     addChangeRow();
     for (const id of ['#aTitle', '#aClient', '#aQuoted', '#aPaste']) $(id).value = '';
     $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
+    $('#aChecks').innerHTML = '';
     dlg.showModal();
     requestAnimationFrame(() => $('#aTitle').focus());
   };
 
   $('#btnAddChangeRow').onclick = addChangeRow;
+
+  // Re-run plausibility on every edit. The audit is only as good as what goes
+  // in, and a dropped digit produces a report that is confident and wrong.
+  $('#dlgAudit').addEventListener('input', () => renderIntakeChecks());
+  $('#dlgAudit').addEventListener('change', () => renderIntakeChecks());
 
   // A link the contractor filled in themselves. Everything travels in the URL
   // fragment, so their figures were never sent anywhere — this just unpacks it.
@@ -2129,6 +2135,7 @@ function wireAuditIntake() {
     }
     if (!data.changes.length) addChangeRow();
     $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}, ${data.changes.length} change${data.changes.length === 1 ? '' : 's'}. Check it over and build.`;
+    renderIntakeChecks();
   });
 
   $('#aChanges').onclick = (e) => {
@@ -2144,29 +2151,17 @@ function wireAuditIntake() {
       return;
     }
 
-    const read = (attr) => Object.fromEntries(
-      $$(`[data-${attr}]`).map((el) => [el.dataset[attr], Number(el.value) || 0]),
-    );
-    const budget = read('budget');
-    const budgetTotal = Object.values(budget).reduce((a, b) => a + b, 0);
+    const form = readIntakeForm();
+    const budget = form.budget;
+    const budgetTotal = Object.values(budget).reduce((a, b) => a + Math.max(0, b), 0);
     if (budgetTotal <= 0) {
       toast('Enter at least one estimated cost — with no costs there is no margin to measure.', { bad: true });
       return;
     }
 
-    const changes = $$('#aChanges .change-row').map((row) => ({
-      title: row.querySelector('[data-ctitle]').value.trim(),
-      amount: Number(row.querySelector('[data-camount]').value) || 0,
-      signed: row.querySelector('[data-csigned]').checked,
-    })).filter((c) => c.amount > 0);
-
     const { impliedMarkup } = store.createAuditJob({
-      title: $('#aTitle').value.trim() || 'Audited job',
-      client: $('#aClient').value.trim(),
-      quotedTotal: quoted,
-      budget,
-      spent: read('spent'),
-      changes,
+      ...form,
+      title: form.title || 'Audited job',
     });
 
     dlg.close();
@@ -2182,6 +2177,34 @@ function wireAuditIntake() {
       { ms: 7000 },
     );
   };
+}
+
+/** Read the dialog into the shape checkIntake and createAuditJob both expect. */
+function readIntakeForm() {
+  const read = (attr) => Object.fromEntries(
+    $$(`[data-${attr}]`).map((el) => [el.dataset[attr], Number(el.value) || 0]),
+  );
+  return {
+    title: $('#aTitle').value.trim(),
+    client: $('#aClient').value.trim(),
+    quotedTotal: Number($('#aQuoted').value) || 0,
+    budget: read('budget'),
+    spent: read('spent'),
+    changes: $$('#aChanges .change-row').map((row) => ({
+      title: row.querySelector('[data-ctitle]').value.trim(),
+      amount: Number(row.querySelector('[data-camount]').value) || 0,
+      signed: row.querySelector('[data-csigned]').checked,
+    })).filter((c) => c.amount > 0),
+  };
+}
+
+function renderIntakeChecks() {
+  const checks = checkIntake(readIntakeForm());
+  $('#aChecks').innerHTML = checks.map((c) => `
+    <div class="check ${c.level === 'warn' ? 'warn' : ''}">
+      <span class="tag">${c.level === 'warn' ? 'Check' : 'Note'}</span>
+      <span>${esc(c.message)}</span>
+    </div>`).join('');
 }
 
 function addChangeRow() {

@@ -439,6 +439,36 @@ console.log('\n  mobile (390x844)');
   await page.context().close();
 }
 
+/* ============================================ contractor intake page ===== */
+console.log('\n  contractor intake page');
+{
+  const page = await newPage(1000, 1000);
+  await page.goto(`${base}/quoteforge/intake.html`, { waitUntil: 'networkidle' });
+
+  await page.locator('#fQuoted').fill('3150');
+  await page.locator('[data-budget="labor"]').fill('9800');
+  await page.locator('[data-budget="material"]').fill('6200');
+  await page.waitForTimeout(400);
+  check('the contractor sees their own typo flagged',
+    (await page.locator('.check.warn').count()) >= 1,
+    '(nobody else checks these numbers before they become a report)');
+
+  await page.locator('#fQuoted').fill('31500');
+  await page.waitForTimeout(400);
+  check('correcting it clears the flag', (await page.locator('.check.warn').count()) === 0);
+
+  // A warning must never block them — their numbers, their call.
+  await page.locator('#fQuoted').fill('3150');
+  await page.waitForTimeout(300);
+  await page.locator('#btnFinish').click();
+  await page.waitForTimeout(400);
+  check('a warning informs but never blocks',
+    (await page.locator('#outLink').inputValue()).includes('#j='),
+    '(contractors really do lose money on jobs)');
+
+  await page.context().close();
+}
+
 /* ================================================ offline capability ===== */
 // The landing page promises the app works with no internet on a job site.
 // That is only true if a COLD load succeeds offline, not merely that state

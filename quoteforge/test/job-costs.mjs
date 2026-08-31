@@ -337,6 +337,32 @@ check('overruns surface from the intake', /over budget|Over/i.test(
   await page.waitForTimeout(200);
 }
 
+/* --- plausibility checks catch a typo before it becomes a report --- */
+{
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(350);
+  await page.locator('#aTitle').fill('Typo job');
+  await page.locator('#aQuoted').fill('3150');          // a zero short
+  await page.locator('[data-budget="labor"]').fill('9800');
+  await page.locator('[data-budget="material"]').fill('6200');
+  await page.waitForTimeout(400);
+  check('a dropped digit is flagged before building',
+    (await page.locator('#aChecks .check.warn').count()) >= 1,
+    '(a confident wrong report is worse than none)');
+
+  await page.locator('#aQuoted').fill('31500');
+  await page.waitForTimeout(400);
+  check('correcting the figure clears the warning',
+    (await page.locator('#aChecks .check.warn').count()) === 0);
+
+  await page.locator('[data-spent="labor"]').fill('98000');
+  await page.waitForTimeout(400);
+  check('a figure in the wrong row is flagged',
+    /wrong row|right row/i.test(await page.locator('#aChecks').textContent()));
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(250);
+}
+
 /* --- the portfolio report: what the offer actually sells --- */
 {
   // A second audited job, so the report has a pattern to find.
