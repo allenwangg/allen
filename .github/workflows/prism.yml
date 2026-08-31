@@ -37,6 +37,13 @@ jobs:
         working-directory: prism
         run: node validate.mjs
 
+      # Reports the metrics that decide whether a quiz tests knowledge or is
+      # merely guessable. Not yet a gate: two of them are still being fixed.
+      - name: Quiz-design audit
+        working-directory: prism
+        continue-on-error: true
+        run: node audit.mjs
+
       - name: Install Playwright + Chromium
         working-directory: prism
         run: |
