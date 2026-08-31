@@ -9,7 +9,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -869,6 +869,30 @@ t('topLeverage returns ranked positive-delta actions', () => {
 t('topLeverage does not repeat a field', () => {
   const fields = topLeverage(demo, ctx).map((l) => l.field);
   eq(new Set(fields).size, fields.length);
+});
+
+t('an empty result always states how blind the test was', () => {
+  // "Nothing held up" is the app's most common output. Measured recall of a
+  // genuine effect at |r| = 0.32 is 8% at 90 days and 56% at 180, so
+  // presenting an empty result as a settled negative would be the most
+  // frequent overclaim the app makes.
+  for (const n of [40, 90, 120, 200]) {
+    const note = sensitivityNote(n);
+    ok(note && note.length > 40, 'must say something concrete at ' + n);
+    ok(/miss|strong|would not appear|sharper/i.test(note), 'must describe the limits: ' + note);
+    ok(!/no effect|you are fine|nothing wrong|rules out/i.test(note), 'must not read as a clean bill: ' + note);
+  }
+  ok(sensitivityNote(90) !== sensitivityNote(200), 'the claim must scale with how much data there is');
+});
+t('the trial verdict never says randomisation rules a confound out', () => {
+  // Randomisation makes drift and ordering unlikely as SYSTEMATIC bias; in a
+  // single trial they can still line up by luck, and this card is the most
+  // persuasive thing in the app.
+  const { trial, es } = runTrial(1000, 1.5);
+  const v = verdict(trial, es);
+  const all = `${v.headline} ${v.body} ${v.caveat || ''}`;
+  ok(!/cannot explain|rules? out|proves/i.test(all), 'overclaimed causality: ' + all);
+  ok(/by luck|still|single|one experiment/i.test(all), 'must admit the single-trial limit');
 });
 
 /* ================= safety ================= */

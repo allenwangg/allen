@@ -10,6 +10,7 @@
 import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, daysBetween, SEVERITY } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { LEVERS, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { sensitivityNote } from './insights.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
@@ -384,8 +385,9 @@ export function insightsView(state) {
   let body;
   if (!res.findings.length) {
     body = `<div class="empty-state">
-      <h3>Nothing statistically solid yet</h3>
+      <h3>Nothing held up</h3>
       <p>${esc(res.message)}</p>
+      <p class="subtle" style="max-width:560px;margin:12px auto 0">${esc(sensitivityNote((state.entries || []).length))}</p>
     </div>`;
   } else {
     body = res.findings.map((f) => insightCard(f, state)).join('');
@@ -693,7 +695,7 @@ export function reportView(state) {
           <td class="num">${f.pAdjusted < 0.0001 ? '&lt;0.0001' : f.pAdjusted}</td>
           <td class="num">${f.n}</td></tr>`).join('')}</tbody>
       </table></div>` : `<p class="muted">Nothing held up (${state.insights?.tested || 0} relationships
-        tested, Benjamini–Hochberg at q=0.10). That is a result rather than missing data.</p>`}
+        tested, Benjamini–Hochberg at q=0.10). ${esc(sensitivityNote(entries.length))}</p>`}
     </div>
 
     <div class="card">

@@ -376,7 +376,7 @@ export function verdict(t, entries) {
       headline: better
         ? `${lever.label} looks like it helped`
         : `${lever.label} looks like it made things worse`,
-      body: `On the blocks where you did it, ${outcomeName} averaged ${size}${unit} ${better === lowerIsBetter(t.outcome) ? 'lower' : 'higher'} — and ${res.agreeing} of your ${res.usablePairs} block-pairs pointed the same way (p = ${res.p}). Because the blocks were assigned by a coin toss, ordinary drift and the time of year cannot explain that.`,
+      body: `On the blocks where you did it, ${outcomeName} averaged ${size}${unit} ${better === lowerIsBetter(t.outcome) ? 'lower' : 'higher'} — and ${res.agreeing} of your ${res.usablePairs} block-pairs pointed the same way (p = ${res.p}). Because the blocks were assigned by a coin toss, a drift over the weeks or the order you did things in cannot line up with the schedule systematically — though in a single trial they can still line up by luck.`,
       caveat: `You knew which blocks were which, so some of this may be expectation rather than the change itself. It is one experiment on one person; if it matters, the honest next step is to run it again, or to mention it to a doctor.`,
     };
   }
@@ -385,6 +385,6 @@ export function verdict(t, entries) {
     kind: 'no-effect', adherence: adh, analysis: res,
     headline: `No sign that ${lever.label.toLowerCase()} changed anything`,
     body: `${outcomeName[0].toUpperCase() + outcomeName.slice(1)} came out ${size}${unit} different between the two halves, which is well inside what the coin tosses alone could produce (p = ${res.p}). You stuck to it ${Math.round(adh.onAdherence * 100)}% of the time, so this was a fair test.`,
-    caveat: `This does not prove it does nothing — a trial this size can only see fairly large effects, and the smallest p-value it could possibly have returned was ${res.floorP}. It does mean you can stop wondering about it and try something else.`,
+    caveat: `This does not prove it does nothing. A trial this size can only see a fairly large effect — the smallest p-value it could possibly have returned was ${res.floorP} — so read this as "not big enough for this trial to see", not as "no effect". It does mean it is reasonable to stop wondering and try something else.`,
   };
 }

@@ -226,6 +226,24 @@ with fabricated findings.
 The symptom groups survive in the UI, but only as reporting ("48 relationships
 tested for your migraine, none held up"). They are not correction boundaries.
 
+## What "nothing held up" is worth
+
+This is the app's most common output, so presenting it as a settled negative
+would be the most frequent overclaim it makes. Measured recall of a genuine
+planted effect, by history length and true correlation strength:
+
+| | \|r\| = 0.32 | \|r\| = 0.55 | \|r\| = 0.71 |
+|---|---|---|---|
+| 90 days | 8% | 84% | 100% |
+| 120 days | 12% | 100% | 100% |
+| 180 days | 56% | 100% | 100% |
+
+An empty result therefore rules out a *strong* day-to-day driver among the ones
+tested. It says little about a moderate one, and nothing at all about causes
+the app cannot see — which is most of medicine. `sensitivityNote()` turns the
+user's actual history length into a sentence saying so, and it is shown
+wherever an empty result appears.
+
 ## Where correlation stops
 
 Everything above can only ever generate hypotheses. If you want to know whether

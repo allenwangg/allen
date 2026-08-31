@@ -949,6 +949,33 @@ export function phrase(f) {
 }
 
 /**
+ * What "nothing held up" actually means, in numbers.
+ *
+ * This is the app's most common output, and presenting it as a settled
+ * negative would be the most frequent lie it tells. Measured recall of a
+ * genuine planted effect, by history length and true correlation strength:
+ *
+ *          |r| 0.32     |r| 0.55     |r| 0.71
+ *   90d      8%           84%         100%
+ *   120d    12%          100%         100%
+ *   180d    56%          100%         100%
+ *
+ * So an empty result rules out a STRONG day-to-day driver among the ones
+ * tested. It says very little about a moderate one, and nothing at all about
+ * causes the app cannot see — which is most of medicine. The sentence returned
+ * here goes wherever an empty result is shown.
+ */
+export function sensitivityNote(loggedDays) {
+  if (loggedDays >= 180) {
+    return 'With this much history a strong day-to-day driver would almost certainly have shown up, and a moderate one would be found about half the time. A weaker pattern, or a cause this app cannot see, would not appear at all.';
+  }
+  if (loggedDays >= 120) {
+    return 'With this much history a strong day-to-day driver would almost certainly have shown up, but a moderate one would be missed more often than not. Keep logging and this gets sharper.';
+  }
+  return 'At this length only a strong day-to-day driver would reliably show up — a moderate one is missed roughly nine times in ten. This is a reason to keep logging, not a clean bill of health.';
+}
+
+/**
  * Weekday effects — cheap, reliable, and a good free-tier teaser because almost
  * everyone has one ("your Fridays cost you 6 points").
  */
