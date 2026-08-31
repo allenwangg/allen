@@ -35,6 +35,15 @@
   --crown:#F5A524; --crown-edge:#C8811A; --crown-soft:#FEF3E0;
   --heat:#FF5A4E;  --heat-edge:#D33F35;  --heat-soft:#FFEDEB;
   --status:#7B61FF; --status-soft:#EFEBFF;
+  /* Button ink is a separate decision from brand colour: white on the brand
+     greens/corals/golds measured 2.04-3.43:1, all below AA. Each interactive
+     surface names the background it actually paints and the ink that passes on
+     it, so a semantic colour can stay vivid without the label going unreadable. */
+  --money-btn:#0A7B45; --money-btn-edge:#06592F; --on-money:#FFFFFF;   /* 5.34:1 */
+  --heat-btn:#D33F35;  --heat-btn-edge:#A32C24;  --on-heat:#FFFFFF;    /* 4.63:1 */
+  --on-crown:#2E1E00;                                                  /* 7.90:1 */
+  --silver:#8E9AAB; --on-silver:#1B2027;                               /* 5.74:1 */
+  --bronze:#9A5A22; --on-bronze:#FFFFFF;                               /* 5.44:1 */
   --shadow:0 1px 2px rgba(23,26,31,.05), 0 10px 26px -14px rgba(23,26,31,.22);
   --shadow-lift:0 2px 4px rgba(23,26,31,.06), 0 18px 34px -16px rgba(23,26,31,.28);
   color-scheme: light;
@@ -47,6 +56,11 @@
     --crown:#FFBA45; --crown-edge:#D28E1F; --crown-soft:#33270F;
     --heat:#FF7466;  --heat-edge:#D94C40;  --heat-soft:#331A18;
     --status:#9B85FF; --status-soft:#241E3D;
+    --money-btn:#2BC97B; --money-btn-edge:#12A45E; --on-money:#06231A;  /* 7.71:1 */
+    --heat-btn:#FF7466;  --heat-btn-edge:#D94C40;  --on-heat:#2A0D0A;    /* 6.84:1 */
+    --on-crown:#2E1E00;                                                  /* 9.38:1 */
+    --silver:#8E9AAB; --on-silver:#1B2027;
+    --bronze:#9A5A22; --on-bronze:#FFFFFF;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.7);
     --shadow-lift:0 2px 6px rgba(0,0,0,.45), 0 20px 38px -16px rgba(0,0,0,.8);
     color-scheme: dark;
@@ -59,6 +73,11 @@
   --crown:#FFBA45; --crown-edge:#D28E1F; --crown-soft:#33270F;
   --heat:#FF7466;  --heat-edge:#D94C40;  --heat-soft:#331A18;
   --status:#9B85FF; --status-soft:#241E3D;
+  --money-btn:#2BC97B; --money-btn-edge:#12A45E; --on-money:#06231A;  /* 7.71:1 */
+  --heat-btn:#FF7466;  --heat-btn-edge:#D94C40;  --on-heat:#2A0D0A;    /* 6.84:1 */
+  --on-crown:#2E1E00;                                                  /* 9.38:1 */
+  --silver:#8E9AAB; --on-silver:#1B2027;
+  --bronze:#9A5A22; --on-bronze:#FFFFFF;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.7);
   --shadow-lift:0 2px 6px rgba(0,0,0,.45), 0 20px 38px -16px rgba(0,0,0,.8);
   color-scheme: dark;
@@ -84,9 +103,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{o
 .defendbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
   margin:0 0 14px;padding:12px 16px;border-radius:14px;
   background:var(--heat-soft);border:1px solid var(--heat);color:var(--text)}
-.defendbar button{background:var(--heat);color:#fff;border:0;box-shadow:0 4px 0 var(--heat-edge);padding:10px 16px}
+.defendbar button{background:var(--heat-btn);color:var(--on-heat);border:0;box-shadow:0 4px 0 var(--heat-btn-edge);padding:10px 16px}
 .key:active{transform:translateY(3px)}
-.cta{background:var(--money);color:#fff;border-radius:14px;font-weight:800;padding:12px 20px;white-space:nowrap;
+.cta{background:var(--money-btn);color:var(--on-money);border-radius:14px;font-weight:800;padding:12px 20px;white-space:nowrap;
   box-shadow:0 4px 0 var(--money-edge);transition:transform .08s ease, box-shadow .08s ease, filter .15s}
 .cta:hover{filter:brightness(1.06)}
 .cta:active{transform:translateY(3px);box-shadow:0 1px 0 var(--money-edge)}
@@ -131,7 +150,7 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper
 
 /* ---- ticker ---- */
 .ticker{overflow:hidden;border:1.5px solid var(--line);border-radius:14px;background:var(--card);margin:18px 0;position:relative;box-shadow:0 2px 0 var(--line)}
-.ticker::before{content:"LIVE";position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding:0 14px;background:var(--heat);color:#fff;font-weight:800;font-size:11px;letter-spacing:.1em;z-index:2}
+.ticker::before{content:"LIVE";position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding:0 14px;background:var(--heat-btn);color:var(--on-heat);font-weight:800;font-size:11px;letter-spacing:.1em;z-index:2}
 .ticker-inner{display:flex;gap:34px;white-space:nowrap;padding:12px 0 12px 68px;animation:scroll 36s linear infinite}
 .ticker:hover .ticker-inner{animation-play-state:paused}
 @keyframes scroll{to{transform:translateX(-50%)}}
@@ -159,7 +178,7 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper
 .dare:hover{color:var(--crown);text-decoration:none}
 
 /* ---- take buttons (money keys) ---- */
-.take{background:var(--money);color:#fff;border-radius:13px;padding:10px 15px;font-size:13.5px;font-weight:800;white-space:nowrap;
+.take{background:var(--money-btn);color:var(--on-money);border-radius:13px;padding:10px 15px;font-size:13.5px;font-weight:800;white-space:nowrap;
   box-shadow:0 4px 0 var(--money-edge);transition:transform .08s, box-shadow .08s, filter .15s}
 .take:hover{filter:brightness(1.07)}
 .take:active{transform:translateY(3px);box-shadow:0 1px 0 var(--money-edge)}
@@ -197,12 +216,13 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper
 .rank{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--inset);color:var(--muted);font-weight:800;font-size:18px;font-family:"Spline Sans Mono",monospace}
 /* Podium metaphor: gold, silver, bronze. Violet stays reserved for tiers,
    so a rank chip and a tier chip never read as the same kind of thing. */
-.row:nth-child(1) .rank{background:var(--crown);color:#fff}
-.row:nth-child(2) .rank{background:#8E9AAB;color:#fff}
-.row:nth-child(3) .rank{background:#B87333;color:#fff}
+.row:nth-child(1) .rank{background:var(--crown);color:var(--on-crown)}
+.row:nth-child(2) .rank{background:var(--silver);color:var(--on-silver)}
+.row:nth-child(3) .rank{background:var(--bronze);color:var(--on-bronze)}
 .mv{display:block;font-size:10px;font-weight:800;line-height:1}
 .mv.up{color:var(--money)}.mv.down{color:var(--heat)}.mv.same{color:transparent}
-.row:nth-child(-n+3) .mv.up,.row:nth-child(-n+3) .mv.down{color:#fff}
+/* Inherit the chip's own ink so each podium colour keeps a passing pair. */
+.row:nth-child(-n+3) .mv.up,.row:nth-child(-n+3) .mv.down{color:inherit}
 .who{display:flex;gap:12px;align-items:center;min-width:0}
 .who > div{min-width:0}
 .nm{font-weight:800;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
@@ -292,13 +312,13 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
   opacity:0;visibility:hidden;transition:opacity .22s ease, transform .28s cubic-bezier(.2,.9,.3,1.2), visibility .22s}
 .sharebar.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 .sharebar a,.sharebar button{font-size:13px;font-weight:800;padding:9px 14px;border-radius:12px;white-space:nowrap}
-.sharebar .brag{background:var(--crown);color:#fff;box-shadow:0 3px 0 var(--crown-edge)}
+.sharebar .brag{background:var(--crown);color:var(--on-crown);box-shadow:0 3px 0 var(--crown-edge)}
 .sharebar .brag:hover{filter:brightness(1.06);text-decoration:none}
 .sharebar .brag:active{transform:translateY(2px);box-shadow:0 1px 0 var(--crown-edge)}
 .sharebar .copy{border:1.5px solid var(--line);color:var(--muted);box-shadow:0 2px 0 var(--line)}
 .sharebar .x{color:var(--dim);padding:9px 5px}
 .sticky-cta{display:none;position:fixed;left:14px;right:14px;bottom:14px;z-index:50}
-.sticky-cta button{width:100%;background:var(--money);color:#fff;font-weight:800;font-size:17px;padding:16px;border-radius:18px;box-shadow:0 5px 0 var(--money-edge), var(--shadow-lift)}
+.sticky-cta button{width:100%;background:var(--money-btn);color:var(--on-money);font-weight:800;font-size:17px;padding:16px;border-radius:18px;box-shadow:0 5px 0 var(--money-btn-edge), var(--shadow-lift)}
 .sticky-cta button:active{transform:translateY(4px);box-shadow:0 1px 0 var(--money-edge)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:var(--paper);padding:14px 20px;border-radius:16px;box-shadow:var(--shadow-lift);z-index:60;font-size:14.5px;font-weight:700;max-width:calc(100vw - 32px);
@@ -310,7 +330,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
 .watch.on{display:flex}
 .w-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
 .w-head .logo{font-size:26px}
-.w-live{color:#fff;background:var(--heat);padding:5px 12px;border-radius:99px;font-weight:800;font-size:12px;letter-spacing:.1em;animation:pulse 1.5s infinite}
+.w-live{color:var(--on-heat);background:var(--heat-btn);padding:5px 12px;border-radius:99px;font-weight:800;font-size:12px;letter-spacing:.1em;animation:pulse 1.5s infinite}
 .w-close{margin-left:auto;border:1.5px solid var(--line);border-radius:14px;padding:11px 18px;color:var(--muted);font-weight:800;background:var(--card);box-shadow:0 3px 0 var(--line)}
 .w-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;flex:1;min-height:0}
 .w-main{display:flex;flex-direction:column;gap:16px}
@@ -537,7 +557,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
   </form>
 </dialog>
 
-<div class="watch" id="watch" role="dialog" aria-label="Watch mode">
+<div class="watch" id="watch" role="dialog" aria-modal="true" aria-label="Watch mode" tabindex="-1">
   <div class="w-head">
     <div class="logo">OUT<span class="up">RANKED</span></div>
     <span class="w-live">● LIVE</span>
@@ -1231,11 +1251,27 @@ function renderWatch(){
   $("#wFeed").innerHTML = state.feed.slice(0,9).map(f=>`<div class="ev">${f}</div>`).join("");
   $("#wUrl").textContent = SITE.replace(/^https?:\/\//,"").replace(/\/$/,"") + " — pay more, rank higher, stay on top";
 }
+let watchReturnFocus = null;
 function setWatch(on){
   watchOn = on;
-  $("#watch").classList.toggle("on", on);
+  const w = $("#watch");
+  w.classList.toggle("on", on);
   document.documentElement.style.overflow = on ? "hidden" : "";
-  if (on) renderWatch();
+  /* A full-screen overlay that leaves the page behind it focusable is a trap for
+     anyone not using a mouse: Tab walks off into controls they cannot see, and a
+     screen reader still reads the whole board underneath. inert takes that
+     subtree out of both the focus order and the accessibility tree, so the Tab
+     cycle stays inside the overlay without hand-rolling a focus trap. */
+  for (const el of document.body.children) if (el !== w) el.inert = on;
+  if (on){
+    renderWatch();
+    watchReturnFocus = document.activeElement;
+    ($("#watchClose") || w).focus();
+  } else if (watchReturnFocus){
+    /* Send focus back where it came from, not to the top of the document. */
+    if (document.contains(watchReturnFocus)) watchReturnFocus.focus();
+    watchReturnFocus = null;
+  }
 }
 $("#watchBtn").addEventListener("click", ()=>setWatch(true));
 $("#watchClose").addEventListener("click", ()=>setWatch(false));
