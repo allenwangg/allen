@@ -81,6 +81,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{o
 
 /* ---- pressable keys: the signature control ---- */
 .key{border-radius:14px;font-weight:800;padding:12px 20px;transition:transform .08s ease, box-shadow .08s ease, filter .15s}
+.defendbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin:0 0 14px;padding:12px 16px;border-radius:14px;
+  background:var(--heat-soft);border:1px solid var(--heat);color:var(--text)}
+.defendbar button{background:var(--heat);color:#fff;border:0;box-shadow:0 4px 0 var(--heat-edge);padding:10px 16px}
 .key:active{transform:translateY(3px)}
 .cta{background:var(--money);color:#fff;border-radius:14px;font-weight:800;padding:12px 20px;white-space:nowrap;
   box-shadow:0 4px 0 var(--money-edge);transition:transform .08s ease, box-shadow .08s ease, filter .15s}
@@ -439,6 +443,10 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
     <input class="search" id="search" type="search" placeholder="Search the board…" aria-label="Search the board">
   </div>
 
+  <div id="defendBar" class="defendbar" hidden>
+    <span id="defendMsg"></span>
+    <button type="button" id="defendBtn" class="key">🛡 Defend now</button>
+  </div>
   <section class="board" id="board" aria-label="Leaderboard"></section>
 
   <div class="hall" id="hall" aria-label="Hall of Fame"></div>
@@ -449,7 +457,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
       <li><b>Your rank = total dollars you've paid.</b> No votes, no algorithm, no editor. Money is the only judge.</li>
       <li><b>$5 minimum</b> to claim a new spot. <b>$1 increments</b> after that. Bids are cumulative and final.</li>
       <li><b>Take any rank instantly</b> — every row shows the exact price to pass it. No math required.</li>
-      <li><b>Auto-defend:</b> set a budget and we re-bid +$1 automatically the moment you're outbid. Sleep while your money fights.</li>
+      <li id="ruleDefend"><b>Auto-defend:</b> set a budget and we re-bid +$1 automatically the moment you're outbid. Sleep while your money fights.</li>
       <li><b>The crown is timed.</b> #1 wears it and the reign clock runs. Longest reign goes in the record books forever.</li>
       <li><b>Seasons run monthly.</b> The Season board counts only this month's bids; its champion is engraved forever on the 1st, and everyone starts even again.</li>
       <li><b>Flames reward the faithful.</b> Bid on any day and your listing's 🔥 flame grows; miss a day and it dies. The hottest flame sits in the record books.</li>
@@ -461,8 +469,8 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
   </details>
 
   <footer>
-    OUTRANKED — vibe-built in one page. Demo mode: bids are simulated locally, no card required.<br>
-    In production, the Pay button opens a Stripe Payment Link. That's the whole backend.
+    <span id="footMode">OUTRANKED — vibe-built in one page. Demo mode: bids are simulated locally, no card required.</span><br>
+    <span id="footBackend">In production, the Pay button opens a Stripe Payment Link. That's the whole backend.</span>
   </footer>
 </main>
 
@@ -492,7 +500,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
       <input type="checkbox" id="fDefend">
       <div class="t">
         <b>Auto-defend this rank</b>
-        <span>If outbid, automatically re-bid +$1 up to your budget:</span>
+        <span id="defendHelp">If outbid, automatically re-bid +$1 up to your budget:</span>
         <input id="fBudget" type="number" min="1" step="1" placeholder="Defense budget $" style="margin-top:6px;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text)" disabled>
       </div>
     </div>
@@ -1346,13 +1354,14 @@ $("#bidForm").addEventListener("submit", e=>{
     if (!known && amount < MIN_NEW){
       err.textContent = `New listings start at ${fmt(MIN_NEW)}.`; err.classList.add("show"); return;
     }
-    const ref = encodeRef(cleanName, cleanUrl, decree);
+    const ref = encodeRef(cleanName, cleanUrl, decree, defendBudget);
     window.open(CONFIG.STRIPE_PAYMENT_LINK + (CONFIG.STRIPE_PAYMENT_LINK.includes("?") ? "&" : "?") +
       "client_reference_id=" + encodeURIComponent(ref), "_blank", "noopener");
     try { sessionStorage.setItem("outranked_pending", JSON.stringify({ name: cleanName, amount })); } catch(e){}
     $("#fDecree").value = "";
     modal.close();
-    toast(`🏦 Finish paying ${fmt(amount)} in the Stripe tab — ${esc(cleanName)} joins the board the moment it clears.`);
+    toast(`🏦 Finish paying ${fmt(amount)} in the Stripe tab — ${esc(cleanName)} joins the board the moment it clears.` +
+      (defendBudget > 0 ? ` 🛡 Defending up to ${fmt(defendBudget)}.` : ""));
     return;
   }
 
@@ -1386,6 +1395,40 @@ try{ const t = localStorage.getItem("outranked_theme"); if(t) document.documentE
 
 let toastTimer;
 function toast(html){ const el=$("#toast"); el.innerHTML=html; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3500); }
+
+/* On a live board "auto-defend" cannot re-bid by itself — a Payment Link
+   leaves no saved credential and there is no server authorised to charge one.
+   So the committed budget becomes a watch: the moment the ledger shows you
+   passed, offer a retake priced exactly to win, capped at what you committed.
+   Anything more automatic than this would be charging a card without consent. */
+function checkDefendWatch(){
+  const bar = $("#defendBar");
+  if (!bar) return;
+  const hide = () => { bar.hidden = true; };
+  if (!state.live) return hide();
+  let myName = "";
+  try { myName = (localStorage.getItem("outranked_name") || "").trim(); } catch(e){}
+  if (!myName) return hide();
+  const mine = state.entries.find(e => e.name.toLowerCase() === myName.toLowerCase());
+  if (!mine || !(mine.defend > 0)) return hide();
+  const board = sortedToday();
+  const idx = board.findIndex(e => e.id === mine.id);
+  if (idx < 1) return hide();                     // absent, or already #1
+  const ahead = board[idx - 1];
+  const need = (ahead.todayTotal || 0) - (mine.todayTotal || 0) + 1;
+  if (need < 1 || need > mine.defend) return hide();   // out of budget: stay quiet
+  $("#defendMsg").innerHTML =
+    `🛡 <b>${esc(ahead.name)}</b> passed you — <b>${fmt(need)}</b> retakes #${idx} ` +
+    `<span style="color:var(--dim)">(budget ${fmt(mine.defend)})</span>`;
+  /* Hand openBid the listing AHEAD of us: it already knows how to prefill the
+     exact price to pass a given target, so the retake reuses that path. */
+  bar.dataset.target = ahead.id;
+  bar.hidden = false;
+}
+$("#defendBtn").addEventListener("click", () => {
+  const t = $("#defendBar").dataset.target;
+  if (t) openBid(t);
+});
 
 /* ============ viral loops ============ */
 const SHARE_LINK = SITE + "?r=x";              // tag shares so analytics shows what X drives
@@ -1576,23 +1619,26 @@ if (CONFIG.GOATCOUNTER){
 /* ============ the board IS the Stripe ledger ============ */
 /* Bids are encoded into Stripe's client_reference_id, so /api/board can
    rebuild the entire leaderboard from completed payments — no database. */
-function encodeRef(name, url, decree){
-  const raw = [name.slice(0,24), (url||"").slice(0,48), (decree||"").slice(0,48)]
-    .map(s => s.replace(/\|/g, "/")).join("|");
+function encodeRef(name, url, decree, defend){
+  const parts = [name.slice(0,24), (url||"").slice(0,48), (decree||"").slice(0,48)];
+  /* Only appended when set, so existing three-field refs stay byte-identical. */
+  if (defend > 0) parts.push(String(Math.min(999999, Math.floor(defend))));
+  const raw = parts.map(s => String(s).replace(/\|/g, "/")).join("|");
   const b64 = btoa(unescape(encodeURIComponent(raw)))
     .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
   return ("b64." + b64).slice(0, 200);
 }
 function decodeRef(ref){
-  if (!ref) return {name:"Anonymous", url:"", decree:""};
-  if (!/^b64\./.test(ref)) return {name: ref.split("_")[0] || "Anonymous", url:"", decree:""};
+  if (!ref) return {name:"Anonymous", url:"", decree:"", defend:0};
+  if (!/^b64\./.test(ref)) return {name: ref.split("_")[0] || "Anonymous", url:"", decree:"", defend:0};
   const body = ref.slice(4);
-  if (!/^[A-Za-z0-9\-_]+$/.test(body)) return {name:"Anonymous", url:"", decree:""};
+  if (!/^[A-Za-z0-9\-_]+$/.test(body)) return {name:"Anonymous", url:"", decree:"", defend:0};
   try {
     const raw = decodeURIComponent(escape(atob(body.replace(/-/g,"+").replace(/_/g,"/"))));
-    const [name,url,decree] = raw.split("|");
-    return {name:(name||"Anonymous").slice(0,30), url:(url||"").slice(0,60), decree:(decree||"").slice(0,60)};
-  } catch(e){ return {name:"Anonymous", url:"", decree:""}; }
+    const [name,url,decree,defend] = raw.split("|");
+    return {name:(name||"Anonymous").slice(0,30), url:(url||"").slice(0,60), decree:(decree||"").slice(0,60),
+            defend: Math.max(0, Math.min(999999, parseInt(defend,10) || 0))};
+  } catch(e){ return {name:"Anonymous", url:"", decree:"", defend:0}; }
 }
 
 /* Once Stripe is connected the ledger is the whole truth: the demo seed board
@@ -1613,12 +1659,26 @@ function goLive(){
      merged into: keeping any prior entry would double-count its bids. */
   state.entries = [];
   state.stats = { bids: 0, biggest: 0 };
-  state.feed = []; state.hall = []; state.applied = [];
+  /* state.hall AND state.seasons are both demo fiction — clearing only the
+     hall left fabricated Season champions engraved on a live board. */
+  state.feed = []; state.hall = []; state.seasons = []; state.applied = [];
   delete state.decree; delete state.todayDecree;
   state.crownId = null; state.crownedAt = Date.now();
   state.longestReign = { name: "—", ms: 0 };
   const ribbon = $("#demoRibbon");
   if (ribbon) ribbon.classList.remove("show");
+  /* The ribbon was not the only place the page called itself a demo. */
+  const fm = $("#footMode");
+  if (fm) fm.textContent = "OUTRANKED — vibe-built in one page. Live: every row is a real, completed Stripe payment.";
+  const fb = $("#footBackend");
+  if (fb) fb.textContent = "The board is recomputed from the Stripe ledger on every load. That's the whole backend.";
+  /* Auto-defend cannot mean "charge them again" here: a Payment Link leaves us
+     no saved credential and no server to charge from. Live, it is a watch. */
+  const rd = $("#ruleDefend");
+  if (rd) rd.innerHTML = "<b>Auto-defend:</b> set a budget and we watch your rank. The moment you're passed, " +
+    "we offer a one-tap retake priced exactly to win — up to the budget you committed.";
+  const dh = $("#defendHelp");
+  if (dh) dh.textContent = "If outbid, we'll offer a one-tap retake priced to win, up to:";
 }
 
 async function mergeBoardFeed(){
@@ -1640,7 +1700,7 @@ async function mergeBoardFeed(){
   let changed = false;
   for (const c of confirmed){
     if (!c || !c.id || seen.has(c.id)) continue;
-    const { name, url, decree } = decodeRef(c.ref);
+    const { name, url, decree, defend } = decodeRef(c.ref);
     const amount = Math.floor(+c.amount || 0);
     if (amount < 1) continue;
     let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
@@ -1679,6 +1739,9 @@ async function mergeBoardFeed(){
     feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
     /* The decree belongs to the biggest single bid on a listing — a $1 griefer
        cannot put words in an expensive mouth. */
+    /* Same largest-bid rule as the decree: a $1 bid under someone else's name
+       must not be able to rewrite the budget they committed. */
+    if (defend > 0 && amount >= (entry.topBid || 0)) entry.defend = defend;
     if (decree && amount >= (entry.topBid || 0)){
       const top = sorted()[0];
       if (top && top.id === entry.id) state.decree = { text: decree, by: entry.name, id: entry.id };
@@ -1690,6 +1753,7 @@ async function mergeBoardFeed(){
   }
   if (changed && state.entries.length) checkCrown(sorted()[0]);
   if (changed || wentLive) render();
+  checkDefendWatch();
 }
 mergeBoardFeed();
 if (CONFIG.BOARD_FEED_URL) setInterval(mergeBoardFeed, 20000);

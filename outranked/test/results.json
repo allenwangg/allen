@@ -173,6 +173,14 @@
       "pass": true
     },
     {
+      "name": "going live stops the page calling itself a demo and drops fabricated champions",
+      "pass": true
+    },
+    {
+      "name": "a committed defend budget rides the ledger and offers a one-tap retake",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -193,18 +201,22 @@
       "pass": true
     },
     {
+      "name": "a zero-decimal currency is not credited 100x",
+      "pass": true
+    },
+    {
       "name": "public ledger page renders a listing's payments without leaking full session IDs",
       "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 128,
-    "medianDOMContentLoadedms": 94.3,
-    "medianLoadms": 12461.7,
+    "medianFCPms": 100,
+    "medianDOMContentLoadedms": 74.2,
+    "medianLoadms": 12502.8,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 93636,
-    "gzipBytes": 27843
+    "htmlBytes": 97655,
+    "gzipBytes": 29235
   }
 }

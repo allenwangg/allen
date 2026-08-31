@@ -19,6 +19,20 @@ const STRIPE_API = (process.env.STRIPE_API_BASE || "https://api.stripe.com") + "
 const MAX_PAGES = 50;
 const TIME_BUDGET_MS = 7000; // stay well inside the function timeout
 
+// Stripe reports amounts in a currency's MINOR unit, and that is not always
+// 1/100: zero-decimal currencies quote whole units, three-decimal ones quote
+// thousandths. Dividing everything by 100 credited a KRW payer 100x what they
+// paid. Floor, never round — the board must never credit money nobody sent.
+const ZERO_DECIMAL = new Set(["bif","clp","djf","gnf","jpy","kmf","krw","mga",
+  "pyg","rwf","ugx","vnd","vuv","xaf","xof","xpf"]);
+const THREE_DECIMAL = new Set(["bhd","iqd","jod","kwd","omr","tnd"]);
+function majorUnits(minor, currency) {
+  const c = String(currency || "usd").toLowerCase();
+  if (ZERO_DECIMAL.has(c)) return Math.floor(minor);
+  if (THREE_DECIMAL.has(c)) return Math.floor(minor / 1000);
+  return Math.floor(minor / 100);
+}
+
 /**
  * Fetch completed checkout sessions and reduce them to public bid records.
  * Deliberately returns ONLY: session id, the client_reference_id the page
@@ -45,7 +59,7 @@ async function fetchBids(key) {
     const rows = body.data || [];
     for (const s of rows) {
       if (s.payment_status !== "paid") continue;
-      const amount = Math.round((s.amount_total || 0) / 100);
+      const amount = majorUnits(s.amount_total || 0, s.currency);
       if (amount < 1) continue;
       bids.push({
         id: s.id,
