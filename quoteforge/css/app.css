@@ -730,6 +730,12 @@ table.pr-table tr.group-head td {
   body[data-print="audit"] #pane-costs { display: block !important; }
   body[data-print="audit"] #pane-costs > .workspace { display: none !important; }
   body[data-print="audit"] #auditPrintShell { display: block !important; }
+
+  body[data-print="pf"] .pane { display: none !important; }
+  body[data-print="pf"] #pane-jobs { display: block !important; }
+  body[data-print="pf"] #pane-jobs > .stat-row,
+  body[data-print="pf"] #pane-jobs > .card { display: none !important; }
+  body[data-print="pf"] #pfPrintShell { display: block !important; }
   body { background: #fff; }
   .pane { padding: 0; }
   .proposal-shell { max-width: none; }

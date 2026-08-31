@@ -12,7 +12,7 @@ import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
-  solveDiscountForTotal,
+  solveDiscountForTotal, summarizePortfolio,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -23,7 +23,7 @@ import {
 } from './pricebook.js';
 import {
   renderProposal, proposalAsText, renderChangeOrder, renderContractStatement,
-  renderAuditReport, esc,
+  renderAuditReport, renderPortfolioReport, esc,
 } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -1095,6 +1095,25 @@ function wireJobs() {
       if (est) est.status = e.target.value;
     }, { label: 'status' });
   });
+
+  $('#btnPortfolio').onclick = () => {
+    // Audited jobs only. Mixing in the operator's own quotes would report a
+    // finding about their business, not the client's.
+    const audited = store.state.estimates.filter((e) => e.isAudit);
+    if (!audited.length) {
+      toast('No audited jobs yet — build one with "Audit a job" first.', { bad: true });
+      return;
+    }
+    const portfolio = summarizePortfolio(audited, store.state.settings);
+    $('#pfPrint').innerHTML = renderPortfolioReport({
+      portfolio, company: store.state.company, settings: store.state.settings,
+    });
+    document.body.dataset.print = 'pf';
+    requestAnimationFrame(() => {
+      window.print();
+      delete document.body.dataset.print;
+    });
+  };
 
   $('#btnExportAll').onclick = $('#btnExportAll2').onclick = () => {
     download(`quoteforge-backup-${new Date().toISOString().slice(0, 10)}.json`,

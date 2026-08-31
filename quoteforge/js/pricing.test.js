@@ -10,7 +10,7 @@ import {
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
-  solveDiscountForTotal,
+  solveDiscountForTotal, summarizePortfolio,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -769,6 +769,111 @@ t('contract margin uses a pre-tax basis on both halves', () => {
   const untaxed = summarizeContract({ items, changeOrders: [co] }, { ...S, taxMode: 'none', taxRate: 0 });
   near(c.contractMargin, untaxed.contractMargin, 1e-9,
     'sales tax must not change the margin the contractor earns:');
+});
+
+/* ------------------------------------------------------- portfolio ------- */
+
+/** A job as createAuditJob would build it, without needing the Store. */
+function auditedJob(title, quoted, budget, spent, changes = []) {
+  const overhead = S.overhead;
+  const budgetTotal = Object.values(budget).reduce((a, b) => a + Math.max(0, b), 0);
+  const burdened = budgetTotal * (1 + overhead);
+  const markup = burdened > 0 ? (quoted - burdened) / burdened : 0;
+  return {
+    id: title, title, isAudit: true,
+    settings: { contingency: 0, taxMode: 'none', taxRate: 0, overhead },
+    items: Object.entries(budget).filter(([, v]) => v > 0).map(([c, v], i) => ({
+      id: `${title}-${i}`, description: c, category: c, unit: 'ls', qty: 1, unitCost: v, markup,
+    })),
+    actuals: Object.entries(spent).map(([c, v], i) => ({
+      id: `${title}-a${i}`, date: '2026-08-01', category: c, description: c, amount: v,
+    })),
+    changeOrders: changes.map(([t, amount, signed], i) => ({
+      id: `${title}-c${i}`, number: `CO-0${i + 1}`, title: t,
+      status: signed ? 'approved' : 'draft', items: [{
+        id: `${title}-ci${i}`, description: t, category: 'labor', unit: 'ls',
+        qty: 1, unitCost: amount / (1 + overhead), markup: 0,
+      }],
+    })),
+  };
+}
+
+t('a portfolio total equals the sum of its jobs', () => {
+  const jobs = [
+    auditedJob('A', 31500, { labor: 9800, material: 6200 }, { labor: 13100, material: 6850 }, [['x', 2200, false]]),
+    auditedJob('B', 44000, { labor: 14000, material: 11000 }, { labor: 17800, material: 11400 }, [['y', 900, true]]),
+    auditedJob('C', 19000, { labor: 6000, material: 7000 }, { labor: 7900, material: 7200 }),
+  ];
+  const pf = summarizePortfolio(jobs, S);
+  eq(pf.count, 3);
+  eq(pf.foundCents, pf.jobs.reduce((a, j) => a + j.foundCents, 0),
+    'the headline must equal the job rows beneath it:');
+  eq(pf.foundCents, pf.leaks.reduce((a, l) => a + l.cents, 0),
+    'and it must equal the leak breakdown too:');
+  ok(pf.revenueCents > 0 && Number.isFinite(pf.foundShare));
+});
+
+t('jobs are ordered worst first', () => {
+  const pf = summarizePortfolio([
+    auditedJob('small', 19000, { labor: 6000 }, { labor: 6100 }),
+    auditedJob('big', 31500, { labor: 9800 }, { labor: 16000 }),
+  ], S);
+  ok(pf.jobs[0].foundCents >= pf.jobs[1].foundCents,
+    'a report should meet the reader with the costliest job first');
+});
+
+t('one catastrophic job is NOT diagnosed as a habit', () => {
+  const clean = { labor: 10000, material: 8000 };
+  const pf = summarizePortfolio([
+    auditedJob('bad', 30000, clean, { labor: 24000, material: 8000 }),
+    auditedJob('ok1', 30000, clean, { labor: 10000, material: 8000 }),
+    auditedJob('ok2', 30000, clean, { labor: 10000, material: 8000 }),
+  ], S);
+  eq(pf.systematic, false, 'one bad job must not be reported as a recurring habit:');
+  eq(pf.jobsAffected, 1);
+  ok(pf.concentration > 0.9, `the worst job should carry almost all of it, got ${pf.concentration}`);
+});
+
+t('the same total spread across every job IS a habit', () => {
+  const clean = { labor: 10000, material: 8000 };
+  const pf = summarizePortfolio(['a', 'b', 'c'].map((n) =>
+    auditedJob(n, 30000, clean, { labor: 14667, material: 8000 })), S);
+  eq(pf.systematic, true, 'a leak on every job is the definition of systematic:');
+  eq(pf.jobsAffected, 3);
+  ok(pf.concentration < 0.5);
+});
+
+t('a single job is never called systematic', () => {
+  const pf = summarizePortfolio([
+    auditedJob('only', 30000, { labor: 10000 }, { labor: 20000 }),
+  ], S);
+  eq(pf.systematic, false, 'one job is not a pattern, whatever it shows:');
+});
+
+t('an empty portfolio is zeros, not NaN', () => {
+  const pf = summarizePortfolio([], S);
+  eq(pf.count, 0);
+  eq(pf.foundCents, 0);
+  ok(Number.isFinite(pf.foundShare) && Number.isFinite(pf.averageMargin));
+  eq(pf.concentration, 0);
+});
+
+t('jobs with no actual costs are counted and flagged', () => {
+  const pf = summarizePortfolio([
+    auditedJob('with', 30000, { labor: 10000 }, { labor: 12000 }),
+    auditedJob('without', 30000, { labor: 10000 }, {}),
+  ], S);
+  eq(pf.jobsMissingActuals, 1,
+    'the report must disclose where fade could not be seen:');
+  eq(pf.jobs.find((j) => j.title === 'without').fadeCents, 0);
+});
+
+t('the dominant leak is the largest one', () => {
+  const pf = summarizePortfolio([
+    auditedJob('a', 31500, { labor: 9800, material: 6200 }, { labor: 13100, material: 6850 }, [['x', 2200, false]]),
+  ], S);
+  eq(pf.dominant.cents, Math.max(...pf.leaks.map((l) => l.cents)));
+  eq(pf.leaks[0].key, pf.dominant.key, 'leaks must be sorted with the dominant first:');
 });
 
 

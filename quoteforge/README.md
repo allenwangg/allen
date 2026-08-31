@@ -35,6 +35,13 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   offers a one-click fix.
 - **Client proposals** grouped by trade, with optional upgrades priced separately, a
   payment schedule that reconciles to the penny, your terms, and signature capture.
+- **A portfolio report across audited jobs.** Three single-job reports are three data points
+  and an exercise for the reader; this is the synthesis the audit offer actually sells. It
+  ranks the three leaks, and — critically — distinguishes a habit from one bad job by measuring
+  how concentrated the dominant leak is. Comparable totals can mean opposite things: money
+  leaking on every job says the pricing model is wrong, while the same sum from one
+  catastrophic job says it is not. The recommendation is derived from which leak dominates,
+  not templated.
 - **A shareable intake link.** `intake.html` is the same questions as a page the
   contractor fills in on their own time; it packs their answers into a URL fragment they
   send back, which the app unpacks into a finished audit. No server, and — because
@@ -117,7 +124,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-178 unit assertions with no test framework and no install step, plus 204 browser
+186 unit assertions with no test framework and no install step, plus 211 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 and `test/security.mjs`. Both figures are what `./run-tests.sh --all` actually reports —
 re-read them from its output rather than trusting this line after a change. The pricing suite includes a

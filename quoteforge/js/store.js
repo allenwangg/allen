@@ -592,6 +592,7 @@ function migrateEstimate(raw) {
     ...raw,
     client: { ...base.client, ...(raw.client || {}) },
     items: (raw.items || []).map(normalizeItem),
+    isAudit: !!raw.isAudit,
     changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
     actuals: (raw.actuals || []).map(migrateActual),
     // Present-but-empty means the user deleted every entry on purpose. Only a
@@ -944,6 +945,9 @@ Object.assign(Store.prototype, {
       updatedAt: created,
       client: { name: input.client || '', email: '', phone: '', address: '' },
       scopeSummary: 'Reconstructed from the contractor\'s own figures for a margin audit.',
+      // Marks this as an audited job rather than one of the operator's own
+      // quotes, so the portfolio report includes exactly the right set.
+      isAudit: true,
       // Overhead is pinned alongside contingency and tax. Without it, changing
       // the global overhead rate silently reprices every audit already
       // delivered — and the implied markup above was derived against THIS

@@ -52,6 +52,11 @@ Before anyone pays you, run one audit on **your own** last job:
 1. **Audit a job** in the toolbar → fill in the twelve fields.
 2. It lands on the Costs tab with the report already built → print to PDF.
 
+Then, once all three are built: **Jobs tab → Audit report — all jobs**. That is the
+deliverable the offer actually promises — the pattern across their jobs rather
+than three disconnected reports. It names which of the three leaks dominates
+and whether it is a habit or one bad job, because those need opposite advice.
+
 That is the whole delivery. The intake asks only for what a contractor can
 actually tell you on a phone call — what they charged, roughly what they paid
 out by trade, and what changed — because nobody can reconstruct their own line

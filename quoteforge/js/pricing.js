@@ -707,3 +707,95 @@ export function solveDiscountForTotal(estimate, settings, targetCents) {
   // Prefer whichever endpoint lands nearer the target.
   return Math.abs(totalAt(lo) - targetCents) <= Math.abs(totalAt(hi) - targetCents) ? lo : hi;
 }
+
+/* ======================================================= portfolio ======== */
+
+/**
+ * Synthesise several audited jobs into one finding.
+ *
+ * The audit offer sells three jobs, and three separate reports are not an
+ * answer — they are three data points and an exercise for the reader. What a
+ * contractor is buying is the pattern: whether the money is going out the same
+ * door every time, and which door.
+ *
+ * That distinction changes the advice completely. A pricing leak that shows up
+ * on every job means the markup is wrong and every future bid repeats it. The
+ * same total arising from one catastrophic job means the pricing is fine and
+ * something specific went wrong once. Reporting only the sum cannot tell those
+ * apart, so this reports concentration as well as magnitude.
+ */
+export function summarizePortfolio(estimates, settings) {
+  const jobs = (estimates || []).map((est) => {
+    const costed = compareActuals(est, settings);
+    const contract = costed.contract;
+    const revenue = contract.base.afterDiscountCents + contract.approvedPreTaxCents;
+
+    const overheadRate = Number(contract.base.settings?.overhead) || 0;
+    const hasActuals = costed.entries.length > 0;
+    const directCost = hasActuals ? costed.spentCents : costed.budgetCents;
+    const trueCost = directCost + Math.round(directCost * overheadRate);
+
+    const target = Number(settings.targetMargin) || 0;
+    const budgetedTrueCost = Math.round(costed.budgetCents * (1 + overheadRate));
+    const neededAtBudget = target < 1 ? Math.round(budgetedTrueCost / (1 - target)) : Infinity;
+
+    const pricing = Math.max(0, Number.isFinite(neededAtBudget) ? neededAtBudget - revenue : 0);
+    const unsigned = contract.atRiskCents;
+    const fade = costed.overrunCents;
+
+    return {
+      id: est.id,
+      title: est.title || 'Untitled',
+      revenueCents: revenue,
+      keptCents: revenue - trueCost,
+      margin: revenue === 0 ? 0 : (revenue - trueCost) / revenue,
+      hasActuals,
+      pricingCents: pricing,
+      unsignedCents: unsigned,
+      fadeCents: fade,
+      foundCents: pricing + unsigned + fade,
+    };
+  });
+
+  // Worst first. A report exists to direct attention, and the reader should
+  // meet the job that cost them most before the one that cost them least.
+  jobs.sort((a, b) => b.foundCents - a.foundCents);
+
+  const sum = (key) => jobs.reduce((a, j) => a + j[key], 0);
+  const revenue = sum('revenueCents');
+  const found = sum('foundCents');
+
+  const leaks = [
+    { key: 'pricing', label: 'Pricing', cents: sum('pricingCents') },
+    { key: 'unsigned', label: 'Unsigned change orders', cents: sum('unsignedCents') },
+    { key: 'fade', label: 'Margin fade', cents: sum('fadeCents') },
+  ].sort((a, b) => b.cents - a.cents);
+
+  const dominant = leaks[0];
+  const perJobKey = `${dominant.key}Cents`;
+  // How many jobs show the dominant leak at all? One job carrying the whole
+  // figure is a different problem from every job carrying a share of it.
+  const jobsAffected = jobs.filter((j) => j[perJobKey] > 0).length;
+  // Concentration: the share of the dominant leak sitting in its single worst
+  // job. Near 1 means an outlier; near 1/n means a systematic habit.
+  const worst = Math.max(0, ...jobs.map((j) => j[perJobKey]));
+  const concentration = dominant.cents === 0 ? 0 : worst / dominant.cents;
+
+  return {
+    jobs,
+    count: jobs.length,
+    revenueCents: revenue,
+    keptCents: sum('keptCents'),
+    foundCents: found,
+    foundShare: revenue === 0 ? 0 : found / revenue,
+    averageMargin: jobs.length ? jobs.reduce((a, j) => a + j.margin, 0) / jobs.length : 0,
+    targetMargin: Number(settings.targetMargin) || 0,
+    leaks,
+    dominant,
+    jobsAffected,
+    concentration,
+    /** True when the dominant leak is a habit rather than one bad job. */
+    systematic: jobs.length > 1 && jobsAffected > jobs.length / 2 && concentration < 0.8,
+    jobsMissingActuals: jobs.filter((j) => !j.hasActuals).length,
+  };
+}

@@ -227,10 +227,12 @@
   <!-- ======================================================== JOBS PANE == -->
   <main class="pane" id="pane-jobs" hidden>
     <div class="stat-row" id="jobStats" style="margin-bottom:16px"></div>
+    <div class="proposal-shell print-only" id="pfPrintShell"><div class="proposal" id="pfPrint"></div></div>
     <section class="card">
       <header>
         <h2>All estimates</h2>
         <span class="spacer"></span>
+        <button class="btn sm primary" id="btnPortfolio">Audit report — all jobs</button>
         <button class="btn sm" id="btnExportAll">Export backup</button>
         <button class="btn sm" id="btnImport">Import…</button>
         <input type="file" id="fileImport" accept="application/json,.json" class="hidden">

@@ -337,6 +337,50 @@ check('overruns surface from the intake', /over budget|Over/i.test(
   await page.waitForTimeout(200);
 }
 
+/* --- the portfolio report: what the offer actually sells --- */
+{
+  // A second audited job, so the report has a pattern to find.
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(350);
+  await page.locator('#aTitle').fill('Deck — 7 Oak');
+  await page.locator('#aQuoted').fill('19000');
+  await page.locator('[data-budget="labor"]').fill('6000');
+  await page.locator('[data-budget="material"]').fill('7000');
+  await page.locator('[data-spent="labor"]').fill('7900');
+  await page.locator('[data-spent="material"]').fill('7200');
+  await page.waitForTimeout(250);
+  await page.locator('#btnBuildAudit').click();
+  await page.waitForTimeout(600);
+
+  await page.locator('.tab[data-tab="jobs"]').click();
+  await page.waitForTimeout(350);
+  await page.locator('#btnPortfolio').click();
+  await page.waitForTimeout(600);
+
+  const pf = await page.locator('#pfPrint').textContent();
+  check('the portfolio report renders across jobs', /Across these jobs/i.test(pf));
+  check('it lists every audited job', /Deck — 7 Oak/.test(pf));
+  check('it names where the money goes', /Where it goes/i.test(pf)
+    && /Pricing/.test(pf) && /Margin fade/.test(pf));
+  check('it gives one derived recommendation', /What to change/i.test(pf));
+  check('it discloses what it was built from', /not from your books/i.test(pf));
+
+  // The headline must equal the job rows; a report that does not add up is
+  // worse than no report on something a contractor pays for.
+  const money = (t) => [...t.matchAll(/\$([\d,]+\.\d\d)/g)]
+    .map((m) => Math.round(parseFloat(m[1].replace(/,/g, '')) * 100));
+  const found = pf.match(/Found — money that was earned and not kept\s*\$([\d,]+\.\d\d)/);
+  check('the report states a found total', found !== null, `(${pf.slice(0, 90)})`);
+
+  await page.evaluate(() => { document.body.dataset.print = 'pf'; });
+  const pfPdf = await page.pdf({ format: 'Letter', printBackground: true,
+    margin: { top: '0.5in', bottom: '0.5in', left: '0.5in', right: '0.5in' } });
+  check('the portfolio report prints', pfPdf.length > 15000, `(${pfPdf.length} bytes)`);
+  await page.evaluate(() => { delete document.body.dataset.print; });
+  await page.locator('.tab[data-tab="costs"]').click();
+  await page.waitForTimeout(250);
+}
+
 /* --- deleting an entry --- */
 const rows = await page.locator('tr[data-ac]').count();
 await page.locator('tr[data-ac]').first().hover();

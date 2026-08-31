@@ -12,6 +12,7 @@
 
 import {
   CATEGORY_LABELS, formatMoney, formatPercent, buildSchedule, allocateLinePrices,
+  marginToMarkup,
 } from './pricing.js';
 
 /** Escape untrusted text for HTML interpolation. */
@@ -832,4 +833,154 @@ export function renderAuditReport({ estimate, costed, company, targetMargin, flo
     </p>
   </div>
 </div>`;
+}
+
+/* ======================================================= portfolio ======== */
+
+/**
+ * The multi-job margin audit — the actual thing the offer sells.
+ *
+ * Three single-job reports are three data points and an exercise for the
+ * reader. This is the page a contractor keeps: what the jobs earned together,
+ * which door the money leaves by, whether that is a habit or one bad week, and
+ * the one thing to change as a result.
+ *
+ * The recommendation is derived, not templated. Which leak dominates decides
+ * what the advice is, and whether it is systematic decides whether the advice
+ * is "change how you price" or "this was one job, do not rewrite your model
+ * over it".
+ */
+export function renderPortfolioReport({ portfolio: pf, company, settings }) {
+  const accent = company.accent || '#c2410c';
+  const target = pf.targetMargin;
+
+  const jobRows = pf.jobs.map((j) => `
+    <tr>
+      <td>${esc(j.title)}${j.hasActuals ? '' : '<div style="font-size:9.5px;color:#a8a29e">no actual costs given</div>'}</td>
+      <td class="r">${formatMoney(j.revenueCents)}</td>
+      <td class="r" style="${j.margin < 0 ? 'color:#b91c1c;font-weight:600' : ''}">${formatPercent(j.margin)}</td>
+      <td class="r" style="${j.foundCents > 0 ? 'color:#b91c1c;font-weight:600' : 'color:#a8a29e'}">${formatMoney(j.foundCents)}</td>
+    </tr>`).join('');
+
+  const maxLeak = Math.max(1, ...pf.leaks.map((l) => l.cents));
+  const leakRows = pf.leaks.map((l) => `
+    <tr>
+      <td style="width:44%">${l.label}</td>
+      <td style="width:34%">
+        <div style="height:8px;background:#ededeb;border-radius:999px;overflow:hidden">
+          <div style="height:100%;width:${Math.round((l.cents / maxLeak) * 100)}%;background:${l.cents === pf.dominant.cents ? '#b91c1c' : '#d6d3d1'}"></div>
+        </div>
+      </td>
+      <td class="r">${formatMoney(l.cents)}</td>
+      <td class="r">${pf.foundCents === 0 ? '—' : formatPercent(l.cents / pf.foundCents, 0)}</td>
+    </tr>`).join('');
+
+  return `
+<div style="--pr-accent:${esc(accent)}">
+  <div class="pr-head">
+    <div>
+      ${company.logoDataUrl
+        ? `<img class="logo" src="${esc(company.logoDataUrl)}" alt="${esc(company.name)}">`
+        : `<div class="co-name">${esc(company.name || 'Margin Audit')}</div>`}
+      <div class="co-meta">${[company.phone, company.email].filter(Boolean).map(esc).join(' · ')}</div>
+    </div>
+    <div class="pr-doc">
+      <div class="doc-kind">Margin audit</div>
+      <div class="doc-no">${pf.count} job${pf.count === 1 ? '' : 's'}</div>
+      <div class="co-meta" style="margin-top:6px">${fmtDate(todayISO())}</div>
+    </div>
+  </div>
+
+  <div class="pr-section pr-keep">
+    <h3>Across these jobs</h3>
+    <table class="pr-table">
+      <tbody>
+        <tr><td>Billed to clients</td><td class="r">${formatMoney(pf.revenueCents)}</td></tr>
+        <tr><td>Kept after every cost — ${formatPercent(pf.averageMargin)} average margin against your ${formatPercent(target, 0)} target</td>
+            <td class="r">${formatMoney(pf.keptCents)}</td></tr>
+        <tr>
+          <td style="font-weight:700">Found — money that was earned and not kept</td>
+          <td class="r" style="font-weight:700">${formatMoney(pf.foundCents)}</td>
+        </tr>
+        <tr><td>As a share of everything billed</td><td class="r">${formatPercent(pf.foundShare)}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pr-section">
+    <h3>Job by job</h3>
+    <table class="pr-table">
+      <thead><tr><th>Job</th><th class="r">Billed</th><th class="r">Kept</th><th class="r">Found</th></tr></thead>
+      <tbody>${jobRows}</tbody>
+    </table>
+  </div>
+
+  <div class="pr-section">
+    <h3>Where it goes</h3>
+    <table class="pr-table">
+      <thead><tr><th>Leak</th><th></th><th class="r">Amount</th><th class="r">Share</th></tr></thead>
+      <tbody>${leakRows}</tbody>
+    </table>
+  </div>
+
+  <div class="pr-section pr-keep">
+    <h3>What to change</h3>
+    ${diagnosis(pf, settings)}
+  </div>
+
+  <div class="pr-section pr-terms">
+    <p style="margin:0">
+      Built from figures you provided, not from your books. Overhead is applied at your stated
+      rate rather than measured, and the three leaks are summed as the size of the problem
+      rather than as an invoice.${pf.jobsMissingActuals
+        ? ` ${pf.jobsMissingActuals} job${pf.jobsMissingActuals === 1 ? '' : 's'} had no actual
+            costs supplied, so ${pf.jobsMissingActuals === 1 ? 'its' : 'their'} estimate was used
+            in place of what was really paid — margin fade cannot be seen there.` : ''}
+    </p>
+  </div>
+</div>`;
+}
+
+/**
+ * The recommendation. Derived from which leak dominates and whether it recurs,
+ * because those two facts imply completely different advice — and getting them
+ * backwards is worse than saying nothing.
+ */
+function diagnosis(pf, settings) {
+  if (pf.foundCents === 0) {
+    return `<p><strong>Nothing found worth acting on.</strong> These jobs priced correctly, the
+      changes were signed, and the work came in on budget. That is rare, and it means the next
+      place to look is volume and overhead rather than pricing.</p>`;
+  }
+
+  const { dominant, systematic, jobsAffected, count } = pf;
+  const share = pf.foundCents === 0 ? 0 : dominant.cents / pf.foundCents;
+
+  const spread = systematic
+    ? `<p><strong>This is a habit, not a bad week.</strong> ${jobsAffected} of ${count} jobs
+        show it, and no single job carries the bulk — which means the next job will do the same
+        thing unless something changes.</p>`
+    : `<p><strong>One job carries most of this.</strong> ${jobsAffected} of ${count} jobs are
+        affected and the worst accounts for ${formatPercent(pf.concentration, 0)} of it. Fix the
+        specific cause; do not rewrite how you price everything over a single job.</p>`;
+
+  const advice = {
+    pricing: `<p>Most of the money — ${formatPercent(share, 0)} of it — was gone before work
+      started: these jobs were sold below the price their own budgets required. To keep
+      ${formatPercent(pf.targetMargin, 0)} you need to mark up
+      <strong>${formatPercent(marginToMarkup(pf.targetMargin), 0)}</strong> on cost, not
+      ${formatPercent(pf.targetMargin, 0)}. Those are different numbers and the difference is
+      exactly what went missing.</p>`,
+    unsigned: `<p>Most of the money — ${formatPercent(share, 0)} of it — is work done with
+      nothing signed behind it. This one is not a pricing problem and no markup fixes it: the
+      remedy is a signature before the crew starts, every time, even when it feels awkward with
+      a client you like.</p>`,
+    fade: `<p>Most of the money — ${formatPercent(share, 0)} of it — was spent past budget with
+      no one left to bill. Two causes look identical on paper and need opposite fixes: where the
+      overrun followed a client request it belonged on a change order, and where it followed
+      your own estimate the number that produced it needs correcting before the next bid repeats
+      it.</p>`,
+  }[dominant.key];
+
+  return `${advice}${spread}`;
 }
