@@ -173,8 +173,11 @@ check('it names all three leaks',
 check('it shows margin and cost — the audit is NOT a client document',
   /margin/i.test(audit) && /cost/i.test(audit));
 check('it ends in a single found-money figure', /Found on this one job/.test(audit));
+// Assert the DISCLOSURE, not one phrasing of it: overhead must be declared as
+// applied at a stated rate rather than measured, however that is worded.
 check('it discloses the overhead is applied, not measured',
-  /not\s+measured/i.test(audit));
+  /overhead is applied[^.]*?(not measured|rather than measured)/i.test(audit.replace(/\s+/g, ' ')),
+  '(the report must not imply it measured their overhead)');
 
 // With every change order signed, leak 2 must report clean — not silent.
 check('a clean leak 2 says so explicitly', /None found/.test(

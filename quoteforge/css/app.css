@@ -742,6 +742,19 @@ table.pr-table tr.group-head td {
      and left most of page 1 blank. Keep individual rows and the short blocks
      intact instead, and repeat the table header on each page. */
   .pr-parties, .pr-totals, .pr-optional, .sign-grid { page-break-inside: avoid; break-inside: avoid; }
+  /* A headline figure must never be separated from the caveat that qualifies
+     it — a reader who sees the number alone has been slightly misled. */
+  .pr-keep { page-break-inside: avoid; break-inside: avoid; }
+
+  /* Screen spacing is generous on purpose; paper is not screen. Tightening
+     section rhythm for print keeps a one-job audit on a single sheet, which
+     matters because its headline figure belongs on the page carrying the
+     evidence for it, not alone overleaf. */
+  .proposal .pr-section { margin: 12px 0; }
+  .proposal .pr-section h3 { margin-bottom: 4px; }
+  .proposal .pr-section p { margin-bottom: 6px; }
+  .proposal table.pr-table td { padding-top: 4px; padding-bottom: 4px; }
+  .proposal .pr-parties { margin: 12px 0; }
   table.pr-table thead { display: table-header-group; }
   table.pr-table tr { page-break-inside: avoid; break-inside: avoid; }
   table.pr-table tr.group-head { page-break-after: avoid; break-after: avoid; }

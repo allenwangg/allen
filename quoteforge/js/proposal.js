@@ -807,13 +807,16 @@ export function renderAuditReport({ estimate, costed, company, targetMargin, flo
       <p style="margin-top:8px">${formatMoney(costed.overrunCents)} was spent past budget with no one
          left to bill for it. Where an overrun traces to a client request, it belonged on a change
          order; where it traces to the estimate, the price book number that caused it needs fixing
-         before the next bid repeats it.</p>`
+         before the next bid repeats it.</p>
+      ${contract.approvedCount ? `<p style="font-size:10.5px;color:#78716c;margin-top:6px">
+         Budgets include work you were paid for through an approved change order, so a category
+         can read higher here than you first estimated.</p>` : ''}`
       : hasActuals
         ? '<p>None found. No category ran past its budget.</p>'
         : '<p>Not assessable — no actual costs were provided for this job.</p>'}
   </div>
 
-  <div class="pr-section">
+  <div class="pr-section pr-keep">
     <h3>The number</h3>
     <div class="pr-totals" style="width:100%;margin-left:0">
       <div class="row grand">
@@ -823,10 +826,9 @@ export function renderAuditReport({ estimate, costed, company, targetMargin, flo
     </div>
     <p style="font-size:11px;color:#57534e;margin:8px 0 0">
       Pricing gap + unsigned change orders + budget overruns. The pricing gap is measured against
-      budgeted cost, so it does not double-count the overruns; the unsigned-change figure can
-      overlap with an overrun only when that same work also ran past budget. Treat the figure as
-      the size of the problem, not an invoice. Overhead is applied at your stated rate, not
-      measured.
+      budgeted cost so it does not double-count the overruns, which can overlap only where the
+      unsigned work also ran past budget. This is the size of the problem, not an invoice, and
+      overhead is applied at your stated rate rather than measured.
     </p>
   </div>
 </div>`;
