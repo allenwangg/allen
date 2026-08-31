@@ -55,7 +55,9 @@ for (const c of courses || []) {
         if (!card.art || !ART.has(card.art)) e(`${kp} bad art key "${card.art}"`);
         else if (artUsed.has(card.art)) w(`${kp} art "${card.art}" reused in lesson`);
         artUsed.add(card.art);
-        if (/[*_#`]{2}|\[.*\]\(/.test(card.body || '')) w(`${kp} markdown syntax in body`);
+        // Underscores appear legitimately in fill-in-the-blank cues ("hot: c___"),
+        // so only flag runs of markdown emphasis that sit against word characters.
+        if (/\*\*[^*]+\*\*|__[^_]+__|`[^`]+`|\[.+\]\(.+\)/.test(card.body || '')) w(`${kp} markdown syntax in body`);
       }
       if (card.type === 'quote' && (!card.text || !card.by)) e(`${kp} quote needs text+by`);
       if (card.type === 'mcq') {
