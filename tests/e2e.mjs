@@ -105,6 +105,59 @@ console.log('planted alcohol -> energy effect recovered:', hasPlanted);
 if (!hasPlanted) throw new Error('planted effect was not surfaced in the UI');
 await page.screenshot({ path: OUT+'/03-insights.png', fullPage: true });
 
+console.log('\n--- SYMPTOMS end to end ---');
+{
+  const sctx = await browser.newContext();
+  const sp = await sctx.newPage();
+  sp.on('pageerror', e => errors.push('SYMPTOM PAGEERROR: ' + e.message));
+  await sp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await sp.waitForTimeout(700);
+  // Seed a log where one habit genuinely drives one symptom.
+  await sp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, dateKey, validateSymptoms } = await import('./js/model.js');
+    function mul(s){return function(){s|=0;s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+    const syms = validateSymptoms([{ label: 'Migraine' }, { label: 'Bloating' }]);
+    await store.setMeta('symptoms', syms);
+    const [id, id2] = syms.map(x => x.id);
+    const r = mul(11); const rows = []; let d = addDays(dateKey(), -149);
+    for (let i = 0; i < 150; i++) {
+      const e = emptyEntry(d, syms);
+      e.sleepHours = 6 + r() * 2.5; e.steps = Math.round(3000 + r() * 8000);
+      e.alcoholUnits = Math.round(r() * 4); e.mood = 1 + Math.floor(r() * 5);
+      e.energy = 1 + Math.floor(r() * 5); e.stress = 1 + Math.floor(r() * 5);
+      e.sleepQuality = 1 + Math.floor(r() * 5); e.exerciseMinutes = Math.round(r() * 60);
+      e.symptoms[id] = 0; e.symptoms[id2] = r() < 0.3 ? 1 + Math.floor(r() * 3) : 0;
+      rows.push(e); d = addDays(d, 1);
+    }
+    const rn = mul(77);
+    for (let i = 1; i < rows.length; i++) {
+      rows[i].symptoms[id] = Math.max(0, Math.min(4, Math.round(rows[i - 1].alcoholUnits * 0.8 + (rn() - 0.5) * 1.4)));
+    }
+    await store.putMany(rows);
+  });
+  await sp.evaluate(() => { location.hash = '#insights'; });
+  await sp.reload({ waitUntil: 'networkidle' });
+  await sp.waitForTimeout(3000);
+
+  const cards = await sp.$$eval('.insight', els => els.map(e => ({
+    text: e.querySelector('.insight-text')?.textContent.trim() || '',
+    dots: e.querySelectorAll('.scatter-dot').length,
+  })));
+  console.log('symptom insight cards:', cards.length);
+  // The whole feature was once dead in the running app while unit tests passed,
+  // because the symptom list was dropped from the discover() call. This asserts
+  // the wiring, not just the engine.
+  const hit = cards.find(c => /migraine/i.test(c.text));
+  if (!hit) throw new Error('the planted symptom driver never reached the UI');
+  if (!/costing you/i.test(hit.text)) throw new Error('symptom verdict direction is wrong: ' + hit.text);
+  if (hit.dots < 20) throw new Error('symptom finding rendered with an empty evidence chart');
+  const body = await sp.$eval('#main', e => e.textContent);
+  if (/s_[a-z0-9]{6,}/.test(body)) throw new Error('a raw symptom id leaked into the UI');
+  console.log('  named, correctly signed, with', hit.dots, 'evidence points');
+  await sctx.close();
+}
+
 console.log('\n--- SIMULATOR ---');
 await page.click('[data-action="goto"][data-view="simulator"]');
 await page.waitForTimeout(600);

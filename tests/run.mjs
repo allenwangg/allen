@@ -9,7 +9,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -985,6 +985,61 @@ t('flags do not fire on people who are simply unwell-ish', () => {
   }
   console.log(`\n  [safety] ${flagged}/${T} ordinary logs produced a flag`);
   ok(flagged / T <= 0.1, `too many false alarms: ${flagged}/${T}`);
+});
+
+t('a symptom finding names the symptom and gets the direction right', () => {
+  // Both of these were broken: the sentence printed the opaque id, and because
+  // a symptom is in neither FIELDS nor LOWER_IS_BETTER, "more alcohol, more
+  // migraine" was classified as working for you.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const id = syms[0].id;
+  eq(labelFor(id, syms), 'Migraine');
+  eq(labelFor('sleepHours', syms), 'Sleep duration');
+  eq(isLowerBetter(id), true, 'a symptom is always lower-is-better');
+  eq(isLowerBetter('mood'), false);
+
+  const es = synth(150, 11, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.energy = 1 + Math.floor(r() * 5);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.symptoms = { [id]: 0 };
+  });
+  const rn = mulberry32(77);
+  for (let i = 1; i < es.length; i++) {
+    es[i].symptoms[id] = Math.max(0, Math.min(4,
+      Math.round(es[i - 1].alcoholUnits * 0.8 + (rn() - 0.5) * 1.4)));
+  }
+  const hit = discover(es, { symptoms: syms }).findings.find((f) => f.outcome === id);
+  ok(hit, 'setup check: the planted effect should be found');
+  ok(!/s_[a-z0-9]{4,}/.test(hit.text), 'raw id leaked into the sentence: ' + hit.text);
+  ok(hit.text.includes('migraine'), 'symptom must be named: ' + hit.text);
+  ok(/costing you/.test(hit.text), 'more alcohol -> more migraine must read as a cost: ' + hit.text);
+});
+
+t('a dismissed flag reopens if the situation gets materially worse', () => {
+  // The snooze exists so the app does not nag about something already known.
+  // It must not become a way of going quiet while things deteriorate.
+  const mk = (n, fn) => {
+    const es = []; let d = addDays('2026-08-30', -(n - 1));
+    for (let i = 0; i < n; i++) { const e = emptyEntry(d); fn(e, i); es.push(e); d = addDays(d, 1); }
+    return es;
+  };
+  const bad = mk(20, (e) => { e.mood = 1; });
+  const ackLow = { 'low-mood': { at: '2026-08-25', severity: 4 } };
+  const reopened = checkFlags(bad, { dismissedFlags: ackLow }, '2026-08-30');
+  ok(reopened.some((f) => f.id === 'low-mood' && f.reopened), 'deterioration must speak up');
+
+  const ackSame = { 'low-mood': { at: '2026-08-25', severity: 14 } };
+  eq(checkFlags(bad, { dismissedFlags: ackSame }, '2026-08-30').length, 0,
+     'an unchanged situation must stay quiet');
+
+  // Records written before this existed are bare date strings.
+  eq(checkFlags(bad, { dismissedFlags: { 'low-mood': '2026-08-25' } }, '2026-08-30').length, 0,
+     'legacy acknowledgements must still snooze');
 });
 
 /* ================= n-of-1 trials ================= */

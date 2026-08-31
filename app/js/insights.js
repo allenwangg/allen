@@ -823,7 +823,7 @@ export function discover(entries, opts = {}) {
     const key = `${f.driver}|${f.outcome}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    deduped.push({ ...f, text: phrase(f) });
+    deduped.push({ ...f, text: phrase(f, activeSymptoms) });
   }
 
   return {
@@ -913,16 +913,37 @@ function practicalEffect(c) {
 }
 
 /** Plain-language rendering. Direction is flipped for lower-is-better fields. */
-export function phrase(f) {
-  const dLabel = (FIELDS[f.driver]?.label || f.driver).toLowerCase();
-  const oLabel = (FIELDS[f.outcome]?.label || f.outcome).toLowerCase();
+/** True for anything where a bigger number is a worse day. */
+export function isLowerBetter(field) {
+  // Every symptom is lower-is-better by definition: nobody tracks "amount of
+  // feeling fine". Omitting this inverted the verdict on every symptom
+  // finding, so "more alcohol, more migraine" was reported as working for you.
+  if (field.startsWith('s_')) return true;
+  return LOWER_IS_BETTER.has(field);
+}
+
+/** Display label for a field or a user-defined symptom. */
+export function labelFor(field, symptoms) {
+  if (field.startsWith('s_')) {
+    const s = (symptoms || []).find((x) => x.id === field);
+    return s ? s.label : 'that symptom';
+  }
+  return FIELDS[field]?.label || field;
+}
+
+export function phrase(f, symptoms = []) {
+  const dLabel = labelFor(f.driver, symptoms).toLowerCase();
+  const oLabel = labelFor(f.outcome, symptoms).toLowerCase();
   const when = f.lag === 0 ? 'the same day' : f.lag === 1 ? 'the next day' : `${f.lag} days later`;
 
-  const outcomeBetterWhenHigher = !LOWER_IS_BETTER.has(f.outcome);
+  const outcomeBetterWhenHigher = !isLowerBetter(f.outcome);
   const outcomeRises = f.r > 0;
   const good = outcomeBetterWhenHigher === outcomeRises;
 
-  const unit = FIELDS[f.outcome]?.unit === '/5' ? ' points' : ` ${FIELDS[f.outcome]?.unit || ''}`.trimEnd();
+  // A symptom is rated 0-4, so its delta is in points like the other scales.
+  const unit = f.outcome.startsWith('s_') || FIELDS[f.outcome]?.unit === '/5'
+    ? ' points'
+    : ` ${FIELDS[f.outcome]?.unit || ''}`.trimEnd();
   const magnitude = f.practical
     ? `${Math.abs(f.practical.delta)}${unit}`
     : `a ${f.effect} amount`;
@@ -937,7 +958,7 @@ export function phrase(f) {
   // hiding data would be its own dishonesty — but the verdict names the likely
   // confound instead of blessing the habit.
   let verdict;
-  if (good && LOWER_IS_BETTER.has(f.driver)) {
+  if (good && isLowerBetter(f.driver)) {
     verdict = `Read this one with care: it is more likely something about those days (weekends, social plans) than the ${dLabel} itself.`;
   } else if (good) {
     verdict = 'This one is working for you.';

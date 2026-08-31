@@ -58,6 +58,7 @@ const state = {
   // entries actually changed — not when a draft slider or a theme toggle did.
   entriesRev: 0,
   _insightsRev: -1,
+  _insightsSymptoms: null,
   // A viewBox has a fixed aspect ratio, so a chart authored at 720x300 renders
   // only ~140px tall on a phone and the trend line becomes unreadable. The
   // views pick chart dimensions from this instead.
@@ -101,13 +102,17 @@ function recompute() {
   state.report = buildReport(state.visible, ctx);
   state.smoothed = ewma(state.report.scored.map((s) => s.score), 7);
 
-  // Insights and the simulator always run on the FULL dataset, not the trimmed
-  // view — a Pro user who just upgraded should see results immediately rather
-  // than waiting for a recompute, and the gating happens at render time.
-  if (state.entriesRev !== state._insightsRev) {
-    state.insights = discover(state.entries);
+  // The symptom list is part of the question being asked, so it belongs in
+  // both the call and the memo key. Dropping it from the call left the whole
+  // symptom-explanation feature dead in the running app while the unit tests —
+  // which call discover() directly — kept passing. Leaving it out of the key
+  // meant adding or removing a symptom would not recompute.
+  const symptomsKey = state.symptoms.map((x) => x.id).join(',');
+  if (state.entriesRev !== state._insightsRev || symptomsKey !== state._insightsSymptoms) {
+    state.insights = discover(state.entries, { symptoms: state.symptoms });
     buildPairCache();
     state._insightsRev = state.entriesRev;
+    state._insightsSymptoms = symptomsKey;
   }
 
   state.weekday = weekdayPattern(state.visible, (e) => scoreDay(e, ctx).score);
@@ -195,6 +200,7 @@ function safetyBanner(state) {
     html += `<div class="card" data-flag="${esc(f.id)}">
       <div class="card-head"><h3 style="margin:0">${esc(f.title)}</h3></div>
       <p class="muted">${esc(f.detail)}</p>
+      ${f.reopened ? '<p class="subtle">You marked this as seen recently, but it has got noticeably worse since.</p>' : ''}
       <p>${esc(f.ask)}</p>
       ${f.support ? `<ul style="margin:0 0 10px;padding-left:18px">
         ${SUPPORT.routes.map((r) => `<li class="muted">${r.href
@@ -375,7 +381,13 @@ const actions = {
   },
 
   'dismiss-flag': async (el) => {
-    state.dismissedFlags = { ...state.dismissedFlags, [el.dataset.id]: dateKey() };
+    // Record WHAT was acknowledged, not just when. A snooze must not go quiet
+    // over a situation that has since got materially worse.
+    const flag = (state.flags || []).find((f) => f.id === el.dataset.id);
+    state.dismissedFlags = {
+      ...state.dismissedFlags,
+      [el.dataset.id]: { at: dateKey(), severity: Number.isFinite(flag?.severity) ? flag.severity : null },
+    };
     await store.setMeta('dismissedFlags', state.dismissedFlags);
     recompute(); render();
   },

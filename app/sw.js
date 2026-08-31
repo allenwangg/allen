@@ -28,7 +28,7 @@
  * `npm run stamp-sw` writes a content hash of the shell into the line below,
  * and CI fails if it is stale — so this cannot be forgotten.
  */
-const VERSION = 'vitalarc-f41c4bbd339f8a06';   // stamped by scripts/stamp-sw.mjs
+const VERSION = 'vitalarc-5b9423cc75989c5f';   // stamped by scripts/stamp-sw.mjs
 const SHELL = [
   './', './index.html', './css/app.css',
   './js/app.js', './js/ui.js', './js/engine.js', './js/insights.js',

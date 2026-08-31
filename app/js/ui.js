@@ -7,10 +7,10 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, LOWER_IS_BETTER, dateKey, parseDateKey, daysBetween, SEVERITY } from './model.js';
+import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { LEVERS, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
-import { sensitivityNote } from './insights.js';
+import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
@@ -414,12 +414,15 @@ export function insightsView(state) {
 }
 
 function insightCard(f, state) {
-  const driverLabel = FIELDS[f.driver]?.label || f.driver;
-  const outcomeLabel = FIELDS[f.outcome]?.label || f.outcome;
-  const good = (!LOWER_IS_BETTER.has(f.outcome)) === (f.r > 0);
+  // labelFor/isLowerBetter, not FIELDS/LOWER_IS_BETTER — a user-defined
+  // symptom is in neither, so the axis read "s_pdyd4jt8" and the verdict came
+  // out inverted (more alcohol, more migraine, labelled "working for you").
+  const driverLabel = labelFor(f.driver, state.symptoms);
+  const outcomeLabel = labelFor(f.outcome, state.symptoms);
+  const good = (!isLowerBetter(f.outcome)) === (f.r > 0);
   // Beneficial-looking correlations from harmful drivers (alcohol lowering
   // stress) are most likely confounds; the pill must not endorse the habit.
-  const caution = good && LOWER_IS_BETTER.has(f.driver);
+  const caution = good && isLowerBetter(f.driver);
   const pairs = (state.pairCache?.[`${f.driver}|${f.outcome}|${f.lag}`]) || [];
 
   return `<div class="insight">
@@ -724,12 +727,7 @@ export function reportView(state) {
 }
 
 /** Human label for a field or symptom id. */
-function fieldLabel(id, state) {
-  if (id.startsWith('s_')) {
-    return (state.symptoms || []).find((s) => s.id === id)?.label || id;
-  }
-  return FIELDS[id]?.label || id;
-}
+const fieldLabel = (id, state) => labelFor(id, state.symptoms);
 /* ================================================================== *
  * SETTINGS
  * ================================================================== */
