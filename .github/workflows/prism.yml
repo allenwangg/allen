@@ -20,7 +20,10 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  # named distinctly: the repo's other workflow also has a job called "test",
+  # and two identically-named checks on one PR are unreadable
+  prism:
+    name: prism
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
