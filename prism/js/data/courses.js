@@ -34052,5 +34052,1886 @@ window.COURSES = [
         ]
       }
     ]
+  },
+  {
+    "id": "materials",
+    "title": "The Materials That Made Us",
+    "tagline": "Civilisation, one substance at a time.",
+    "category": "Science",
+    "description": "From the first hammered copper bead to the alloy holding up the next decade of technology. Why materials behave as they do, how each breakthrough rearranged what was possible, and where the hard limits actually sit.",
+    "lessons": [
+      {
+        "id": "why-materials-behave",
+        "title": "Why Things Break",
+        "summary": "Bonds, crystals and the flaw that explains why real metal is hundreds of times weaker than theory says — and why that flaw is the reason you can bend a paperclip.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Hundreds of Times Too Weak",
+            "body": "Work out how hard you must pull to drag one plane of iron atoms across another and you get a number above 10 gigapascals. Pure annealed iron actually gives way below 50 megapascals — hundreds of times sooner. That gap is the central puzzle of materials science, and its answer is why you can bend a paperclip.",
+            "art": "mountain"
+          },
+          {
+            "type": "concept",
+            "title": "Bonds Set the Ceiling",
+            "body": "Everything a material does traces back to how its atoms hold on to each other. Metals share a common pool of electrons, so atoms can slide and re-bond — that is ductility. Ceramics lock electrons into rigid directional bonds: stiff, hard, unforgiving. Polymers are long tangled chains held together weakly, so they are floppy and melt low.",
+            "art": "network"
+          },
+          {
+            "type": "concept",
+            "title": "Metal Is a Mosaic",
+            "body": "Cool a metal and it does not freeze as one crystal. Millions of crystals nucleate at once, grow, and collide, leaving a mosaic of grains a few micrometres across with mismatched boundaries between them. Etch a polished steel surface and you can see them under a light microscope. Those boundaries matter enormously.",
+            "art": "puzzle"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If the atomic bonds in iron are that strong, why does a nail bend under a hammer instead of holding out to its theoretical limit?",
+            "answer": "Because the planes never slide all at once. A line defect called a dislocation lets atoms break and remake bonds a row at a time, like shoving a ripple along a rug instead of dragging the whole rug. Far less force, same result."
+          },
+          {
+            "type": "concept",
+            "title": "The Ripple in the Rug",
+            "body": "A dislocation is an extra half-plane of atoms wedged into the crystal. Push on it and the wedge steps sideways one atomic spacing at a time, breaking one row of bonds and forming another. A cubic centimetre of annealed metal already holds roughly ten kilometres of dislocation line. Plasticity is dislocations on the move.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Defects are flaws, so a crystal with fewer of them is always the stronger one.",
+            "answer": false,
+            "explain": "Dislocations are why metals fall hundreds of times short of theory, but they are also why metals bend instead of shattering. And the strongest metals are not the cleanest: they are crystals so crowded with obstacles that dislocations cannot move."
+          },
+          {
+            "type": "example",
+            "title": "Three Papers, One Year",
+            "body": "In 1934 Egon Orowan, Michael Polanyi and Geoffrey Ingram Taylor each proposed the dislocation independently, within months of one another. Nobody could see one; the idea was pure inference from the strength gap. Confirmation waited until 1956, when Peter Hirsch's Cambridge group watched dislocations move in an electron microscope.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "concept",
+            "title": "Strength Is Traffic Control",
+            "body": "Every trick for strengthening a metal does the same thing: it puts obstacles in a dislocation's path. Alloying atoms distort the lattice. Grain boundaries stop dislocations at the edge of each crystal. Cold working tangles dislocations into each other. Precipitates force them to bow around hard particles. Small grains, strong metal.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "You want a stronger steel bracket without changing what it is made of. Which of these actually helps?",
+            "choices": [
+              "Heat it until the grains grow large, then cool it slowly",
+              "Cool it fast so the grains stay small",
+              "Purify it so the crystal is as close to perfect as possible",
+              "Melt and recast it to remove all internal stress"
+            ],
+            "answer": 1,
+            "explain": "Grain boundaries block dislocations, so more boundaries means more strength — the Hall-Petch relationship. Growing the grains, purifying, and stress-relieving all clear the traffic and leave the metal softer."
+          },
+          {
+            "type": "example",
+            "title": "Glass Has No Escape Route",
+            "body": "Glass is not weak — its bonds are ferocious. It has no dislocations, because it has no crystal for them to live in, so it cannot yield at all. Instead every scratch becomes a stress concentrator. In a 1921 paper A. A. Griffith showed that thinner glass fibres are stronger, because there is less surface to hold a fatal flaw.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Two beams fail under the same load. One sags visibly for hours first; the other snaps with no warning. Which would you rather be standing on?",
+            "answer": "The one that sags. Ductile failure absorbs enormous energy and announces itself, so you can get out. Brittle failure releases stored elastic energy in milliseconds. Engineers pay for ductility largely to buy warning time."
+          },
+          {
+            "type": "quote",
+            "text": "For a successful technology, reality must take precedence over public relations, for Nature cannot be fooled.",
+            "by": "Richard Feynman, on the Challenger disaster"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Bonds set a material's ceiling; defects decide how close it ever gets.",
+              "Dislocations let crystal planes slip one row at a time, so metals bend far below their theoretical strength.",
+              "Every strengthening method is an obstacle course for dislocations: alloying, small grains, cold work, precipitates.",
+              "Glass has no dislocations and no way to yield, so surface flaws rule its strength.",
+              "Ductile failure warns you. Brittle failure does not."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is a dislocation?",
+            "back": "A line defect - an extra half-plane of atoms - that lets a crystal slip one row of bonds at a time instead of all at once."
+          },
+          {
+            "front": "Why is real metal far weaker than theory predicts?",
+            "back": "Dislocations move under tiny loads, so whole planes never have to shear at once. The theoretical figure assumes they do."
+          },
+          {
+            "front": "Name three ways to strengthen a metal.",
+            "back": "Shrink the grains, alloy it, cold work it, or add hard precipitates. All four block dislocation motion."
+          },
+          {
+            "front": "Why does glass shatter instead of bending?",
+            "back": "No crystal means no dislocations, so it cannot yield. Surface cracks concentrate stress until the bonds break outright."
+          }
+        ]
+      },
+      {
+        "id": "age-of-metals",
+        "title": "The Age of Metals",
+        "summary": "Copper you could find on the ground, bronze you had to trade for, iron that needed more fire, and the two inventions that made steel and aluminium cheap.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Metal Lying on the Ground",
+            "body": "Copper is one of the few metals that occurs native — as metal, not ore. People in Anatolia were cold-hammering nuggets of it into beads by around 7000 BCE, thousands of years before anyone smelted anything. Hammering hardens copper, but it also makes it brittle, and it will never beat stone for an edge.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "Smelting Is Theft",
+            "body": "Most metal is locked into ore as an oxide or a sulphide. Smelting steals the oxygen: heat the ore with charcoal in a starved fire and the carbon, hungrier for oxygen than copper is, carries it off as gas. You need roughly 1100 degrees Celsius, a controlled draught, and someone who knows what a good fire looks like.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Bronze: The First Recipe",
+            "body": "Add about ten percent tin to copper and you get bronze: harder, far easier to cast, and able to hold an edge. It is the first material humans engineered by recipe rather than found. The catch is geography — copper is common, tin is rare and rarely sits beside it, so the Bronze Age ran on long-distance trade.",
+            "art": "map"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Bronze made Mediterranean states dependent on something copper alone never required. What?",
+            "choices": [
+              "Furnaces far hotter than copper smelting needed",
+              "Long-distance trade routes for tin",
+              "Written records of the recipe",
+              "Deep shaft mining rather than surface digging"
+            ],
+            "answer": 1,
+            "explain": "Tin deposits are scarce and rarely near copper, so bronze-using states had to import it from as far as Cornwall and Afghanistan. Bronze needs no more heat than copper. The constraint was supply, not temperature."
+          },
+          {
+            "type": "concept",
+            "title": "Iron Demands More Fire",
+            "body": "Iron ore is everywhere, which is why iron was cheap once anyone could work it. The obstacle was heat: iron melts at 1538 degrees Celsius, far beyond an ancient furnace. So early smiths made a bloom — a spongy, half-solid lump of iron and slag at around 1200 degrees — and hammered the slag out by hand, over and over.",
+            "art": "mountain"
+          },
+          {
+            "type": "truefalse",
+            "statement": "When iron arrived, it immediately outperformed bronze.",
+            "answer": false,
+            "explain": "Early bloomery iron was softer than good bronze and took far more labour to produce. Iron won on abundance, not quality: ore is everywhere and tin is not. Only carburising and quenching, learned slowly over centuries, made iron genuinely better."
+          },
+          {
+            "type": "concept",
+            "title": "Steel Is Iron Plus Control",
+            "body": "Steel is iron with roughly 0.02 to 2 percent carbon — a pinch. That pinch, plus how fast you cool it, is everything. Cool it slowly and you get soft, workable iron. Quench it in water and the carbon is trapped in a strained structure called martensite, ferociously hard and brittle until you temper it back down.",
+            "art": "key"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Before 1856, steel cost roughly ten times what wrought iron did and came out in batches of tens of kilograms. What changed?",
+            "answer": "Henry Bessemer blew cold air straight through molten pig iron. The impurities burned off, and their own combustion kept the charge molten — no extra fuel at all. Tonnes of steel in about twenty minutes instead of days."
+          },
+          {
+            "type": "example",
+            "title": "Twenty Minutes, No Fuel",
+            "body": "Bessemer announced the process in August 1856 in a paper titled 'The Manufacture of Malleable Iron and Steel Without Fuel'. It nearly failed, because blowing air burns out the carbon too and leaves useless metal. Robert Mushet's fix was to burn everything off, then add back a measured dose of carbon and manganese.",
+            "art": "graph"
+          },
+          {
+            "type": "quote",
+            "text": "I had an immense advantage over many others dealing with the problem inasmuch as I had no fixed ideas derived from long-established practice to control and bias my mind, and did not suffer from the general belief that whatever is, is right.",
+            "by": "Henry Bessemer, autobiography, 1905"
+          },
+          {
+            "type": "example",
+            "title": "Silver From Clay",
+            "body": "Aluminium is the most abundant metal in the Earth's crust and one of the hardest to free, because it clings to oxygen. In the 1850s it cost more than gold, and Napoleon III is said to have kept aluminium cutlery for his most honoured guests. In 1884 the United States capped the Washington Monument with a 100-ounce aluminium pyramid.",
+            "art": "coin"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Aluminium went from precious to ordinary within about fifteen years. What did it?",
+            "choices": [
+              "A new ore body large enough to flood the market",
+              "Electrolysis, which pries aluminium away from oxygen using electricity",
+              "A cheaper way to smelt it with charcoal, as with iron",
+              "A trade treaty that opened the market in aluminium ingots"
+            ],
+            "answer": 1,
+            "explain": "In 1886 Charles Martin Hall and Paul Heroult, both twenty-two, independently dissolved alumina in molten cryolite and ran current through it. Carbon cannot strip oxygen off aluminium, so cheap aluminium had to wait for cheap electricity."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Copper could be found and hammered; bronze had to be mixed, which turned tin into a strategic commodity.",
+              "Iron won on abundance, not quality, and its barrier was furnace temperature rather than ore supply.",
+              "Steel is iron plus a fraction of a percent of carbon plus control over the cooling rate.",
+              "Bessemer made steel a bulk commodity by burning the impurities as the fuel.",
+              "Aluminium stayed precious until electrolysis, so its real price is the price of electricity."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What makes bronze better than copper, and harder to get?",
+            "back": "About 10% tin makes it harder and easier to cast, but tin is rare and rarely near copper, so bronze demanded long-distance trade."
+          },
+          {
+            "front": "Why was iron so hard for ancient smiths?",
+            "back": "It melts at 1538C, beyond their furnaces. They made a spongy solid bloom near 1200C and hammered the slag out by hand."
+          },
+          {
+            "front": "What is steel?",
+            "back": "Iron with roughly 0.02-2% carbon, plus control of the cooling rate. Quenching traps the carbon as hard, brittle martensite."
+          },
+          {
+            "front": "Why did aluminium stay dearer than gold until 1886?",
+            "back": "It bonds fiercely to oxygen, so carbon smelting fails. Hall and Heroult's electrolysis in molten cryolite made it cheap."
+          }
+        ]
+      },
+      {
+        "id": "chemistry-age",
+        "title": "The Chemistry Age",
+        "summary": "Concrete, plastics, semiconductors and composites — four materials invented by chemistry rather than by fire, and the trade-off buried in each.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "After Water, Concrete",
+            "body": "Humanity uses more concrete than any other material except water — on the order of 30 billion tonnes a year, several tonnes per person. It is mostly gravel and sand. The clever part is the grey powder holding it together, and that powder accounts for something like 7 percent of global carbon dioxide emissions.",
+            "art": "pyramid"
+          },
+          {
+            "type": "concept",
+            "title": "Cooking Rock to Make Glue",
+            "body": "Cement starts as limestone burned near 1450 degrees Celsius. The heat drives carbon dioxide out of calcium carbonate and leaves calcium oxide behind. Grind that with clay minerals and you have Portland cement, patented by Joseph Aspdin in 1824. Add water and it does not dry — it reacts, growing crystals that lock the aggregate in place.",
+            "art": "flame"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Suppose you ran every cement kiln on clean electricity. Roughly how much of cement's carbon dioxide would that eliminate?",
+            "answer": "Less than half. Around 60 percent of the emissions come out of the limestone itself: driving carbon dioxide off calcium carbonate is the reaction, not the fuel. Clean energy cannot repeal that chemistry."
+          },
+          {
+            "type": "concept",
+            "title": "Strong One Way Only",
+            "body": "Concrete resists crushing superbly and pulling hardly at all — roughly a tenth as well. So you put steel where the tension is. Reinforced concrete works because steel and concrete happen to expand at nearly the same rate with temperature, and the alkaline cement protects the steel from rust until chlorides or carbonation break the spell.",
+            "art": "bridge"
+          },
+          {
+            "type": "example",
+            "title": "The Pantheon's Trick",
+            "body": "Rome's Pantheon, finished around 126 CE, still carries the largest unreinforced concrete dome on Earth, 43.3 metres across. The Romans had no steel, so they built purely in compression and graded the aggregate: heavy basalt at the base, light volcanic pumice near the top. Their volcanic-ash mix also appears to heal its own small cracks.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "One Molecule, Thousands of Plastics",
+            "body": "Most plastics come from a handful of small molecules. Ethylene alone — two carbons, four hydrogens — becomes polyethylene when you string millions of them into chains. What varies is chain length, branching and packing. Long straight chains crystallise into stiff, tough HDPE; branched tangled chains give you the film of a shopping bag.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "HDPE bottle caps and LDPE cling film are made from the same molecule. What makes them different materials?",
+            "choices": [
+              "Different additives and dyes",
+              "How the chains branch and pack together",
+              "HDPE contains a second monomer as well",
+              "LDPE has been deliberately irradiated"
+            ],
+            "answer": 1,
+            "explain": "Branching stops chains packing closely. Straight chains crystallise, stiffen and toughen; branched ones stay loose and flexible. Same atoms, different architecture — that is the whole polymer game."
+          },
+          {
+            "type": "example",
+            "title": "An Accident at High Pressure",
+            "body": "In March 1933 at ICI in Northwich, Eric Fawcett and Reginald Gibson were pushing ethylene to enormous pressure when their vessel leaked and left behind a waxy white solid. It took two more years to reproduce reliably. Polyethylene went into radar cable during the war, and is now the most produced plastic on Earth.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "truefalse",
+            "statement": "All plastics can in principle be melted down and reshaped.",
+            "answer": false,
+            "explain": "Thermoplastics like polyethylene melt and reflow. Thermosets — epoxy, vulcanised rubber, the resin in a wind turbine blade — are cross-linked into one giant molecule during curing. Heat them and they char rather than flow."
+          },
+          {
+            "type": "concept",
+            "title": "Purity to Parts Per Billion",
+            "body": "Electronic-grade silicon is refined to about eleven nines: 99.999999999 percent pure, meaning a stray atom is roughly one in a hundred billion. Much of that is achieved by zone refining, which drags a narrow molten band along an ingot so impurities travel with the melt. William Pfann developed it at Bell Labs in 1952.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If silicon has to be purified to eleven nines, why is the very next step to deliberately contaminate it?",
+            "answer": "Because the useful contamination has to be the only one. Adding boron or phosphorus at a few parts per million sets the conductivity precisely, but only if no unknown impurity is competing. You purify to a blank slate, then write on it."
+          },
+          {
+            "type": "example",
+            "title": "Fibres Held in Glue",
+            "body": "A composite pairs stiff fibres with a matrix that holds and protects them. Roger Bacon made the first high-performance carbon fibres in 1958, and William Watt's team at Farnborough found the practical route in 1963. Carbon fibre in epoxy beats aluminium badly on stiffness per kilogram, which is why roughly half the Boeing 787 is composite by weight.",
+            "art": "layers"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Cement's carbon problem is chemistry, not just fuel: most of it comes out of the limestone.",
+              "Concrete crushes well and pulls badly, and steel reinforcement covers the gap.",
+              "Thousands of plastics come from a few small molecules; chain length and branching do the work.",
+              "Semiconductors are a purity technology first and a doping technology second.",
+              "Composites buy stiffness per kilogram by pairing stiff fibres with a matrix that holds them in place."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why can't clean energy solve cement's emissions?",
+            "back": "About 60% come from the limestone itself: heating calcium carbonate releases CO2 as part of the reaction, not from the fuel."
+          },
+          {
+            "front": "Why does concrete need steel reinforcement?",
+            "back": "It resists compression superbly but tension only about a tenth as well. Steel takes the tension; both expand at nearly the same rate."
+          },
+          {
+            "front": "What makes HDPE stiff and LDPE floppy?",
+            "back": "Chain architecture. Straight chains pack and crystallise; branched chains cannot, so they stay loose and flexible."
+          },
+          {
+            "front": "How pure is electronic-grade silicon, and why?",
+            "back": "About eleven nines. Doping only works if the deliberate impurity is the only one, so you purify to a blank slate first."
+          }
+        ]
+      },
+      {
+        "id": "materials-now",
+        "title": "The Bottleneck Ahead",
+        "summary": "Batteries, superconductors and recycling — where progress is slow because thermodynamics says so, and why materials quietly gate most of what comes next.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Thing That Is Always Late",
+            "body": "Ask why electric aviation, fusion power or a cheap grid battery is not here yet and the answer is usually the same: the materials are not ready. Software iterates in hours. A new structural alloy takes a decade to qualify, because the only honest test of how something fails in twenty years is twenty years.",
+            "art": "hourglass"
+          },
+          {
+            "type": "concept",
+            "title": "Batteries Have to Move Atoms",
+            "body": "A chip improves by making features smaller: you are moving information. A battery improves by storing more lithium ions per kilogram: you are moving matter, and the periodic table has no smaller, lighter options hiding in it. Lithium-ion energy density has improved roughly five to eight percent a year — compounding, but slow.",
+            "art": "clock"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why has no Moore's Law appeared for batteries?",
+            "choices": [
+              "Battery research is badly underfunded compared with chips",
+              "Storing energy means moving atoms, and atoms cannot be shrunk",
+              "Patents have blocked the key improvements",
+              "Batteries already sit at their theoretical limit"
+            ],
+            "answer": 1,
+            "explain": "Shrinking a transistor packs more computation into the same space. A battery's capacity is set by how many ions a given mass of material can hold and release — a chemistry ceiling, not a manufacturing one. Funding is large and the theoretical ceiling is not yet reached."
+          },
+          {
+            "type": "example",
+            "title": "Thirty Years, Three Times Better",
+            "body": "Sony sold the first commercial lithium-ion cell in 1991 at roughly 80 watt-hours per kilogram. The best cells today reach 250 to 300. That is a genuine achievement, and it is about threefold in three decades, while chips over a comparable stretch improved by many thousandfold. Petrol, for contrast, holds around 12,000 watt-hours per kilogram.",
+            "art": "graph"
+          },
+          {
+            "type": "concept",
+            "title": "Zero Resistance, at a Price",
+            "body": "Heike Kamerlingh Onnes found in 1911 that mercury loses all electrical resistance below 4.2 kelvin. Superconductors carry current with no loss and make the strongest practical magnets, including the one in an MRI scanner. The catch has always been the cold: 4 kelvin means liquid helium, which is scarce, costly and leaks through almost anything.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A superconductor working at room temperature and ordinary pressure has now been demonstrated.",
+            "answer": false,
+            "explain": "It remains an open goal and a contested field. Several high-profile claims since 2020 were retracted after other laboratories could not reproduce them, and the 2023 LK-99 excitement did not survive replication either. Hydrides do superconduct near room temperature, but only at around a million atmospheres of pressure."
+          },
+          {
+            "type": "example",
+            "title": "The Jump to Nitrogen",
+            "body": "In 1986 Georg Bednorz and Alex Muller found superconductivity at about 35 kelvin in a copper oxide ceramic, and won the Nobel Prize the following year. In 1987 Paul Chu's group in Houston reached 93 kelvin with YBCO. That number matters because liquid nitrogen boils at 77 kelvin and costs less per litre than milk.",
+            "art": "ladder"
+          },
+          {
+            "type": "concept",
+            "title": "Mixing Is Free, Unmixing Is Not",
+            "body": "Thermodynamics charges nothing to stir two metals together and a great deal to pull them apart. The more dilute a contaminant is, the more energy per atom it costs to remove, so the price climbs precisely as the concentration falls. Alloys are deliberate mixtures. Recycling them means fighting that arithmetic every time.",
+            "art": "fork"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Shredded car bodies contain steel plus small copper motors. Melt the mix and you cannot burn the copper out. Why is that permanent?",
+            "answer": "Copper is less reactive than iron, so oxidising the melt strips the iron first and leaves the copper dissolved. It then causes cracking during hot rolling. Recyclers dilute it with fresh iron rather than remove it, so copper slowly builds up in the world's steel."
+          },
+          {
+            "type": "example",
+            "title": "The One-Way Alloy",
+            "body": "Recycling aluminium takes about five percent of the energy of making it new, which is a genuine triumph. But mixed scrap ends up with a little of everything, and the easiest home for that soup is cast alloys such as engine blocks, which tolerate wide composition. Sheet for drink cans needs tight specification. Aluminium mostly flows downhill.",
+            "art": "coin"
+          },
+          {
+            "type": "concept",
+            "title": "The Bottleneck You Do Not See",
+            "body": "Almost every technology people expect next has a materials clause. Jet engines need single-crystal nickel blades running in gas hotter than the alloy melts, saved only by film cooling and ceramic coatings. Fusion needs a first wall that survives years of neutron bombardment. Grids need grain-oriented electrical steel; turbines need neodymium.",
+            "art": "mountain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which of these is the clearest example of a limit that better engineering cannot lift?",
+            "choices": [
+              "Keeping a superconducting magnet at 4 kelvin",
+              "Removing dissolved copper from recycled steel by oxidation",
+              "Improving lithium-ion cells by another few percent a year",
+              "Cooling a turbine blade with a film of air"
+            ],
+            "answer": 1,
+            "explain": "The other three are hard engineering problems being chipped away at right now. Oxidation cannot remove copper from iron because copper is the less reactive of the two. That is chemistry saying no, not engineering saying not yet."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Batteries improve slowly because energy density is a chemistry ceiling, not a manufacturing one.",
+              "Superconductivity is affordable above 77 kelvin and expensive below it; room temperature at ordinary pressure remains unclaimed and contested.",
+              "Mixing alloys is thermodynamically free; separating them is not, and the cost rises as the contamination gets more dilute.",
+              "Copper in recycled steel is diluted rather than removed, so the world's steel is slowly getting dirtier.",
+              "Most technologies described as coming soon are waiting on a material, and materials qualify on a decade clock."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why is there no Moore's Law for batteries?",
+            "back": "Capacity depends on how many ions a given mass can hold. Atoms cannot be shrunk, so gains run about 5-8% a year."
+          },
+          {
+            "front": "Why did 93 kelvin matter in 1987?",
+            "back": "Liquid nitrogen boils at 77K and is cheap. A superconductor working at 93K meant cooling no longer needed scarce liquid helium."
+          },
+          {
+            "front": "Why does copper accumulate in recycled steel?",
+            "back": "Copper is less reactive than iron, so oxidising the melt removes iron first. Recyclers dilute the copper instead of removing it."
+          },
+          {
+            "front": "Why does a new structural alloy take a decade?",
+            "back": "Qualification. The only honest test of twenty-year failure behaviour is time, so certification rather than discovery sets the pace."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "music-theory",
+    "title": "Music Theory Without Tears",
+    "tagline": "Understand what you hear. No notation needed.",
+    "category": "Music",
+    "description": "Enough theory to explain what your ears already notice: why a fifth sounds settled, why four chords carry so much of the charts, why a backbeat works. No notation required, and nothing you cannot test on a song you already love.",
+    "lessons": [
+      {
+        "id": "pitch-and-intervals",
+        "title": "Pitch and the Overtone Bargain",
+        "summary": "Where consonance comes from, why twelve pure fifths refuse to fit into seven octaves, and the compromise that made every key on a piano usable.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The One Interval Everyone Agrees On",
+            "body": "Play a note, then play one at exactly twice its frequency. Almost everyone hears these as the same note, higher — and traditions that share nothing else agree on it. That is the octave, a 2-to-1 ratio. Every scale you will ever meet is a decision about how to fill the space inside one.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "One String, Many Notes at Once",
+            "body": "Pluck a string and it does not vibrate only as a whole. It also vibrates in halves, thirds, quarters and beyond, all simultaneously. Those overtones sit at 2, 3, 4 and 5 times the fundamental frequency. You hear a single pitch, but its character — why a violin is not a flute — is the recipe of overtone strengths.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why should two notes a fifth apart sound so settled together, when nobody ever taught you to expect it?",
+            "answer": "Because their overtone stacks overlap. A fifth is a 3-to-2 frequency ratio, so every second overtone of the lower note lands on one belonging to the upper. Fewer clashing partials means less roughness, and your ear reads that as consonance."
+          },
+          {
+            "type": "concept",
+            "title": "Simple Ratios, Smooth Sound",
+            "body": "The consonant intervals are the simple ratios. The octave is 2:1, the fifth 3:2, the fourth 4:3, the major third 5:4, the minor third 6:5. Notice these are just the early harmonic series read off as pairs. The more complicated the ratio, the more partials sit close enough to beat against each other and buzz.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which frequency ratio gives you a major third?",
+            "choices": [
+              "2:1",
+              "3:2",
+              "5:4",
+              "9:8"
+            ],
+            "answer": 2,
+            "explain": "5:4, the fourth and fifth harmonics. 2:1 is the octave and 3:2 the fifth. 9:8 is a whole tone, and it sounds noticeably rougher than any of the three."
+          },
+          {
+            "type": "concept",
+            "title": "Twelve Fifths Miss the Target",
+            "body": "Stack pure 3:2 fifths and you should eventually land back where you started, twelve fifths and seven octaves later. You do not. Twelve pure fifths overshoot seven octaves by about 23.5 cents, roughly a quarter of a semitone and easily audible. This gap is the Pythagorean comma, and no tuning system can wish it away.",
+            "art": "puzzle"
+          },
+          {
+            "type": "example",
+            "title": "Everybody Pays a Little",
+            "body": "Equal temperament divides the octave into twelve identical steps, each a frequency ratio of the twelfth root of two. The comma gets spread thin: every fifth ends up about 2 cents flat, which almost nobody hears, and every major third about 14 cents sharp, which plenty of people do. In exchange, every key works and you can modulate anywhere.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "A perfectly tuned modern piano plays every interval except the octave slightly out of tune.",
+            "answer": true,
+            "explain": "That is the bargain. Equal temperament's fifths are about 2 cents narrow and its major thirds about 14 cents wide. Only octaves are pure, and even those get stretched slightly on a piano, because real strings are stiff and their overtones run sharp."
+          },
+          {
+            "type": "concept",
+            "title": "Cents: A Ruler for Pitch",
+            "body": "Cents make intervals comparable. There are 1200 in an octave, so 100 per equal-tempered semitone. Alexander Ellis introduced the unit in the 1880s while translating Hermann von Helmholtz, precisely so he could measure the scales of the world rather than force them onto a European staff. Trained ears notice around 5 cents.",
+            "art": "compass"
+          },
+          {
+            "type": "example",
+            "title": "Not Everyone Takes the Deal",
+            "body": "Plenty of living traditions decline it. Hindustani and Carnatic musicians tune against a sounding drone and place notes by pure ratios, which is why a raga's shruti inflections vanish on a keyboard. Arab and Turkish maqam practice uses neutral intervals that sit between the piano's keys. Javanese gamelan sets are tuned as whole ensembles.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "An unaccompanied choir or a string quartet often drifts away from what a piano would play. Are they going out of tune?",
+            "answer": "Usually the opposite. Freed from fixed keys, singers and string players pull thirds and fifths back toward pure ratios, because that is where the beating stops. Put a piano in front of them and they will bend back to meet it."
+          },
+          {
+            "type": "quote",
+            "text": "Music is the pleasure the human soul experiences from counting without being aware that it is counting.",
+            "by": "Gottfried Wilhelm Leibniz, letter to Christian Goldbach, 1712"
+          },
+          {
+            "type": "recap",
+            "points": [
+              "The octave is a 2:1 frequency ratio, and is heard as the same note almost everywhere.",
+              "Consonance comes from overlapping overtones: 3:2 is the fifth, 5:4 the major third.",
+              "Twelve pure fifths overshoot seven octaves by about 23.5 cents, the Pythagorean comma.",
+              "Equal temperament spreads that error everywhere so every key is usable: fifths 2 cents flat, thirds 14 cents sharp.",
+              "Many traditions keep pure intervals instead, and cents let you measure any of them."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why do two notes a fifth apart sound stable?",
+            "back": "Their ratio is 3:2, so their overtones overlap heavily. Few clashing partials means little beating, which the ear reads as consonance."
+          },
+          {
+            "front": "What is the Pythagorean comma?",
+            "back": "Twelve pure 3:2 fifths overshoot seven octaves by about 23.5 cents, roughly a quarter of a semitone. No tuning removes it."
+          },
+          {
+            "front": "What does equal temperament trade away?",
+            "back": "Purity. Every fifth runs about 2 cents flat and every major third about 14 cents sharp, so that every key becomes usable."
+          },
+          {
+            "front": "How many cents are in an octave?",
+            "back": "1200, so 100 per equal-tempered semitone. Alexander Ellis devised the unit in the 1880s to compare the world's tunings."
+          }
+        ]
+      },
+      {
+        "id": "scales-and-keys",
+        "title": "Scales, Modes and Keys",
+        "summary": "A scale is a pattern of gaps, not a list of notes. Major, minor, the seven modes, pentatonic, and what actually happens to you during a key change.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Scale Is a Pattern of Gaps",
+            "body": "A scale is not a list of notes. It is a pattern of distances that you can start anywhere. Move any melody up three semitones and every listener still recognises the same tune, because what you kept was the pattern of gaps rather than the pitches. Change one gap and the whole character shifts.",
+            "art": "path"
+          },
+          {
+            "type": "concept",
+            "title": "The Major Scale's Fingerprint",
+            "body": "Count in semitones, the smallest step on a piano, one key to the very next. The major scale goes two, two, one, two, two, two, one. Those two half-steps, sitting between degrees 3 and 4 and between 7 and 8, are what make it sound major wherever you start. On the white keys, that pattern starts on C.",
+            "art": "ladder"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where do the two half-steps fall in a major scale?",
+            "choices": [
+              "Between degrees 2-3 and 6-7",
+              "Between degrees 3-4 and 7-8",
+              "Between degrees 1-2 and 5-6",
+              "They are spread evenly through the scale"
+            ],
+            "answer": 1,
+            "explain": "Two, two, one, two, two, two, one. The half-step from degree 7 up to 8 is the one that makes the scale lean toward home; the other sits between 3 and 4."
+          },
+          {
+            "type": "concept",
+            "title": "Minor: Same Notes, Different Home",
+            "body": "Play the white keys from A to A and you get the natural minor scale: two, one, two, two, one, two, two. Those are precisely the notes of C major, rearranged around a different centre. Every major scale has a relative minor starting on its sixth degree. The notes did not change. The gravity did.",
+            "art": "mirror"
+          },
+          {
+            "type": "reveal",
+            "prompt": "C major and A minor use exactly the same seven notes. So why does one sound bright and the other sad?",
+            "answer": "Because a scale's character comes from the distances measured out from its home note, not from the set of pitches. Starting on A puts a minor third above the tonic instead of a major one, and that third is most of what you hear as mood."
+          },
+          {
+            "type": "concept",
+            "title": "Seven Rotations, Seven Moods",
+            "body": "Start the white keys on each of the seven notes in turn and you get the modes: Ionian (major), Dorian, Phrygian, Lydian, Mixolydian, Aeolian (natural minor) and Locrian. One pot of notes, seven patterns of gaps, seven characters. Each is best described by how it differs from plain major or plain minor.",
+            "art": "orbit"
+          },
+          {
+            "type": "example",
+            "title": "How the Modes Actually Feel",
+            "body": "Mixolydian is major with a flattened seventh, so it loses the sharp pull home — a great deal of rock and folk sits there. Dorian is minor with a raised sixth: minor, but not mournful. Lydian is major with a raised fourth, which floats and shines. Phrygian's flattened second sounds tense from the very first step.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Playing in Dorian mode means using notes from outside the major scale.",
+            "answer": false,
+            "explain": "D Dorian is exactly the white keys, the same collection as C major. What changes is which note behaves as home, and therefore what every other note sounds like in relation to it. Modes are rotations, not new note collections."
+          },
+          {
+            "type": "concept",
+            "title": "Five Notes, Nearly Everywhere",
+            "body": "The major pentatonic keeps degrees 1, 2, 3, 5 and 6 and throws away both half-steps. Five-note scales turn up independently in Chinese, Scottish, West African, Andean, Japanese and Appalachian music, among many others — not one tradition borrowing from another, but many arriving somewhere similar.",
+            "art": "map"
+          },
+          {
+            "type": "example",
+            "title": "The Forgiving Scale",
+            "body": "Because a pentatonic scale contains no half-steps, no two of its notes sit close enough to clash badly. Play the five black keys on a piano over almost any chord drawn from that key and nothing sounds wrong. That forgiveness is why blues and rock soloing lives there, and why it is the first scale most teachers hand a beginner.",
+            "art": "key"
+          },
+          {
+            "type": "concept",
+            "title": "A Key Is a Centre of Gravity",
+            "body": "A key is a note your ear treats as home, plus the scale orbiting it. You can hear one without naming it: stop a tune a single note early and feel the pull. Modulation moves that centre mid-piece. Done well you barely register the moment it happens — you register that everything suddenly feels lifted or unsettled.",
+            "art": "anchor"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A song shifts up a key for the final chorus. What is the listener actually responding to?",
+            "choices": [
+              "The notes are objectively louder in the new key",
+              "The home note has moved, so familiar material arrives with fresh tension",
+              "The scale has changed from major to minor",
+              "The tempo has quietly increased"
+            ],
+            "answer": 1,
+            "explain": "Modulation relocates the centre of gravity. The pattern of gaps is unchanged, so the tune is recognisably itself, but it now sits higher and unresolved against what your ear had settled into. That reads as lift."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "A scale is a pattern of gaps rather than a set of pitches, which is why any tune transposes.",
+              "Major is 2-2-1-2-2-2-1; natural minor is the same notes rotated to begin on degree 6.",
+              "The seven modes are rotations of one scale, each defined by a difference or two from major or minor.",
+              "Pentatonic scales drop the half-steps, which makes them forgiving and helps explain their independent appearance in many traditions.",
+              "A key is a home note plus its scale, and modulation moves home while keeping the pattern."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Give the major scale in semitone steps.",
+            "back": "2-2-1-2-2-2-1. The two half-steps fall between degrees 3-4 and 7-8."
+          },
+          {
+            "front": "What is a relative minor?",
+            "back": "The natural minor built on the sixth degree of a major scale. Same seven notes, different home note, different character."
+          },
+          {
+            "front": "What defines Mixolydian and Dorian?",
+            "back": "Mixolydian is major with a flat seventh; Dorian is minor with a raised sixth. Both are rotations of an ordinary major scale."
+          },
+          {
+            "front": "Why is pentatonic forgiving to improvise on?",
+            "back": "It has no half-steps, so no two of its notes sit close enough to clash badly against the chords underneath."
+          }
+        ]
+      },
+      {
+        "id": "chords-and-progressions",
+        "title": "Chords and the Pull Home",
+        "summary": "Triads, sevenths and the tension that drives Western harmony — plus why a handful of progressions carry so much music, and what cadences are really doing.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Stacked in Thirds",
+            "body": "A chord is notes sounding together, but Western harmony builds them one particular way: skip a note, take a note. From scale degrees 1, 3 and 5 you get a triad — three notes, two thirds stacked on top of each other. Keep stacking and you get sevenths, ninths, and everything jazz has ever done.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "Four Flavours of Triad",
+            "body": "Which thirds you stack decides the flavour. Major is a big third then a small one: four semitones, then three. Minor reverses it, three then four. Diminished stacks two small thirds and sounds unstable. Augmented stacks two big ones and sounds like it is hovering. Almost all common harmony is major and minor.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "One note separates a C major chord from a C minor chord. Which note, and by how far?",
+            "answer": "The middle one, moved down a single semitone: C-E-G becomes C-E flat-G. That one semitone is doing nearly all the emotional work you hear, which is why the third is the note that defines a chord's quality."
+          },
+          {
+            "type": "concept",
+            "title": "Every Key Has Seven Chords",
+            "body": "Build a triad on each degree of a major scale using only that scale's notes and the qualities fall out automatically: degrees 1, 4 and 5 come out major, degrees 2, 3 and 6 minor, and degree 7 diminished. Musicians number them with Roman numerals, so a progression can be described in every key at once.",
+            "art": "network"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In a major key, which chords come out minor?",
+            "choices": [
+              "The I, IV and V",
+              "The ii, iii and vi",
+              "Only the vi",
+              "The ii, V and vii"
+            ],
+            "answer": 1,
+            "explain": "The pattern is fixed by the scale: 1, 4 and 5 major, 2, 3 and 6 minor, 7 diminished. This is why the vi chord, the relative minor, is the easy pivot between bright and dark inside a single key."
+          },
+          {
+            "type": "concept",
+            "title": "Sevenths Add Colour and Itch",
+            "body": "Add one more third on top of a triad and you have a seventh chord. A major seventh sounds soft and unhurried. A minor seventh is smooth and neutral. The dominant seventh — a major triad plus a flattened seventh, built on degree 5 — is the restless one. It does not sound wrong. It sounds unfinished.",
+            "art": "lens"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The dominant seventh chord is unstable because it contains a tritone.",
+            "answer": true,
+            "explain": "Its third and seventh sit six semitones apart, the tritone, the most dissonant interval in the scale. Both notes want to move: the third is the leading tone pulling upward to the tonic, and the seventh slides down. Resolve them and the tension vanishes."
+          },
+          {
+            "type": "concept",
+            "title": "The Strongest Move in the System",
+            "body": "V to I is the engine of tonal music. The seventh degree, a semitone below home, is the leading tone and it leans hard upward. The dominant chord contains it, plus that tritone, so arriving at the tonic feels like a door swinging shut. Delay the arrival and you can hold an audience for minutes.",
+            "art": "target"
+          },
+          {
+            "type": "example",
+            "title": "Four Chords, Hundreds of Songs",
+            "body": "The progression I-V-vi-IV carries an enormous amount of popular music, in every decade since the 1960s; the comedy trio Axis of Awesome built a whole routine on medleying songs that share it. Its trick is balance: two bright major chords, the relative minor for shade, and a subdominant that walks home gently rather than slamming.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "If four chords cover that much of the charts, is songwriting mostly laziness?",
+            "answer": "No more than sonnets are lazy for sharing fourteen lines. A familiar progression is a frame the listener already understands, so melody, rhythm, timbre and lyric are free to carry the surprise. The constraint is what makes any deviation legible."
+          },
+          {
+            "type": "example",
+            "title": "Cadences Are Punctuation",
+            "body": "A cadence is how a phrase ends. V to I is the full stop, the perfect cadence. Ending on V instead leaves a comma, the half cadence, and the phrase plainly continues. IV to I is the plagal cadence, softer, often heard as an amen. V to vi is the deceptive cadence: the setup for home, then a swerve into the relative minor.",
+            "art": "dialog"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A phrase builds hard on the dominant, then lands on a minor chord instead of home. What did you just hear?",
+            "choices": [
+              "A half cadence",
+              "A plagal cadence",
+              "A deceptive cadence",
+              "A modulation into a new key"
+            ],
+            "answer": 2,
+            "explain": "V to vi, the deceptive cadence. Every expectation points at the tonic and the music steps sideways into the relative minor instead. The tension is postponed rather than resolved, which is exactly why writers use it to extend a section."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Triads stack two thirds, and the middle note decides major or minor.",
+              "A major key yields a fixed set: I, IV and V major, ii, iii and vi minor, vii diminished.",
+              "The dominant seventh holds a tritone and a leading tone, which is why V to I feels like arrival.",
+              "A handful of progressions carry most popular music: a shared frame that lets everything else be the surprise.",
+              "Cadences are punctuation. Perfect is a full stop, half a comma, deceptive a swerve."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What separates a major triad from a minor one?",
+            "back": "The middle note. Major stacks a 4-semitone third then a 3-semitone one; minor reverses it. One semitone changes the colour."
+          },
+          {
+            "front": "Which chords in a major key are minor?",
+            "back": "The ii, iii and vi. Degrees 1, 4 and 5 are major and degree 7 is diminished. The pattern is fixed by the scale."
+          },
+          {
+            "front": "Why does V pull so strongly to I?",
+            "back": "It holds the leading tone a semitone below home, plus a tritone between its third and seventh. Both notes resolve into the tonic."
+          },
+          {
+            "front": "What is a deceptive cadence?",
+            "back": "V moving to vi instead of I. The arrival is set up and then swerved, postponing resolution and extending the section."
+          }
+        ]
+      },
+      {
+        "id": "time-and-form",
+        "title": "Time, Groove and Shape",
+        "summary": "Metre, syncopation and the milliseconds that make a groove; odd metres, the three song forms you already know, and how to listen for all of it.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "You Already Do This",
+            "body": "Tap your foot to any song and you have done something remarkable: pulled a steady pulse out of a signal that is rarely steady, and predicted where the next beat will land. Everything in this lesson stands on that prediction, because groove is what happens when a player places a note slightly off the grid your head is keeping.",
+            "art": "clock"
+          },
+          {
+            "type": "concept",
+            "title": "Metre Is a Grid of Expectation",
+            "body": "Beats group themselves. Four beats with a strong first one is 4/4; three of them is a waltz. The grid lives in your head, not in the recording, which is why a drummer can drop out for a whole bar and you keep counting. Metre matters because it creates positions that feel expected and positions that do not.",
+            "art": "graph"
+          },
+          {
+            "type": "reveal",
+            "prompt": "In most rock and pop the snare hits beats 2 and 4 — the weak ones. Why does that feel so good?",
+            "answer": "Because it contradicts the grid without destroying it. Your body counts 1 and 3 as the strong beats, and the backbeat lands between them, so every snare is a small, reliable surprise. Take it away and the same song goes strangely limp."
+          },
+          {
+            "type": "concept",
+            "title": "Syncopation Is Disagreement on Purpose",
+            "body": "Syncopation puts accents where the metre says they should not be: off the beat, or on a weak one. It works only because the listener is still tracking the strong beats underneath. Syncopate absolutely everything and the reference disappears, so the music stops sounding exciting and starts sounding unmetred.",
+            "art": "fork"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why does syncopation stop working if a player syncopates constantly?",
+            "choices": [
+              "The listener becomes physically tired",
+              "The underlying grid disappears, so there is nothing left to push against",
+              "It becomes technically impossible to play",
+              "The tempo drifts automatically"
+            ],
+            "answer": 1,
+            "explain": "Syncopation is a relationship, not a rhythm. An off-beat accent only reads as displaced if the ear still knows where the beat is, which is why grooves keep something plain running underneath."
+          },
+          {
+            "type": "concept",
+            "title": "Groove Lives in Milliseconds",
+            "body": "Notation puts a note on the beat or off it. Real players land tens of milliseconds early or late, consistently, and that consistency is the feel. Swing is the clearest case: pairs of eighth notes played long-short, with the ratio running anywhere from nearly even to nearly three-to-one, and shifting with tempo and with player.",
+            "art": "hourglass"
+          },
+          {
+            "type": "example",
+            "title": "The Clave Holds the Room Together",
+            "body": "In Cuban son, and the salsa built from it, the clave is a two-bar rhythmic key: five strokes, three in one bar and two in the other. Everything else in the band orients to it, and a song is in 3-2 or 2-3 depending which half comes first. Playing against the clave is not a style choice; it is an error musicians hear instantly.",
+            "art": "wave"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Metres like 7 and 9 are inherently hard to feel, which is why they are rare.",
+            "answer": false,
+            "explain": "They are rare in Anglo-American pop, not in music. Bulgarian and Macedonian dance music is full of 7/8, 9/8 and 11/8, grouped into uneven long and short beats that dancers follow without counting anything. What feels natural is whatever you grew up predicting."
+          },
+          {
+            "type": "example",
+            "title": "What an Odd Metre Does",
+            "body": "An odd metre keeps a small imbalance running. Take Five, written by Paul Desmond and recorded by the Dave Brubeck Quartet in 1959, sits in 5/4 grouped three plus two, so the bar always arrives a beat sooner than an ear trained on 4/4 expects. That is the effect, not a side effect. Odd metres do not confuse; they tilt.",
+            "art": "bridge"
+          },
+          {
+            "type": "concept",
+            "title": "Three Shapes You Already Know",
+            "body": "Verse-chorus alternates a changing story with a fixed hook. The twelve-bar blues fixes a chord plan — four bars of I, two of IV, two of I, then V, IV, I, I — so strangers can share a map without rehearsing. AABA runs 32 bars: a tune stated twice, a contrasting bridge, then the tune again.",
+            "art": "pyramid"
+          },
+          {
+            "type": "example",
+            "title": "Listen to What the Bass Decides",
+            "body": "Texture is what is happening at once, and the bass has outsized power over it. Hold the same chord but put the third in the bass instead of the root and the chord goes from settled to leaning. A countermelody — a second tune with its own shape, not a harmony line — is the difference between a track that fills space and one that rewards a fourth listen.",
+            "art": "anchor"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Take a song you have heard a hundred times. What should you actually listen for on the next play?",
+            "answer": "Three passes. First find the pulse and notice where the snare lands. Second, ignore the vocal entirely and follow only the bass, noting when it leaves the root. Third, count the sections and name the form. You will hear choices that were always there."
+          },
+          {
+            "type": "recap",
+            "points": [
+              "Metre is a grid your head maintains; the backbeat and syncopation work by contradicting it without erasing it.",
+              "Groove is systematic microtiming, and swing ratios vary with tempo and player rather than with notation.",
+              "Odd metres are ordinary in many traditions; familiarity rather than difficulty decides what feels natural.",
+              "Verse-chorus, the twelve-bar blues and AABA account for a huge share of what you hear.",
+              "Bass lines and countermelodies shape a track far more than most listeners consciously notice."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why does the backbeat feel good?",
+            "back": "Snare on 2 and 4 contradicts the strong beats your head is counting: a small, reliable surprise that needs the grid to stay intact."
+          },
+          {
+            "front": "What is swing, precisely?",
+            "back": "Pairs of eighth notes played long-short. The ratio runs from nearly even to nearly 3:1, and loosens as the tempo rises."
+          },
+          {
+            "front": "What is clave?",
+            "back": "A two-bar, five-stroke rhythmic key in Cuban son and salsa. The band orients to it, in 3-2 or 2-3 depending which half leads."
+          },
+          {
+            "front": "Give the twelve-bar blues chord plan.",
+            "back": "Four bars of I, two of IV, two of I, then V, IV, I, I. A shared map that lets strangers play together without rehearsal."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oceans",
+    "title": "The Ocean",
+    "tagline": "Seventy percent of the planet, and its climate engine",
+    "category": "Earth Science",
+    "description": "How the sea is layered and stirred, why microscopic drifters run the planet's carbon and oxygen budgets, what heat and dissolved carbon are doing to the water, and which decisions about the ocean are being taken right now.",
+    "lessons": [
+      {
+        "id": "structure-circulation",
+        "title": "Layers and Conveyors",
+        "summary": "Why the sea sorts itself into layers, where deep water is manufactured, how long a circuit takes, and why a sliver of coast feeds the world's fisheries.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Thin Warm Skin",
+            "body": "The ocean averages about 3,700 metres deep, but sunlight reaches only the top 200 or so. Below that lies the real ocean: dark, close to freezing, and enormous. Averaged over its whole volume the sea is about 3.5 degrees Celsius. What you picture when you think of the ocean is a warm skin on a cold reservoir.",
+            "art": "layers"
+          },
+          {
+            "type": "concept",
+            "title": "Density Does the Sorting",
+            "body": "Seawater sinks or floats according to density, and density is set by temperature and salt: cold sinks, salty sinks. The result is a layered ocean, with a sharp temperature drop called the thermocline separating the warm surface from the cold deep. Those layers resist mixing, which is why the deep stays deep.",
+            "art": "balance"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Two parcels of seawater sit side by side at the surface. Which one sinks?",
+            "choices": [
+              "The warmer, saltier one",
+              "The colder, saltier one",
+              "The warmer, fresher one",
+              "Whichever one is already deeper"
+            ],
+            "answer": 1,
+            "explain": "Cold raises density and so does salt, so cold and salty sinks. That single rule builds the ocean's structure: a thermocline capping a cold, dense deep that will not mix upward on its own."
+          },
+          {
+            "type": "concept",
+            "title": "Where Deep Water Is Made",
+            "body": "Only a few places on Earth manufacture deep water. In the Nordic and Labrador Seas, and around Antarctica in the Weddell and Ross Seas, surface water becomes cold and salty enough to sink thousands of metres. Freezing helps: forming sea ice excludes salt, leaving the water beneath it saltier and heavier still.",
+            "art": "anchor"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Below the thermocline, the deep ocean is essentially still water.",
+            "answer": false,
+            "explain": "It moves, just slowly. Dense water made near the poles spreads across the sea floor as identifiable masses — North Atlantic Deep Water, Antarctic Bottom Water — creeping through every basin on Earth. Slow is not the same as stagnant."
+          },
+          {
+            "type": "concept",
+            "title": "The Conveyor and Its Clock",
+            "body": "Wallace Broecker's 1987 image of a global conveyor belt links polar sinking to slow return flow and eventual upwelling elsewhere. One full circuit takes something like a thousand years. Oceanographers have since complicated the cartoon: winds and tides supply much of the energy that drags deep water back towards the surface.",
+            "art": "clock"
+          },
+          {
+            "type": "quote",
+            "text": "For all at last return to the sea — to Oceanus, the ocean river, like the ever-flowing stream of time, the beginning and the end.",
+            "by": "Rachel Carson, The Sea Around Us, 1951"
+          },
+          {
+            "type": "reveal",
+            "prompt": "How can anyone know a parcel of deep water has been down there for a thousand years?",
+            "answer": "You date it. Water stops taking up carbon-14 the moment it leaves the surface, so radiocarbon gives an age since last contact with air — well over a millennium in the deep North Pacific. Industrial gases absent before the 1930s tag the younger water."
+          },
+          {
+            "type": "concept",
+            "title": "Wind Pushes Sideways",
+            "body": "Fridtjof Nansen noticed drifting ice tracking 20 to 40 degrees to the right of the wind. Vagn Walfrid Ekman explained it in 1905: Earth's rotation deflects each moving layer of water, and the surface layer's net transport ends up about 90 degrees right of the wind in the north. Wind plus rotation is what stacks up the great gyres.",
+            "art": "compass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "The Gulf Stream is narrow, fast and hugs the Atlantic's western side, while the return flow on the eastern side is broad and sluggish. Why?",
+            "choices": [
+              "The Atlantic is much deeper along its western edge",
+              "Earth's rotation strengthens towards the poles, crowding gyre flow against western boundaries",
+              "Warm water is naturally drawn towards continents",
+              "Rivers along the American coast push the current along"
+            ],
+            "answer": 1,
+            "explain": "Henry Stommel showed in 1948 that because rotational deflection strengthens with latitude, a wind-driven gyre squeezes its return into an intense western boundary current. Every basin has one: the Gulf Stream, the Kuroshio, the Agulhas."
+          },
+          {
+            "type": "example",
+            "title": "Cold Water, Full Nets",
+            "body": "Off Peru the wind blows along the coast, Ekman transport drags surface water offshore, and cold nutrient-rich water rises to replace it. Phytoplankton bloom, anchoveta swarm, and in 1970 that single fishery landed about 13 million tonnes — the largest catch of one species in history, before overfishing and El Nino broke it.",
+            "art": "fork"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Upwelling zones cover a large share of the ocean's surface, which is why they produce so much fish.",
+            "answer": false,
+            "explain": "They cover well under one percent of it. John Ryther's 1969 estimate that these slivers supply something on the order of half the world's wild catch is still roughly how oceanographers describe them: tiny area, outsized harvest, because upwelling delivers nutrients that sunlight alone cannot."
+          },
+          {
+            "type": "recap",
+            "title": "Layers and Conveyors",
+            "points": [
+              "Density, set by temperature and salt, layers the ocean: a thin warm surface over a cold deep averaging about 3.5 degrees Celsius.",
+              "Deep water is manufactured in a few polar places — the Nordic and Labrador Seas, the Weddell and Ross Seas — where cold salty water sinks.",
+              "One circuit of the overturning circulation takes roughly a thousand years, dated by radiocarbon and by industrial gas tracers.",
+              "Wind plus Earth's rotation drives the surface gyres, squeezing fast western boundary currents like the Gulf Stream against continents.",
+              "Coastal upwelling covers under one percent of the ocean and yields something like half the world's wild fish catch."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What sets the density of seawater?",
+            "back": "Temperature and salt: cold sinks, salty sinks. That is why the ocean is layered, with a thermocline capping the cold deep."
+          },
+          {
+            "front": "How long is one circuit of the overturning circulation?",
+            "back": "Roughly a thousand years. Radiocarbon ages and industrial gas tracers show how long a parcel has been out of contact with the air."
+          },
+          {
+            "front": "What is Ekman transport?",
+            "back": "Wind drags the surface layer, Earth's rotation deflects it, and net transport ends up about 90 degrees right of the wind in the north."
+          },
+          {
+            "front": "Why do upwelling zones matter so much?",
+            "back": "Wind pushes surface water offshore and nutrient-rich deep water rises. Under 1% of the ocean's area yields around half the wild catch."
+          }
+        ]
+      },
+      {
+        "id": "life-at-scale",
+        "title": "Life at Scale",
+        "summary": "The invisible cells that run half the planet's photosynthesis, the pump that buries carbon, the largest habitat on Earth, and a sea floor we have barely seen.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Half of Every Breath",
+            "body": "Take a breath. Roughly half the oxygen released by photosynthesis on this planet comes from the ocean, and almost none of it from anything you would call a plant. It comes from drifting single cells, most too small to see, which together fix about as much carbon each year as every forest, grassland and crop on land.",
+            "art": "seed"
+          },
+          {
+            "type": "concept",
+            "title": "The Most Abundant Photosynthesiser",
+            "body": "Prochlorococcus is roughly six tenths of a micrometre across, the smallest photosynthetic cell known, and it was not described until 1988 — invisible to older methods, found by flow cytometry in Sallie Chisholm's laboratory. Estimates put the global population near three thousand trillion trillion cells.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which organisms carry out most of the ocean's photosynthesis?",
+            "choices": [
+              "Kelp forests and seagrass meadows along the coasts",
+              "Microscopic drifting cells spread through the sunlit surface",
+              "Coral reefs, the ocean's most productive ecosystem",
+              "Bacteria clustered around deep-sea vents"
+            ],
+            "answer": 1,
+            "explain": "Phytoplankton, not vegetation you could photograph. Kelp, seagrass and reefs are productive per square metre but occupy a sliver of the sea; vent bacteria use chemistry rather than sunlight. The open ocean wins on sheer area."
+          },
+          {
+            "type": "concept",
+            "title": "The Oxygen Bookkeeping",
+            "body": "Careful, though: producing oxygen is not the same as adding it. Nearly all the oxygen phytoplankton release is consumed again as they are eaten and decay. Atmospheric oxygen accumulates only from the small fraction of organic carbon that gets buried in sediment before anything can respire it away.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "If all phytoplankton died tomorrow, the atmosphere would run out of oxygen within a few years.",
+            "answer": false,
+            "explain": "The air already holds an enormous stock of oxygen, and production and consumption nearly cancel. Losing phytoplankton would wreck marine food webs and the carbon cycle long before it dented the oxygen you breathe, which would take many thousands of years to fall."
+          },
+          {
+            "type": "concept",
+            "title": "The Biological Pump",
+            "body": "When plankton die, their remains clump with faecal pellets and mucus into marine snow, and it sinks. Some of that carbon reaches depths that will not touch the atmosphere again for centuries. Models suggest that without this biological pump, atmospheric carbon dioxide would sit well over a hundred parts per million higher than it does.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "What is marine snow actually made of?",
+            "answer": "Dead plankton, faecal pellets, shed shells, mucus and bacteria, aggregated into pale flakes that drift down at tens of metres a day. It is the ocean's delivery service: almost everything living in the deep is eating leftovers from the sunlit surface."
+          },
+          {
+            "type": "concept",
+            "title": "The Largest Habitat There Is",
+            "body": "Add up all the space where life can live and the deep ocean is more than nine tenths of it. Most of that volume is midwater: no floor, no surface, just cold dark water. Every night much of it rises hundreds of metres to feed and sinks again at dawn — the largest animal migration on the planet, found when wartime sonar kept detecting a false bottom that moved.",
+            "art": "mountain"
+          },
+          {
+            "type": "example",
+            "title": "Life Without Sunlight",
+            "body": "In February 1977 the submersible Alvin settled onto the Galapagos Rift at about 2,500 metres and found clams, crabs and metre-long tube worms crowding hot vents. The worms have no mouth or gut; they farm bacteria that build food from hydrogen sulfide. Two years later, chimneys venting fluid near 400 degrees Celsius turned up on the East Pacific Rise.",
+            "art": "flame"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What ultimately powers a hydrothermal vent community?",
+            "choices": [
+              "Sunlight filtering faintly down from the surface",
+              "Marine snow drifting from the sunlit ocean above",
+              "Chemical energy in the vent fluid, harvested by bacteria",
+              "Heat itself, absorbed directly by the animals"
+            ],
+            "answer": 2,
+            "explain": "Chemosynthesis: bacteria oxidise hydrogen sulfide and other chemicals from the vent, and animals such as the tube worms house them internally. Heat is not food, and these communities are far too dense to live on marine snow drifting from above."
+          },
+          {
+            "type": "concept",
+            "title": "A Floor We Have Barely Seen",
+            "body": "Satellite gravity maps cover the whole sea floor but blur anything smaller than a kilometre or two. Surveyed properly, by ship sonar, the figure stood at about 26 percent by 2024, according to the Nippon Foundation and GEBCO's Seabed 2030 project. Most of the planet's largest solid surface has never been seen in detail.",
+            "art": "map"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does resolution matter so much when someone says the sea floor is 'mapped'?",
+            "answer": "A blurred global map shows the big shapes and hides everything local: seamounts that steer currents and gather fish, vent fields, canyons, wrecks, hazards. Ships have surveyed roughly a quarter of it in real detail. The rest is a smooth, plausible guess."
+          },
+          {
+            "type": "recap",
+            "title": "Life at Scale",
+            "points": [
+              "Roughly half of Earth's photosynthesis happens in the sea, mostly by invisible drifting cells; Prochlorococcus alone numbers around three thousand trillion trillion.",
+              "Producing oxygen is not adding it: almost all is respired back, and the atmospheric stock comes from carbon buried in sediment.",
+              "The biological pump sinks carbon as marine snow, holding atmospheric carbon dioxide far below where it would otherwise sit.",
+              "The deep sea is over nine tenths of Earth's habitable volume, and its nightly vertical migration is the largest animal movement anywhere.",
+              "Vent communities discovered in 1977 run on chemosynthesis, not sunlight — and only about a quarter of the sea floor is mapped in detail."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How much of Earth's photosynthesis happens in the ocean?",
+            "back": "Roughly half, almost all of it by drifting microscopic plankton rather than by kelp, seagrass or coral reefs."
+          },
+          {
+            "front": "Why wouldn't losing phytoplankton quickly starve us of oxygen?",
+            "back": "Production and respiration nearly cancel, and the air holds a vast oxygen stock. Net gain comes only from carbon buried in sediment."
+          },
+          {
+            "front": "What is the biological pump?",
+            "back": "Sinking marine snow carries carbon from the sunlit surface to depths that will not meet the atmosphere for centuries, lowering the CO2 in air."
+          },
+          {
+            "front": "What did Alvin find at the Galapagos Rift in 1977?",
+            "back": "Dense vent communities — tube worms, clams, crabs — living on chemosynthesis: bacteria making food from hydrogen sulfide, with no sunlight."
+          }
+        ]
+      },
+      {
+        "id": "ocean-and-climate",
+        "title": "The Ocean and the Climate",
+        "summary": "Where the planet's extra heat has gone, what dissolved carbon does to seawater chemistry, why corals turn white, and the two engines of sea level rise.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Where the Heat Went",
+            "body": "Since the middle of the twentieth century the planet has been gaining energy, and about 90 percent of that surplus has gone into the ocean. Water is a spectacular heat sink: the top three and a half metres of sea hold as much heat as the entire atmosphere above them. Air temperature is the small change.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "A Very Slow Sponge",
+            "body": "That sponge cuts both ways. It has spared you most of the warming so far, but heat already in the upper ocean will keep leaking back out for centuries, and below about a kilometre the water has barely begun to respond. A great deal of change is already bought and paid for, sitting in the sea, waiting.",
+            "art": "hourglass"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where has most of the extra energy trapped by added greenhouse gases actually gone?",
+            "choices": [
+              "Almost all of it into warming the atmosphere",
+              "About 90 percent into the ocean",
+              "Mostly into melting ice",
+              "Split roughly evenly between air, land and sea"
+            ],
+            "answer": 1,
+            "explain": "The ocean takes about nine tenths of it. Melting ice and warming land and air divide what is left. That is why a few metres of seawater outweigh the whole atmosphere thermally, and why ocean heat is the clearest measure of the imbalance."
+          },
+          {
+            "type": "concept",
+            "title": "The Chemistry of Acidification",
+            "body": "Carbon dioxide dissolving in seawater forms carbonic acid, which promptly sheds a hydrogen ion. More hydrogen ions means lower pH: the surface ocean has fallen from about 8.2 to about 8.1 since the industrial revolution. That sounds trivial only because pH is logarithmic. It is roughly a 30 percent rise in hydrogen ions.",
+            "art": "graph"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Ocean acidification means seawater has become an acid.",
+            "answer": false,
+            "explain": "It remains alkaline, around pH 8.1. Acidification names the direction of travel, not the destination: a measurable shift towards the acid end of the scale. The danger is not corrosive seas but what those extra hydrogen ions do to the carbonate that shell builders need."
+          },
+          {
+            "type": "example",
+            "title": "The Hatchery That Failed",
+            "body": "In 2007 and 2008 the Whiskey Creek hatchery in Netarts Bay, Oregon, watched batch after batch of oyster larvae die. The cause traced to the seawater drawn in during upwelling season: deep water, naturally rich in carbon dioxide, now carrying a century of extra industrial carbon on top. The larvae could not build their first shells.",
+            "art": "shield"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why did acidification hit an upwelling coast decades before the open ocean?",
+            "answer": "Deep water has been accumulating carbon dioxide from decaying matter for centuries, so it arrives at the surface already corrosive. Add the industrial carbon the sea has absorbed since, and upwelling coasts cross the threshold for shell builders first."
+          },
+          {
+            "type": "concept",
+            "title": "Bleaching Is a Divorce",
+            "body": "A coral is an animal housing algae that feed it. Push the water a degree or so above the usual summer maximum for a few weeks and the partnership breaks down: the coral expels its algae, and the white you see is bare skeleton through now-transparent tissue. The animal is starving, not yet dead, and can recover if the heat relents.",
+            "art": "bridge"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A reef has just turned white. What has happened to the corals?",
+            "choices": [
+              "They have died and their skeletons are exposed",
+              "They have expelled the algae that feed them and are starving",
+              "Sediment has settled over the reef",
+              "Acidification has dissolved their skeletons"
+            ],
+            "answer": 1,
+            "explain": "Bleaching is the symbiosis breaking under heat stress, and the white is bare skeleton showing through tissue that has lost its colour. Corals can take their algae back if the water cools soon enough. It is prolonged or repeated bleaching that kills."
+          },
+          {
+            "type": "concept",
+            "title": "Two Ways the Sea Rises",
+            "body": "Sea level rise has two main engines. Warm water expands, and expansion alone accounts for around half the rise since the 1970s. Most of the rest comes from land ice: mountain glaciers and the Greenland and Antarctic sheets. The rate has climbed from about 1.4 millimetres a year early last century to about 3.7 in recent decades.",
+            "art": "ladder"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Melting Arctic sea ice is a major direct contributor to sea level rise.",
+            "answer": false,
+            "explain": "Sea ice already floats, so melting it barely shifts sea level — Archimedes settles that one. The direct contributions come from thermal expansion and from ice resting on land: glaciers, Greenland, Antarctica. Losing sea ice matters enormously for other reasons."
+          },
+          {
+            "type": "reveal",
+            "prompt": "If emissions stopped tomorrow, would sea level stop rising?",
+            "answer": "No. Heat already in the ocean keeps expanding the water for centuries, and ice sheets respond over longer timescales still. Stopping emissions changes how fast and how far the rise goes, not whether it continues. That commitment is already made."
+          },
+          {
+            "type": "recap",
+            "title": "The Ocean and the Climate",
+            "points": [
+              "About 90 percent of the planet's excess heat has gone into the ocean; three and a half metres of seawater hold as much heat as the whole atmosphere.",
+              "Dissolved carbon dioxide makes carbonic acid; surface pH has fallen from about 8.2 to 8.1, roughly 30 percent more hydrogen ions.",
+              "Calcifiers feel it first, and upwelling coasts first of all — as Oregon's oyster hatcheries discovered in 2007 and 2008.",
+              "Bleaching is heat breaking the coral-algae partnership: the animal is starving, not dead, and recovers only if the heat passes.",
+              "Sea level rises from thermal expansion plus land ice melt, now about 3.7 millimetres a year, and will keep rising after emissions stop."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "How much of the planet's extra heat has the ocean absorbed?",
+            "back": "About 90 percent. The top three and a half metres of the sea hold as much heat as the entire atmosphere above it."
+          },
+          {
+            "front": "What is ocean acidification, chemically?",
+            "back": "Dissolved carbon dioxide forms carbonic acid and releases hydrogen ions. Surface pH has fallen from ~8.2 to ~8.1: about 30% more hydrogen ions."
+          },
+          {
+            "front": "What happens when a coral bleaches?",
+            "back": "Heat stress makes it expel the algae that feed it, exposing white skeleton through clear tissue. It starves, but can recover if the water cools."
+          },
+          {
+            "front": "What drives sea level rise?",
+            "back": "Thermal expansion of warming water, about half of it since the 1970s, plus melting glaciers and ice sheets. Floating sea ice adds almost nothing."
+          }
+        ]
+      },
+      {
+        "id": "pressure-stewardship",
+        "title": "Pressure and Stewardship",
+        "summary": "A fishery that collapsed while the numbers looked fine, what bycatch and plastics actually amount to, the mining decision being taken now, and where protection demonstrably works.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "The Fish That Didn't Come Back",
+            "body": "On 2 July 1992 Canada closed the northern cod fishery off Newfoundland. A stock that had fed Europe for five centuries had fallen to a small fraction of its former biomass. Around 30,000 people lost their livelihoods in a single announcement, the largest industrial layoff in Canadian history. The cod has still not returned in force.",
+            "art": "anchor"
+          },
+          {
+            "type": "concept",
+            "title": "The Numbers That Lied",
+            "body": "Catch rates looked reassuring almost to the end, because trawlers kept finding the shrinking schools that remained. Scientists call this hyperstability: catch per unit of effort holds up while the stock beneath it empties. Inshore fishers had reported the fish vanishing years earlier. Quotas were repeatedly set above scientific advice anyway.",
+            "art": "graph"
+          },
+          {
+            "type": "quote",
+            "text": "I didn't take the fish from the goddamned water.",
+            "by": "John Crosbie, Canada's fisheries minister, to protesting fishers in Newfoundland, 1992"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why did the cod collapse take managers by surprise?",
+            "choices": [
+              "Nobody was monitoring the stock at all",
+              "Catch rates stayed high as fleets concentrated on the last dense schools",
+              "The cod migrated somewhere nobody thought to look",
+              "Disease killed the stock in a single season"
+            ],
+            "answer": 1,
+            "explain": "Hyperstability: the index used to judge abundance held steady while the stock underneath it collapsed. Monitoring existed and inshore fishers were warning loudly. The failure was trusting a flattering number and setting quotas above the scientific advice."
+          },
+          {
+            "type": "concept",
+            "title": "Where Fishing Stands Now",
+            "body": "The UN Food and Agriculture Organization's 2024 assessment put 37.7 percent of assessed marine stocks outside biologically sustainable limits, against about 10 percent in 1974. The same data show what works: stocks under strict, science-led management with enforced catch limits do rebuild. Overfishing is a governance failure before it is a biological one.",
+            "art": "target"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Once a stock has collapsed, closing the fishery reliably brings it back within a decade.",
+            "answer": false,
+            "explain": "Sometimes, but not reliably. Northern cod stayed depressed for more than thirty years after the moratorium, inside an ecosystem that had reorganised around its absence, and Canada reopened only a limited commercial fishery in 2024 — a decision that remains contested."
+          },
+          {
+            "type": "example",
+            "title": "Everything Else in the Net",
+            "body": "Fishing catches what it is not aiming at. The FAO's 2019 estimate put discards at roughly 9 million tonnes a year. The sharpest case is the vaquita, a small porpoise found only in the northern Gulf of California, drowned in gillnets set illegally for a different fish. Recent surveys count somewhere around six to eight animals left.",
+            "art": "network"
+          },
+          {
+            "type": "reveal",
+            "prompt": "No fishery targets the vaquita. So what are the nets that kill it set for?",
+            "answer": "The totoaba, a large fish whose dried swim bladder sells for enormous sums in an old Chinese dried-seafood trade. The vaquita simply shares its water and its mesh size, which is why saving the porpoise means policing a market in something else entirely."
+          },
+          {
+            "type": "concept",
+            "title": "The Patch Is Not an Island",
+            "body": "The Great Pacific Garbage Patch is not a raft you could stand on. A 2018 survey estimated 1.6 million square kilometres holding around 79,000 tonnes of plastic in perhaps 1.8 trillion pieces, most of them confetti-sized fragments. Nearly half that mass, though, was abandoned fishing gear: nets and lines, not straws.",
+            "art": "lens"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What would you actually see while sailing through the Great Pacific Garbage Patch?",
+            "choices": [
+              "A solid floating island of rubbish",
+              "Mostly clear water with scattered fragments, plus some large abandoned fishing gear",
+              "A slick covering the surface from horizon to horizon",
+              "Nothing at all, since the plastic is entirely on the sea floor"
+            ],
+            "answer": 1,
+            "explain": "It is a diffuse soup, not an island: 1.8 trillion mostly tiny pieces spread across an area several times the size of France, plus derelict nets making up close to half the mass. Plenty of plastic does sink, but the patch itself is a surface phenomenon."
+          },
+          {
+            "type": "concept",
+            "title": "The Decision Being Made Now",
+            "body": "On the abyssal plain between Hawaii and Mexico lie potato-sized nodules of nickel, cobalt and manganese that took millions of years to grow. Whether to mine them is live: the International Seabed Authority has not finished its rules, dozens of states now back a pause, and others are pressing ahead. The sediment plumes are undisputed; the ecological cost is unknown.",
+            "art": "fork"
+          },
+          {
+            "type": "example",
+            "title": "What Actually Works",
+            "body": "In 1995 the fishing community of Cabo Pulmo, in Baja California, stopped fishing their reef altogether. Within about a decade fish biomass inside the reserve had risen 463 percent, large predators were back, and catches improved around its edges. Fully protected reserves do this repeatedly. Reserves that still permit trawling mostly do not.",
+            "art": "shield"
+          },
+          {
+            "type": "recap",
+            "title": "Pressure and Stewardship",
+            "points": [
+              "Grand Banks cod collapsed in 1992 because a flattering catch-rate index and quotas above scientific advice outlasted the fish themselves.",
+              "The FAO put 37.7 percent of assessed stocks outside sustainable limits in 2024, up from about 10 percent in 1974 — yet well-managed stocks do rebuild.",
+              "Bycatch is the hidden catch: roughly 9 million tonnes discarded a year, and species like the vaquita taken by nets aimed at something else.",
+              "The garbage patches are diffuse fields of fragments, with abandoned fishing gear close to half the mass — not islands you could walk on.",
+              "Real protection works: Cabo Pulmo gained 463 percent more fish biomass, but under 3 percent of the ocean is fully protected against a 2030 target of 30 percent."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What caused the Grand Banks cod collapse?",
+            "back": "Quotas set above scientific advice, guided by catch rates that stayed high as trawlers worked the last dense schools. Closed 2 July 1992."
+          },
+          {
+            "front": "How many fish stocks are overfished?",
+            "back": "The FAO's 2024 assessment puts 37.7% of assessed stocks outside biologically sustainable limits, up from about 10% in 1974."
+          },
+          {
+            "front": "What is really in the Great Pacific Garbage Patch?",
+            "back": "About 79,000 tonnes across 1.6 million square kilometres, mostly tiny fragments; nearly half the mass is abandoned fishing gear."
+          },
+          {
+            "front": "Do marine protected areas work?",
+            "back": "Fully protected ones do: Cabo Pulmo's fish biomass rose 463% in a decade. Areas that still allow trawling show little measurable benefit."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "senses",
+    "title": "How Your Senses Work",
+    "tagline": "Your brain builds the world it shows you",
+    "category": "Neuroscience",
+    "description": "Perception is not a recording. Follow the machinery from retina to cochlea to the gut, and watch your brain construct a seamless world out of delayed, partial, heavily edited signals — and find the seams where the construction shows.",
+    "lessons": [
+      {
+        "id": "vision-construction",
+        "title": "The Eye Is Not a Camera",
+        "summary": "Brain tissue at the back of the eye, a hole you never notice, colour computed from three numbers, and why illusions are the system working correctly.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Two Grey Squares",
+            "body": "In Edward Adelson's 1995 checker-shadow image, square A looks dark and square B looks light. Cut them out and they are the identical grey, printed with the same ink. You are not seeing a surface. You are seeing your visual system's verdict about a surface — and it will not let you overrule it.",
+            "art": "eye"
+          },
+          {
+            "type": "concept",
+            "title": "Your Retina Is Brain Tissue",
+            "body": "The retina is not passive film. In the embryo it grows out of the developing forebrain as a stalk and a cup, so it is literally displaced brain, pushed to the back of the eye. Before any signal leaves for the skull, layers of neurons have already compared, sharpened and discarded. The eye edits before the brain ever sees.",
+            "art": "brain"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Why do neuroscientists call the retina part of the brain, rather than a sense organ wired to it?",
+            "choices": [
+              "It grows from the embryonic forebrain and runs layers of neural processing itself",
+              "It is the only tissue in the eye with its own blood supply",
+              "It sits closer to the brain than any other sense organ",
+              "Its cells regenerate the way brain cells do"
+            ],
+            "answer": 0,
+            "explain": "Origin and function both say brain: it buds off the developing forebrain, and it computes before transmitting. The optic nerve is a brain tract, not a peripheral nerve. Blood supply, physical distance and regeneration are beside the point."
+          },
+          {
+            "type": "concept",
+            "title": "The Hole You Never See",
+            "body": "Where the optic nerve leaves each eye there are no photoreceptors at all — a blind patch about six degrees across, twelve full moons side by side, roughly 15 degrees to the outside of wherever you are looking. Edme Mariotte found it in the 1660s and is said to have amused Charles II's court by making a courtier appear headless.",
+            "art": "lens"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Cover one eye and the hole still isn't there. What is your brain putting in its place?",
+            "answer": "Whatever surrounds it. The visual system interpolates the missing patch from neighbouring colour, texture and edges, then reports the result as seen. Hide a word in your blind spot and you get unbroken page, not a gap — and nothing tells you a guess was made."
+          },
+          {
+            "type": "concept",
+            "title": "Colour Is a Computation",
+            "body": "Light has wavelength; it has no colour. Your retina samples the whole spectrum with just three cone types, peaking near 420, 530 and 560 nanometres. Every colour you will ever see is reconstructed from three numbers — which makes colour a verdict your brain reaches, not a property it detects.",
+            "art": "layers"
+          },
+          {
+            "type": "example",
+            "title": "Two Spectra, One Colour",
+            "body": "The yellow of a lemon is a broad band of wavelengths. The yellow on your screen is red and green pixels with no yellow light in it at all. Both drive your long and medium cones in the same ratio, so both look identical. Physicists call such pairs metamers. Every colour screen you own is a metamer machine.",
+            "art": "mirror"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Two lights that look exactly the same colour must contain the same mix of wavelengths.",
+            "answer": false,
+            "explain": "They are metamers: different spectra that happen to excite your three cone types in identical ratios. Your screen exploits this constantly, faking yellow out of red and green. An animal with different photoreceptors would not be fooled the same way."
+          },
+          {
+            "type": "concept",
+            "title": "Neighbours That Argue",
+            "body": "Retinal cells inhibit their neighbours. Excite one and it turns down the cells beside it, so edges get exaggerated and flat fields get ignored. Haldan Keffer Hartline worked this out in the horseshoe crab's eye and shared a Nobel Prize in 1967. Lateral inhibition is why you see borders instead of a smear of brightness.",
+            "art": "network"
+          },
+          {
+            "type": "example",
+            "title": "Illusions Are the System Working",
+            "body": "Ernst Mach noticed in 1865 that a smooth brightness ramp shows phantom bright and dark bands at its shoulders — lateral inhibition, drawn on your retina. Adelson's checkers work the same way: your brain discounts the shadow, because a surface in shadow really does reflect less light. That is correct reasoning about a rigged scene.",
+            "art": "puzzle"
+          },
+          {
+            "type": "mcq",
+            "prompt": "What do illusions like Mach bands and the checker-shadow best demonstrate?",
+            "choices": [
+              "The eye is imprecise and its small errors accumulate",
+              "Perception applies useful assumptions that a rigged image can exploit",
+              "Illusions only fool people with untrained or poor eyesight",
+              "The brain gives up before processing the image fully"
+            ],
+            "answer": 1,
+            "explain": "Illusions are not malfunctions. Edge enhancement and shadow discounting give the right answer in the world you evolved in; an image built to violate those assumptions turns a strength into a visible error. Sharper eyes and longer looking do not help."
+          },
+          {
+            "type": "recap",
+            "title": "The Eye Is Not a Camera",
+            "points": [
+              "The retina is displaced brain tissue — it grows from the embryonic forebrain and processes signals before anything reaches the skull.",
+              "Each eye has a receptor-free blind spot about six degrees wide; the brain interpolates it from the surroundings and never flags the guess.",
+              "Colour is computed from three cone signals rather than read off the light, which is why metamers — different spectra — look identical.",
+              "Lateral inhibition sharpens edges; Mach bands and the checker-shadow are that machinery working correctly on an image built to fool it."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "Why is the retina considered brain tissue?",
+            "back": "It grows out of the embryonic forebrain and runs layers of neural processing itself. The optic nerve is a brain tract, not a peripheral nerve."
+          },
+          {
+            "front": "What is a metamer?",
+            "back": "Two different mixes of wavelengths that excite your three cone types identically, so they look like one colour. Screens fake yellow this way."
+          },
+          {
+            "front": "What does lateral inhibition do?",
+            "back": "Excited retinal cells suppress their neighbours, exaggerating edges. Hartline showed it in the horseshoe crab eye; Nobel Prize, 1967."
+          },
+          {
+            "front": "Why don't you notice your blind spot?",
+            "back": "No receptors sit where the optic nerve exits, so the brain interpolates the gap from surrounding pattern — with no signal that it guessed."
+          }
+        ]
+      },
+      {
+        "id": "hearing-balance",
+        "title": "Ears, and the Sense of Up",
+        "summary": "A spiral that sorts frequencies, a pitch that is not physically there, direction measured in millionths of a second, and why ships make you sick.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "A Ribbon That Sorts Sound",
+            "body": "Coiled in your skull like a snail shell sits a fluid-filled tube about 35 millimetres long, uncoiled. A sound arrives as one messy pressure wave. It leaves the cochlea as hundreds of separate channels, sorted by frequency, before a single note reaches your brain. Your ear is not a microphone. It is a spectrum analyser.",
+            "art": "wave"
+          },
+          {
+            "type": "concept",
+            "title": "Stiff at the Base, Slack at the Tip",
+            "body": "The basilar membrane running through the cochlea is narrow and stiff where sound enters, wide and floppy at the far end. High frequencies peak near the entrance; low ones travel to the tip. Georg von Bekesy watched these travelling waves directly and won the 1961 Nobel Prize for it. Place along the ribbon is pitch.",
+            "art": "ladder"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Age-related hearing loss almost always takes the high notes first. Given that layout, why?",
+            "answer": "Every travelling wave crosses the high-frequency base before dying away at the low-frequency tip, so those hair cells take the most lifetime wear, and they sit closest to incoming loud energy. Damage accumulates where the traffic is heaviest."
+          },
+          {
+            "type": "concept",
+            "title": "The Note That Isn't There",
+            "body": "Play tones of 200, 300 and 400 hertz together and you hear a pitch of 100 hertz — a note with no energy anywhere in the signal. Your auditory system notices that those frequencies are all multiples of 100 and reports the fundamental it infers. J. F. Schouten demonstrated this residue pitch in 1940.",
+            "art": "bell"
+          },
+          {
+            "type": "mcq",
+            "prompt": "A phone line carries only about 300 to 3,400 hertz, yet a deep voice with a 110-hertz fundamental still sounds deep. Why?",
+            "choices": [
+              "The handset electronically rebuilds the low frequencies before playing them",
+              "Your brain infers the missing fundamental from the harmonics that do get through",
+              "110 hertz is in fact inside the phone's range",
+              "Low frequencies survive a wire better than high ones"
+            ],
+            "answer": 1,
+            "explain": "Harmonics at 220, 330 and 440 hertz pass the filter, and your auditory system computes the fundamental they share. Small laptop and phone speakers, physically unable to move enough air for deep bass, lean on exactly the same trick."
+          },
+          {
+            "type": "concept",
+            "title": "Where, Measured in Microseconds",
+            "body": "Your ears sit about 22 centimetres apart, so a sound from one side reaches the near ear up to roughly 600 microseconds early — and you can use differences down to about ten millionths of a second. Lord Rayleigh's 1907 duplex theory splits the work: timing locates low sounds, loudness shadows locate high ones.",
+            "art": "compass"
+          },
+          {
+            "type": "truefalse",
+            "statement": "You work out where a low-pitched sound came from mainly by which ear hears it louder.",
+            "answer": false,
+            "explain": "Long wavelengths bend right around your head, so the loudness difference is tiny. Below roughly 1,500 hertz you rely on arrival-time differences instead. That is Rayleigh's duplex theory: timing for low frequencies, level differences for high."
+          },
+          {
+            "type": "concept",
+            "title": "How to Time a Millionth of a Second",
+            "body": "No neuron fires that fast, so the brain compares instead of measuring. Lloyd Jeffress proposed in 1948 that axons of different lengths act as delay lines feeding coincidence detectors, each tuned to one direction. Barn owls have something close to this. Whether mammals do is contested — many researchers now favour two broad opposing channels.",
+            "art": "network"
+          },
+          {
+            "type": "example",
+            "title": "Three Loops and Two Sacs",
+            "body": "Behind each ear sit three fluid-filled rings set at right angles, one per axis of rotation, plus two sacs holding crystals of calcium carbonate that lag behind whenever you accelerate or tilt. Spin, then stop, and the fluid keeps moving. That is exactly what dizziness is: canals still reporting a turn that already ended.",
+            "art": "orbit"
+          },
+          {
+            "type": "concept",
+            "title": "The Conflict Alarm",
+            "body": "Below decks, your inner ear reports pitching and rolling while your eyes, fixed on a still cabin, report nothing. Motion sickness theories centre on that mismatch. Michel Treisman proposed in 1977 that vomiting in response to sensory conflict evolved as a defence against neurotoxins, which cause similar incoordination. Plausible hypothesis, not proven fact.",
+            "art": "balance"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why does watching the horizon usually help, while reading your phone makes it far worse?",
+            "answer": "The horizon gives your eyes the same motion your inner ear is reporting, and the conflict shrinks. A phone does the opposite, locking vision to a surface that moves with you while the canals insist you are swaying. Drivers rarely get sick: they see and anticipate every turn."
+          },
+          {
+            "type": "mcq",
+            "prompt": "On sensory-conflict accounts, what makes a passenger below deck feel sick?",
+            "choices": [
+              "Repeated motion physically damages the inner ear",
+              "The vestibular system reports motion that vision does not confirm",
+              "The stomach senses the ship's movement directly",
+              "Low-frequency engine noise disturbs the cochlea"
+            ],
+            "answer": 1,
+            "explain": "The mismatch is the trigger: canals and otolith organs report a moving world while the eyes report a stationary cabin. Nothing is damaged, and the gut has no motion sense of its own. Why mismatch should cause vomiting is still only hypothesis."
+          },
+          {
+            "type": "recap",
+            "title": "Ears, and the Sense of Up",
+            "points": [
+              "The cochlea sorts one pressure wave into frequency channels by place: stiff base for high notes, slack tip for low. Bekesy, Nobel 1961.",
+              "The missing fundamental: harmonics at 200, 300 and 400 hertz are heard as a 100-hertz pitch that is not physically present.",
+              "Direction comes from interaural differences — arrival times up to about 600 microseconds, resolved to about ten; loudness shadows for high notes.",
+              "Three semicircular canals sense rotation and two otolith organs sense gravity and linear acceleration; dizziness is fluid still moving after you stop.",
+              "Motion sickness tracks vestibular-visual mismatch, but the evolutionary toxin-defence explanation for it remains unsettled."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What does the cochlea do to a sound wave?",
+            "back": "Sorts it by frequency along the basilar membrane: high notes peak at the stiff base, low notes at the slack tip. Place is pitch."
+          },
+          {
+            "front": "What is the missing fundamental?",
+            "back": "Tones at 200, 300 and 400 hertz are heard as a 100-hertz pitch, though no 100-hertz energy exists. The brain infers it from the harmonics."
+          },
+          {
+            "front": "How do you tell which side a sound came from?",
+            "back": "Interaural differences: arrival times up to ~600 microseconds, resolved to ~10, for low sounds; loudness shadows for high. Rayleigh, 1907."
+          },
+          {
+            "front": "What is the sensory-conflict account of motion sickness?",
+            "back": "Sickness follows a mismatch between vestibular motion and visual stillness. Why mismatch triggers vomiting — perhaps toxin defence — is unproven."
+          }
+        ]
+      },
+      {
+        "id": "smell-body-pain",
+        "title": "The Senses You Don't Count",
+        "summary": "Smell's shortcut to memory, flavour as mostly nose, the body sense you only meet by losing it, and pain as something the brain produces.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Pinch Your Nose and Chew",
+            "body": "Take a jelly bean, hold your nose, and chew. You get sweet, and almost nothing else. Let go halfway and the flavour floods in — cherry, or lemon, arriving late. Nothing changed in your mouth. What changed is that air could finally reach the smell receptors at the top of your nasal cavity.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "The Sense That Skips the Switchboard",
+            "body": "Nearly every sense routes through the thalamus before reaching cortex. Smell largely does not: receptor neurons in your nose synapse in the olfactory bulb, which projects straight to piriform cortex and to the amygdala next door. Linda Buck and Richard Axel found the receptor gene family in 1991 — about 400 working genes in humans — and shared the 2004 Nobel Prize.",
+            "art": "key"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Odours often trigger memories that feel older and more emotional than those cued by words or photographs. Which fact makes that most plausible?",
+            "choices": [
+              "Smell has more receptor types than any other sense",
+              "Olfactory signals reach the amygdala and nearby memory structures without a thalamic relay",
+              "Odour molecules physically enter the brain through the nose",
+              "The nose is anatomically closer to the brain than the eyes are"
+            ],
+            "answer": 1,
+            "explain": "The short, direct route into emotional and memory circuitry is the standard explanation for the so-called Proust phenomenon. Receptor variety is real but irrelevant here, odour molecules never enter the brain, and raw distance is not the point. How large the memory effect actually is remains debated."
+          },
+          {
+            "type": "concept",
+            "title": "Flavour Is Mostly Smell",
+            "body": "Your tongue reports five qualities: sweet, salty, sour, bitter and umami, the last identified by Kikunae Ikeda in 1908. Nearly everything else you call taste is odour, reaching the receptors backwards from the mouth as you chew and swallow. That retronasal route is why a heavy cold turns dinner into warm cardboard.",
+            "art": "bridge"
+          },
+          {
+            "type": "truefalse",
+            "statement": "Regions of the tongue specialise in different tastes: sweet at the tip, bitter at the back.",
+            "answer": false,
+            "explain": "The tongue map is a textbook error. It traces to Edwin Boring's loose 1942 handling of D. P. Hanig's 1901 thesis, which had reported only slight threshold differences. Every region detects all five qualities — put something bitter on the tip of your tongue and see."
+          },
+          {
+            "type": "concept",
+            "title": "The Sense Nobody Lists",
+            "body": "Close your eyes and touch your nose. Nothing looked and nothing groped for it, yet you knew where your hand was. Muscle spindles and tendon organs report length and tension continuously, without ever reaching awareness. Charles Sherrington named this proprioception in 1906 and grouped it with the senses that report the body rather than the world.",
+            "art": "anchor"
+          },
+          {
+            "type": "example",
+            "title": "The Man Who Lost His Body",
+            "body": "At nineteen, Ian Waterman lost all touch and proprioception below the neck after an autoimmune reaction to a virus. His muscles worked perfectly; he simply had no idea where his limbs were. He learned to sit, stand and walk again by watching his body and calculating every movement — decades of concentration doing a job your spinal cord does for free.",
+            "art": "path"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Waterman can walk across a lit room. What happens when the lights go out?",
+            "answer": "He collapses. Vision has been doing the work his proprioceptors used to do, and without it he cannot tell where his body is. The sense you never notice is the one holding you upright. You meet it only by losing it."
+          },
+          {
+            "type": "concept",
+            "title": "The Body Reporting Inward",
+            "body": "Interoception is the sense of your own insides: heartbeat, breath, gut, temperature, air hunger. These signals converge on the insular cortex, and people who can track their own heartbeat accurately tend to report emotion differently from those who cannot. Whether bodily signals constitute emotions or merely colour them is an old argument still running.",
+            "art": "mirror"
+          },
+          {
+            "type": "example",
+            "title": "The Nail Through the Boot",
+            "body": "A builder jumped down onto a seven-inch nail that went straight through his boot. He arrived at hospital in such agony that he had to be sedated before anyone could touch it. When the boot came off, the nail had passed cleanly between his toes. The foot was untouched. The case ran in the British Medical Journal in 1995.",
+            "art": "flame"
+          },
+          {
+            "type": "concept",
+            "title": "Pain Is an Output, Not a Reading",
+            "body": "Nociceptors report threat; pain is what your brain produces after weighing context and expectation. So injury can arrive without pain, and pain without injury. In 2020 the International Association for the Study of Pain redefined it as an experience associated with, or resembling that associated with, actual or potential tissue damage — cutting the tie to tissue.",
+            "art": "shield"
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which observation best fits pain being an output of the brain rather than a message sent up from tissue?",
+            "choices": [
+              "Painkillers reduce pain",
+              "A builder in genuine agony from a nail that never touched his foot",
+              "Deep cuts hurt more than shallow scratches",
+              "Anaesthetic injected at a wound blocks the pain"
+            ],
+            "answer": 1,
+            "explain": "Severe pain with no damage — and its mirror image — is the giveaway. At Anzio in 1944 the anaesthetist Henry Beecher found only about a quarter of 215 badly wounded soldiers wanted morphine. The other options all sit comfortably with pain as a signal travelling up from injured tissue."
+          },
+          {
+            "type": "recap",
+            "title": "The Senses You Don't Count",
+            "points": [
+              "Smell largely bypasses the thalamus, reaching piriform cortex and the amygdala directly; Buck and Axel mapped its receptor genes in 1991.",
+              "Most of what you call taste is retronasal smell. The tongue reports five qualities — and reports all of them everywhere.",
+              "Proprioception, named by Sherrington in 1906, tracks your body without your noticing, as Ian Waterman's case makes brutally clear.",
+              "Interoception carries the body's inner state to the insula; its exact role in emotion is genuinely contested.",
+              "Pain is produced by the brain rather than read off tissue, which is why the nail-through-the-boot patient hurt so much."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What makes smell anatomically unusual?",
+            "back": "It largely skips the thalamus: the olfactory bulb projects straight to piriform cortex and the amygdala — a short route to emotion and memory."
+          },
+          {
+            "front": "How much of flavour is actually taste?",
+            "back": "Little. The tongue gives five qualities; the rest is retronasal smell. Block your nose and a jelly bean collapses to plain sweet."
+          },
+          {
+            "front": "What is proprioception?",
+            "back": "The sense of where your body is, from muscle spindles and tendon organs. Sherrington named it in 1906; Ian Waterman shows the cost of losing it."
+          },
+          {
+            "front": "Why do clinicians say pain is an output, not an input?",
+            "back": "The brain produces pain by weighing threat and context, so injury can occur without pain and severe pain without injury — as in the boot case."
+          }
+        ]
+      },
+      {
+        "id": "multisensory-prediction",
+        "title": "One World, Assembled",
+        "summary": "How separate senses become a single scene: vision overruling hearing, ownership of a rubber hand, perception as prediction, and the seams you never see.",
+        "cards": [
+          {
+            "type": "intro",
+            "title": "Hearing With Your Eyes",
+            "body": "Watch a video of a mouth saying 'ga' while the soundtrack says 'ba'. You hear 'da' — a syllable nobody produced. Harry McGurk and John MacDonald reported this in Nature in 1976, after mismatched dubbing in a study of infant speech perception. Close your eyes and the real sound returns. Open them and the illusion is back.",
+            "art": "dialog"
+          },
+          {
+            "type": "concept",
+            "title": "The Senses Vote",
+            "body": "Your brain does not keep separate reports. It fuses them, weighting each sense by how reliable it is for the question at hand. Vision is precise about location, so it wins there — which is why a cinema voice seems to come from the actor's mouth rather than the wall. Hearing is precise about timing, and wins that.",
+            "art": "target"
+          },
+          {
+            "type": "mcq",
+            "prompt": "In a cinema the sound comes from speakers along the walls, yet you hear each voice at the actor's mouth. What is going on?",
+            "choices": [
+              "The speakers are angled to bounce sound off the screen",
+              "Your brain weights vision more heavily for location and moves the sound to match",
+              "You are consciously ignoring the speakers",
+              "Ears cannot localise sound indoors at all"
+            ],
+            "answer": 1,
+            "explain": "This is the ventriloquism effect, the same weighting that drives McGurk: for spatial questions vision is the more reliable instrument, so it captures the answer. Your ears localise indoors perfectly well. They are simply outvoted."
+          },
+          {
+            "type": "example",
+            "title": "A Hand That Isn't Yours",
+            "body": "Hide your real hand, watch a rubber one on the table, and have both stroked in perfect time. Within a minute or two most people feel the touch in the rubber hand, and when asked to point at their own, indicate a spot drifted towards it. Matthew Botvinick and Jonathan Cohen reported it in Nature in 1998.",
+            "art": "puzzle"
+          },
+          {
+            "type": "truefalse",
+            "statement": "The rubber hand illusion works just as well when the seen and felt strokes are out of sync.",
+            "answer": false,
+            "explain": "Synchrony is the entire engine. Matched sight and touch are evidence of a common cause, so the brain revises its estimate of where your hand is. Delay the brushstrokes and the evidence goes, and so does the illusion. Ownership of your body is an inference."
+          },
+          {
+            "type": "concept",
+            "title": "Perception as Prediction",
+            "body": "Hermann von Helmholtz argued in 1867 that perception is unconscious inference: the brain's best guess at what could be producing this pattern of signals. The modern version runs the loop the other way. Higher levels predict incoming signals, and only the mismatch — the prediction error — is passed upward. You mostly see your model, corrected.",
+            "art": "lightbulb"
+          },
+          {
+            "type": "reveal",
+            "prompt": "Why can't you tickle yourself?",
+            "answer": "Your brain predicts the consequences of your own movements and turns down what it expects, so self-touch stays quiet and surprises stand out. Blakemore and colleagues showed in 1998 that routing your own tickling through a robot with a delay makes it ticklish again."
+          },
+          {
+            "type": "concept",
+            "title": "Contested: How Far Does It Go?",
+            "body": "Predictive processing is the most influential framework in perception research, and it is not settled science. Karl Friston's free-energy principle claims to derive perception, action and learning from a single rule. Critics answer that a theory able to accommodate any result explains none, and ask why a prediction-minimising brain does not simply seek out dark, silent rooms.",
+            "art": "fork"
+          },
+          {
+            "type": "concept",
+            "title": "The Binding Problem",
+            "body": "Colour, motion, shape and location are handled in different places at different speeds, and there is no master region where they all arrive. Yet you see one red ball, moving. How the brain binds features to objects is unsolved. Anne Treisman's 1980 theory hands attention the job; the rival idea, binding by synchronised firing, remains disputed.",
+            "art": "network"
+          },
+          {
+            "type": "example",
+            "title": "Even the Clock Is Edited",
+            "body": "Glance at a ticking second hand and the first tick often seems to last too long. Your eyes jumped, vision was suppressed during the jump, and the brain backdated what you saw to before the movement, papering over the gap. Kielan Yarrow and colleagues measured the stretch in Nature in 2001 at roughly a tenth of a second.",
+            "art": "clock"
+          },
+          {
+            "type": "truefalse",
+            "statement": "What you experience as 'now' is the outside world at this exact instant.",
+            "answer": false,
+            "explain": "Signals take time. Light needs tens of milliseconds to reach visual cortex, conscious report takes longer still, and the senses run at different speeds. The brain buys a delay, aligns the streams and backdates the result — which is how a single eye movement can stretch a clock tick."
+          },
+          {
+            "type": "reveal",
+            "prompt": "If perception is a guess assembled from delayed, separately processed signals, why does the world feel so immediate?",
+            "answer": "Because you never see the workings. Gaps are interpolated, streams are aligned and errors are corrected before anything reaches experience, and nothing marks the joins. Seamlessness is the finished product, not the raw material."
+          },
+          {
+            "type": "recap",
+            "title": "One World, Assembled",
+            "points": [
+              "Senses are fused and weighted by reliability, which is why vision captures location — McGurk, the ventriloquism effect — and hearing captures timing.",
+              "Body ownership is an inference too: synchronised brushstrokes can hand it to a rubber hand, and breaking the timing takes it back.",
+              "Predictive processing casts perception as the brain's best guess corrected by error signals, an idea going back to Helmholtz in 1867. Influential and genuinely contested.",
+              "The binding problem — how separately processed features become one object — has no agreed solution.",
+              "Timing is edited: the brain aligns and backdates the streams, so the immediacy of 'now' is itself constructed."
+            ]
+          }
+        ],
+        "review": [
+          {
+            "front": "What is the McGurk effect?",
+            "back": "Seeing a mouth say 'ga' while hearing 'ba' makes you hear 'da'. Vision overrides the sound, and knowing about it does not switch it off."
+          },
+          {
+            "front": "What does the rubber hand illusion show?",
+            "back": "Body ownership is inferred from synchronised sight and touch. Break the timing and the feeling of ownership disappears with it."
+          },
+          {
+            "front": "What does predictive processing claim?",
+            "back": "Perception is the brain's best guess at the causes of its signals, with only prediction errors passed upward. Rooted in Helmholtz, 1867; contested."
+          },
+          {
+            "front": "What is the binding problem?",
+            "back": "Colour, motion and shape are processed separately yet experienced as single objects. How the brain achieves that remains unsolved."
+          }
+        ]
+      }
+    ]
   }
 ];

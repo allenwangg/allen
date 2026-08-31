@@ -89,6 +89,33 @@ await page.goto(url + '#/paths');
 ok(await page.locator('.path-card').count() > 0, 'learning paths render with no server');
 await ctx.setOffline(false);
 
+// --- home-screen badge ---
+// setAppBadge is not implemented in headless Chromium, so stub it and prove the
+// app calls it with the real due count and clears it when nothing is due.
+const badge = await page.evaluate(async () => {
+  const calls = [];
+  navigator.setAppBadge = n => { calls.push(n); return Promise.resolve(); };
+  navigator.clearAppBadge = () => { calls.push('clear'); return Promise.resolve(); };
+  // no deck yet -> clear
+  location.hash = '#/stats';
+  await new Promise(r => setTimeout(r, 60));
+  const whenEmpty = calls.slice();
+  // seed three cards that are due now
+  const c = window.COURSES[0], l = c.lessons[0];
+  window.Store.addReviewItems(c, l);
+  const srs = window.Store.state.srs;
+  const keys = Object.keys(srs).slice(0, 3);
+  for (const k of Object.keys(srs)) delete srs[k];
+  let i = 0;
+  for (const k of keys) { srs[k] = { id: k, due: Date.now() - 1000, ivl: 1, ease: 2.5, step: 0, lapses: 0, front: 'f' + i, back: 'b' + (i++) }; }
+  calls.length = 0;
+  location.hash = '#/';
+  await new Promise(r => setTimeout(r, 80));
+  return { whenEmpty, whenDue: calls.slice() };
+});
+ok(badge.whenEmpty.includes('clear'), 'badge is cleared when nothing is due');
+ok(badge.whenDue.includes(3), `badge shows the due count (${JSON.stringify(badge.whenDue)})`);
+
 ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
 await b.close(); server.close();
 console.log(fail ? `${fail} FAILED` : 'ALL PASS');

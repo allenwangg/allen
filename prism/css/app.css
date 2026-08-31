@@ -562,6 +562,23 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 
 /* ---------------- backup ---------------- */
 
+/* keyboard shortcut list */
+.keys { margin: 4px 0 0; }
+.key-row { display: flex; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.key-row:last-child { border-bottom: 0; }
+.key-row dt { flex: 0 0 118px; margin: 0; }
+.key-row dd { margin: 0; font-size: 14px; color: var(--mut); }
+.version kbd {
+  display: inline-block; padding: 1px 6px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+  font: 600 11px/1.4 var(--font-ui);
+}
+.keys kbd {
+  display: inline-block; padding: 3px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+  font: 600 12px/1.4 var(--font-ui); white-space: nowrap;
+}
+
 /* install prompt — only rendered when the browser says the app is installable,
    so it never sits there as a button that does nothing */
 .install-row {

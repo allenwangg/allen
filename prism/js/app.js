@@ -1516,6 +1516,7 @@
       function doGrade(g) {
         var xp = [1, 3, 5, 5][g];
         Store.gradeReview(item, g);
+        syncBadge();
         SFX.grade();
         gainXP(xp);
         rev.xp += xp; rev.graded += 1;
@@ -1794,7 +1795,7 @@
         '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
       '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
-      '<p class="version">Prism — ' + COURSES.length + ' courses, ' + libraryCardCount().toLocaleString() + ' cards, one memory that keeps them.</p>' +
+      '<p class="version">Prism — ' + COURSES.length + ' courses, ' + libraryCardCount().toLocaleString() + ' cards, one memory that keeps them.<br>Press <kbd>?</kbd> any time for keyboard shortcuts.</p>' +
     '</div>';
     document.body.appendChild(wrap);
     function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
@@ -1853,6 +1854,35 @@
     };
   }
 
+  var SHORTCUTS = [
+    ['1 – 4', 'Answer a quiz, or grade a review card'],
+    ['Enter / Space', 'Continue, or flip a card over'],
+    ['Esc', 'Leave a lesson or session'],
+    ['/', 'Search every card in the library'],
+    ['?', 'This list']
+  ];
+
+  function openShortcuts() {
+    if (document.querySelector('.modal-wrap')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = '<div class="modal" role="dialog" aria-label="Keyboard shortcuts">' +
+      '<h2>Keyboard shortcuts</h2>' +
+      '<dl class="keys">' + SHORTCUTS.map(function (k) {
+        return '<div class="key-row"><dt><kbd>' + esc(k[0]) + '</kbd></dt><dd>' + esc(k[1]) + '</dd></div>';
+      }).join('') + '</dl>' +
+      '<div class="modal-row"><button class="btn primary" id="keys-close">Got it</button></div>' +
+    '</div>';
+    document.body.appendChild(wrap);
+    function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
+    function onEsc(e) { if (e.key === 'Escape' || e.key === '?') { e.stopPropagation(); e.preventDefault(); close(); } }
+    document.addEventListener('keydown', onEsc, true);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    var b = document.getElementById('keys-close');
+    b.onclick = close;
+    b.focus();
+  }
+
   function applyTheme() {
     var t = Store.state.settings.theme;
     if (t === 'light' || t === 'dark' || t === 'pastel') document.documentElement.setAttribute('data-theme', t);
@@ -1875,11 +1905,23 @@
     if (document.querySelector('.modal-wrap')) return;   // an open modal owns the keyboard
     // let a focused button/link activate itself instead of triggering the shortcut too
     if ((e.key === 'Enter' || e.key === ' ') && (tag === 'BUTTON' || tag === 'A')) return;
+    if (e.key === '?') { e.preventDefault(); return openShortcuts(); }
     if (e.key === '/' && !onkey) { e.preventDefault(); return nav('#/search'); }
     if (onkey) onkey(e);
   });
 
   function nav(hash) { location.hash = hash; }
+
+  /* An installed app carries its unread count on the home-screen icon, and due
+     reviews are exactly that count. No-ops in browsers and tabs that lack it. */
+  function syncBadge() {
+    if (!navigator.setAppBadge) return;
+    var n = SRS.dueItems(Store.state.srs, Date.now()).length;
+    try {
+      var p = n ? navigator.setAppBadge(n) : navigator.clearAppBadge();
+      if (p && p['catch']) p['catch'](function () { /* not installed */ });
+    } catch (e) { /* not installed */ }
+  }
 
   function route() {
     var h = location.hash || '#/';
@@ -1903,6 +1945,7 @@
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') renderSearch();
     else renderHome();
+    syncBadge();
   }
 
   /* ---- installable app ----

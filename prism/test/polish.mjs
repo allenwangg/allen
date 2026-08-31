@@ -92,6 +92,27 @@ ok(bands.includes('Solid'), `a well-retained lesson reads Solid (${bands.join(',
 ok(bands.includes('Shaky') || bands.includes('Growing'), 'a poorly-retained lesson is not marked Solid');
 ok(bands.filter(b=>b==='Not started').length>=1, 'unstudied lessons read Not started');
 
+// --- keyboard help ---
+await page.goto(url+'#/'); await page.waitForSelector('.cover');
+await page.keyboard.press('?');
+await page.waitForSelector('.keys',{timeout:4000}).catch(()=>{});
+ok(await page.locator('.key-row').count()>=5, 'the ? overlay lists every shortcut');
+ok(await page.evaluate(()=>document.activeElement && document.activeElement.id==='keys-close'), 'focus lands in the shortcut dialog');
+await page.keyboard.press('Escape'); await page.waitForTimeout(120);
+ok(await page.locator('.modal-wrap').count()===0, 'Esc closes the shortcut overlay');
+// it must be reachable mid-lesson without disturbing the lesson underneath
+await page.goto(url+`#/lesson/${cid}/${lid}`); await page.waitForSelector('.card');
+const idxBefore = await page.locator('.card').count();
+await page.keyboard.press('?'); await page.waitForSelector('.keys',{timeout:4000}).catch(()=>{});
+ok(await page.locator('.keys').count()===1, 'the overlay opens during a lesson');
+await page.keyboard.press('Escape'); await page.waitForTimeout(120);
+ok(await page.locator('.modal-wrap').count()===0 && await page.locator('.card').count()===idxBefore, 'the lesson is intact after closing it');
+// while it is open, a stray digit must not answer the quiz behind it
+await page.keyboard.press('?'); await page.waitForSelector('.keys',{timeout:4000}).catch(()=>{});
+await page.keyboard.press('1'); await page.waitForTimeout(100);
+ok(await page.locator('.keys').count()===1, 'digits do not leak through to the card behind');
+await page.keyboard.press('Escape'); await page.waitForTimeout(120);
+
 ok(errs.length===0,'no console errors'+(errs.length?': '+errs.slice(0,2).join(' | '):''));
 await b.close(); server.close();
 console.log(fail?`${fail} FAILURE(S)`:'ALL PASS');
