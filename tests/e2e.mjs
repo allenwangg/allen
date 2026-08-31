@@ -180,6 +180,60 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- injection through user-supplied text ---");
+{
+  // Symptom labels and notes are user text rendered into innerHTML on six
+  // views. They are also the one input an import file fully controls, so this
+  // is the app's main injection surface.
+  const xctx = await browser.newContext();
+  const xp = await xctx.newPage();
+  let dialogs = 0;
+  xp.on('dialog', async (d) => { dialogs++; await d.dismiss(); });
+  xp.on('pageerror', e => errors.push('XSS PAGEERROR: ' + e.message));
+  await xp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await xp.waitForTimeout(700);
+
+  const PAYLOADS = [
+    '<img src=x onerror="window.__pwned=1">',
+    '"><scr' + 'ipt>window.__pwned=1</scr' + 'ipt>',
+    "'; window.__pwned=1; //",
+    '<svg onload="window.__pwned=1">',
+    '</td></tr><scr' + 'ipt>window.__pwned=1</scr' + 'ipt>',
+  ];
+
+  // Straight into the store, which is what a hostile import file can do.
+  await xp.evaluate(async (payloads) => {
+    const { store } = await import('./js/store.js');
+    const { validateSymptoms, emptyEntry, addDays, dateKey } = await import('./js/model.js');
+    const syms = validateSymptoms(payloads.map((l) => ({ label: l })));
+    await store.setMeta('symptoms', syms);
+    const rows = []; let d = addDays(dateKey(), -25);
+    for (let i = 0; i < 26; i++) {
+      const e = emptyEntry(d, syms);
+      for (const s of syms) e.symptoms[s.id] = i % 3;
+      e.notes = payloads[0];
+      rows.push(e);
+      d = addDays(d, 1);
+    }
+    await store.putMany(rows);
+  }, PAYLOADS);
+
+  for (const view of ['settings', 'log', 'today', 'insights', 'report', 'history']) {
+    await xp.evaluate((v) => { location.hash = '#' + v; }, view);
+    await xp.reload({ waitUntil: 'networkidle' });
+    await xp.waitForTimeout(view === 'insights' ? 2000 : 900);
+    const r = await xp.evaluate(() => ({
+      executed: !!window.__pwned,
+      injected: document.querySelectorAll('#main img, #main svg[onload], #main script').length,
+    }));
+    if (r.executed) throw new Error(`${view}: injected script EXECUTED — this is an XSS`);
+    if (r.injected) throw new Error(`${view}: ${r.injected} node(s) built from user text instead of escaped`);
+  }
+  if (dialogs) throw new Error('a payload opened a dialog — markup is reaching the parser');
+  console.log('  6 payloads x 6 views: nothing executed, nothing injected');
+  await xctx.close();
+}
+
 console.log("\n--- the symptom lifecycle ---");
 {
   const lctx = await browser.newContext();
