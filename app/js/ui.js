@@ -403,9 +403,10 @@ export function insightsView(state) {
       <thead><tr><th>Question</th><th class="num">Relationships tested</th><th class="num">Held up</th></tr></thead>
       <tbody>${res.families.map((f) => `<tr><td>${esc(f.label)}</td><td class="num">${f.tested}</td><td class="num">${f.found}</td></tr>`).join('')}</tbody>
     </table></div>
-    <p class="subtle" style="margin-top:8px">Each symptom is judged on its own, so tracking more
-    of them never makes the app worse at explaining any one. A zero in the last column is a real
-    answer: nothing in your log moved with it strongly enough to be worth telling you about.</p>` : ''}
+    <p class="subtle" style="margin-top:8px">The breakdown is just to show where the testing went —
+    one correction covers all of it, so a finding has to clear the same bar whichever row it came from.
+    A zero in the last column is a real answer, but read it as "nothing strong enough to see" rather
+    than "nothing wrong". ${esc(sensitivityNote((state.entries || []).length))}</p>` : ''}
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
   </div>
@@ -755,8 +756,7 @@ export function settingsView(state) {
   <div class="card">
     <div class="card-head"><h3>What you're tracking</h3></div>
     <p class="muted">Name the things that actually bother you, in your own words. They get rated
-    on the log screen each day, and the analysis treats each one as a separate question —
-    so tracking a second symptom never costs you accuracy on the first.</p>
+    on the log screen each day, and the analysis goes looking for whatever moves with them.</p>
     ${symptomRows}
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
       <input type="text" id="new-symptom" maxlength="60" placeholder="e.g. migraine, bloating, joint pain"

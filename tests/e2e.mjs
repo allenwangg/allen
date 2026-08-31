@@ -180,6 +180,59 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- the example-data tour ---");
+{
+  const tctx = await browser.newContext();
+  const tp = await tctx.newPage();
+  tp.on('pageerror', e => errors.push('TOUR PAGEERROR: ' + e.message));
+  await tp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await tp.waitForTimeout(700);
+  const cta = await tp.$('[data-action="load-sample"]');
+  if (!cta) throw new Error('the tour CTA is missing from the empty state');
+  await tp.click('[data-action="load-sample"]');
+  await tp.waitForTimeout(3000);
+  if (!(await tp.$('[data-sample-banner]'))) throw new Error('example data is not labelled as such');
+
+  await tp.evaluate(() => { location.hash = '#insights'; });
+  await tp.waitForTimeout(3500);
+  const cards = await tp.$$eval('.insight', els => els.map(e => e.querySelector('.insight-text')?.textContent || ''));
+  console.log('tour insight cards:', cards.length);
+  if (cards.length < 3) throw new Error('example data lit up only ' + cards.length + ' insights');
+  // The tour exists to show what the app does, and what it does is explain
+  // symptoms. A tour without one demonstrates the wellness tracker this used
+  // to be — which is exactly what shipped until this assertion existed.
+  if (!cards.some(c => /headache|bloating/i.test(c))) {
+    throw new Error('the tour shows no symptom finding — it misses the whole point');
+  }
+  console.log('  includes a symptom explanation:', true);
+
+  await tp.evaluate(() => { location.hash = '#log'; });
+  await tp.waitForTimeout(700);
+  const rows = await tp.$$eval('.sym-seg', e => e.length);
+  console.log('  symptom rows on the log screen:', rows);
+  if (rows < 2) throw new Error('the tour does not show the symptom log');
+
+  await tp.click('[data-action="save-entry"]');
+  await tp.waitForTimeout(400);
+  const toast = await tp.$eval('#toast', e => e.textContent);
+  if (!/example data/i.test(toast)) throw new Error('saving over example data was not refused: ' + toast);
+
+  await tp.click('[data-action="clear-sample"]');
+  await tp.waitForTimeout(900);
+  const left = await tp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    return {
+      entries: (await store.allEntries()).length,
+      symptoms: ((await store.getMeta('symptoms')) || []).length,
+    };
+  });
+  if (left.entries !== 0 || left.symptoms !== 0) {
+    throw new Error('clearing the tour left ' + JSON.stringify(left) + ' behind');
+  }
+  console.log('  clears to a genuinely empty app:', true);
+  await tctx.close();
+}
+
 console.log('\n--- dark mode ---');
 await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });

@@ -16,7 +16,7 @@
  * to find, plus a weekend rhythm so the weekday view has a story too.
  */
 
-import { emptyEntry, addDays, dateKey } from './model.js';
+import { emptyEntry, addDays, dateKey, validateSymptoms } from './model.js';
 
 /** Deterministic PRNG — the same example data every time, and testable. */
 function mulberry32(seed) {
@@ -31,13 +31,23 @@ function mulberry32(seed) {
 
 export const SAMPLE_DAYS = 90;
 
-export function generateSampleData(endDate = dateKey()) {
+/**
+ * The example log tracks two symptoms, because symptoms are the point of the
+ * app and a tour without them would demonstrate the wellness tracker this used
+ * to be. Fixed ids so the generated ratings and the catalogue always match.
+ */
+export const SAMPLE_SYMPTOMS = validateSymptoms([
+  { id: 's_headache', label: 'Headache', primary: true },
+  { id: 's_bloating', label: 'Bloating' },
+]);
+
+export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTOMS) {
   const rnd = mulberry32(20260830);
   const entries = [];
   let d = addDays(endDate, -(SAMPLE_DAYS - 1));
 
   for (let i = 0; i < SAMPLE_DAYS; i++) {
-    const e = emptyEntry(d);
+    const e = emptyEntry(d, symptoms);
     const p = i / (SAMPLE_DAYS - 1);            // slow improvement over the window
     const [y, m, dd] = d.split('-').map(Number);
     const dow = new Date(y, m - 1, dd).getDay();
@@ -80,7 +90,24 @@ export function generateSampleData(endDate = dateKey()) {
     entries[i].energy = clamp15(Math.round(4.4 - entries[i - 1].alcoholUnits * 0.55 + (rn() - 0.5) * 1.9));
   }
 
-  // Planted effect 2: late caffeine degrades that night's sleep quality.
+  // Planted effect 2: yesterday's drinking brings a headache today. This is
+  // the one the tour is really for — a habit explaining a symptom.
+  const rh = mulberry32(777003);
+  entries[0].symptoms.s_headache = 0;
+  for (let i = 1; i < entries.length; i++) {
+    entries[i].symptoms.s_headache = clamp04(
+      Math.round(entries[i - 1].alcoholUnits * 0.72 + (rh() - 0.5) * 1.5)
+    );
+  }
+
+  // Planted effect 3: ultra-processed food and bloating, same day, weaker —
+  // so the tour also shows what a moderate finding looks like.
+  const rb = mulberry32(777004);
+  for (const e of entries) {
+    e.symptoms.s_bloating = clamp04(Math.round(e.ultraProcessed * 0.55 - 0.6 + (rb() - 0.5) * 1.4));
+  }
+
+  // Planted effect 4: late caffeine degrades that night's sleep quality.
   const rq = mulberry32(777002);
   for (const e of entries) {
     const base = 2.6 + (e.sleepHours - 6.5) * 0.35;
@@ -93,6 +120,7 @@ export function generateSampleData(endDate = dateKey()) {
 const round1 = (x) => Math.round(x * 10) / 10;
 const round2 = (x) => Math.round(x * 100) / 100;
 const clamp15 = (x) => Math.max(1, Math.min(5, x));
+const clamp04 = (x) => Math.max(0, Math.min(4, x));
 const clampMin = (x, lo) => Math.max(lo, x);
 
 export const SAMPLE_PROFILE = { age: 42, weightKg: 81 };

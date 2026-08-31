@@ -12,7 +12,7 @@ import { discover, weekdayPattern, alignedPairs } from './insights.js';
 import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
-import { generateSampleData, SAMPLE_PROFILE } from './sample.js';
+import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS } from './sample.js';
 import * as views from './ui.js';
 
 const VIEWS = {
@@ -436,6 +436,10 @@ const actions = {
     await store.putMany(generateSampleData(dateKey()));
     await store.setMeta('sampleMode', true);
     await store.setMeta('profile', SAMPLE_PROFILE);
+    // Without the catalogue the generated ratings are orphaned ids, and the
+    // tour would demonstrate the app without its main feature.
+    await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    state.symptoms = SAMPLE_SYMPTOMS;
     state.sampleMode = true;
     state.entries = await store.allEntries();
     state.entriesRev++;
@@ -451,6 +455,7 @@ const actions = {
     state.entries = [];
     state.entriesRev++;
     state.sampleMode = false;
+    state.symptoms = [];
     state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry(dateKey(), state.symptoms);
     state.dirty = false;
