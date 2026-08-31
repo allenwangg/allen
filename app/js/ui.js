@@ -707,6 +707,29 @@ export function reportView(state) {
       <p class="subtle">Self-measured at home, not clinic measurements.</p>
     </div>` : ''}
 
+    ${(state.factors || []).filter((f) => !f.archivedAt).length ? `<div class="card">
+      <h2>What I've been watching for</h2>
+      <p class="muted">Things I suspected and tracked daily alongside everything else. A blank
+      result is not proof it does nothing, but it means my own log does not show a day-to-day
+      link — so it is probably not worth spending an appointment on.</p>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Suspected</th><th class="num">Days tracked</th><th class="num">Days present</th><th>What the data showed</th></tr></thead>
+        <tbody>${(state.factors || []).filter((f) => !f.archivedAt).map((fac) => {
+          const vals = entries.map((e) => e.factors?.[fac.id]).filter((v) => v != null);
+          const present = vals.filter((v) => v > 0).length;
+          const hits = findings.filter((f) => f.driver === fac.id);
+          return `<tr>
+            <td>${esc(fac.label)}</td>
+            <td class="num">${vals.length}</td>
+            <td class="num">${present}</td>
+            <td>${hits.length
+              ? hits.map((h) => `linked to ${esc(fieldLabel(h.outcome, state))}${h.lag ? ` (${h.lag}-day lag)` : ''}, r = ${h.r}`).join('; ')
+              : vals.length >= 21 ? 'nothing found' : 'not enough days yet'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>` : ''}
+
     ${trials.length ? `<div class="card">
       <h2>What I've already tried</h2>
       <p class="muted">Each of these was a randomised block trial on myself — the same change

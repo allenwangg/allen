@@ -615,6 +615,40 @@ console.log("\n--- a trial from start to verdict ---");
   await fctx.close();
 }
 
+console.log("\n--- the report tells a doctor what was ruled out ---");
+{
+  const rctx = await browser.newContext();
+  const rp = await rctx.newPage();
+  rp.on('pageerror', e => errors.push('REPORT PAGEERROR: ' + e.message));
+  await rp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await rp.waitForTimeout(600);
+  await rp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS, SAMPLE_PROFILE } = await import('./js/sample.js');
+    await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    await store.setMeta('factors', SAMPLE_FACTORS);
+    await store.setMeta('profile', SAMPLE_PROFILE);
+    await store.putMany(generateSampleData());
+  });
+  await rp.evaluate(() => { location.hash = '#report'; });
+  await rp.reload({ waitUntil: 'networkidle' });
+  await rp.waitForTimeout(3000);
+  const rows = await rp.$$eval('#print-report table tbody tr', els => els.map(e => e.textContent.replace(/\s+/g, ' ').trim()));
+  // The row that saves the most appointment time is the negative one: it stops
+  // a clinician spending ten minutes suggesting something already ruled out.
+  const ruledOut = rows.find(r => /Screens after 10pm/.test(r));
+  if (!ruledOut) throw new Error('tracked factors never reach the report');
+  if (!/nothing found/i.test(ruledOut)) {
+    throw new Error('a factor with no relationship is not reported as ruled out: ' + ruledOut);
+  }
+  const found = rows.find(r => /^Dairy /.test(r));
+  if (!found || !/linked to/i.test(found)) {
+    throw new Error('a factor with a real relationship is not reported as linked: ' + found);
+  }
+  console.log('  reports both a confirmed suspicion and a ruled-out one');
+  await rctx.close();
+}
+
 console.log("\n--- the example-data tour ---");
 {
   const tctx = await browser.newContext();
