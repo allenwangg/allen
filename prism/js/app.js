@@ -128,7 +128,14 @@
     'origin-of-life': 'seed', 'senses': 'eye', 'oceans': 'wave', 'materials': 'layers',
     'music-theory': 'bell', 'western-music-history': 'book', 'world-music': 'network',
     'film': 'lens', 'poetry': 'book', 'photography': 'eye',
-    'existentialism': 'fork', 'epistemology': 'lens', 'political-philosophy': 'balance', 'free-will': 'path'
+    'existentialism': 'fork', 'epistemology': 'lens', 'political-philosophy': 'balance', 'free-will': 'path',
+    'memory-science': 'brain', 'child-development': 'seed', 'weather': 'wave', 'plants': 'seed',
+    'infinity': 'orbit', 'cryptography': 'key', 'mental-health': 'mirror', 'pain-and-placebo': 'bell',
+    'cities': 'bridge', 'demography': 'graph', 'theatre': 'dialog', 'dance': 'flame',
+    'entrepreneurship': 'ladder', 'career': 'path', 'philosophy-of-science': 'lens', 'logic': 'puzzle',
+    'archaeology': 'layers', 'history-of-medicine': 'shield', 'systems-thinking': 'network',
+    'risk': 'balance', 'animal-minds': 'eye', 'fungi': 'network', 'comparative-religion': 'compass',
+    'meaning-of-life': 'compass'
   };
   function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
 
