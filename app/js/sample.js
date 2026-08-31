@@ -104,7 +104,10 @@ export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTO
   // so the tour also shows what a moderate finding looks like.
   const rb = mulberry32(777004);
   for (const e of entries) {
-    e.symptoms.s_bloating = clamp04(Math.round(e.ultraProcessed * 0.55 - 0.6 + (rb() - 0.5) * 1.4));
+    // Offset so bloating is absent on most days. A symptom present on 97% of
+    // days is not a symptom, it is a constant — and it made the report read
+    // "present on 87 of 90 days", which looks like a bug rather than a life.
+    e.symptoms.s_bloating = clamp04(Math.round(e.ultraProcessed * 1.3 - 5.8 + (rb() - 0.5) * 1.3));
   }
 
   // Planted effect 4: late caffeine degrades that night's sleep quality.

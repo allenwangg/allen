@@ -180,6 +180,65 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- the report, printed ---");
+for (const scheme of ['light', 'dark']) {
+  // The report is the thing you hand a doctor, and printing it from dark mode
+  // used to produce near-black card backgrounds with light-grey text on white
+  // paper. Theme tokens have to be reset for print; setting body colours alone
+  // does not reach the rules that read them.
+  const pctx = await browser.newContext({ viewport: { width: 900, height: 1200 }, colorScheme: scheme });
+  const pp = await pctx.newPage();
+  pp.on('pageerror', e => errors.push('PRINT PAGEERROR: ' + e.message));
+  await pp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await pp.waitForTimeout(600);
+  await pp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_PROFILE } = await import('./js/sample.js');
+    await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
+    await store.setMeta('profile', SAMPLE_PROFILE);
+    await store.putMany(generateSampleData());
+  });
+  await pp.evaluate(() => { location.hash = '#report'; });
+  await pp.reload({ waitUntil: 'networkidle' });
+  await pp.waitForTimeout(2500);
+  await pp.emulateMedia({ media: 'print' });
+  await pp.waitForTimeout(400);
+
+  const probe = await pp.evaluate(() => {
+    const lum = (rgb) => {
+      const [r, g, b] = rgb.match(/\d+/g).map(Number).map((v) => {
+        const c = v / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a, b) => {
+      const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+      return (x + 0.05) / (y + 0.05);
+    };
+    const card = document.querySelector('#print-report .card');
+    const muted = document.querySelector('#print-report .muted');
+    const cardBg = getComputedStyle(card).backgroundColor;
+    return {
+      cardBg,
+      mutedContrast: muted ? ratio(getComputedStyle(muted).color, cardBg) : null,
+      furniture: [...document.querySelectorAll('.banner, #update-banner, [data-flag], .topbar')]
+        .filter((e) => getComputedStyle(e).display !== 'none').length,
+    };
+  });
+  if (!/255,\s*255,\s*255/.test(probe.cardBg)) {
+    throw new Error(`${scheme}: report cards print with background ${probe.cardBg}, not white`);
+  }
+  if (probe.mutedContrast < 4.5) {
+    throw new Error(`${scheme}: printed body text contrast is ${probe.mutedContrast.toFixed(2)}:1`);
+  }
+  if (probe.furniture > 0) {
+    throw new Error(`${scheme}: ${probe.furniture} piece(s) of screen furniture print with the report`);
+  }
+  console.log(`  ${scheme}: white cards, ${probe.mutedContrast.toFixed(1)}:1 text, no screen furniture`);
+  await pctx.close();
+}
+
 console.log("\n--- a trial from start to verdict ---");
 {
   // The trial engine is well tested as a function; what was never verified is

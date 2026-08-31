@@ -708,7 +708,8 @@ export function reportView(state) {
       not blinded. Correlations use Spearman rank correlation on days paired at 0, 1 and 2-day
       lags, after removing any linear time trend and any day-of-week pattern from both series;
       p-values come from a permutation null (circular shifts plus a moving-block bootstrap) and
-      are corrected for multiple comparisons within each symptom separately. Confidence intervals
+      are corrected for multiple comparisons across every relationship tested, by
+      Benjamini-Hochberg at a 10% false-discovery rate. Confidence intervals
       use an effective sample size adjusted for autocorrelation. Trials are block-randomised with
       the outcome fixed in advance and analysed by exact randomisation test.</p>
       <p class="subtle">This was produced by a self-tracking app with no clinical input. It is a
