@@ -37,6 +37,36 @@ const isComment = (l) => /^\s*(?:\/\/|\/\*|\*)/.test(l);
 /** A sentence may name these words while explicitly denying them. */
 const NEGATED = /\b(?:does not|do not|cannot|can't|never|not a medical|no clinical|is not|isn't|won't|refus)/i;
 
+/**
+ * Claims this project has measured, found false, and retracted.
+ *
+ * Each of these was once written in good faith, disproved by measurement, and
+ * removed — and then reappeared, because a retraction lives in one commit
+ * message while the sentence lives in four files. The per-symptom correction
+ * claim had to be chased down three separate times, the last of which was in
+ * the methods paragraph of the document you hand a doctor.
+ *
+ * A retraction is only real if something enforces it.
+ */
+const RETRACTED = [
+  {
+    pattern: /(within each symptom separately|each symptom is (?:corrected|judged) (?:as its own|on its own)|tracking (?:a second|more) symptoms? never (?:costs|makes))/i,
+    why: 'Per-symptom FDR families were reverted: measured 3-4 of 40 noise datasets leaking against 0 of 40 for one global correction, with no recall gained. See docs/INSIGHTS.md Guard 8.',
+  },
+  {
+    pattern: /\bhealthspan age\b/i,
+    why: 'The bio-age figure was removed; it existed because it was shareable, not because it helped anyone.',
+  },
+  {
+    pattern: /(cannot explain|rules? (?:it|them|that) out)\b(?![^.]*\b(?:systematic|by luck)\b)/i,
+    why: 'Randomisation makes a confound unlikely as systematic bias; it does not rule it out in a single trial.',
+  },
+  {
+    pattern: /\b(?:free tier|upgrade to pro|pro plan|subscription|paywall)\b/i,
+    why: 'The business layer was removed entirely; every feature is available to everyone.',
+  },
+];
+
 let issues = 0;
 for (const rel of FILES) {
   const lines = readFileSync(path.join(ROOT, rel), 'utf8').split('\n');
@@ -53,8 +83,21 @@ for (const rel of FILES) {
   });
 }
 
+// Retracted claims must not come back.
+for (const rel of FILES) {
+  const lines = readFileSync(path.join(ROOT, rel), 'utf8').split('\n');
+  lines.forEach((line, i) => {
+    if (isComment(line)) return;
+    for (const { pattern, why } of RETRACTED) {
+      if (!pattern.test(line)) continue;
+      console.error(`  ${rel}:${i + 1}  [retracted claim]\n    ${line.trim().slice(0, 150)}\n    ${why}`);
+      issues++;
+    }
+  });
+}
+
 if (issues) {
   console.error(`\ncopy-guard: ${issues} phrase(s) claim more than this app can support.`);
   process.exit(1);
 }
-console.log('copy-guard: clean — nothing diagnoses, cures, or falsely reassures.');
+console.log('copy-guard: clean — nothing diagnoses, cures, falsely reassures, or repeats a retracted claim.');
