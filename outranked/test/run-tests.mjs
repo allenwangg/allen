@@ -802,6 +802,87 @@ await test("the Oracle still offers a game on a dead board", async () => {
   assert(shape.picks === 2, `a dead board should still offer a yes/no prophecy, got ${shape.picks} options`);
 });
 
+await test("every primary control meets WCAG AA in both themes", async () => {
+  // White on the brand green/coral/gold measured 2.04-3.43:1 — the mobile sticky
+  // CTA, the single most important control in the app, was the least readable
+  // element on the page. Measured here from rendered styles, not from tokens, so
+  // a future palette change cannot quietly reintroduce it.
+  const SELECTORS = [".cta", ".take", ".sticky-cta button",
+                     ".row:nth-child(1) .rank", ".row:nth-child(2) .rank", ".row:nth-child(3) .rank"];
+  for (const scheme of ["light", "dark"]) {
+    const cctx = await browser.newContext({ colorScheme: scheme });
+    const cp = await cctx.newPage();
+    await cp.goto(url + "?nosim", { waitUntil: "networkidle" });
+    await cp.waitForTimeout(300);
+    const measured = await cp.evaluate((sels) => {
+      const parse = (c) => (c.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+      const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+      const out = [];
+      for (const sel of sels) {
+        const el = document.querySelector(sel);
+        if (!el) continue;
+        const cs = getComputedStyle(el);
+        let bgEl = el, bg = parse(cs.backgroundColor);
+        // Walk up past transparent backgrounds to whatever actually paints behind.
+        while (bgEl && (/rgba\(0, 0, 0, 0\)|transparent/.test(getComputedStyle(bgEl).backgroundColor))) {
+          bgEl = bgEl.parentElement;
+          if (bgEl) bg = parse(getComputedStyle(bgEl).backgroundColor);
+        }
+        const fg = parse(cs.color);
+        if (fg.length < 3 || bg.length < 3) continue;
+        const [hi, lo] = [lum(fg), lum(bg)].sort((a, b) => b - a);
+        out.push({ sel, ratio: +(((hi + 0.05) / (lo + 0.05)).toFixed(2)) });
+      }
+      return out;
+    }, SELECTORS);
+    await cctx.close();
+    assert(measured.length >= 4, `${scheme}: expected to measure the main controls, got ${measured.length}`);
+    for (const m of measured) {
+      assert(m.ratio >= 4.5,
+        `${scheme} theme: "${m.sel}" is ${m.ratio}:1 — below the 4.5:1 AA floor for its label`);
+    }
+  }
+});
+
+await test("Watch Mode keeps keyboard focus inside the overlay", async () => {
+  // It was a full-screen div that never took focus and never blocked the page
+  // behind it: Tab walked straight into controls the viewer could not see.
+  const wctx = await browser.newContext();
+  const wp = await wctx.newPage();
+  await wp.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await wp.waitForTimeout(300);
+  await wp.click("#watchBtn");
+  await wp.waitForTimeout(150);
+  const inertWhileOpen = await wp.evaluate(() =>
+    [...document.body.children].every(el => el.id === "watch" || el.inert));
+  const escaped = [];
+  for (let i = 0; i < 8; i++) {
+    await wp.keyboard.press("Tab");
+    // Cycling through <body> between passes is the browser's normal "nothing
+    // focused" state, not a leak. What must never happen is focus landing on a
+    // real control behind the overlay.
+    const leaked = await wp.evaluate(() => {
+      const a = document.activeElement;
+      if (!a || a === document.body || a === document.documentElement) return null;
+      return a.closest("#watch") ? null : (a.tagName + "." + String(a.className).slice(0, 20));
+    });
+    if (leaked) escaped.push(`${i + 1} (${leaked})`);
+  }
+  const restored = await wp.evaluate(async () => {
+    document.querySelector("#watchClose").click();
+    await new Promise(r => setTimeout(r, 50));
+    return { onWatchBtn: document.activeElement === document.querySelector("#watchBtn"),
+             inertCleared: ![...document.body.children].some(el => el.id !== "watch" && el.inert) };
+  });
+  await wctx.close();
+  assert(escaped.length === 0,
+    `focus reached a control behind the overlay on Tab press(es) ${escaped.join(", ")}`);
+  assert(inertWhileOpen, "the page behind Watch Mode was still focusable and screen-reader visible");
+  assert(restored.onWatchBtn, "closing Watch Mode should return focus to the control that opened it");
+  assert(restored.inertCleared, "the page behind was left inert after Watch Mode closed");
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");

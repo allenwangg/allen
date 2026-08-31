@@ -197,6 +197,14 @@
       "pass": true
     },
     {
+      "name": "every primary control meets WCAG AA in both themes",
+      "pass": true
+    },
+    {
+      "name": "Watch Mode keeps keyboard focus inside the overlay",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -234,13 +242,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 100,
-    "medianDOMContentLoadedms": 72.9,
-    "medianLoadms": 12449.1,
+    "medianFCPms": 104,
+    "medianDOMContentLoadedms": 80.4,
+    "medianLoadms": 12466.5,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 103574,
-    "gzipBytes": 31064
+    "htmlBytes": 106067,
+    "gzipBytes": 31834
   }
 }

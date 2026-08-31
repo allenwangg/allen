@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 58 tests, run on CI |
+| Automated test suite | none public | ✅ 60 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -51,7 +51,7 @@ product titles, public click counts):
 | Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
 | Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 58/58 passing
+## 2. Functional correctness — 60/60 passing
 
 `node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
 the Stripe ledger reader exercised against a mock Stripe. This suite also runs
@@ -107,6 +107,8 @@ PASS  the leaderboard shows names, and never scrolls sideways, on phones
 PASS  a Stripe outage must not empty a live board
 PASS  a live board refuses to invent a payment when checkout is unwired
 PASS  the Oracle still offers a game on a dead board
+PASS  every primary control meets WCAG AA in both themes
+PASS  Watch Mode keeps keyboard focus inside the overlay
 PASS  API decodes both the encoded and legacy reference formats
 PASS  API ranks by cumulative payment, breaking ties by who paid first
 PASS  a cheap bid cannot hijack an established listing's link or decree
@@ -117,7 +119,7 @@ PASS  a refunded or disputed payment loses its rank
 PASS  a hostile listing name cannot hijack the marketing robot's posts
 PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-58/58 tests passed
+60/60 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -126,10 +128,10 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **100 ms** |
-| DOMContentLoaded | **73 ms** |
+| First Contentful Paint | **104 ms** |
+| DOMContentLoaded | **80 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
-| Page weight | **101.1 KB raw / 30.3 KB gzipped** |
+| Page weight | **103.6 KB raw / 31.1 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
 | Backend | **none** — the board is computed from the Stripe ledger |
 
