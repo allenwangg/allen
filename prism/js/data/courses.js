@@ -5667,7 +5667,7 @@ window.COURSES_FULL = [
           {
             "type": "reveal",
             "prompt": "Zimbabwe, November 2008: monthly inflation hit an estimated 79.6 billion percent. What did the central bank print to keep up?",
-            "answer": "A one-hundred-trillion-dollar note — outdone in zeros only by Hungary's 1946 hyperinflation notes. Prices were doubling roughly every day, and in 2009 Zimbabwe abandoned its own currency entirely for US dollars and South African rand."
+            "answer": "By January 2009, a one-hundred-trillion-dollar note — outdone in zeros only by Hungary's 1946 hyperinflation notes. Prices were doubling roughly every day, and later that year Zimbabwe abandoned its own currency entirely for US dollars and South African rand."
           },
           {
             "type": "concept",
@@ -8312,7 +8312,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Flight Simulator",
-            "body": "Psychologist Keith Oatley calls fiction 'the mind's flight simulator.' Pilots crash in simulation so they won't in the air; readers betray, grieve, and forgive on the page before life demands it. In his lab's studies, frequent fiction readers scored higher at reading emotion in strangers' eyes — the practice seems to transfer.",
+            "body": "Psychologist Keith Oatley calls fiction 'the mind's flight simulator.' Pilots crash in simulation so they won't in the air; readers betray, grieve, and forgive on the page before life demands it. In his lab's studies, frequent fiction readers scored higher at reading emotion in strangers' eyes — a correlation, so which way the arrow runs is still open.",
             "art": "map"
           },
           {
@@ -8568,7 +8568,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Read It Aloud",
-            "body": "Voice lives in rhythm. Writing teacher Gary Provost proved it with a paragraph built entirely of five-word sentences: the drone sets in fast, and only varied lengths — short jabs set against long, winding lines — make prose sing. Your ear catches what your eye forgives. Read drafts aloud; wherever you stumble or drone, the sentence is confessing.",
+            "body": "Voice lives in rhythm. Writing teacher Gary Provost showed it with a paragraph that opens in five-word sentences — 'This sentence has five words' — until the drone sets in, then breaks into varied lengths and starts to sing. Your ear catches what your eye forgives. Read drafts aloud; wherever you stumble or drone, the sentence is confessing.",
             "art": "wave"
           },
           {
@@ -9710,7 +9710,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Bouba and Kiki",
-            "body": "Now the delicious exception. Shown a spiky star and a rounded blob and asked which is 'kiki' and which is 'bouba', about 95% of people call the spiky one kiki. Wolfgang Köhler ran the first version in 1929 (with 'takete' and 'maluma'); Ramachandran and Hubbard revived it in 2001 and found the effect across cultures. Sound symbolism is real — it just seasons an arbitrary system.",
+            "body": "Now the delicious exception. Shown a spiky star and a rounded blob and asked which is 'kiki' and which is 'bouba', about 95% of people call the spiky one kiki. Wolfgang Köhler ran the first version in 1929 (with 'takete' and 'baluma'); Ramachandran and Hubbard revived it in 2001 and found the effect across cultures. Sound symbolism is real — it just seasons an arbitrary system.",
             "art": "wave"
           },
           {
@@ -10145,7 +10145,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Chop It Into Packets",
-            "body": "In the early 1960s, Paul Baran at RAND and Donald Davies in Britain independently proposed a radical alternative: slice each message into small blocks — Davies named them 'packets' — each stamped with its destination address. Packets from thousands of conversations could share the same wires, with no path reserved at all.",
+            "body": "In the 1960s, Paul Baran at RAND and Donald Davies in Britain independently proposed a radical alternative: slice each message into small blocks — Davies named them 'packets' — each stamped with its destination address. Packets from thousands of conversations could share the same wires, with no path reserved at all.",
             "art": "puzzle"
           },
           {
@@ -10210,7 +10210,7 @@ window.COURSES_FULL = [
             "type": "recap",
             "points": [
               "Circuit switching reserves one path per conversation; packet switching chops messages into addressed blocks that share every wire.",
-              "Baran and Davies imagined packets in the early 1960s; ARPANET's first message, 'LO', crashed mid-LOGIN on October 29, 1969.",
+              "Baran and Davies imagined packets in the 1960s; ARPANET's first message, 'LO', crashed mid-LOGIN on October 29, 1969.",
               "Cerf and Kahn's TCP/IP (1974) lets different networks interconnect: IP moves packets, TCP reassembles and re-sends.",
               "Packets route independently around failures — the internet is resilient by design, not by luck."
             ]
@@ -10255,7 +10255,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Internet's Phone Book",
-            "body": "Early ARPANET kept every name-to-number mapping in one file, HOSTS.TXT, hand-edited at Stanford and downloaded by everyone. By 1983 that couldn't scale, so Paul Mockapetris designed the Domain Name System: a distributed, delegated database where no single office holds the whole book, yet any name can be found.",
+            "body": "Early ARPANET kept every name-to-number mapping in one file, HOSTS.TXT, hand-edited at SRI's Network Information Center and downloaded by everyone. By 1983 that couldn't scale, so Paul Mockapetris designed the Domain Name System: a distributed, delegated database where no single office holds the whole book, yet any name can be found.",
             "art": "book"
           },
           {
@@ -10749,7 +10749,7 @@ window.COURSES_FULL = [
             "type": "truefalse",
             "statement": "Most T cells your body makes are destroyed before they ever fight an infection.",
             "answer": true,
-            "explain": "The thymus deletes the large majority of developing T cells — chiefly those that bind your own tissues, plus those that bind nothing useful. Harsh screening is the price of an army that does not attack its host."
+            "explain": "The thymus deletes the large majority of developing T cells — most because their receptors bind nothing useful at all, the rest because they bind your own tissues. Harsh screening is the price of an army that does not attack its host."
           },
           {
             "type": "recap",
@@ -11026,7 +11026,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Story Economists Told",
-            "body": "Adam Smith spelled out barter's fatal flaw in 1776: the 'double coincidence of wants.' You have fish and need shoes — but the shoemaker hates fish. Money, the story goes, was invented to solve this. It's an elegant thought experiment. Smith just never pointed to a society that actually lived this way.",
+            "body": "Adam Smith spelled out barter's fatal flaw in 1776: you have fish and need shoes, but the shoemaker hates fish. A century later William Stanley Jevons named the problem the 'double coincidence of wants.' Money, the story goes, was invented to solve it. It's an elegant thought experiment — Smith just never pointed to a society that actually lived this way.",
             "art": "dialog"
           },
           {
@@ -11072,8 +11072,8 @@ window.COURSES_FULL = [
           },
           {
             "type": "reveal",
-            "prompt": "Your paycheck's name — 'salary' — preserves a commodity money. Which one?",
-            "answer": "Salt. The word comes from Latin salarium, a Roman soldier's allowance linked to sal, salt — money tied to the era's essential preservative. The word has outlived the commodity by two thousand years."
+            "prompt": "Your paycheck's name — 'salary' — hides the Latin word for one everyday substance. Which one?",
+            "answer": "Salt. 'Salary' comes from Latin salarium, an allowance whose name derives from sal. The familiar story that Roman soldiers were paid in salt has no ancient source behind it — but salt genuinely did circulate as money, in bars, along the Saharan trade routes."
           },
           {
             "type": "concept",
@@ -11112,8 +11112,8 @@ window.COURSES_FULL = [
             "back": "Mesopotamian temple accounts, c. 3000 BCE — debts and rations priced in silver shekels on cuneiform tablets, about 2,400 years before coins."
           },
           {
-            "front": "Why is your 'salary' a fossil of commodity money?",
-            "back": "It comes from Latin salarium, tied to sal (salt) — a Roman soldier's salt allowance. Salt, cattle, and cowrie shells all served as money."
+            "front": "What is the real link between 'salary' and salt?",
+            "back": "The word comes from Latin salarium, whose root is sal, salt — though no ancient source says soldiers were paid in it. Salt, cattle and cowrie shells did serve as money."
           },
           {
             "front": "Name money's three functions.",
@@ -11511,7 +11511,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Deceptive Cadence",
-            "body": "A composer builds toward the home chord — the dominant practically shouts 'resolution next!' — then lands on the minor sixth chord instead. That V–vi swerve is the deceptive cadence, a staple from Bach to Radiohead. Your prediction fails, tension spikes, and the real resolution, when it finally comes, lands twice as hard.",
+            "body": "A composer builds toward the home chord — the dominant practically shouts 'resolution next!' — then lands on the vi chord, the relative minor, instead. That V–vi swerve is the deceptive cadence, a staple from Bach to Radiohead. Your prediction fails, tension spikes, and the real resolution, when it finally comes, lands twice as hard.",
             "art": "fork"
           },
           {
@@ -11832,7 +11832,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "A Natural History of Song",
-            "body": "In 2019, Samuel Mehr's team published the Natural History of Song: recordings and ethnographies from 315 societies, coded and compared. Music appeared in every single one, clustering into recognizable types — dance songs, lullabies, healing songs, love songs. Listeners worldwide could hear a snippet from a culture they'd never met and guess its job: acoustic form tracks social function.",
+            "body": "In 2019, Samuel Mehr's team published the Natural History of Song: ethnographic accounts of 315 societies plus recordings from 86, coded and compared. Music appeared in every society described, clustering into recognizable types — dance songs, lullabies, healing songs, love songs. Listeners could hear a snippet from a culture they'd never met and guess its job.",
             "art": "book"
           },
           {
@@ -13338,7 +13338,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "A World Written by Hand",
-            "body": "Picture Europe in 1450. Every book you have ever seen was copied by hand, letter by letter, by a scribe who might spend a year on a single Bible. Books cost as much as farms; most people die without owning one. Then a goldsmith in Mainz assembles a machine, and within fifty years the written word is everywhere. Here is how it happened.",
+            "body": "Picture Europe in 1450. Every book you have ever seen was copied by hand, letter by letter, by a scribe who might spend a year on a single Bible. A fine Bible can cost as much as a house; most people die without owning a book. Then a goldsmith in Mainz assembles a machine, and within fifty years the written word is everywhere. Here is how it happened.",
             "art": "book"
           },
           {
@@ -13368,7 +13368,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Price of Words Collapses",
-            "body": "Around 1450, all of Europe held perhaps 30,000 hand-copied books. By 1500, presses had spread to over 250 towns and printed millions of volumes — scholarly estimates run from eight to twenty million, more books in fifty years than in the previous thousand. The price of a book collapsed, and with it the monopoly on who could know things.",
+            "body": "Copying by hand was slow, and historians put European scribal output across the whole Middle Ages on the order of ten million volumes. By 1500, presses in over 250 towns had matched that — estimates of printed books run from eight to twenty million in fifty years. The price of a book collapsed, and with it the monopoly on who could know things.",
             "art": "coin"
           },
           {
@@ -13421,7 +13421,7 @@ window.COURSES_FULL = [
             "type": "recap",
             "points": [
               "Gutenberg (~1450) fused movable metal type, a screw press, and oil ink into a system; Korea's Jikji (1377) used movable type first.",
-              "Europe went from roughly 30,000 hand-copied books to millions of printed volumes within fifty years.",
+              "Presses printed an estimated eight to twenty million volumes by 1500 — as many books in fifty years as scribes had copied in centuries.",
               "Luther's 1517 theses spread across Europe in weeks as pamphlets — print made the Reformation possible.",
               "Identical copies let science accumulate; standardized print built national languages and a reading public.",
               "Every information revolution since — telegraph, internet — has rhymed with the press."
@@ -13443,7 +13443,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "How did Europe's book supply change in print's first fifty years?",
-            "back": "From roughly 30,000 hand-copied volumes around 1450 to millions of printed books by 1500 — estimates run from eight to twenty million."
+            "back": "Presses in over 250 towns printed an estimated eight to twenty million volumes by 1500, rivalling centuries of scribal output."
           }
         ]
       },
@@ -13857,7 +13857,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Change Blindness",
-            "body": "In 1998, Daniel Simons and Daniel Levin had a stranger stop pedestrians to ask directions. Two workers carried a door between them, and a different person walked away holding the map. Only 7 of the 15 pedestrians noticed they were now talking to somebody else.",
+            "body": "In 1998, Daniel Simons and Daniel Levin had a stranger stop pedestrians to ask directions. Two workers carried a door between them, and when it passed, a different person was holding the map. Only 7 of the 15 pedestrians noticed they were now talking to somebody else.",
             "art": "mirror"
           },
           {
@@ -14184,7 +14184,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Batch the Interrupts",
-            "body": "Kostadin Kushlev and Elizabeth Dunn had people check email just three times a day for a week; they reported lower daily stress than in their unlimited-checking week. In a 2016 study, a week with phone notifications on brought more reported inattention and hyperactivity than a week with them batched.",
+            "body": "Kostadin Kushlev and Elizabeth Dunn had people check email just three times a day for a week; they reported lower daily stress than in their unlimited-checking week. In a 2016 study, a week with phone notifications on brought more reported inattention and hyperactivity than a week with them silenced.",
             "art": "bell"
           },
           {
@@ -14243,7 +14243,7 @@ window.COURSES_FULL = [
             "type": "recap",
             "points": [
               "Change the environment rather than your willpower: the phone in another room beat face-down on the desk (Ward et al., 2017).",
-              "Batching email and notifications lowered reported stress and inattention (Kushlev & Dunn).",
+              "Limiting email checks lowered stress; a week with notifications silenced lowered inattention (Kushlev).",
               "Single-tasking follows from switch costs and residue; time-blocking is a sensible inference, not a proven protocol.",
               "Undemanding, wandering time aids incubation (Baird et al., 2012); nature effects are real but modest.",
               "If-then plans beat good intentions (Gollwitzer & Sheeran, 2006) — so name the time, the place and the task tonight."
@@ -14257,7 +14257,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "Does batching notifications help?",
-            "back": "Kushlev's studies found batched checking lowered reported stress, inattention and hyperactivity versus notifications always on."
+            "back": "Kushlev's studies found checking email three times a day lowered stress, and silencing notifications for a week lowered inattention."
           },
           {
             "front": "What is an implementation intention?",
@@ -15277,13 +15277,13 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Rosenblatt's Perceptron, 1958",
-            "body": "Frank Rosenblatt built a single neuron in hardware: 400 photocells wired to weights held as motorised dials that turned whenever the machine was corrected. It learned to tell simple shapes apart, and the press promptly announced machines that would soon walk, talk, see and write. That was 1958.",
+            "body": "Frank Rosenblatt designed a single neuron you could build. In the Mark I machine, 400 photocells were wired to weights held as motorised dials that turned whenever it was corrected. It learned to tell simple shapes apart, and after a 1958 demonstration the press announced machines that would soon walk, talk, see and write.",
             "art": "clock"
           },
           {
             "type": "reveal",
             "prompt": "A single-layer perceptron cannot learn a rule as simple as 'exactly one of these two inputs is on'. Why did that stall an entire field?",
-            "answer": "Minsky and Papert proved the limit in 1969 and funding drained away. The fix — extra layers plus a practical way to train them — took until the 1980s, and a second slump followed when hand-built expert systems proved brittle. Two AI winters, roughly two decades."
+            "answer": "Minsky and Papert set out that limit in 1969, and funding for neural networks drained away. The fix — extra layers plus a practical way to train them — took until the 1980s, and a second slump followed when hand-built expert systems proved brittle. Two AI winters, roughly two decades."
           },
           {
             "type": "concept",
@@ -15696,7 +15696,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "A Letter From Nebraska",
-            "body": "In 1967 Stanley Milgram mailed packets to volunteers in Nebraska and Kansas, naming a target they had never met: a stockbroker outside Boston. One rule governed everything. You may forward this only to someone you know on a first-name basis. Then he watched how far a letter could travel on friendship alone.",
+            "body": "In the 1960s Stanley Milgram mailed packets to volunteers in Nebraska, naming a target they had never met: a stockbroker outside Boston. One rule governed everything. You may forward this only to someone you know on a first-name basis. Then he watched how far a letter could travel on friendship alone.",
             "art": "map"
           },
           {
@@ -17604,7 +17604,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Gutenberg's Borrowed Parts",
-            "body": "Around 1440 in Mainz, Johannes Gutenberg combined a screw press built for crushing grapes with the metal punches goldsmiths used to stamp coins. Neither part was new. One squeezed wine, the other stamped marks into metal. Put them together and you get printing.",
+            "body": "Working in Mainz around 1450, Johannes Gutenberg combined a screw press built for crushing grapes with the metal punches goldsmiths used to stamp coins. Neither part was new. One squeezed wine, the other stamped marks into metal. Put them together and you get printing.",
             "art": "puzzle"
           },
           {
@@ -19226,7 +19226,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "The Door That Fights You",
-            "body": "You reach for a door with a tall vertical handle, pull, and nothing moves. A small sign says PUSH. You have just met a Norman door, named for Don Norman, whose 1988 book The Design of Everyday Things argued that this confusion is not your failing. The handle made a promise the door could not keep.",
+            "body": "You reach for a door with a tall vertical handle, pull, and nothing moves. A small sign says PUSH. You have just met a Norman door, named for Don Norman, whose The Design of Everyday Things — published in 1988 as The Psychology of Everyday Things — argued that this confusion is not your failing. The handle made a promise the door could not keep.",
             "art": "key"
           },
           {
@@ -19477,7 +19477,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Four Branches",
-            "body": "Salovey and Mayer defined EI as four linked abilities. Perceiving emotion, in faces, voices and yourself. Using emotion to aid thinking. Understanding how feelings blend, escalate and shift. And managing emotion, in yourself and in others. Abilities — things you can be measurably better or worse at.",
+            "body": "By 1997 Mayer and Salovey had settled on four linked abilities. Perceiving emotion, in faces, voices and yourself. Using emotion to aid thinking. Understanding how feelings blend, escalate and shift. And managing emotion, in yourself and in others. Abilities — things you can be measurably better or worse at.",
             "art": "layers"
           },
           {
@@ -19547,7 +19547,7 @@ window.COURSES_FULL = [
           {
             "type": "recap",
             "points": [
-              "Salovey and Mayer (1990) defined EI as four abilities: perceiving, using, understanding and managing emotion.",
+              "Salovey and Mayer named EI in 1990; their 1997 model set out four abilities: perceiving, using, understanding and managing emotion.",
               "Goleman's 1995 bestseller popularised the idea — and an 80% figure that was leftover variance, never a measured finding.",
               "Ability tests and self-report questionnaires measure different things and correlate weakly, usually below .30.",
               "Self-reported EI is largely personality in disguise; controlling IQ and the Big Five leaves EI a few per cent of extra variance.",
@@ -19557,7 +19557,7 @@ window.COURSES_FULL = [
         ],
         "review": [
           {
-            "front": "What are the four branches of Salovey and Mayer's model?",
+            "front": "What are the four branches of Mayer and Salovey's 1997 model?",
             "back": "Perceiving emotion, using emotion to aid thinking, understanding emotion, and managing emotion — in yourself and in others."
           },
           {
@@ -19647,7 +19647,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Fifteen Minutes on Paper",
-            "body": "James Pennebaker's expressive writing task is unglamorous: fifteen minutes a day for three or four days, writing your deepest thoughts about something unresolved. Across 146 studies the average effect is real but small, around 0.08. Useful and nearly free — not transformative.",
+            "body": "James Pennebaker's expressive writing task is unglamorous: fifteen minutes a day for three or four days, writing your deepest thoughts about something unresolved. Across 146 studies the average effect is real but small, an r of about .08. Useful and nearly free — not transformative.",
             "art": "book"
           },
           {
@@ -20210,7 +20210,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Large Stakes, Big Mistakes",
-            "body": "Dan Ariely, Uri Gneezy, George Loewenstein and Nina Mazar offered participants in rural India bonuses worth up to five months' spending. On mechanical key-pressing, big money helped. On tasks demanding memory, concentration or creativity, the largest-bonus group performed worst of the three.",
+            "body": "Dan Ariely, Uri Gneezy, George Loewenstein and Nina Mazar offered participants in rural India bonuses worth up to five months' spending. On tasks demanding memory, concentration or creativity, the largest-bonus group performed worst of the three. In their US experiments high pay did help, but only on purely mechanical key-pressing.",
             "art": "brain"
           },
           {
@@ -21830,7 +21830,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "Ahead of Death on the List",
-            "body": "In a 1973 Bruskin survey, Americans named speaking before a group their number one fear: 41% picked it, against 19% for death. Comedians have dined out on that ever since. Decades later, Chapman University's fear surveys still put public speaking near the top — about one adult in four.",
+            "body": "In a 1973 Bruskin survey, Americans named speaking before a group their number one fear: 41% picked it, against 19% for death. Comedians have dined out on that ever since. Chapman University's modern fear surveys still find a quarter to a third of adults afraid of it, though ranked well down their overall list.",
             "art": "graph"
           },
           {
@@ -21899,7 +21899,7 @@ window.COURSES_FULL = [
           {
             "type": "recap",
             "points": [
-              "Public speaking sits at or near the top of self-reported fears — 41% in the 1973 Bruskin survey, ahead of death, and roughly one adult in four today.",
+              "Public speaking topped the 1973 Bruskin survey at 41%, ahead of death; Chapman's modern surveys still find a quarter to a third afraid of it, though ranked lower.",
               "Adrenaline narrows attention and speeds you up; suppressing it keeps arousal high and eats the working memory you need.",
               "Reappraisal beats relaxation: 'I am excited' outperformed 'I am calm' on singing, speaking and maths (Brooks, 2014).",
               "Illusion of transparency (Savitsky and Gilovich, 2003): your nerves are far less visible than they feel, and being told so improved both felt anxiety and audience ratings.",
@@ -22745,7 +22745,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "Seventeen Seconds",
-            "body": "In 2001, Jeffrey and Lisa Smith stood in the Metropolitan Museum of Art with stopwatches and timed how long visitors spent in front of paintings by Rembrandt, Vermeer and others. The median stop lasted 17 seconds — just long enough to glance, read the label, and move on. Almost everything a painting can give you arrives after that.",
+            "body": "In a study published in 2001, Jeffrey and Lisa Smith stood in the Metropolitan Museum of Art with stopwatches and timed how long 150 visitors spent in front of six paintings, by Rembrandt, Cézanne and others. The median stop lasted 17 seconds — just long enough to glance, read the label, and move on. Almost everything a painting can give you arrives after that.",
             "art": "hourglass"
           },
           {
@@ -23132,7 +23132,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Ceiling Nobody Recognised",
-            "body": "Michelangelo's Sistine Chapel ceiling, painted 1508–12, was cleaned between 1980 and 1994. Under four centuries of candle soot and darkened glue varnish were acid pinks, apple greens and lemon yellows nobody expected. Some scholars protested that the restorers had scrubbed away his final shadows; most conservators concluded the removed layer was later grime and glue.",
+            "body": "Michelangelo's Sistine Chapel ceiling, painted 1508–12, was cleaned between 1980 and 1989. Under four centuries of candle soot and darkened glue varnish were acid pinks, apple greens and lemon yellows nobody expected. Some scholars protested that the restorers had scrubbed away his final shadows; most conservators concluded the removed layer was later grime and glue.",
             "art": "layers"
           },
           {
@@ -23192,7 +23192,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "Are the colours you see the colours as painted?",
-            "back": "No. Pigments fade and shift, varnish yellows, soot builds up. Cleaning the Sistine ceiling (1980–94) uncovered startlingly bright colour."
+            "back": "No. Pigments fade and shift, varnish yellows, soot builds up. Cleaning the Sistine ceiling (1980–89) uncovered startlingly bright colour."
           },
           {
             "front": "What did Linda Nochlin argue in 1971?",
@@ -23341,7 +23341,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Lovelace's Notes",
-            "body": "In 1843 Ada Lovelace translated an Italian account of the Engine and appended notes three times longer than the paper itself. Note G sets out, step by step, how the machine would compute a sequence of Bernoulli numbers — widely described as the first algorithm published for a machine, though Babbage had drafted unpublished programs earlier.",
+            "body": "In 1843 Ada Lovelace translated the Italian engineer Luigi Menabrea's French account of the Engine and appended notes three times longer than the paper itself. Note G sets out, step by step, how the machine would compute a sequence of Bernoulli numbers — widely described as the first algorithm published for a machine, though Babbage had drafted unpublished programs earlier.",
             "art": "book"
           },
           {
@@ -23577,7 +23577,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "How Work Grows",
-            "body": "Complexity measures how the number of steps grows with the size of the input, not how many seconds it takes on today's machine. Double the input: a method that scans the list once does twice the work, while one that compares every pair does four times as much. On a million items that gap is a factor of fifty thousand.",
+            "body": "Complexity measures how the number of steps grows with the size of the input, not how many seconds it takes on today's machine. Double the input: a method that scans the list once does twice the work, while one that compares every pair does four times as much. On a million items that is a million steps against a trillion.",
             "art": "graph"
           },
           {
@@ -23728,7 +23728,7 @@ window.COURSES_FULL = [
             "type": "example",
             "title": "Reagan's Plan, Gorbachev's Plan",
             "art": "balance",
-            "body": "In 1990 Constance Stillinger and colleagues, working with Lee Ross, handed Stanford students an arms-reduction proposal. Attributed to Reagan, around 90% judged it even-handed or good for the United States. The same words attributed to Gorbachev, and that share collapsed to well under half."
+            "body": "In 1990 Constance Stillinger and colleagues, working with Lee Ross, handed Stanford students an arms-reduction proposal. Attributed to Reagan, around 90% judged it even-handed or good for the United States. The same words attributed to Gorbachev, and only 44% said the same."
           },
           {
             "type": "truefalse",
@@ -25100,7 +25100,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "Four Great Kingdoms",
-            "body": "Around 240 CE the Persian prophet Mani listed the world's four great powers: Persia, Rome, China, and Aksum, in the highlands of what is now Ethiopia and Eritrea. He was not being generous. Aksum controlled the Red Sea trade, and everyone doing business between Rome and India knew it.",
+            "body": "In the third century CE the Persian prophet Mani listed the world's four great powers: Persia, Rome, China, and Aksum, in the highlands of what is now Ethiopia and Eritrea. He was not being generous. Aksum controlled the Red Sea trade, and everyone doing business between Rome and India knew it.",
             "art": "map"
           },
           {
@@ -25259,7 +25259,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Mansa Musa Goes to Mecca",
-            "body": "In 1324 Mansa Musa of Mali crossed the Sahara on pilgrimage with a caravan that stopped Cairo in its tracks. He came home with the Andalusian architect al-Sahili, who worked at Timbuktu and Gao. Fifty years later a Spanish mapmaker drew him on the Catalan Atlas, holding a lump of gold.",
+            "body": "In 1324 Mansa Musa of Mali crossed the Sahara on pilgrimage with a caravan that stopped Cairo in its tracks. He came home with the Andalusian architect al-Sahili, who worked at Timbuktu and Gao. Fifty years later a Majorcan mapmaker drew him on the Catalan Atlas, holding a lump of gold.",
             "art": "compass"
           },
           {
@@ -26169,7 +26169,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "How Offices Used to Be Filled",
-            "body": "The Han recruited by recommendation: local officials nominated men as 'filial and incorrupt', which in practice meant well connected. The Sui introduced written examinations around 605 CE, and the Tang added the jinshi degree, prized and tiny — often only about thirty men passed in a year.",
+            "body": "The Han recruited by recommendation: local officials nominated men as 'filial and incorrupt', which in practice meant well connected. The Sui introduced written examinations around 605 CE, and under the Tang the jinshi degree became the prized route — tiny, with often only about thirty men passing in a year.",
             "art": "seed"
           },
           {
@@ -26222,7 +26222,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Mobility Argument",
-            "body": "How open was it? Ho Ping-ti's 1962 study found roughly a third of Ming jinshi came from families with no degree-holder in three generations, a share that fell under the Qing. Robert Hymes, Benjamin Elman and others reply that marriage ties and local standing made such families elite anyway. The debate is open; 'porous, not level' is the honest summary.",
+            "body": "How open was it? Ho Ping-ti's 1962 study found close to half of Ming jinshi came from families with no degree-holder in three generations, a share that fell under the Qing. Robert Hymes, Benjamin Elman and others reply that marriage ties and local standing made such families elite anyway. The debate is open; 'porous, not level' is the honest summary.",
             "art": "graph"
           },
           {
@@ -26710,7 +26710,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Debate as a Public Sport",
-            "body": "Nyaya sorts argument into kinds. Vada is debate for the truth, where losing teaches you something. Jalpa is debate to win. Vitanda is pure demolition, with no thesis of your own to defend. The texts even list twenty-two ways to lose, among them talking nonsense and repeating yourself. Tibetan monastic debate still runs on these Indian manuals.",
+            "body": "Nyaya sorts argument into kinds. Vada is debate for the truth, where losing teaches you something. Jalpa is debate to win. Vitanda is pure demolition, with no thesis of your own to defend. The texts list twenty-two ways to lose, among them talking nonsense and repeating yourself. Tibetan monastic debate still runs on the Indian Buddhist logic that grew up arguing with Nyaya.",
             "art": "dialog"
           },
           {
@@ -26792,7 +26792,7 @@ window.COURSES_FULL = [
           {
             "type": "quote",
             "text": "In the happiness of the subjects lies the happiness of the king, and in what is beneficial to the subjects his own benefit.",
-            "by": "Arthashastra 1.19.34, translated by R. P. Kangle"
+            "by": "Arthashastra 1.19.34"
           },
           {
             "type": "truefalse",
@@ -27996,7 +27996,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Three Patterns, Then a Fourth",
-            "body": "Ainsworth's 1978 scheme sorted babies as secure, avoidant or resistant; in low-risk North American samples roughly six in ten come out secure. Mary Main and Judith Solomon added a fourth in 1990 — disorganised — for babies whose reunion behaviour has no strategy at all, approaching and freezing at once.",
+            "body": "Ainsworth's 1978 scheme sorted babies as secure, avoidant or resistant; in low-risk North American samples roughly six in ten come out secure. Mary Main and Judith Solomon added a fourth in 1986 — disorganised — for babies whose reunion behaviour has no strategy at all, approaching and freezing at once.",
             "art": "layers"
           },
           {
@@ -28056,7 +28056,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "The Boy Who Studied Molluscs",
-            "body": "Jean Piaget published on molluscs at eleven and drifted into psychology by scoring children's intelligence tests. What caught him was not the right answers but the wrong ones: children of the same age were wrong in the same way. That regularity, he decided, was the data.",
+            "body": "Jean Piaget published his first paper at ten, on an albino sparrow, and had papers on molluscs out by fifteen. He drifted into psychology by scoring children's intelligence tests. What caught him was not the right answers but the wrong ones: children of the same age were wrong in the same way. That regularity, he decided, was the data.",
             "art": "lens"
           },
           {
@@ -28092,7 +28092,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Drawbridge Study",
-            "body": "Renee Baillargeon, 1985: infants watched a screen rotate like a drawbridge. When a box was hidden behind it and the screen swung straight through the space the box should occupy, four-and-a-half-month-olds looked longer. They appeared to expect a hidden object to still be there — months before Piaget's timetable allows.",
+            "body": "Renee Baillargeon, 1987: infants watched a screen rotate like a drawbridge. When a box was hidden behind it and the screen swung straight through the space the box should occupy, four-and-a-half-month-olds looked longer. They appeared to expect a hidden object to still be there — months before Piaget's timetable allows.",
             "art": "bridge"
           },
           {
@@ -28205,7 +28205,7 @@ window.COURSES_FULL = [
             "type": "truefalse",
             "statement": "Every child goes through a sudden vocabulary explosion at around eighteen months.",
             "answer": false,
-            "explain": "The average curve accelerates, but individual curves mostly do not jump. Jennifer Ganger and Michael Brent fitted growth models to individual children in 2004 and found an identifiable spurt in only about a fifth of them. The explosion may be partly an artifact of averaging — a real and unsettled dispute."
+            "explain": "The average curve accelerates, but individual curves mostly do not jump. Jennifer Ganger and Michael Brent fitted growth models to individual children in 2004 and found an identifiable spurt in only 5 of the 38 children they tracked. The explosion may be partly an artifact of averaging — a real and unsettled dispute."
           },
           {
             "type": "concept",
@@ -28364,7 +28364,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Speak to Status, Not to Health",
-            "body": "Christopher Bryan's 2016 study gave eighth graders an expose of food-company marketing aimed at children. Framed as defiance against manipulation rather than as health advice, it shifted their snack choices for months. Adolescent motivation runs on autonomy and standing, and arguments built on those land harder.",
+            "body": "Christopher Bryan's 2016 study gave eighth graders an expose of food-company marketing aimed at children. Framed as defiance against manipulation rather than as health advice, it shifted their snack choices the next day, in an unrelated setting. Adolescent motivation runs on autonomy and standing, and arguments built on those land harder.",
             "art": "target"
           },
           {
@@ -28539,7 +28539,7 @@ window.COURSES_FULL = [
             "type": "intro",
             "title": "Three Hundred and Forty-Two",
             "art": "clock",
-            "body": "In Karel Capek's 1922 play The Makropulos Affair, Elina Makropulos drinks her father's elixir at 42 and stops ageing. Bernard Williams retold the story in a 1973 essay: by his count she is now 342, has worn several identities sharing her initials, and is cold, bored and untouchable. Offered the elixir again, she refuses it and dies."
+            "body": "In Karel Capek's 1922 play The Makropulos Affair, a court physician's elixir stops his daughter Elina ageing. Bernard Williams retold the story in a 1973 essay: by his count she has been 42 for three hundred years, has worn several identities sharing her initials, and is cold, bored and untouchable. Offered the elixir again, she refuses it and dies."
           },
           {
             "type": "concept",
@@ -28820,7 +28820,7 @@ window.COURSES_FULL = [
           {
             "type": "reveal",
             "prompt": "Does moral progress also wait for funerals?",
-            "answer": "Partly. Cohort replacement moves opinion, but the American swing on same-sex marriage, from 27 percent support in Gallup's 1996 poll to over 70 percent by 2021, came substantially from people changing their own minds, not only from older cohorts dying."
+            "answer": "Partly. Cohort replacement moves opinion, but the American swing on same-sex marriage, from 27 percent support in Gallup's 1996 poll to 70 percent by 2021, came substantially from people changing their own minds, not only from older cohorts dying."
           },
           {
             "type": "concept",
@@ -28844,7 +28844,7 @@ window.COURSES_FULL = [
             "type": "concept",
             "title": "Power That Never Turns Over",
             "art": "anchor",
-            "body": "Turnover is not only about ideas. Offices, fortunes, land and reputations pass on largely because their holders die. Pew put the average age of senators in the 118th United States Congress at about 64, and that is with ordinary lifespans. A society whose powerful stayed healthy for 150 years would need new machinery of succession."
+            "body": "Turnover is not only about ideas. Offices, fortunes, land and reputations pass on largely because their holders die. Pew put the median age of senators in the 118th United States Congress at 65, and that is with ordinary lifespans. A society whose powerful stayed healthy for 150 years would need new machinery of succession."
           },
           {
             "type": "concept",
@@ -30302,7 +30302,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Mujō: Nothing Holds Still",
-            "body": "Japanese aesthetics grows out of Buddhist mujō — impermanence, the Sanskrit anicca. Nothing carries a fixed self; everything is midway through becoming something else. The Tale of the Heike, compiled in the 1300s, opens on temple bells sounding the impermanence of all things. That premise sits under every idea in this lesson.",
+            "body": "Japanese aesthetics grows out of Buddhist mujō — impermanence, the Sanskrit anicca. Nothing carries a fixed self; everything is midway through becoming something else. The Tale of the Heike, which took shape in the 1200s, opens on temple bells sounding the impermanence of all things. That premise sits under every idea in this lesson.",
             "art": "wave"
           },
           {
@@ -30472,13 +30472,13 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Ichigo Ichie: One Time, One Meeting",
-            "body": "This gathering, these guests, this light will not recur. The phrase was set down by Ii Naosuke in his 1858 treatise on tea, drawing on a line recorded from Rikyū's teaching a century earlier. It is not a sentiment; it is a working instruction to the host. Treat the occasion as unrepeatable, because it is.",
+            "body": "This gathering, these guests, this light will not recur. The phrase was set down by Ii Naosuke in his 1858 treatise on tea, drawing on a line Rikyū's disciple Yamanoue Sōji had recorded in 1588. It is not a sentiment; it is a working instruction to the host. Treat the occasion as unrepeatable, because it is.",
             "art": "hourglass"
           },
           {
             "type": "example",
             "title": "Ryōan-ji: The Stone You Cannot See",
-            "body": "Fifteen stones sit in five odd-numbered groups on raked gravel in Kyoto. From any seat on the veranda you can count only fourteen; one is always hidden behind another. Nobody knows for certain who made the garden or exactly when — the late 1400s is the usual estimate. Its asymmetry refuses you a finished view.",
+            "body": "Fifteen stones sit in five groups — five, two, three, two, three — on raked gravel in Kyoto. From any seat on the veranda you can count only fourteen; one is always hidden behind another. Nobody knows for certain who made the garden or exactly when — the late 1400s is the usual estimate. Its asymmetry refuses you a finished view.",
             "art": "balance"
           },
           {
@@ -31240,7 +31240,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Attention Is the Gate",
-            "body": "Nothing is stored that you never processed. In 1972 Fergus Craik and Robert Lockhart showed that what you do with a word decides its fate: judge whether it is printed in capitals and you barely remember it; judge whether it fits a sentence and recall climbs sharply. Depth of processing, not effort, does the work.",
+            "body": "Nothing is stored that you never processed. Fergus Craik and Robert Lockhart argued in 1972 that what you do with a word decides its fate, and Craik and Endel Tulving tested it in 1975: judge whether a word is printed in capitals and you barely remember it; judge whether it fits a sentence and recall climbs. Depth of processing, not effort, does the work.",
             "art": "eye"
           },
           {
@@ -31325,7 +31325,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "What is depth of processing?",
-            "back": "Craik and Lockhart, 1972: judging a word's meaning stores it far better than judging its look or sound. Rote repetition is shallow processing."
+            "back": "Craik and Lockhart's 1972 framework, tested by Craik and Tulving in 1975: judging a word's meaning stores it far better than judging its look or sound."
           },
           {
             "front": "What is systems consolidation?",
@@ -31457,7 +31457,7 @@ window.COURSES_FULL = [
           {
             "type": "intro",
             "title": "The War of the Ghosts",
-            "body": "At Cambridge in the 1930s, Frederic Bartlett had English students read a Kathlamet Chinook story recorded by Franz Boas in 1901, then retell it days and months later. The retellings shrank, smoothed and rationalised: canoes became boats, the spirits fell away. The story is coherent on its own terms. What shifted was the students.",
+            "body": "At Cambridge, in work he published in 1932, Frederic Bartlett had English students read a Kathlamet Chinook story recorded by Franz Boas in 1901, then retell it days and months later. The retellings shrank, smoothed and rationalised: canoes became boats, the spirits fell away. The story is coherent on its own terms. What shifted was the students.",
             "art": "book"
           },
           {
@@ -32080,7 +32080,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Code Is Not Random",
-            "body": "Sixty-four codons spell twenty amino acids, and the assignment has a pattern. Codons differing in the third letter usually mean the same amino acid, and codons differing elsewhere usually mean a chemically similar one, so most copying errors do little damage. In 1998 Freeland and Hurst estimated the natural code beats roughly a million random alternatives at limiting error.",
+            "body": "Sixty-four codons spell twenty amino acids, and the assignment has a pattern. Codons differing in the third letter usually mean the same amino acid, and codons differing elsewhere usually mean a chemically similar one, so most copying errors do little damage. In 1998 Freeland and Hurst estimated only about one random code in a million does better at limiting error.",
             "art": "puzzle"
           },
           {
@@ -32131,7 +32131,7 @@ window.COURSES_FULL = [
             "points": [
               "LUCA is the most recent ancestor of all living things, not the first life. It already had a genetic code, a ribosome and membranes.",
               "Reconstructions from shared genes, such as the 355 protein families in a 2016 analysis, suggest an anaerobe, but horizontal gene transfer keeps this contested.",
-              "The genetic code buffers error: similar codons mean similar amino acids, and Freeland and Hurst estimated it beats about a million random codes.",
+              "The genetic code buffers error: similar codons mean similar amino acids, and Freeland and Hurst estimated only about one random code in a million does better.",
               "The code is mostly frozen, not fully. Mitochondria and some microbes read variants, so it can still change.",
               "Origin-of-life work can show a route is possible, never that it is what happened. A second, independent example of life would change everything."
             ]
@@ -32144,7 +32144,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "What does the genetic code's structure suggest?",
-            "back": "It buffers error, since similar codons specify similar amino acids. Freeland and Hurst (1998) put it ahead of a million random codes."
+            "back": "It buffers error, since similar codons specify similar amino acids. Freeland and Hurst (1998) found only about one random code in a million does better."
           },
           {
             "front": "Why can't origin-of-life research prove what happened?",
@@ -32730,7 +32730,7 @@ window.COURSES_FULL = [
           {
             "type": "reveal",
             "prompt": "De Grey's own benchmark is robust mouse rejuvenation. How close is it?",
-            "answer": "It means taking mice two-thirds through life and doubling what remains. Nobody has done it. The best-replicated result is rapamycin, which added 23 to 26 percent to median mouse lifespan in NIA testing: real, and far short. Nothing has been shown to slow human aging at all."
+            "answer": "It means taking mice two-thirds through life and tripling what remains. Nobody has done it. The best-replicated result is rapamycin, which added 23 to 26 percent to median mouse lifespan in NIA testing: real, and far short. Nothing has been shown to slow human aging at all."
           },
           {
             "type": "recap",
@@ -33196,7 +33196,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Superfluous Man",
-            "body": "Turgenev named the type in his 1850 story The Diary of a Superfluous Man: educated, sharp, idle and useless — not lazy by nature, but trained by a society that has no work for him. Goncharov's Oblomov (1859) barely leaves his sofa in Part One; Nikolai Dobrolyubov's essay that year coined oblomovshchina for the condition.",
+            "body": "Turgenev named the type in his 1850 story The Diary of a Superfluous Man: educated, sharp, idle and useless — not lazy by nature, but trained by a society that has no work for him. Goncharov's Oblomov (1859) barely leaves his sofa in Part One; Nikolai Dobrolyubov's essay that year took the novel's own word, oblomovshchina, and made it a diagnosis of a class.",
             "art": "hourglass"
           },
           {
@@ -33437,7 +33437,7 @@ window.COURSES_FULL = [
               "They feuded in print for decades and never reconciled, right up to the end of their lives"
             ],
             "answer": 0,
-            "explain": "Both were religious, both wrote across classes, and they never met or feuded. Isaiah Berlin sharpened the contrast in 1953: Tolstoy was a fox who knew many things and wanted all his life to be a hedgehog who knew one big thing."
+            "explain": "Both were religious, both wrote across classes, and they never met or feuded. Isaiah Berlin's 1953 essay pinned Tolstoy himself: a fox who knew many things and wanted all his life to be a hedgehog who knew one big thing."
           },
           {
             "type": "recap",
@@ -34545,7 +34545,7 @@ window.COURSES_FULL = [
           {
             "type": "reveal",
             "prompt": "Why should two notes a fifth apart sound so settled together, when nobody ever taught you to expect it?",
-            "answer": "Because their overtone stacks overlap. A fifth is a 3-to-2 frequency ratio, so every second overtone of the lower note lands on one belonging to the upper. Fewer clashing partials means less roughness, and your ear reads that as consonance."
+            "answer": "Because their overtone stacks overlap. A fifth is a 3-to-2 frequency ratio, so every third harmonic of the lower note coincides with every second harmonic of the upper. Fewer clashing partials means less roughness, and your ear reads that as consonance."
           },
           {
             "type": "concept",
@@ -35626,7 +35626,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Where, Measured in Microseconds",
-            "body": "Your ears sit about 22 centimetres apart, so a sound from one side reaches the near ear up to roughly 600 microseconds early — and you can use differences down to about ten millionths of a second. Lord Rayleigh's 1907 duplex theory splits the work: timing locates low sounds, loudness shadows locate high ones.",
+            "body": "Your ears sit about 17 centimetres apart, and sound has to bend around your head to reach the far one, so a source off to one side arrives up to roughly 600 microseconds early — and you can use differences down to about ten millionths of a second. Lord Rayleigh's 1907 duplex theory splits the work: timing locates low sounds, loudness shadows locate high ones.",
             "art": "compass"
           },
           {
@@ -35768,7 +35768,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Nail Through the Boot",
-            "body": "A builder jumped down onto a seven-inch nail that went straight through his boot. He arrived at hospital in such agony that he had to be sedated before anyone could touch it. When the boot came off, the nail had passed cleanly between his toes. The foot was untouched. The case ran in the British Medical Journal in 1995.",
+            "body": "A builder jumped down onto a 15-centimetre nail that went straight through his boot. He arrived at hospital in such agony that he had to be sedated before anyone could touch it. When the boot came off, the nail had passed cleanly between his toes. The foot was untouched. The case ran in the British Medical Journal in 1995.",
             "art": "flame"
           },
           {
@@ -35870,7 +35870,7 @@ window.COURSES_FULL = [
           {
             "type": "reveal",
             "prompt": "Why can't you tickle yourself?",
-            "answer": "Your brain predicts the consequences of your own movements and turns down what it expects, so self-touch stays quiet and surprises stand out. Blakemore and colleagues showed in 1998 that routing your own tickling through a robot with a delay makes it ticklish again."
+            "answer": "Your brain predicts the consequences of your own movements and turns down what it expects, so self-touch stays quiet and surprises stand out. Blakemore and colleagues showed in 1999 that routing your own tickling through a robot with a delay makes it ticklish again."
           },
           {
             "type": "concept",
@@ -37606,8 +37606,8 @@ window.COURSES_FULL = [
           },
           {
             "type": "quote",
-            "text": "Writing free verse is like playing tennis with the net down.",
-            "by": "Robert Frost"
+            "text": "I would as soon write free verse as play tennis with the net down.",
+            "by": "Robert Frost, address at Milton Academy, 1935"
           },
           {
             "type": "truefalse",
@@ -38676,7 +38676,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Testing What Strangers Can Hear",
-            "body": "Samuel Mehr and colleagues, publishing in Current Biology in 2018, played thirty-six field recordings drawn from eighty-six mostly small-scale societies to around 750 listeners in sixty countries, and asked what each song was for. Listeners identified dance, lullaby and healing songs at above-chance rates from music entirely unfamiliar to them.",
+            "body": "Samuel Mehr and colleagues, publishing in Current Biology in 2018, played fourteen-second excerpts of 118 field recordings from eighty-six mostly small-scale societies to around 750 listeners in sixty countries, and asked what each song was for. Listeners identified dance, lullaby and healing songs at above-chance rates from music entirely unfamiliar to them.",
             "art": "graph"
           },
           {
@@ -40257,7 +40257,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Older Than Farming Itself",
-            "body": "That is roughly seven thousand years before Stonehenge and six thousand before the pyramids at Giza. The builders had no pottery, no metal, no domesticated crops and no herds. The animal bones are wild gazelle and aurochs; the plant remains are wild grasses. Monumental stone came first, in the hands of hunter-gatherers.",
+            "body": "That is roughly seven thousand years before either Stonehenge or the pyramids at Giza. The builders had no pottery, no metal, no domesticated crops and no herds. The animal bones are wild gazelle and aurochs; the plant remains are wild grasses. Monumental stone came first, in the hands of hunter-gatherers.",
             "art": "hourglass"
           },
           {
@@ -40531,7 +40531,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Long Ago Person Found",
-            "body": "In August 1999 hunters found a young man's frozen remains in Tatshenshini-Alsek Park, British Columbia. The Champagne and Aishihik First Nations named him Kwäday Dän Ts'ìnchi and co-directed the study. He had died roughly 300 to 550 years earlier. In 2001, by their decision, he was cremated and returned to the glacier.",
+            "body": "In August 1999 hunters found a young man's frozen remains in Tatshenshini-Alsek Park, British Columbia. The Champagne and Aishihik First Nations named him Kwäday Dän Ts'ìnchi and co-directed the study. Radiocarbon dating placed his death within the past few centuries. In 2001, by their decision, he was cremated and returned to the glacier.",
             "art": "shield"
           },
           {
@@ -40854,7 +40854,7 @@ window.COURSES_FULL = [
           },
           {
             "type": "quote",
-            "text": "Well building hath three conditions: firmness, commodity, and delight.",
+            "text": "Well building hath three conditions: commodity, firmness, and delight.",
             "by": "Sir Henry Wotton, The Elements of Architecture (1624), rendering Vitruvius"
           },
           {
@@ -41225,13 +41225,13 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Video That Sold Nothing",
-            "body": "In 2007 Drew Houston could not demo Dropbox without first building the sync engine, so he made a short screencast of what it would do and posted it where technical early adopters gathered. The beta waiting list went from about 5,000 people to 75,000 overnight. The product did not exist yet. The demand did.",
+            "body": "In 2008 Drew Houston had Dropbox running in a closed private beta and no way to show it at scale, so he posted a short screencast of it working where technical early adopters gathered. The beta waiting list went from about 5,000 people to 75,000 overnight. Nobody in that queue could use it yet. The demand was real anyway.",
             "art": "wave"
           },
           {
             "type": "reveal",
             "prompt": "The Dropbox video tested something much narrower than 'do people want this'. What exactly?",
-            "answer": "Whether people who already felt the problem would hand over an email address after seeing the promise. It tested the pitch, the audience and the appetite — not the product. That is why it could run in a weekend instead of a year."
+            "answer": "Whether people who already felt the problem would hand over an email address after seeing the promise. It tested the pitch, the audience and the appetite before anyone outside could use the thing at all. That is why the answer came back in a day rather than a year."
           },
           {
             "type": "concept",
@@ -41297,7 +41297,7 @@ window.COURSES_FULL = [
             "back": "A number, a threshold and a deadline — for example, 15 deposits from 100 pitches within two weeks, or we stop."
           },
           {
-            "front": "What did the 2007 Dropbox video test?",
+            "front": "What did the 2008 Dropbox video test?",
             "back": "Whether people who felt the problem would give an email address for the promise. The waiting list went from about 5,000 to 75,000 overnight."
           },
           {
@@ -42772,7 +42772,7 @@ window.COURSES_FULL = [
             "type": "truefalse",
             "statement": "Edward Jenner invented the idea of giving someone a mild infection to prevent a worse one.",
             "answer": false,
-            "explain": "Variolation - inoculating with material from a mild case of smallpox - was practised in China, India, Africa and the Ottoman Empire long before. Lady Mary Wortley Montagu brought it to England in 1721; that same year in Boston, an enslaved African man named Onesimus described the practice to Cotton Mather. Jenner's step in 1796 was to use cowpox instead, which was far safer."
+            "explain": "Variolation - inoculating with material from a mild smallpox case - was practised in China, India, Africa and the Ottoman Empire long before. Lady Mary Wortley Montagu brought it to England in 1721; Cotton Mather pushed it through Boston that same year, having learned of it from Onesimus, an enslaved African man he held. Jenner's step in 1796 was to use cowpox instead, far safer."
           },
           {
             "type": "concept",
@@ -42899,7 +42899,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "What Still Fails",
-            "body": "In 2019, bacterial resistance was directly responsible for an estimated 1.27 million deaths worldwide and associated with about 5 million more, while few genuinely new antibiotic classes arrive. The WHO estimates roughly 4.5 billion people are not fully covered by essential health services. The revolution is real, and unevenly delivered.",
+            "body": "In 2019, bacterial resistance was directly responsible for an estimated 1.27 million deaths worldwide and played a part in about 5 million altogether, while few genuinely new antibiotic classes arrive. The WHO estimates roughly 4.5 billion people are not fully covered by essential health services. The revolution is real, and unevenly delivered.",
             "art": "mountain"
           },
           {
@@ -42977,7 +42977,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Illness Scripts",
-            "body": "Experienced clinicians do not store diseases as textbook lists. They store illness scripts: who tends to get this, what goes wrong inside, and what it looks like from outside. Georges Bordage and Madeleine Lemieux described these in 1991. Recognition is script matching, not recall — which is why experts are fast and hard to interrogate.",
+            "body": "Experienced clinicians do not store diseases as textbook lists. They store illness scripts: who tends to get this, what goes wrong inside, and what it looks like from outside. Paul Feltovich and Howard Barrows named them in 1984. Recognition is script matching, not recall — which is why experts are fast and hard to interrogate.",
             "art": "layers"
           },
           {
@@ -43018,7 +43018,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Semantic Qualifiers",
-            "body": "Bordage also noticed how experts talk. They translate a patient's words into paired opposites: acute or chronic, sudden or gradual, one-sided or both, constant or coming in waves. These semantic qualifiers are the hooks a story hangs on, and students who used them reasoned more accurately than students who repeated the patient's words back.",
+            "body": "Georges Bordage noticed how experts talk. They translate a patient's words into paired opposites: acute or chronic, sudden or gradual, one-sided or both, constant or coming in waves. These semantic qualifiers are the hooks a story hangs on, and students who used them reasoned more accurately than students who repeated the patient's words back.",
             "art": "lens"
           },
           {
@@ -43719,13 +43719,13 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Four Cards on a Table",
-            "body": "Peter Wason's 1966 task: four cards show D, F, 3 and 7, each with a letter on one side and a number on the other. The rule to test is 'if a card has a D on one side, it has a 3 on the other'. Which must you turn over? Fewer than one person in ten picks the correct pair.",
+            "body": "Peter Wason's 1966 task: four cards show D, K, 3 and 7, each with a letter on one side and a number on the other. The rule to test is 'if a card has a D on one side, it has a 3 on the other'. Which must you turn over? Fewer than one person in ten picks the correct pair.",
             "art": "eye"
           },
           {
             "type": "example",
             "title": "The Same Puzzle, in a Bar",
-            "body": "Richard Griggs and James Cox rewrote it in 1982. Four drinkers, one card each, showing beer, cola, 25 and 16. The rule: if you are drinking beer you must be over 18. Check the beer drinker and the sixteen-year-old. Around three-quarters of people manage it — the identical logic that just defeated them.",
+            "body": "Richard Griggs and James Cox rewrote it in 1982. Four drinkers, one card each, showing beer, cola, and two ages — one of them sixteen. The rule: if you are drinking beer you must be over 19. Check the beer drinker and the sixteen-year-old. Around three-quarters of people manage it — the identical logic that just defeated them.",
             "art": "dialog"
           },
           {
@@ -44543,7 +44543,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Risk of Not Flying",
-            "body": "After September 11, 2001, Americans drove instead of flying. Gerd Gigerenzer went through the road statistics and estimated 1,595 additional US traffic deaths in the following twelve months — over half as many again as the attacks killed, and nobody counted them as victims.",
+            "body": "After September 11, 2001, Americans drove instead of flying. Gerd Gigerenzer went through the road statistics and estimated 1,595 additional US traffic deaths in the following twelve months — more than half as many as the attacks themselves killed, and nobody counted them as victims.",
             "art": "path"
           },
           {
@@ -45963,7 +45963,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Mirror Test",
-            "body": "Gordon Gallup's 1970 method: put a mark on an animal where it can only be seen in a mirror, then watch. Touch your own mark and you have shown you know the reflection is you. Great apes pass, and so do bottlenose dolphins, at least one Asian elephant, and magpies. Notice what the test demands: caring how you look, in vision.",
+            "body": "Gordon Gallup's 1970 method: put a mark on an animal where it can only be seen in a mirror, then watch. Touch your own mark and you have shown you know the reflection is you. Chimpanzees, bonobos and orangutans pass, and so do bottlenose dolphins, at least one Asian elephant, and magpies. Notice what the test demands: caring how you look, in vision.",
             "art": "mirror"
           },
           {
@@ -46002,7 +46002,7 @@ window.COURSES_FULL = [
               "Betty bent a hook in 2002; wild crows were found doing it in 2016, so the feat was transfer to new material, not pure invention.",
               "Ravens chose a tool over instant food for a next-day payoff, in tasks deliberately placed outside the caching instinct.",
               "About two thirds of an octopus's 500 million neurons are in its arms, which complicates what one mind even means.",
-              "The mirror test is passed by apes, dolphins, at least one elephant and magpies. Failing it mostly indicts the test.",
+              "The mirror test is passed by chimps, bonobos, orangutans, dolphins, at least one elephant and magpies. Failing it mostly indicts the test.",
               "Elephants wait for a partner on a two-rope task; Shark Bay dolphins run alliances nested three levels deep."
             ]
           }
@@ -46302,7 +46302,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Nobody Can Define Religion",
-            "body": "Define it by belief in gods, as Edward Tylor did in 1871, and you exclude the many Buddhists who venerate no creator. Define it by function — Emile Durkheim's 1912 sacred and profane, binding a community together — and nationalism and football start to qualify. Every definition cuts too much or swallows too much.",
+            "body": "Define it by belief in gods and you exclude the many Buddhists who venerate no creator. Widen it, as Edward Tylor did in 1871, to belief in spiritual beings, and ghosts and horoscopes drift in. Define it by function — Emile Durkheim's 1912 sacred and profane, binding a community together — and nationalism and football qualify. Every definition cuts or swallows too much.",
             "art": "puzzle"
           },
           {
@@ -46330,7 +46330,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "Five Things to Look For",
-            "body": "Ninian Smart's framework gives you handholds. Myth: the stories a tradition tells about origins and endings. Ritual: what people do with their bodies and their calendars. Ethics: the obligations that follow. Experience: what practitioners report feeling. Community: how the group organises and reproduces itself.",
+            "body": "Ninian Smart mapped religion in seven dimensions; five of them will carry you anywhere. Myth: the stories a tradition tells about origins and endings. Ritual: what people do with their bodies and their calendars. Ethics: the obligations that follow. Experience: what practitioners report feeling. Community: how the group organises itself.",
             "art": "layers"
           },
           {
@@ -46379,7 +46379,7 @@ window.COURSES_FULL = [
           },
           {
             "front": "What are the five recurring dimensions?",
-            "back": "Myth, ritual, ethics, experience and community — Ninian Smart's handholds for describing any tradition."
+            "back": "Myth, ritual, ethics, experience and community — five of Ninian Smart's seven dimensions, and handholds for describing any tradition."
           },
           {
             "front": "Emic or etic — which is the insider's view?",
@@ -46677,7 +46677,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Two Trends at Once",
-            "body": "Both things are true. Secularity deepens in rich, ageing societies: a 2020 analysis by Ronald Inglehart found that 43 of 49 countries surveyed became less religious between 2007 and 2019. Meanwhile Pew projects Muslims at about 2.8 billion and Christians at about 3.05 billion by 2060, on fertility and age structure alone.",
+            "body": "Both things are true. Secularity deepens in rich, ageing societies: a 2020 analysis by Ronald Inglehart found that 43 of 49 countries surveyed became less religious between 2007 and 2019. Meanwhile Pew projects Muslims at about 3.0 billion and Christians at about 3.05 billion by 2060, on fertility and age structure alone.",
             "art": "orbit"
           },
           {
@@ -50924,7 +50924,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Exceptional Access Debate",
-            "body": "Governments argue that warrant-proof encryption shelters serious crime and that court-authorised access is a long-standing balance; the FBI named the problem 'going dark' in 2014 and fought Apple over a locked iPhone in 2016. Cryptographers reply that any built-in access path is a new weakness others will find. The balance stays genuinely contested.",
+            "body": "Governments argue that warrant-proof encryption shelters serious crime and that court-authorised access is a long-standing balance; the FBI has pushed the 'going dark' case since around 2010, and fought Apple over a locked iPhone in 2016. Cryptographers reply that any built-in access path is a new weakness others will find. The balance stays genuinely contested.",
             "art": "balance"
           },
           {
@@ -51225,7 +51225,7 @@ window.COURSES_FULL = [
           {
             "type": "concept",
             "title": "The Common Factors",
-            "body": "What the successful therapies share may matter more than what separates them: a trusting working relationship, a believable explanation of the problem, an expectation that things can change, and a therapist who takes the work seriously. Across more than 300 studies, alliance quality tracks outcome at about r = 0.28.",
+            "body": "What the successful therapies share may matter more than what separates them: a trusting working relationship, a believable explanation of the problem, an expectation that things can change, and a therapist who takes the work seriously. Across nearly 300 studies, alliance quality tracks outcome at about r = 0.28.",
             "art": "dialog"
           },
           {
@@ -51389,7 +51389,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Coal Gas Story",
-            "body": "Britain's domestic gas was poisonous with carbon monoxide until North Sea gas replaced it between 1958 and the early 1970s. The commonest method of suicide simply vanished, and the overall suicide rate in England and Wales fell by roughly a third without people substituting other methods at the same scale.",
+            "body": "Britain's domestic gas was rich in carbon monoxide until it was engineered out — first by a change in how gas was made from the late 1950s, then by conversion to North Sea natural gas from 1968. The commonest method of suicide vanished, and the suicide rate in England and Wales fell by roughly a third, with no full substitution.",
             "art": "shield"
           },
           {
@@ -52277,7 +52277,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "The Bomb That Didn't Go Off",
-            "body": "Paul Ehrlich's The Population Bomb, published in 1968, opened by declaring the battle to feed humanity already lost and forecasting hundreds of millions of famine deaths in the 1970s. World population has nearly doubled since. Over the same period the share of people who are undernourished fell from roughly a quarter to under a tenth.",
+            "body": "Paul Ehrlich's The Population Bomb, published in 1968, opened by declaring the battle to feed humanity already lost and forecasting hundreds of millions of famine deaths in the 1970s. World population has more than doubled since. Over the same period the share of people who are undernourished fell from roughly a quarter to under a tenth.",
             "art": "flame"
           },
           {
@@ -52289,7 +52289,7 @@ window.COURSES_FULL = [
             "type": "truefalse",
             "statement": "Ehrlich's forecast failed because population grew far more slowly than he assumed.",
             "answer": false,
-            "explain": "It grew about as fast as he assumed — it nearly doubled. He underestimated food supply. He also bet on it: in 1980 he wagered Julian Simon that five metals would get scarcer and dearer by 1990. All five got cheaper, and Ehrlich mailed a cheque for 576 dollars and 7 cents."
+            "explain": "It grew about as fast as he assumed — it more than doubled. He underestimated food supply. He also bet on it: in 1980 he wagered Julian Simon that five metals would get scarcer and dearer by 1990. All five got cheaper, and Ehrlich mailed a cheque for 576 dollars and 7 cents."
           },
           {
             "type": "concept",
@@ -52911,7 +52911,7 @@ window.COURSES_FULL = [
           {
             "type": "example",
             "title": "Two Thousand Years Later",
-            "body": "The theatre at Epidaurus was cut into a hillside in the fourth century BCE for roughly 14,000 people, and the acoustics still work: an unamplified voice on the floor carries to the top row. Every summer the Athens and Epidaurus Festival stages plays there. The building is a ruin. The room still functions exactly as designed.",
+            "body": "The theatre at Epidaurus was cut into a hillside in the fourth century BCE and later enlarged to hold roughly 14,000 people, and the acoustics still work: an unamplified voice on the floor carries to the top row. Every summer the Athens and Epidaurus Festival stages plays there. The building is a ruin. The room still functions exactly as designed.",
             "art": "anchor"
           },
           {
