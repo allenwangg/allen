@@ -113,6 +113,28 @@ export function factorLever(factor) {
   };
 }
 
+/**
+ * The lever that would test a given driver, if one exists.
+ *
+ * Closes the loop between the two halves of the app: observing that your dairy
+ * days are worse is a hypothesis, and the only honest next step is to vary it
+ * on purpose. Without this the user has to notice the finding, go to Trials,
+ * and re-pick the same two things from scratch — so most people never take the
+ * step that turns a correlation into an answer.
+ *
+ * Returns null for drivers nothing can deliberately change (resting heart
+ * rate, HRV), and for a windowed driver it offers the underlying lever, since
+ * "avoid it for a week" is just avoiding it.
+ */
+export function leverForDriver(driver, factors = []) {
+  const base = driver.startsWith('w7_') ? driver.slice(3) : driver;
+  if (base.startsWith('f_')) {
+    const fac = (factors || []).find((f) => f.id === base && !f.archivedAt);
+    return fac ? factorLever(fac) : null;
+  }
+  return LEVERS.find((l) => l.field === base) || null;
+}
+
 /** All levers available to this user: the built-ins plus their own factors. */
 export function leversFor(factors = []) {
   return [...LEVERS, ...(factors || []).filter((f) => f && !f.archivedAt).map(factorLever)];

@@ -82,7 +82,7 @@ It is just not the first one, and it says nothing about whether you are well.
 
 ## Verification
 
-`npm test` runs 134 checks over this model, including:
+`npm test` runs 135 checks over this model, including:
 
 - score bounds held across 4,000 fuzzed out-of-range inputs
 - monotonicity where it should hold (alcohol strictly hurts) and non-monotonicity

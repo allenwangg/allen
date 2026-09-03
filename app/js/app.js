@@ -360,6 +360,17 @@ const actions = {
 
   'print-report': () => window.print(),
 
+  // Carry a finding straight into a pre-filled trial.
+  'test-finding': (el) => {
+    state.trialDraft = {
+      ...state.trialDraft,
+      leverId: el.dataset.lever,
+      outcome: el.dataset.outcome,
+    };
+    go('trials');
+    toast('Pre-filled — check the length and start when you are ready');
+  },
+
   'start-trial': async () => {
     const d = state.trialDraft;
     const outcome = d.outcome || (state.symptoms.find((s) => !s.archivedAt)?.id) || 'energy';

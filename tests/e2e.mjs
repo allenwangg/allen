@@ -832,6 +832,22 @@ console.log("\n--- the example-data tour ---");
   }
   console.log('  includes a symptom explanation and a user factor:', true);
 
+  // Every finding that names something changeable must offer the experiment
+  // that would settle it, pre-filled.
+  const offers = await tp.$$eval('[data-action="test-finding"]',
+    els => els.map(e => ({ lever: e.dataset.lever, outcome: e.dataset.outcome })));
+  if (!offers.length) throw new Error('no finding offers a trial');
+  await tp.click('[data-action="test-finding"]');
+  await show(tp, null);
+  const prefilled = await tp.evaluate(() => ({
+    view: document.querySelector('[aria-current="page"]')?.textContent.trim(),
+    lever: document.getElementById('trial-lever')?.value,
+  }));
+  if (prefilled.view !== 'Trials' || prefilled.lever !== offers[0].lever) {
+    throw new Error('"Test this properly" did not pre-fill the trial: ' + JSON.stringify(prefilled));
+  }
+  console.log('  a finding carries straight into a pre-filled trial:', prefilled.lever);
+
   const facRows = await tp.evaluate(async () => {
     const { store } = await import('./js/store.js');
     return ((await store.getMeta('factors')) || []).length;

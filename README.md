@@ -16,7 +16,7 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 134 unit tests + the copy guard, no dependencies
+npm test          # 135 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run stamp-sw  # before deploying — see below
 ```
@@ -39,7 +39,11 @@ No build step. The app is ES modules served as they are.
   change — including one of your own factors, as "avoid it" versus "carry on" —
   pre-register what you are measuring, and get an exact randomisation test at
   the end. This is the only part of the app that can support the sentence
-  "this helped".
+  "this helped". Every finding that names something you can deliberately change
+  offers the trial that would settle it, pre-filled.
+- **Notices what builds up.** Some things do not act in a day. Trailing weekly
+  averages catch a symptom that follows a bad *week* — sleep debt, accumulated
+  stress — which single-day correlation cannot see at all.
 - **Knows when to send you elsewhere.** Conservative flags for patterns worth
   raising with a doctor — never a diagnosis, never reassurance.
 - **Prints for an appointment.** Chief complaint and timeline first, then
@@ -71,7 +75,7 @@ app/
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  134 unit tests, a copy guard, a browser walkthrough
+tests/                  135 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.

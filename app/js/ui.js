@@ -9,7 +9,7 @@
 
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
-import { leversFor, getLever, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 
@@ -477,6 +477,19 @@ function insightCard(f, state) {
     <div class="insight-body">
       <div>
         <div class="insight-text">${esc(f.text)}</div>
+        ${(() => {
+          // A correlation is a hypothesis. Offer the experiment that would
+          // settle it, pre-filled, rather than making the user rebuild it.
+          const lever = leverForDriver(f.driver, state.factors);
+          if (!lever) return '';
+          return `<p style="margin:0 0 10px">
+            <button class="btn btn-sm" data-action="test-finding"
+              data-lever="${esc(lever.id)}" data-outcome="${esc(f.outcome)}">
+              Test this properly
+            </button>
+            <span class="subtle" style="margin-left:8px">${esc(lever.label.toLowerCase())}, decided by coin toss</span>
+          </p>`;
+        })()}
         <div class="insight-stats">
           <span title="Spearman rank correlation">r = ${f.r}</span>
           <span title="95% confidence interval">CI [${f.ci ? f.ci.join(', ') : '--'}]</span>

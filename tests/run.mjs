@@ -8,7 +8,7 @@ import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
-import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
+import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
@@ -1325,6 +1325,26 @@ t('missing days block a verdict rather than shrinking the test', () => {
   eq(analyze(trial, sparse).status, 'inconclusive');
   eq(verdict(trial, sparse).kind, 'inconclusive');
 });
+t('a finding offers the experiment that would settle it', () => {
+  // A correlation is a hypothesis; the trial is the only thing that can answer
+  // it. Without this mapping the user has to notice the finding, go to Trials
+  // and rebuild the same two choices by hand.
+  const facs = validateFactors([{ label: 'Dairy' }]);
+  eq(leverForDriver('alcoholUnits', facs)?.id, 'no-alcohol');
+  eq(leverForDriver('caffeineAfter2pm', facs)?.id, 'no-late-caffeine');
+  // A windowed driver offers the same lever — avoiding it for a week is just
+  // avoiding it.
+  eq(leverForDriver('w7_alcoholUnits', facs)?.id, 'no-alcohol');
+  eq(leverForDriver(facs[0].id, facs)?.field, facs[0].id);
+  eq(leverForDriver('w7_' + facs[0].id, facs)?.field, facs[0].id);
+  // Nothing you can deliberately change: no offer, rather than a fake one.
+  eq(leverForDriver('restingHR', facs), null);
+  eq(leverForDriver('hrv', facs), null);
+  eq(leverForDriver('sleepHours', facs), null, 'you set a bedtime, not a duration');
+  // A factor that has been removed must not resurrect a lever.
+  eq(leverForDriver(facs[0].id, []), null);
+});
+
 t('a trial is not finished until its last day is past', () => {
   // It used to be declared finished ON the final day, revealing and offering
   // to save a verdict computed before that day was logged — the exact peeking
