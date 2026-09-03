@@ -10,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -873,7 +873,8 @@ t('an empty result always states how blind the test was', () => {
   for (const n of [40, 90, 120, 200]) {
     const note = sensitivityNote(n);
     ok(note && note.length > 40, 'must say something concrete at ' + n);
-    ok(/miss|strong|would not appear|sharper/i.test(note), 'must describe the limits: ' + note);
+    ok(/strong|would not appear|clean bill/i.test(note), 'must describe the limits: ' + note);
+    ok(/\d/.test(note), 'must give a number, not a vibe: ' + note);
     ok(!/no effect|you are fine|nothing wrong|rules out/i.test(note), 'must not read as a clean bill: ' + note);
   }
   ok(sensitivityNote(90) !== sensitivityNote(200), 'the claim must scale with how much data there is');
@@ -1525,6 +1526,68 @@ t('logging bias is one-sided and corrected across symptoms', () => {
   ok(out.every((b) => b.pAdjusted >= b.p), 'correction can only raise a p-value');
   ok(out.every((b) => b.diff > 0), 'only under-logged BAD days are worth flagging');
   eq(loggingBiasChecks(es, []).length, 0);
+});
+
+t('the power curve never claims more than was measured', () => {
+  const { days, weak, moderate, strong } = POWER_CURVE;
+  for (const [name, ys] of [['weak', weak], ['moderate', moderate], ['strong', strong]]) {
+    eq(ys.length, days.length, `${name} has the wrong number of points`);
+    for (let i = 1; i < ys.length; i++) {
+      ok(ys[i] >= ys[i - 1], `${name} recall falls off between ${days[i - 1]} and ${days[i]} days`);
+    }
+    ok(ys.every((y) => y >= 0 && y <= 1), `${name} has a probability outside [0,1]`);
+  }
+  // A bigger effect is never harder to find than a smaller one.
+  for (let i = 0; i < days.length; i++) {
+    ok(strong[i] >= moderate[i] && moderate[i] >= weak[i], `effect sizes are out of order at ${days[i]} days`);
+  }
+});
+
+t('detectionChance interpolates and never extrapolates upward', () => {
+  for (let i = 0; i < POWER_CURVE.days.length; i++) {
+    near(detectionChance(POWER_CURVE.days[i], 'moderate'), POWER_CURVE.moderate[i], 1e-9);
+  }
+  const mid = detectionChance(105, 'moderate');
+  ok(mid > POWER_CURVE.moderate[1] && mid < POWER_CURVE.moderate[2], 'should sit between the measured points');
+  eq(detectionChance(0, 'strong'), 0, 'no days, no chance');
+  // Beyond the longest measured log, hold the last measurement — never grow it.
+  eq(detectionChance(5000, 'moderate'), POWER_CURVE.moderate[POWER_CURVE.moderate.length - 1]);
+  eq(detectionChance(90, 'nonsense'), null);
+});
+
+t('daysForChance answers with a length that actually delivers it', () => {
+  for (const target of [0.3, 0.5, 0.7, 0.9]) {
+    const need = daysForChance('moderate', target);
+    ok(need != null, `no answer for ${target}`);
+    ok(detectionChance(need, 'moderate') >= target - 1e-9,
+      `${need} days does not actually reach ${target}`);
+  }
+  // A weak driver never reaches 9-in-10 anywhere on the measured curve, and
+  // inventing a number there would be the whole point of this missed.
+  eq(daysForChance('weak', 0.9), null);
+});
+
+t('the sensitivity note is honest at short lengths', () => {
+  // The wording this replaced said only a strong driver "would reliably show
+  // up" at 60 days. Measured, that is 2 times in 10.
+  const short = sensitivityNote(60);
+  ok(!/reliably/i.test(short), 'must not call a 2-in-10 chance reliable: ' + short);
+  ok(/essentially never|1 time in 10/.test(short), 'must be blunt about a moderate driver: ' + short);
+  ok(/clean bill of health/.test(short), 'must not be read as an all-clear');
+  // Every length gives a target to walk towards, until the curve runs out.
+  for (const n of [30, 60, 90, 120, 150, 180, 240]) {
+    ok(/Another \d+ days/.test(sensitivityNote(n)), `no milestone offered at ${n} days`);
+  }
+  ok(!/Another \d+ days/.test(sensitivityNote(300)), 'must not invent a milestone past the curve');
+});
+
+t('chancePhrase never rounds a near-miss up to a certainty', () => {
+  eq(chancePhrase(1), 'almost every time');
+  eq(chancePhrase(0.96), 'about 9 times in 10');
+  eq(chancePhrase(0.02), 'essentially never');
+  eq(chancePhrase(0.1), 'about 1 time in 10');
+  eq(chancePhrase(0.5), 'about 5 times in 10');
+  ok(!/always|certain|guarantee/i.test([0, 0.3, 0.6, 0.9, 1].map(chancePhrase).join(' ')));
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

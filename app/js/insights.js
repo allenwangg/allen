@@ -1096,14 +1096,95 @@ export function phrase(f, symptoms = [], factors = []) {
  * causes the app cannot see — which is most of medicine. The sentence returned
  * here goes wherever an empty result is shown.
  */
+/**
+ * Measured recall of THIS engine, as a function of how many days are logged.
+ *
+ * Every number here was produced by running the real discover() over 50
+ * synthetic logs per cell: a full set of sixteen habit fields plus one symptom,
+ * with a single next-day effect of `beta` standard deviations planted from late
+ * caffeine onto the symptom, and a finding counted only when it named that
+ * driver and that outcome. See docs/INSIGHTS.md.
+ *
+ * WHY IT IS WORTH THE TROUBLE. The wording this replaced was written from
+ * intuition and was wrong in the direction that does harm: it told someone with
+ * 60 days that "only a strong day-to-day driver would reliably show up", when
+ * a strong driver is found 20% of the time at that length. Read alongside
+ * "nothing held up", that invites the conclusion that there is no strong
+ * driver — wrong four times in five.
+ *
+ * These are simulations, not a guarantee about any particular person's data.
+ * They are a fair description of what this engine does to logs of this shape,
+ * which is a great deal better than a confident sentence backed by nothing.
+ */
+export const POWER_CURVE = {
+  days:     [60, 90, 120, 150, 180, 240, 300],
+  weak:     [0.00, 0.00, 0.02, 0.06, 0.10, 0.14, 0.20],
+  moderate: [0.02, 0.12, 0.32, 0.46, 0.74, 0.84, 0.96],
+  strong:   [0.20, 0.54, 0.86, 0.96, 1.00, 1.00, 1.00],
+};
+
+/** Interpolated chance this engine finds an effect of `size` at `days`. */
+export function detectionChance(days, size = 'moderate') {
+  const ys = POWER_CURVE[size];
+  if (!ys || !Number.isFinite(days)) return null;
+  const xs = POWER_CURVE.days;
+  if (days <= xs[0]) return ys[0] * (days / xs[0]);   // nothing is detectable at zero days
+  if (days >= xs[xs.length - 1]) return ys[ys.length - 1];
+  for (let i = 1; i < xs.length; i++) {
+    if (days <= xs[i]) {
+      const f = (days - xs[i - 1]) / (xs[i] - xs[i - 1]);
+      return ys[i - 1] + f * (ys[i] - ys[i - 1]);
+    }
+  }
+  return ys[ys.length - 1];
+}
+
+/** Fewest logged days at which `size` is found at least `target` of the time. */
+export function daysForChance(size, target) {
+  const xs = POWER_CURVE.days, ys = POWER_CURVE[size];
+  if (!ys) return null;
+  if (ys[ys.length - 1] < target) return null;        // not reachable on this curve
+  for (let i = 0; i < xs.length; i++) {
+    if (ys[i] >= target) {
+      if (i === 0) return xs[0];
+      const f = (target - ys[i - 1]) / (ys[i] - ys[i - 1]);
+      return Math.ceil(xs[i - 1] + f * (xs[i] - xs[i - 1]));
+    }
+  }
+  return null;
+}
+
+/** Plain-English odds. Never rounds 0.96 up to a certainty. */
+export function chancePhrase(p) {
+  if (p >= 0.97) return 'almost every time';
+  if (p >= 0.85) return 'about 9 times in 10';
+  if (p < 0.05) return 'essentially never';
+  if (p < 0.15) return 'about 1 time in 10';
+  return `about ${Math.round(p * 10)} times in 10`;
+}
+
+/**
+ * What "nothing held up" is actually worth at this much history — in numbers,
+ * and with the next milestone, so that "keep logging" has a finish line.
+ */
 export function sensitivityNote(loggedDays) {
-  if (loggedDays >= 180) {
-    return 'With this much history a strong day-to-day driver would almost certainly have shown up, and a moderate one would be found about half the time. A weaker pattern, or a cause this app cannot see, would not appear at all.';
+  const n = Math.max(0, Math.floor(loggedDays || 0));
+  const strong = detectionChance(n, 'strong');
+  const moderate = detectionChance(n, 'moderate');
+  const head = `On simulated logs of this shape, ${n} days catches a strong day-to-day driver `
+    + `${chancePhrase(strong)} and a moderate one ${chancePhrase(moderate)}.`;
+  const tail = 'Nothing holding up is mostly a statement about how much history there is, '
+    + 'not a clean bill of health.';
+
+  // The next length worth walking towards. A milestone a fortnight away is not
+  // news, so skip to the one after it.
+  for (const [target, words] of [[0.5, 'half the time'], [0.7, '7 times in 10'], [0.9, '9 times in 10']]) {
+    if (moderate >= target) continue;
+    const need = daysForChance('moderate', target);
+    if (!need || need - n < 14) continue;
+    return `${head} Another ${need - n} days would take a moderate one to ${words}. ${tail}`;
   }
-  if (loggedDays >= 120) {
-    return 'With this much history a strong day-to-day driver would almost certainly have shown up, but a moderate one would be missed more often than not. Keep logging and this gets sharper.';
-  }
-  return 'At this length only a strong day-to-day driver would reliably show up — a moderate one is missed roughly nine times in ten. This is a reason to keep logging, not a clean bill of health.';
+  return `${head} A weaker driver, or a cause this app cannot see at all, still would not appear. ${tail}`;
 }
 
 

@@ -407,3 +407,54 @@ The wording says what the gaps do to the numbers, notes that a severity rating
 on its own would close it, and stops there. An end-to-end test asserts the card
 appears on both the insights view and the report, and separately that it
 contains none of "should have", "failed to", "you must", "be better".
+
+## "Keep logging" with a number attached
+
+Someone logs for three months, the app reports that nothing held up, and they
+stop. That is the single most likely way this app fails a person — and whether
+stopping was reasonable depends entirely on how much power three months buys,
+which the app used to describe from intuition.
+
+The wording it used was wrong in the direction that does harm. It told someone
+with 60 days that "only a strong day-to-day driver would reliably show up".
+Measured, a strong driver shows up 20% of the time at 60 days. Read next to
+"nothing held up", that invites exactly the wrong conclusion, and it would have
+been wrong four times in five.
+
+`POWER_CURVE` now holds measurements instead. Each cell is 50 synthetic logs
+run through the real `discover()`: sixteen habit fields plus one symptom, a
+single next-day effect of β standard deviations planted from late caffeine onto
+that symptom, and a hit counted only when a surviving finding names that driver
+and that outcome.
+
+| days logged | weak (β=0.25) | moderate (β=0.40) | strong (β=0.60) |
+|---|---|---|---|
+| 60  | 0.00 | 0.02 | 0.20 |
+| 90  | 0.00 | 0.12 | 0.54 |
+| 120 | 0.02 | 0.32 | 0.86 |
+| 150 | 0.06 | 0.46 | 0.96 |
+| 180 | 0.10 | 0.74 | 1.00 |
+| 240 | 0.14 | 0.84 | 1.00 |
+| 300 | 0.20 | 0.96 | 1.00 |
+
+Three things follow from the shape of that table, and all three are now said
+out loud rather than left for the user to infer:
+
+- **Three months is not a null result.** At 90 days a moderate driver is found
+  once in eight attempts. "Nothing held up" at that length is a statement about
+  the length.
+- **The gap between 120 and 180 days is where most of the value is.** Moderate
+  recall goes 0.32 → 0.74 across those two months. That is the single most
+  useful thing to tell someone deciding whether to carry on, so the note names
+  the number of days to the next milestone rather than saying "keep logging".
+- **A weak driver is not reachable.** It tops out at 0.20 even after ten months,
+  so the note never offers a milestone for one. Promising a length that would
+  deliver it would be a lie with a number on it.
+
+`chancePhrase` refuses to round 0.96 up to a certainty, and the interpolation
+holds the last measured value beyond 300 days rather than extrapolating — an
+engine that has never been measured past ten months should not make claims
+about two years. Tests assert the curve is monotone in both days and effect
+size, that `daysForChance` returns a length that genuinely delivers the target,
+that it returns null for the weak curve rather than inventing one, and that the
+note at 60 days does not contain the word "reliably".

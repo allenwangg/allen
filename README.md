@@ -16,7 +16,7 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 141 unit tests + the copy guard, no dependencies
+npm test          # 146 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run stamp-sw  # before deploying — see below
 ```
@@ -83,7 +83,7 @@ app/
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  141 unit tests, a copy guard, a browser walkthrough
+tests/                  146 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.
