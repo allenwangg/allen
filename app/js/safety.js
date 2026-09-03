@@ -175,11 +175,21 @@ export const RULES = [
 ];
 
 /**
- * Evaluate every rule, minus anything the person has already acknowledged
- * recently. Returns at most two flags: a wall of warnings is a wall nobody
- * reads, and the most important one is the one at the top.
+ * Evaluate every rule.
+ *
+ * By default this returns the BANNER list: anything acknowledged recently is
+ * skipped, and at most two are shown, because a wall of warnings is a wall
+ * nobody reads.
+ *
+ * Pass `{ all: true }` for the unfiltered, untruncated set. The report needs
+ * that, and reading the banner list there was a real bug: tapping "I've seen
+ * this" — the only acknowledgement the card offers, sitting next to a button
+ * labelled "Put it in the report" — silently removed that flag from the
+ * printed handout for thirty days, and with five rules firing the report
+ * showed two of them in declaration order. Acknowledging a message on screen
+ * is not the same act as deciding not to mention it to a doctor.
  */
-export function checkFlags(entries, ctx = {}, today = dateKey()) {
+export function checkFlags(entries, ctx = {}, today = dateKey(), opts = {}) {
   const dismissed = ctx.dismissedFlags || {};
   const out = [];
   for (const rule of RULES) {
@@ -194,7 +204,7 @@ export function checkFlags(entries, ctx = {}, today = dateKey()) {
     const seenAt = typeof record === 'string' ? record : record?.at;
     const seenSeverity = typeof record === 'object' ? record?.severity : null;
 
-    if (seenAt && daysBetween(seenAt, today) < SNOOZE_DAYS) {
+    if (!opts.all && seenAt && daysBetween(seenAt, today) < SNOOZE_DAYS) {
       const worsened = Number.isFinite(seenSeverity) && Number.isFinite(flag.severity)
         && flag.severity >= seenSeverity * REOPEN_ON_WORSENING;
       if (!worsened) continue;
@@ -203,7 +213,7 @@ export function checkFlags(entries, ctx = {}, today = dateKey()) {
     }
     out.push({ ...flag, id, kind: rule.kind || 'general' });
   }
-  return out.slice(0, 2);
+  return opts.all ? out : out.slice(0, 2);
 }
 
 /**

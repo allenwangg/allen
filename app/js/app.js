@@ -51,6 +51,7 @@ const state = {
   trialDraft: { leverId: null, outcome: null, pairs: DEFAULT_PAIRS },
   trialVerdict: null,
   flags: [],
+  reportFlags: [],
   dismissedFlags: {},
   crisis: false,
   // Bumped on every entry mutation. discover() runs the full hypothesis grid
@@ -129,10 +130,12 @@ function recompute() {
   // A running trial only yields a verdict once its last day has passed. Not
   // computing it earlier is the point: a half-run experiment you can peek at
   // is an experiment you will stop when it looks good.
-  state.flags = checkFlags(state.entries, {
-    symptoms: state.symptoms,
-    dismissedFlags: state.dismissedFlags,
-  }, dateKey());
+  const flagCtx = { symptoms: state.symptoms, dismissedFlags: state.dismissedFlags };
+  // Two lists, deliberately. The banner is throttled so it stays readable; the
+  // report is not, because leaving something out of what you hand a doctor is
+  // a decision the user has not made by tapping "I've seen this".
+  state.flags = checkFlags(state.entries, flagCtx, dateKey());
+  state.reportFlags = checkFlags(state.entries, flagCtx, dateKey(), { all: true });
 
   const running = state.trials.find((t) => t.status === 'running');
   state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
@@ -644,21 +647,11 @@ function wire() {
         render();
         return;
       }
-      const ctx = profileCtx();
-      state.draftScore = scoreDay(state.draft, ctx);
-
-  // A running trial only yields a verdict once its last day has passed. Not
-  // computing it earlier is the point: a half-run experiment you can peek at
-  // is an experiment you will stop when it looks good.
-  state.flags = checkFlags(state.entries, {
-    symptoms: state.symptoms,
-    dismissedFlags: state.dismissedFlags,
-  }, dateKey());
-
-  const running = state.trials.find((t) => t.status === 'running');
-  state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
-    ? verdict(running, state.entries, state.factors)
-    : null;
+      // Only the live score. Recomputing flags and trial verdicts on every
+      // keystroke belongs in recompute(), not in a drag handler — an earlier
+      // edit anchored on a line that appears twice and pasted that whole block
+      // in here, so every slider movement was re-running the safety rules.
+      state.draftScore = scoreDay(state.draft, profileCtx());
       updateLiveScore(t);
       return;
     }

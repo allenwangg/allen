@@ -249,6 +249,36 @@ the app cannot see — which is most of medicine. `sensitivityNote()` turns the
 user's actual history length into a sentence saying so, and it is shown
 wherever an empty result appears.
 
+## Effects that build up over a week
+
+Some things do not act in a day. Sleep debt, accumulated stress and a slow
+dietary drift build, and a symptom that follows a bad *week* is invisible to a
+single-day correlation. Measured, for an effect driven by the previous n
+nights of sleep:
+
+| accumulation window | detected (single-day drivers only) | with weekly windows |
+|---|---|---|
+| 1 night | 20/20 | 20/20 |
+| 4 nights | 19/20 | 20/20 |
+| 7 nights | **0/20** | **18/20** |
+| 10 nights | 0/20 | 3/20 |
+
+So the grid also tests trailing seven-day means, for the ten fields where "a
+bad week" is a real thing. Two details keep that honest:
+
+- **A window is never compared against its own outcome.** A window ending on
+  day *d* contains day *d*, so "your stress over the past week" against "your
+  stress today" is partly a variable correlated with itself. That tautology was
+  the only thing leaking when windows were added — 2 of 25 noise datasets, both
+  of exactly that shape. Excluded, the leak returns to 0 of 25.
+- **The bootstrap block length scales with the series' own smoothness.** A
+  block has to outlast the dependence it is breaking, and a seven-day mean is
+  smooth by construction — consecutive values share six of seven terms. Blocks
+  are now sized from the measured lag-1 autocorrelation.
+
+Cost: the grid grows about 44% (372 to 533 hypotheses on a three-symptom log),
+with single-day recall unchanged at 100% and the no-effect leak still 0 of 25.
+
 ## Where correlation stops
 
 Everything above can only ever generate hypotheses. If you want to know whether

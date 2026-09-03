@@ -196,6 +196,26 @@ function seededRandom(seed) {
 export const BLOCK_LENGTH = 7;
 
 /**
+ * Block length chosen from the data rather than fixed.
+ *
+ * A bootstrap block has to be longer than the dependence it is trying to
+ * break, or the surrogates keep the very structure they were meant to destroy
+ * and the null comes out too narrow. Seven days is right for ordinary daily
+ * data with a weekly rhythm, and wrong for a trailing seven-day mean, which is
+ * smooth by construction — consecutive values share six of seven terms.
+ *
+ * Measured: adding windowed drivers with a fixed block length of 7 took the
+ * noise leak from 0 of 25 datasets to 2 of 25. Scaling the block with the
+ * series' own correlation time (roughly 1/(1-rho) for an AR(1)-like series,
+ * with a safety factor) puts it back to zero at no cost in recall.
+ */
+export function blockLengthFor(xs, ys) {
+  const rho = Math.max(Math.abs(lag1Autocorr(xs)), Math.abs(lag1Autocorr(ys)));
+  const correlationTime = 1 / Math.max(0.02, 1 - Math.min(0.98, rho));
+  return Math.max(BLOCK_LENGTH, Math.min(40, Math.ceil(3 * correlationTime)));
+}
+
+/**
  * Moving-block bootstrap surrogate: rebuild a series of the same length by
  * concatenating randomly chosen contiguous blocks (with wraparound).
  *
@@ -555,10 +575,49 @@ export function readField(entry, field) {
   return v === undefined ? null : v;
 }
 
+/**
+ * Trailing-window drivers.
+ *
+ * Some things do not act in a day. Sleep debt, accumulated stress and a slow
+ * dietary shift build up, and a symptom that follows a bad WEEK is invisible to
+ * a single-day correlation. Measured: an effect driven by the previous n nights
+ * of sleep is detected 20/20 at n=1, 19/20 at n=4, and 0/20 from n=7 onward,
+ * because by then one night is too small a share of the sum to correlate.
+ *
+ * A driver written "w7_sleepHours" is the trailing 7-day mean of sleepHours
+ * ending on the pairing day. Windows are only added for fields where
+ * accumulation is physiologically plausible — adding them for everything would
+ * double the hypothesis grid to chase effects nobody has.
+ */
+export const WINDOW_PREFIX = 'w7_';
+export const WINDOW_DAYS = 7;
+
+/** Fields where "a bad week" is a real thing, unlike a one-off measurement. */
+export const WINDOWED_DRIVERS = [
+  'sleepHours', 'sleepQuality', 'stress', 'steps', 'exerciseMinutes',
+  'alcoholUnits', 'ultraProcessed', 'produceServings', 'sunlightMinutes', 'socialMinutes',
+];
+
+/** Trailing mean of `field` over the WINDOW_DAYS ending at `day`, or null. */
+function trailingMean(index, field, day) {
+  let sum = 0, n = 0;
+  for (let k = 0; k < WINDOW_DAYS; k++) {
+    const e = index.byDay.get(day - k);
+    if (!e) continue;
+    const v = readField(e, field);
+    if (v == null) continue;
+    sum += v; n++;
+  }
+  // Require most of the window: a "weekly average" from two days is not one.
+  return n >= Math.ceil(WINDOW_DAYS * 0.6) ? sum / n : null;
+}
+
 export function alignedPairsIndexed(index, driver, outcome, lag) {
   const xs = [], ys = [], times = [], xDows = [], yDows = [];
+  const windowed = driver.startsWith(WINDOW_PREFIX);
+  const baseDriver = windowed ? driver.slice(WINDOW_PREFIX.length) : driver;
   for (const { e, day } of index.rows) {
-    const x = readField(e, driver);
+    const x = windowed ? trailingMean(index, baseDriver, day) : readField(e, baseDriver);
     if (x == null) continue;
     const target = index.byDay.get(day + lag);
     if (!target) continue;
@@ -680,7 +739,11 @@ export function discover(entries, opts = {}) {
   // Without them the app can only answer questions it thought of, which is no
   // use to someone whose actual suspicion is dairy or a warm bedroom.
   const activeFactors = (factors || []).filter((f) => f && f.id && !f.archivedAt);
-  const allDrivers = [...drivers, ...activeFactors.map((f) => f.id)];
+  const windowDrivers = opts.windows === false ? [] : [
+    ...drivers.filter((d) => WINDOWED_DRIVERS.includes(d)),
+    ...activeFactors.map((f) => f.id),
+  ].map((d) => WINDOW_PREFIX + d);
+  const allDrivers = [...drivers, ...activeFactors.map((f) => f.id), ...windowDrivers];
 
   // Outcome groups.
   //
@@ -719,6 +782,17 @@ export function discover(entries, opts = {}) {
     for (const outcome of outcomes) {
       if (driver === outcome) continue;
       for (const lag of lags) {
+        // A trailing window already reaches back seven days; pairing it at a
+        // further lag mostly re-tests the same overlapping data.
+        if (driver.startsWith(WINDOW_PREFIX) && lag > 1) continue;
+        // A window ending on day d CONTAINS day d, so "your stress over the
+        // past week" against "your stress today" is partly a variable
+        // correlated with itself. That is a tautology, not a finding, and it
+        // was the only thing leaking when windows were added: 2 of 25
+        // noise datasets, both w7_stress -> stress.
+        if (driver.startsWith(WINDOW_PREFIX)
+            && driver.slice(WINDOW_PREFIX.length) === outcome
+            && lag <= 0) continue;
         // Same-day self-report pairs are contaminated by shared mood bias:
         // a bad day makes you rate stress high AND mood low in one sitting.
         if (lag === 0 && isSelfReport(driver) && isSelfReport(outcome)) continue;
@@ -929,6 +1003,7 @@ function practicalEffect(c) {
 /** Plain-language rendering. Direction is flipped for lower-is-better fields. */
 /** True for anything where a bigger number is a worse day. */
 export function isLowerBetter(field) {
+  if (field.startsWith(WINDOW_PREFIX)) return isLowerBetter(field.slice(WINDOW_PREFIX.length));
   // Every symptom is lower-is-better by definition: nobody tracks "amount of
   // feeling fine". Omitting this inverted the verdict on every symptom
   // finding, so "more alcohol, more migraine" was reported as working for you.
@@ -943,6 +1018,9 @@ export function isLowerBetter(field) {
 
 /** Display label for a field or a user-defined symptom. */
 export function labelFor(field, symptoms, factors) {
+  if (field.startsWith(WINDOW_PREFIX)) {
+    return `${labelFor(field.slice(WINDOW_PREFIX.length), symptoms, factors)} over the past week`;
+  }
   if (field.startsWith('s_')) {
     const s = (symptoms || []).find((x) => x.id === field);
     return s ? s.label : 'that symptom';

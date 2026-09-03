@@ -614,7 +614,8 @@ export function reportView(state) {
   const primary = symptoms.find((x) => x.primary) || symptoms[0];
   const findings = state.insights?.findings || [];
   const trials = (state.trials || []).filter((t) => t.status === 'complete' && t.result);
-  const flags = state.flags || [];
+  // The unfiltered rule output, not the throttled banner list.
+  const flags = state.reportFlags || [];
 
   const symptomSummary = (sym) => {
     const vals = entries.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);

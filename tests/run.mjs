@@ -1035,6 +1035,33 @@ t('never shows more than two flags at once', () => {
   }, syms);
   ok(checkFlags(es, { symptoms: syms }, '2026-08-30').length <= 2);
 });
+t('the report gets every flag, however many were dismissed', () => {
+  // Tapping "I've seen this" is an acknowledgement, not a decision to leave
+  // something out of what you hand a doctor. The report used to read the
+  // banner list, which is dismissal-filtered and capped at two — so with five
+  // rules firing it showed two, and acknowledging them removed them entirely.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const id = syms[0].id;
+  const es = safetySeries(95, (e, i, n) => {
+    e.bodyweightKg = 90 - (i / n) * 12;
+    e.restingHR = 55 + Math.round((i / n) * 25);
+    e.mood = 1;
+    e.symptoms[id] = i > 60 ? 4 : 1;
+  }, syms);
+  const ctx = { symptoms: syms };
+  const banner = checkFlags(es, ctx, '2026-08-30');
+  const full = checkFlags(es, ctx, '2026-08-30', { all: true });
+  ok(full.length > banner.length, 'the report set must not be truncated');
+  eq(banner.length, 2, 'the banner stays readable');
+
+  // And acknowledging everything must not empty the report.
+  const dismissed = {};
+  for (const f of full) dismissed[f.id] = '2026-08-29';
+  eq(checkFlags(es, { ...ctx, dismissedFlags: dismissed }, '2026-08-30').length, 0, 'banner respects dismissal');
+  eq(checkFlags(es, { ...ctx, dismissedFlags: dismissed }, '2026-08-30', { all: true }).length, full.length,
+     'the report keeps every flag even when all are acknowledged');
+});
+
 t('the notes crisis check is precise, not keyword soup', () => {
   for (const s of ['this headache is killing me', 'my back is murder today',
                    'dead tired', 'ended my workout early', 'I could die of embarrassment']) {
@@ -1116,6 +1143,57 @@ t('a dismissed flag reopens if the situation gets materially worse', () => {
   // Records written before this existed are bare date strings.
   eq(checkFlags(bad, { dismissedFlags: { 'low-mood': '2026-08-25' } }, '2026-08-30').length, 0,
      'legacy acknowledgements must still snooze');
+});
+
+t('a driver that accumulates over a week is found', () => {
+  // Detection of an n-night sleep-debt effect was 20/20 at n=1 and 0/20 from
+  // n=7, because by then one night is too small a share of the sum. Trailing
+  // weekly means close that gap.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const id = syms[0].id;
+  let found = 0;
+  const T = 10;
+  for (let s = 0; s < T; s++) {
+    const es = synth(160, 4000 + s, (e, i, r) => {
+      e.sleepHours = 5.2 + r() * 3.4;
+      e.steps = Math.round(3000 + r() * 8000);
+      e.alcoholUnits = Math.round(r() * 4);
+      e.exerciseMinutes = Math.round(r() * 60);
+      e.caffeineAfter2pm = Math.round(r() * 4) * 50;
+      e.mood = 1 + Math.floor(r() * 5);
+      e.energy = 1 + Math.floor(r() * 5);
+      e.stress = 1 + Math.floor(r() * 5);
+      e.sleepQuality = 1 + Math.floor(r() * 5);
+      e.symptoms = { [id]: 0 };
+    });
+    const rn = mulberry32(s * 3 + 1);
+    for (let i = 7; i < es.length; i++) {
+      let debt = 0;
+      for (let k = 1; k <= 7; k++) debt += Math.max(0, 7.5 - es[i - k].sleepHours);
+      es[i].symptoms[id] = Math.max(0, Math.min(4, Math.round((debt / 7) * 1.7 - 0.6 + (rn() - 0.5) * 1.3)));
+    }
+    const res = discover(es, { symptoms: syms });
+    if (res.findings.some((f) => /sleepHours$/.test(f.driver) && f.outcome === id)) found++;
+  }
+  console.log(`\n  [window] weekly sleep-debt effect found in ${found}/${T} datasets`);
+  ok(found / T >= 0.7, `cumulative effects still missed: ${found}/${T}`);
+});
+t('a weekly window is never compared against its own outcome', () => {
+  // A window ending on day d contains day d, so "stress over the past week"
+  // against "stress today" is a variable correlated with itself. That was the
+  // only thing leaking when windows were introduced.
+  const es = synth(150, 6001, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.stress = 1 + Math.floor(r() * 5);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.energy = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.steps = Math.round(3000 + r() * 8000);
+  });
+  const res = discover(es, { raw: true });
+  const tautology = (res._raw || []).some((c) =>
+    c.driver === 'w7_' + c.outcome && c.lag === 0);
+  ok(!tautology, 'a window was tested against the variable it contains');
 });
 
 /* ================= n-of-1 trials ================= */
