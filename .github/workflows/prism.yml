@@ -66,6 +66,10 @@ jobs:
         continue-on-error: true
         run: node test/perf.mjs
 
-      - name: Single-file build still works
+      # The shareable copy is what gets handed to people, so it is built and then
+      # actually driven over file:// rather than merely produced.
+      - name: Single-file build
         working-directory: prism
-        run: node build.mjs
+        run: |
+          node build.mjs
+          node test/single.mjs

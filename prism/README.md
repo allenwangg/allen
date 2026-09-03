@@ -47,6 +47,7 @@ node audit.mjs --strict  # quiz-design gate: answer position, length cue, true/f
 node test/smoke.mjs      # 25 end-to-end checks (needs playwright-core + Chromium)
 node test/features.mjs   # 24 checks: Today sessions, paths, saved cards, freezes, lazy data
 node test/polish.mjs     # 13 checks: swipe gestures, mastery map, announcements
+node test/single.mjs     # 9 checks: the shareable bundle, driven over file://
 node test/perf.mjs       # timings at full library size (load, search, stats, memory)
 ```
 
