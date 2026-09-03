@@ -14,7 +14,8 @@ const STRIPE_API = (process.env.STRIPE_API_BASE || "https://api.stripe.com") + "
 // Stripe lists newest-first, so truncation drops the OLDEST payments — which would
 // silently understate lifetime totals. We therefore page generously and, if we ever
 // do run out of room, say so (`partial`) rather than publishing a wrong board.
-// Ceiling: 5,000 paid sessions. Past that, add a cached aggregate (Vercel KV or a
+// Ceiling: 5,000 completed sessions (see the status filter below — before it,
+// abandoned carts counted against this, cutting the real ceiling by ~5x). Past that, add a cached aggregate (Vercel KV or a
 // nightly snapshot committed to the repo) and only page back to the snapshot.
 const crypto = require("crypto");
 /* Stable per-session public reference: same input always yields the same id, so
@@ -54,7 +55,10 @@ async function fetchBids(key) {
 
   for (let page = 0; page < MAX_PAGES; page++) {
     if (Date.now() > deadline) { partial = true; break; }
-    const qs = new URLSearchParams({ limit: "100" });
+    // Without this every abandoned cart burns a slot in the window below: a
+    // Payment Link creates a Checkout Session on load, so at a 20% conversion
+    // rate four in five rows fetched were carts that never paid.
+    const qs = new URLSearchParams({ limit: "100", status: "complete" });
     // Needed to see refunds and disputes: neither changes payment_status, so
     // without the charge a refunded bid would hold its rank forever.
     qs.append("expand[]", "data.payment_intent.latest_charge");

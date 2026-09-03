@@ -883,6 +883,80 @@ await test("Watch Mode keeps keyboard focus inside the overlay", async () => {
   assert(restored.inertCleared, "the page behind was left inert after Watch Mode closed");
 });
 
+await test("a live board reconstructs its Hall of Fame from the ledger", async () => {
+  // rollover() only engraves a day if a browser happens to be open across
+  // midnight, and goLive() clears the hall — so every new visitor to a live
+  // board saw no history at all, forever, while the ledger held every past day.
+  const hctx2 = await browser.newContext();
+  const hp2 = await hctx2.newPage();
+  await hp2.goto(url + "?nosim", { waitUntil: "networkidle" });
+  await hp2.waitForTimeout(400);
+  const shape = await hp2.evaluate(async () => {
+    const DAY = 86400;
+    const now = Math.floor(Date.now() / 1000);
+    const twoAgo = now - 2 * DAY, oneAgo = now - DAY;
+    CONFIG.BOARD_FEED_URL = "stub://hall";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      // Two days ago: Alpha outspends Beta.
+      { id: "h_a1", ref: encodeRef("Alpha", "a.io", ""), amount: 300, at: twoAgo },
+      { id: "h_b1", ref: encodeRef("Beta", "b.io", ""), amount: 100, at: twoAgo },
+      // Yesterday: Beta takes it back, across two payments.
+      { id: "h_b2", ref: encodeRef("Beta", "b.io", ""), amount: 400, at: oneAgo },
+      { id: "h_a2", ref: encodeRef("Alpha", "a.io", ""), amount: 250, at: oneAgo },
+      // Today is still being fought over and must not be engraved yet.
+      { id: "h_c1", ref: encodeRef("Gamma", "g.io", ""), amount: 900, at: now },
+    ] }) });
+    await mergeBoardFeed();
+    return { hall: (state.hall || []).map(h => `${h.date}:${h.name}:${h.amount}`),
+             today: new Date(now * 1000).toISOString().slice(0, 10) };
+  });
+  await hctx2.close();
+  assert(shape.hall.length === 2,
+    `expected the two finished days engraved, got ${shape.hall.length}: ${shape.hall}`);
+  assert(/:Beta:400$/.test(shape.hall[0]),
+    `yesterday's king should be Beta at $400, got ${shape.hall[0]}`);
+  assert(/:Alpha:300$/.test(shape.hall[1]),
+    `the day before should be Alpha at $300, got ${shape.hall[1]}`);
+  assert(!shape.hall.some(h => h.startsWith(shape.today)),
+    "today was engraved into the hall before it finished");
+});
+
+await test("a dare link finds its target on a live board, not just the demo one", async () => {
+  // The old handler resolved ?take= against state.entries after a fixed 600ms.
+  // On a live board that races a Stripe fetch, so it matched the demo seed board
+  // and then never retried — history.replaceState had already wiped the param.
+  // The visitor a dare tweet delivered got a blank form and "isn't on the board
+  // any more", which was false. The existing ?take= test passes against the demo
+  // board, so it could not catch this.
+  const tctx = await browser.newContext();
+  const tp = await tctx.newPage();
+  // domcontentloaded, not networkidle: this sandbox's blocked font requests make
+  // networkidle take ~12s, which is not what a real visitor experiences.
+  await tp.goto(url + "?nosim&take=LateArrival", { waitUntil: "domcontentloaded" });
+  const shape = await tp.evaluate(async () => {
+    // The ledger answers only after the 600ms timer would already have fired.
+    CONFIG.BOARD_FEED_URL = "stub://slow";
+    window.fetch = async () => {
+      await new Promise(r => setTimeout(r, 900));
+      return { json: async () => ({ configured: true, bids: [
+        { id: "t1", ref: encodeRef("LateArrival", "late.io", ""), amount: 700,
+          at: Math.floor(Date.now() / 1000) },
+      ] }) };
+    };
+    await mergeBoardFeed();
+    await new Promise(r => setTimeout(r, 80));
+    const target = state.entries.find(e => e.name === "LateArrival");
+    return { open: document.querySelector("#bidModal").open,
+             aimed: !!target && bidTarget === target.id,
+             prefill: document.querySelector("#fAmt").value };
+  });
+  await tctx.close();
+  assert(shape.open, "the dare link should land the visitor inside the bid modal");
+  assert(shape.aimed,
+    "the dare aimed at nothing — the target arrived with the ledger and was never re-resolved");
+  assert(+shape.prefill === 701, `should prefill the price to pass $700, got ${shape.prefill}`);
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -1068,6 +1142,61 @@ await test("a hostile listing name cannot hijack the marketing robot's posts", a
   assert(safeName("x".repeat(400)).length === 30, "names must be hard-capped at 30 chars");
   assert(safeName("ShipFast") === "ShipFast", "an ordinary name must pass through untouched");
   assert(safeName("") === "Anonymous", "an empty name must fall back, not render blank");
+});
+
+await test("a ref survives non-Latin names, and both decoders agree", async () => {
+  // The 200-char cap applied to the ENCODED ref while fields were sliced by code
+  // unit, so any CJK or Cyrillic listing overflowed and the base64 was cut
+  // mid-character. The client threw and showed "Anonymous" while the server
+  // recovered the real name — so a paying customer was Anonymous on the board,
+  // and every corrupted bid pooled into one shared listing.
+  const html = readFileSync(join(root, "index.html"), "utf8");
+  const src = html.match(/function encodeRef[\s\S]*?\n}/)[0] + "\n" +
+              html.match(/function decodeRef[\s\S]*?\n}/)[0];
+  const client = new Function("btoa", "atob", "TextDecoder", src + "; return {encodeRef, decodeRef};")(
+    (x) => Buffer.from(x, "binary").toString("base64"),
+    (x) => Buffer.from(x, "base64").toString("binary"),
+    TextDecoder);
+  const server = require(join(root, "api", "_board.js"));
+
+  const CASES = [
+    ["株式会社アクメコーポレーシ", "acme-tokyo-official-site-example.co.jp",
+     "日本一のサービスを今すぐ体験してください。王座は我らのものだ。", 500],
+    ["Корпорация Акме Лимитед", "acme-corporation-limited-example-domain.ru",
+     "Мы лучшие в России приходите и посмотрите сами", 999],
+    ["🔥🔥🔥 Emoji Co 🔥🔥🔥", "emoji.example.com",
+     "👑👑👑 we hold the crown forever and ever 👑👑👑", 250],
+    ["ShipFast", "shipfast.io", "Come and take it.", 0],
+  ];
+  for (const [name, url2, decree, defend] of CASES) {
+    const ref = client.encodeRef(name, url2, decree, defend);
+    assert(ref.length <= 200, `ref for "${name}" is ${ref.length} chars, over Stripe's cap`);
+    const c = client.decodeRef(ref), sv = server.decodeRef(ref);
+    assert(c.name !== "Anonymous",
+      `"${name}" decoded to Anonymous — a paying customer would vanish from their own board`);
+    assert(c.name === sv.name && c.url === sv.url && c.decree === sv.decree,
+      `client and server disagree for "${name}": ${JSON.stringify(c)} vs ${JSON.stringify(sv)}`);
+  }
+});
+
+await test("the ledger window pages completed sessions, not abandoned carts", async () => {
+  // A Payment Link creates a Checkout Session on load, so without a status
+  // filter every abandoned cart burned a slot in the 5,000-session window —
+  // and Stripe lists newest-first, so what gets evicted is the founding whales.
+  let sawStatus = null;
+  const mock = createServer((req, res) => {
+    sawStatus = new URL(req.url, "http://x").searchParams.get("status");
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ has_more: false, data: [] }));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+  delete require.cache[require.resolve(join(root, "api", "_board.js"))];
+  await require(join(root, "api", "_board.js")).fetchBids("sk_test_x");
+  mock.close();
+  delete process.env.STRIPE_API_BASE;
+  assert(sawStatus === "complete",
+    `the session list must filter to completed sessions, sent status=${sawStatus}`);
 });
 
 await test("public ledger page renders a listing's payments without leaking full session IDs", async () => {

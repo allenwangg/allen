@@ -205,6 +205,14 @@
       "pass": true
     },
     {
+      "name": "a live board reconstructs its Hall of Fame from the ledger",
+      "pass": true
+    },
+    {
+      "name": "a dare link finds its target on a live board, not just the demo one",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -237,18 +245,26 @@
       "pass": true
     },
     {
+      "name": "a ref survives non-Latin names, and both decoders agree",
+      "pass": true
+    },
+    {
+      "name": "the ledger window pages completed sessions, not abandoned carts",
+      "pass": true
+    },
+    {
       "name": "public ledger page renders a listing's payments without leaking full session IDs",
       "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 104,
-    "medianDOMContentLoadedms": 80.4,
-    "medianLoadms": 12466.5,
+    "medianFCPms": 176,
+    "medianDOMContentLoadedms": 135.3,
+    "medianLoadms": 12535.7,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 106067,
-    "gzipBytes": 31834
+    "htmlBytes": 110401,
+    "gzipBytes": 33398
   }
 }
