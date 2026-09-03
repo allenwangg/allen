@@ -10,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -1621,9 +1621,9 @@ t('a yes/no habit is a real driver, at the lag it actually acts on', () => {
 });
 
 t('a yes/no habit logged too rarely is still refused', () => {
-  // The modal-share floor is what makes two distinct values safe. A habit
-  // present on a handful of days out of hundreds is three outliers, not a
-  // variable, however strongly it lines up.
+  // The informative-count floor is what makes two distinct values safe. A
+  // habit present on a handful of days out of hundreds is a few outliers, not
+  // a variable, however strongly it lines up.
   const symptoms = [{ id: 's_a', label: 'Ache', primary: true }];
   const factors = [{ id: 'f_rare', label: 'Rare thing' }];
   const r = mulberry32(3);
@@ -1638,7 +1638,7 @@ t('a yes/no habit logged too rarely is still refused', () => {
   }
   const res = discover(es, { symptoms, factors });
   ok(!res.findings.some((f) => f.driver === 'f_rare'),
-    'a 4%-of-days habit must not be reportable however well it lines up');
+    'an 8-event habit must not be reportable however well it lines up');
 });
 
 t('binary drivers do not leak false positives', () => {
@@ -1662,6 +1662,90 @@ t('binary drivers do not leak false positives', () => {
     if (discover(es, { symptoms, factors }).findings.length) leaked++;
   }
   ok(leaked / R <= 0.15, `binary drivers leak too much noise: ${leaked}/${R}`);
+});
+
+t('an episodic symptom is analysed, not silently dropped', () => {
+  // REGRESSION, and the worst bug of its kind found so far. hasUsableVariance
+  // required 15% of observations away from the modal value and was applied to
+  // OUTCOMES as well as drivers, so migraine on 12% of days — three or four
+  // attacks a month, the textbook episodic presentation — was excluded
+  // entirely. On this exact log the count of relationships tested fell from 36
+  // to 16 and not one of them concerned the migraine, while the report told
+  // the user "nothing found" about their main complaint.
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const factors = [{ id: 'f_dairy', label: 'Dairy' }];
+  const build = (rate) => {
+    const r = mulberry32(5); const es = []; let d = '2026-01-01';
+    for (let i = 0; i < 300; i++) {
+      const e = emptyEntry(d, symptoms);
+      const dairy = r() < 0.35 ? 1 : 0;
+      e.factors = { f_dairy: dairy };
+      e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+      e.stress = 1 + Math.floor(r() * 5);
+      const flare = dairy ? r() < rate * 2.2 : r() < rate * 0.25;
+      e.symptoms = { s_mig: flare ? 2 + Math.floor(r() * 3) : 0 };
+      es.push(e); d = addDays(d, 1);
+    }
+    return es;
+  };
+  for (const rate of [0.12, 0.10, 0.06]) {
+    const res = discover(build(rate), { symptoms, factors });
+    ok(res.findings.some((f) => f.outcome === 's_mig' && f.driver === 'f_dairy'),
+      `an unambiguous trigger must be found at a ${rate * 100}% flare rate`);
+  }
+  // Genuinely too few events to rest anything on.
+  const rare = discover(build(0.03), { symptoms, factors });
+  ok(!rare.findings.some((f) => f.outcome === 's_mig'), 'nine flare days cannot carry a finding');
+});
+
+t('the informative floor is a count, not a proportion', () => {
+  // 12 flare days is 12 flare days whether they sit in 100 days of log or 400.
+  // The second person has a rarer symptom, not a less analysable one.
+  const symptoms = [{ id: 's_a', label: 'Flare', primary: true }];
+  const spaced = (days, events) => {
+    const r = mulberry32(21); const es = []; let d = '2026-01-01';
+    const every = Math.floor(days / events);
+    for (let i = 0; i < days; i++) {
+      const e = emptyEntry(d, symptoms);
+      const flare = i % every === 0 && i / every < events;
+      e.sleepHours = flare ? 4.5 + r() * 0.5 : 7.5 + r() * 0.5;   // a blatant link
+      e.steps = Math.round(5000 + r() * 5000);
+      e.symptoms = { s_a: flare ? 3 : 0 };
+      es.push(e); d = addDays(d, 1);
+    }
+    return es;
+  };
+  eq(MIN_INFORMATIVE, 12);
+  const wide = discover(spaced(400, 14), { symptoms, factors: [] });
+  ok(wide.findings.some((f) => f.outcome === 's_a'),
+    '14 events in 400 days is 3.5% and must still be analysable');
+  const tooFew = discover(spaced(90, 9), { symptoms, factors: [] });
+  ok(!tooFew.findings.some((f) => f.outcome === 's_a'),
+    '9 events is under the floor even at 10% of days');
+});
+
+t('sparse symptoms do not leak false positives', () => {
+  const symptoms = [{ id: 's_a', label: 'Flare', primary: true }, { id: 's_b', label: 'Ache' }];
+  const factors = [{ id: 'f_a', label: 'A' }, { id: 'f_b', label: 'B' }];
+  let leaked = 0;
+  const R = 25;
+  for (let k = 0; k < R; k++) {
+    const r = mulberry32(11000 + k * 7919);
+    const es = []; let d = '2026-01-01';
+    for (let i = 0; i < 200; i++) {
+      const e = emptyEntry(d, symptoms);
+      e.factors = { f_a: r() < 0.3 ? 1 : 0, f_b: Math.floor(r() * 4) };
+      e.strengthSession = r() < 0.4 ? 1 : 0;
+      e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+      e.stress = 1 + Math.floor(r() * 5); e.mood = 1 + Math.floor(r() * 5);
+      e.alcoholUnits = Math.round(r() * 3); e.bedtimeMinutes = Math.round(1290 + r() * 120);
+      e.symptoms = { s_a: r() < 0.10 ? 1 + Math.floor(r() * 4) : 0,
+                     s_b: r() < 0.10 ? 1 + Math.floor(r() * 4) : 0 };
+      es.push(e); d = addDays(d, 1);
+    }
+    if (discover(es, { symptoms, factors }).findings.length) leaked++;
+  }
+  ok(leaked / R <= 0.12, `sparse symptoms leak noise: ${leaked}/${R}`);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

@@ -700,30 +700,59 @@ export function conditionalDeseasonalize(values, dows, minEta2 = DESEASON_MIN_ET
   return { values: fit.residuals, deseasonalized: true, eta2: fit.eta2 };
 }
 
-/** Guard against a "correlation" driven by three outlier days on a flat series. */
+/**
+ * Fewest observations that may sit away from a series' most common value.
+ *
+ * This is a ROBUSTNESS floor, not a validity one, and the distinction was
+ * measured rather than assumed. The permutation null stays calibrated no
+ * matter how sparse the series gets: over 1500 pure-noise datasets per cell at
+ * n=200, P(p<=.05) came out 0.043 / 0.041 / 0.051 / 0.045 / 0.045 at 30% /
+ * 15% / 12% / 6% / 2.5% nonzero — flat, and uniform across the whole p range.
+ * Sparsity does not break the mathematics. What it does is rest a finding on a
+ * handful of days, where one mis-logged entry changes the answer, and twelve is
+ * the point at which that stops being true.
+ */
+export const MIN_INFORMATIVE = 12;
+
+/**
+ * Guard against a "correlation" driven by three outlier days on a flat series.
+ *
+ * WHY THIS IS A COUNT AND NOT A PERCENTAGE. It used to require 15% of
+ * observations away from the modal value, which silently excluded the people
+ * this app exists for. Episodic migraine on 12% of days — three or four
+ * attacks a month, the textbook presentation — fell under the floor, so the
+ * symptom was dropped as an OUTCOME entirely: on a 300-day log where dairy
+ * unambiguously triggered it, the number of relationships tested fell from 36
+ * to 16 and not one of them concerned the migraine. The report then told them
+ * "nothing found" about their main complaint.
+ *
+ * A percentage confuses "rare" with "uninformative". Twelve flare days is
+ * twelve flare days whether they sit in 100 days of log or 400; the second
+ * person has a rarer symptom, not a less analysable one.
+ */
 function hasUsableVariance(values) {
   const uniq = new Set(values);
   // Two distinct values is enough, PROVIDED the minority is well represented —
-  // which is exactly what the modal-share check below enforces. Requiring three
-  // used to be the rule, and it silently excluded every yes/no habit from the
-  // engine: strengthSession, a built-in driver, could never produce a finding
-  // at all, and a user tracking "dairy: yes/no" — the most natural way to track
-  // a suspicion — was never tested against their symptom. The report then said
-  // "nothing found" about a question it had not asked.
+  // which is what the count below enforces. Requiring three used to be the
+  // rule, and it excluded every yes/no habit from the engine: strengthSession,
+  // a built-in driver, could never produce a finding at all, and a user
+  // tracking "dairy: yes/no" — the most natural way to record a suspicion —
+  // was never tested. The report then said "nothing found" about a question it
+  // had not asked.
   //
-  // The windowed driver made it worse than a silent omission. A 7-day trailing
-  // average of a binary habit IS continuous, so it passed, and a same-day dairy
-  // effect came back to the user as "this one builds up over a week".
+  // The windowed drivers turned that silence into a wrong answer. A 7-day
+  // trailing average of a binary habit IS continuous, so it passed the guard
+  // when its own source did not, and a same-day dairy trigger came back to the
+  // user as "this one builds up over a week".
   if (uniq.size < 2) return false;
   const n = values.length;
   const mean = values.reduce((a, b) => a + b, 0) / n;
   const sd = Math.sqrt(values.reduce((a, b) => a + (b - mean) ** 2, 0) / n);
   if (sd === 0) return false;
-  // At least 15% of observations must sit away from the modal value.
   const counts = new Map();
   for (const v of values) counts.set(v, (counts.get(v) || 0) + 1);
   const modal = Math.max(...counts.values());
-  return (n - modal) / n >= 0.15;
+  return n - modal >= MIN_INFORMATIVE;
 }
 
 /* ------------------------------------------------------------------ *

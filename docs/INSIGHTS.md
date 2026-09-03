@@ -501,3 +501,56 @@ This is why "keep logging" and "test it properly" are different advice for
 different problems, and the insights page now says so in as many words. Longer
 logs buy power against a real effect that is currently too small to see. They
 buy nothing whatsoever against a confounded one.
+
+## The floor that excluded the people this app is for
+
+`hasUsableVariance` guards against a "correlation" driven by three outlier days
+on an otherwise flat series. That guard is necessary. The way it was written
+was not: it required 15% of observations to sit away from the modal value, and
+it was applied to outcomes as well as drivers.
+
+Episodic migraine on 12% of days — three or four attacks a month, the textbook
+presentation — sits under that floor. So the symptom was dropped as an outcome
+entirely. On a 300-day synthetic log where dairy unambiguously triggered it,
+the number of relationships tested fell from 36 to 16 and not one of them
+concerned the migraine. The user's main complaint was never analysed, and the
+report's own factor table then said "nothing found".
+
+**A percentage confuses "rare" with "uninformative".** Twelve flare days is
+twelve flare days whether they sit in 100 days of log or 400. The second person
+has a rarer symptom, not a less analysable one.
+
+**Sparsity was never the validity problem it was treated as.** Measured over
+1500 pure-noise datasets per cell at n=200, the permutation null holds flat all
+the way down:
+
+| nonzero days | events | P(p≤.05) | P(p≤.10) | P(p≤.50) |
+|---|---|---|---|---|
+| 30% | 60 | 0.043 | 0.101 | 0.508 |
+| 15% | 30 | 0.041 | 0.101 | 0.526 |
+| 12% | 24 | 0.051 | 0.109 | 0.511 |
+| 6%  | 12 | 0.045 | 0.105 | 0.508 |
+| 2.5% | 6 | 0.045 | 0.098 | 0.507 |
+
+The mathematics does not degrade. What degrades is robustness: a finding
+resting on six days changes if one of them was mis-logged. So the floor is now
+an absolute count — `MIN_INFORMATIVE = 12` observations away from the modal
+value — and it is documented as a robustness floor rather than a statistical
+one, because that is what the measurements say it is.
+
+**The relaxation costs nothing in false positives.** Full engine, 250 pure-noise
+datasets per cell, two symptoms and several binary factors in play:
+
+| log length | flare rate | datasets carrying any finding |
+|---|---|---|
+| 200 days | 30% | 0.000 |
+| 200 days | 15% | 0.000 |
+| 200 days | 10% | 0.004 |
+| 200 days | 6%  | 0.000 |
+| 300 days | 6%  | 0.000 |
+| 365 days | 5%  | 0.000 |
+| 120 days | 15% | 0.000 |
+| 120 days | 11% | 0.004 |
+
+Against an FDR target of 0.10. The old floor was buying nothing and costing the
+app its central purpose for anyone with an episodic condition.
