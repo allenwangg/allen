@@ -562,6 +562,15 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 
 /* ---------------- backup ---------------- */
 
+.loading-lessons { display: grid; place-items: center; gap: 14px; padding: 60px 20px; }
+.spinner {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid var(--line); border-top-color: var(--accent);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+
 /* keyboard shortcut list */
 .keys { margin: 4px 0 0; }
 .key-row { display: flex; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }

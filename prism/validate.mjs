@@ -10,7 +10,7 @@ const src = readFileSync(join(root, 'js/data/courses.js'), 'utf8');
 const sandbox = { window: {} };
 vm.createContext(sandbox);
 vm.runInContext(src, sandbox);
-const courses = sandbox.window.COURSES;
+const courses = sandbox.window.COURSES_FULL || sandbox.window.COURSES;
 
 const ART = new Set(['anchor','atom','balance','bell','book','brain','bridge','camera','cell','clock','coin','column','compass','crown','crystal','dialog','dna','door','eye','feather','flame','flask','fork','funnel','gavel','gear','globe','graph','grid','heart','hourglass','key','ladder','layers','leaf','lens','lightbulb','lock','loop','magnet','map','mask','microscope','mirror','mountain','network','note','orbit','palette','path','pen','pill','puzzle','pyramid','seed','shield','ship','spectrum','target','telescope','tree','wave']);
 const TYPES = new Set(['intro','concept','example','quote','mcq','truefalse','reveal','recap']);

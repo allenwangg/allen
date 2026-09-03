@@ -103,6 +103,45 @@ ok(streakNow>=11, `streak survives the covered gap (${streakNow} days)`);
 // --- narration module present and safe ---
 ok(await page.evaluate(()=>typeof TTS==='object' && typeof TTS.speak==='function'),'narration module loads');
 
+// --- lazy card data ---
+// Browse must work from metadata alone; card text arrives behind it. Hold the
+// big file back and prove both halves of that.
+{
+  const ctx = await b.newContext({viewport:{width:900,height:850}});
+  const p2 = await ctx.newPage();
+  let release; const held = new Promise(r => release = r);
+  let requested = 0;
+  await p2.route('**/js/data/courses.js', async route => { requested++; await held; await route.continue(); });
+  const perr=[]; p2.on('pageerror',e=>perr.push(String(e)));
+  await p2.goto(url,{waitUntil:'domcontentloaded'});
+  await p2.evaluate(()=>Store.markToured());
+  await p2.evaluate(()=>{location.hash='#/'});
+  requested = 0;   // count only this page load; the pre-reload one warmed it too
+  await p2.reload({waitUntil:'domcontentloaded'});
+  await p2.waitForSelector('.cover',{timeout:8000});
+  ok(await p2.locator('.cover').count()>0, 'the library browses with card text still loading');
+  ok(await p2.evaluate(()=>!window.COURSES_FULL), 'card text is genuinely not loaded yet');
+  const meta = await p2.evaluate(()=>{ const c=window.COURSES[0]; return {n:c.lessons[0].n, count:c.cardCount, art:c.lessons[0].art, cards:c.lessons[0].cards.length}; });
+  ok(meta.n>0 && meta.count>0 && !!meta.art && meta.cards===0, `metadata carries counts and art without cards (${meta.n} cards, art ${meta.art})`);
+  const [cid2,lid2] = await p2.evaluate(()=>[COURSES[0].id, COURSES[0].lessons[0].id]);
+  await p2.evaluate(c=>{location.hash='#/course/'+c}, cid2); await p2.waitForSelector('.lesson-row');
+  ok(/\d+ cards · \d+ quizzes/.test(await p2.locator('.lesson-row .lesson-side').first().textContent()||''),
+     'course pages show card and quiz counts from metadata');
+  await p2.evaluate(a=>{location.hash='#/lesson/'+a[0]+'/'+a[1]}, [cid2,lid2]);
+  await p2.waitForSelector('.loading-lessons',{timeout:5000}).catch(()=>{});
+  ok(await p2.locator('.loading-lessons').count()===1, 'opening a lesson before the text arrives shows a loading state');
+  release();
+  await p2.waitForSelector('.card',{timeout:15000});
+  ok(await p2.locator('.card').count()>0, 'the lesson renders once the text arrives');
+  ok(requested===1, `card text is fetched exactly once per page load (${requested})`);
+  await p2.evaluate(()=>{location.hash='#/'});
+  await p2.evaluate(a=>{location.hash='#/lesson/'+a[0]+'/'+a[1]}, [cid2,lid2]);
+  await p2.waitForSelector('.card',{timeout:8000});
+  ok(requested===1, 'a second lesson does not refetch it');
+  ok(perr.length===0, 'no page errors while loading lazily'+(perr.length?': '+perr[0]:''));
+  await ctx.close();
+}
+
 ok(errs.length===0,'no console errors'+(errs.length?': '+errs.slice(0,2).join(' | '):''));
 await b.close(); server.close();
 console.log(fail?`${fail} FAILURE(S)`:'ALL PASS');

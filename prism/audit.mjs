@@ -15,7 +15,7 @@ const root = dirname(fileURLToPath(import.meta.url));
 const sandbox = { window: {} };
 vm.createContext(sandbox);
 vm.runInContext(readFileSync(join(root, 'js/data/courses.js'), 'utf8'), sandbox);
-const courses = sandbox.window.COURSES;
+const courses = sandbox.window.COURSES_FULL || sandbox.window.COURSES;
 const strict = process.argv.includes('--strict');
 
 const mcq = [], tf = [];

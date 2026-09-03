@@ -84,7 +84,7 @@
     if (cardTotal === null) {
       cardTotal = 0;
       for (var i = 0; i < COURSES.length; i++) {
-        for (var j = 0; j < COURSES[i].lessons.length; j++) cardTotal += COURSES[i].lessons[j].cards.length;
+        cardTotal += COURSES[i].cardCount || 0;
       }
     }
     return cardTotal;
@@ -139,7 +139,53 @@
     'turning-points': 'path', 'weather': 'loop', 'western-music-history': 'book',
     'world-in-data': 'graph', 'world-music': 'network', 'writing-well': 'pen'
   };
-  function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].cards[0].art || 'lightbulb'; }
+  function coverArt(c) { return COVER_ART[c.id] || c.lessons[0].art || 'lightbulb'; }
+
+  /* ---------------- data loading ----------------
+     index.js gives every browse view what it needs in ~170 KB. The 3 MB of card
+     text arrives behind first paint, and anything that reads a card waits for it.
+     Lessons are filled in place, so references taken before the load stay valid. */
+  var dataReady = !!window.COURSES_FULL, dataWaiting = null;
+
+  function lessonCardCount(l) { return l.cards.length || l.n || 0; }
+  function lessonArt(l) { return (l.cards[0] && l.cards[0].art) || l.art || 'lightbulb'; }
+
+  function mergeFullData() {
+    var full = window.COURSES_FULL;
+    if (!full) return false;
+    var byId = {};
+    for (var i = 0; i < full.length; i++) byId[full[i].id] = full[i];
+    for (var j = 0; j < COURSES.length; j++) {
+      var src = byId[COURSES[j].id];
+      if (!src) continue;
+      for (var k = 0; k < COURSES[j].lessons.length; k++) {
+        var to = COURSES[j].lessons[k], from = src.lessons[k];
+        if (from) { to.cards = from.cards; to.review = from.review; }
+      }
+    }
+    dataReady = true;
+    return true;
+  }
+
+  /* Run cb once card text is available; loads it on first need. */
+  function withData(cb) {
+    if (dataReady || mergeFullData()) return cb();
+    if (dataWaiting) { dataWaiting.push(cb); return; }
+    dataWaiting = [cb];
+    var s = document.createElement('script');
+    s.src = 'js/data/courses.js';
+    s.onload = function () {
+      mergeFullData();
+      var q = dataWaiting; dataWaiting = null;
+      for (var i = 0; i < q.length; i++) q[i]();
+    };
+    s.onerror = function () {
+      dataWaiting = null;
+      $app.innerHTML = '<div class="empty"><h2>Couldn\u2019t load the lessons</h2>' +
+        '<p>Check your connection and reload.</p></div>';
+    };
+    document.head.appendChild(s);
+  }
 
   /* ---------------- toasts ---------------- */
 
@@ -310,7 +356,7 @@
       var npl = npc && findLesson(npc, np.lessonId);
       if (npl && !Store.lessonRecord(np.courseId, np.lessonId)) {
         cont = { course: npc, lesson: npl.lesson, index: npl.index };
-        resume = { at: np.snap.idx + 1, of: npl.lesson.cards.length };
+        resume = { at: np.snap.idx + 1, of: lessonCardCount(npl.lesson) };
       }
     }
     var last = Store.state.lastLesson;
@@ -382,7 +428,7 @@
     }
     if (cont) {
       h += '<a class="action-card continue-card" style="--ah:' + courseHue(cont.course.id) + '" href="#/lesson/' + esc(cont.course.id) + '/' + esc(cont.lesson.id) + '">' +
-        '<div class="action-art accent">' + Art.svg(cont.lesson.cards[0].art || 'lightbulb') + '</div>' +
+        '<div class="action-art accent">' + Art.svg(lessonArt(cont.lesson)) + '</div>' +
         '<div class="action-body"><h3>' + (resume ? 'Resume' : 'Continue') + ': ' + esc(cont.lesson.title) + '</h3>' +
         '<p>' + esc(cont.course.title) + ' · Lesson ' + (cont.index + 1) + (resume ? ' · card ' + resume.at + '/' + resume.of : '') + '</p></div>' +
         '<span class="go">›</span></a>';
@@ -871,14 +917,14 @@
     for (var i = 0; i < c.lessons.length; i++) {
       var l = c.lessons[i];
       var rec = Store.lessonRecord(c.id, l.id);
-      var quizN = 0;
-      for (var q = 0; q < l.cards.length; q++) if (isInteractive(l.cards[q])) quizN++;
+      var quizN = l.quizzes || 0;
+      if (l.cards.length) { quizN = 0; for (var q = 0; q < l.cards.length; q++) if (isInteractive(l.cards[q])) quizN++; }
       h += '<a class="lesson-row' + (rec ? ' done' : '') + '" href="#/lesson/' + esc(c.id) + '/' + esc(l.id) + '">' +
         '<span class="lesson-n">' + (rec
           ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
           : (i + 1)) + '</span>' +
         '<span class="lesson-txt"><b>' + esc(l.title) + '</b><small>' + esc(l.summary) + '</small></span>' +
-        '<span class="lesson-side">' + (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + l.cards.length + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
+        '<span class="lesson-side">' + (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + lessonCardCount(l) + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
       '</a>';
     }
     h += '</section></main>';
@@ -1914,6 +1960,16 @@
 
   function nav(hash) { location.hash = hash; }
 
+  /* Render cb once card text is here. Only paints a placeholder if the data has
+     not already arrived, which after the first second it almost always has. */
+  function loading(cb) {
+    if (dataReady || window.COURSES_FULL) return withData(cb);
+    $app.innerHTML = '<div class="empty loading-lessons"><div class="spinner" aria-hidden="true"></div>' +
+      '<p>Loading the lessons…</p></div>';
+    announce('Loading the lessons');
+    withData(cb);
+  }
+
   /* An installed app carries its unread count on the home-screen icon, and due
      reviews are exactly that count. No-ops in browsers and tabs that lack it. */
   function syncBadge() {
@@ -1936,16 +1992,17 @@
     for (var mi = 0; mi < modals.length; mi++) modals[mi].remove();
     if (typeof TTS !== 'undefined' && TTS.available()) TTS.stop();
     if (flow && parts[0] !== 'review' && parts[0] !== 'lesson' && parts[0] !== 'practice' && parts[0] !== 'today') flow = null;
+    // views that read card text wait for it; the rest render from metadata now
     if (parts[0] === 'course' && parts[1]) renderCourse(parts[1]);
-    else if (parts[0] === 'lesson' && parts[1] && parts[2]) startLesson(parts[1], parts[2]);
-    else if (parts[0] === 'review') startReview(parts[1] || null);
-    else if (parts[0] === 'practice') startPractice(parts[1] || null);
-    else if (parts[0] === 'today') renderToday();
+    else if (parts[0] === 'lesson' && parts[1] && parts[2]) loading(function () { startLesson(parts[1], parts[2]); });
+    else if (parts[0] === 'review') loading(function () { startReview(parts[1] || null); });
+    else if (parts[0] === 'practice') loading(function () { startPractice(parts[1] || null); });
+    else if (parts[0] === 'today') loading(function () { renderToday(); });
     else if (parts[0] === 'paths') renderPaths();
     else if (parts[0] === 'path' && parts[1]) renderPath(parts[1]);
-    else if (parts[0] === 'saved') renderSaved();
+    else if (parts[0] === 'saved') loading(function () { renderSaved(); });
     else if (parts[0] === 'stats') renderStats();
-    else if (parts[0] === 'search') renderSearch();
+    else if (parts[0] === 'search') loading(function () { renderSearch(); });
     else renderHome();
     syncBadge();
   }
@@ -1980,6 +2037,8 @@
     applyTheme();
     var frozen = Store.applyFreeze();
     route();
+    // warm the card text straight away so opening a lesson never waits on it
+    if (!dataReady) setTimeout(function () { withData(function () {}); }, 0);
     if (frozen) {
       toast('<span class="toast-emoji">🧊</span><span><b>Streak freeze used</b><br>You missed ' + esc(frozen) + ', but your streak survived.</span>');
     }

@@ -17,6 +17,13 @@ html = html.replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, href) =>
 html = html.replace(/<script src="([^"]+)"><\/script>/g, (_, src) =>
   `<script>\n${readFileSync(join(root, src), 'utf8')}\n</script>`);
 
+// The standalone file has no sibling to lazy-load, so the card text is inlined
+// straight after the metadata. app.js sees window.COURSES_FULL already present
+// and merges on first use instead of fetching.
+html = html.replace('<script src="js/data/index.js"></script>', '');
+html = html.replace(/(<script>\s*\/\* Prism — course metadata[\s\S]*?<\/script>)/, (m) =>
+  m + `\n<script>\n${readFileSync(join(root, 'js/data/courses.js'), 'utf8')}\n</script>`);
+
 mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist', 'prism.html'), html);
 console.log(`dist/prism.html written (${(html.length / 1024).toFixed(0)} KB)`);
