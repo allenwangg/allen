@@ -93,6 +93,36 @@ ok(bands.includes('Solid'), `a well-retained lesson reads Solid (${bands.join(',
 ok(bands.includes('Shaky') || bands.includes('Growing'), 'a poorly-retained lesson is not marked Solid');
 ok(bands.filter(b=>b==='Not started').length>=1, 'unstudied lessons read Not started');
 
+// --- input-appropriate hints ---
+// A phone user has nothing to press, so keyboard affordances must not show there.
+{
+  const touch = await b.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  await touch.goto(url,{waitUntil:'domcontentloaded'});
+  await touch.evaluate(()=>Store.markToured());
+  await touch.reload({waitUntil:'domcontentloaded'});
+  await touch.waitForFunction(()=>!!window.COURSES_FULL,null,{timeout:20000});
+  await touch.evaluate(a=>{location.hash='#/lesson/'+a[0]+'/'+a[1]},[cid,lid]);
+  await touch.waitForSelector('.card');
+  for (let i=0;i<8 && !(await touch.locator('.choice').count());i++){ await touch.keyboard.press('Enter'); await touch.waitForTimeout(200); }
+  const hint = await touch.evaluate(()=>{const h=document.querySelector('.hint');return h?h.innerText.trim():''});
+  ok(hint.length>0 && !/key/i.test(hint), `touch devices get a hint with no keyboard reference ("${hint}")`);
+  await touch.close();
+}
+{
+  // the shared page is created hasTouch, so use a genuinely pointer-fine one here
+  const desk = await b.newPage({viewport:{width:1100,height:900}});
+  await desk.goto(url,{waitUntil:'domcontentloaded'});
+  await desk.evaluate(()=>Store.markToured());
+  await desk.reload({waitUntil:'domcontentloaded'});
+  await desk.waitForFunction(()=>!!window.COURSES_FULL,null,{timeout:20000});
+  await desk.evaluate(a=>{location.hash='#/lesson/'+a[0]+'/'+a[1]},[cid,lid]);
+  await desk.waitForSelector('.card');
+  for (let i=0;i<8 && !(await desk.locator('.choice').count());i++){ await desk.keyboard.press('Enter'); await desk.waitForTimeout(200); }
+  const deskHint = await desk.evaluate(()=>{const h=document.querySelector('.hint');return h?h.innerText.trim():''});
+  ok(/key/i.test(deskHint), `a keyboard device still gets the shortcut hint ("${deskHint}")`);
+  await desk.close();
+}
+
 // --- keyboard help ---
 await page.goto(url+'#/'); await page.waitForSelector('.cover');
 await page.keyboard.press('?');

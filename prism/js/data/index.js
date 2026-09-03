@@ -5104,37 +5104,37 @@ window.COURSES = [
  {
   "id": "anthropology",
   "title": "What Anthropology Sees",
-  "tagline": "The discipline that makes the familiar strange.",
+  "tagline": "Making the familiar strange, and taking it seriously.",
   "category": "Anthropology",
-  "description": "How anthropologists learn a way of life from the inside — and what that method has found, cost and got wrong. Fieldwork, gifts, ritual, a colonial inheritance, and the discovery that most of psychology had studied a very unusual slice of humanity.",
-  "cardCount": 52,
+  "description": "How anthropologists learn a way of life from the inside — participant observation, kinship, gift and ritual — and how the discipline reckons with a past entangled in empire. It ends with the WEIRD critique and what it means to take other lives seriously without romanticising them.",
+  "cardCount": 51,
   "lessons": [
    {
     "id": "the-method",
-    "title": "Living There",
-    "summary": "Participant observation, thick description, and the insider-outsider distinction — plus the reliability problem that comes with making one person the instrument.",
-    "n": 13,
-    "quizzes": 5,
+    "title": "The Method",
+    "summary": "Participant observation, thick description, and the emic-etic split — why a year of living somewhere reveals what a survey cannot, and what that costs in reliability.",
+    "n": 12,
+    "quizzes": 4,
     "art": "map",
     "cards": [],
     "review": []
    },
    {
     "id": "kinship-exchange-ritual",
-    "title": "Gifts, Kin and Thresholds",
-    "summary": "Kinship as a rule system rather than biology, Mauss on why gifts bind, the kula and the potlatch, liminality, and why some things feel polluting.",
+    "title": "Kinship, Exchange and Ritual",
+    "summary": "Kinship as a system rather than biology, the obligations hidden inside a gift, the three-part shape of every rite of passage, and why dirt is a matter of category.",
     "n": 13,
-    "quizzes": 5,
+    "quizzes": 4,
     "art": "network",
     "cards": [],
     "review": []
    },
    {
-    "id": "hard-history",
+    "id": "the-hard-history",
     "title": "The Hard History",
-    "summary": "Colonial funding and access, Boas against race science, the Mead-Freeman fight over evidence, repatriation, and ethics rules written after real harm.",
+    "summary": "Colonial patronage, Boas against scientific racism, the unresolved Mead-Freeman fight over Samoa, repatriation, and ethics codes written in the wake of real harm.",
     "n": 13,
-    "quizzes": 5,
+    "quizzes": 4,
     "art": "map",
     "cards": [],
     "review": []
@@ -5142,9 +5142,9 @@ window.COURSES = [
    {
     "id": "anthropology-now",
     "title": "Anthropology Now",
-    "summary": "WEIRD samples, the difference between relativism as a method and as a moral position, and fieldwork on trading floors, in clinics and around machines.",
+    "summary": "The WEIRD samples problem, the difference between relativism as method and as moral position, and ethnographers working inside finance, medicine and technology.",
     "n": 13,
-    "quizzes": 5,
+    "quizzes": 4,
     "art": "graph",
     "cards": [],
     "review": []
@@ -5254,47 +5254,47 @@ window.COURSES = [
  {
   "id": "infinity",
   "title": "The Idea of Infinity",
-  "tagline": "Counting past the end, and what breaks when you do.",
+  "tagline": "Some infinities are bigger than others. Here is how.",
   "category": "Mathematics",
-  "description": "How mathematicians tamed the infinite: pairing instead of counting, Cantor's proof that some infinities are larger than others, limits that made calculus honest, and the two famous results people most often misquote.",
-  "cardCount": 52,
+  "description": "Infinity is not one thing. Follow it from Hilbert's hotel to Cantor's diagonal, through the limits that finally made calculus rigorous, to the two results that mark the outer edge of what proof can reach.",
+  "cardCount": 51,
   "lessons": [
    {
     "id": "counting-past-the-end",
     "title": "Counting Past the End",
-    "summary": "Bijections as the only workable test of size, Hilbert's hotel, and why the even numbers are exactly as numerous as all the counting numbers.",
-    "n": 13,
-    "quizzes": 5,
-    "art": "puzzle",
+    "summary": "Bijections, Hilbert's hotel, and the discovery that half of the counting numbers is exactly as many as all of them.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "key",
     "cards": [],
     "review": []
    },
    {
-    "id": "cantor-diagonal",
-    "title": "Cantor's Diagonal",
-    "summary": "The rationals can be listed, the reals cannot, there is no largest infinity — and one natural question the standard axioms cannot answer.",
+    "id": "cantors-infinities",
+    "title": "Cantor's Infinities",
+    "summary": "The fractions queue up, the reals refuse, and the question of what sits between them turns out to be undecidable by the standard axioms.",
     "n": 13,
     "quizzes": 4,
-    "art": "book",
+    "art": "network",
     "cards": [],
     "review": []
    },
    {
     "id": "infinity-in-calculus",
     "title": "Infinity in Calculus",
-    "summary": "How limits replaced vanishing quantities, why a series with shrinking terms can still run away, and what the mathematics does and does not settle about Zeno.",
+    "summary": "Convergent and divergent series, the limit that replaced the infinitely small, and why Achilles does in fact pass the tortoise.",
     "n": 13,
-    "quizzes": 5,
+    "quizzes": 4,
     "art": "path",
     "cards": [],
     "review": []
    },
    {
-    "id": "paradox-and-limits",
-    "title": "Paradoxes and Limits",
-    "summary": "Banach-Tarski stated accurately, the axiom of choice, and Godel's incompleteness theorems in plain language — including what they do not say.",
+    "id": "paradox-and-proof",
+    "title": "Paradox and Proof",
+    "summary": "Banach-Tarski stated accurately, the optional axiom behind it, and what Gödel's incompleteness theorems do and do not say.",
     "n": 13,
-    "quizzes": 5,
+    "quizzes": 4,
     "art": "puzzle",
     "cards": [],
     "review": []
@@ -5396,6 +5396,106 @@ window.COURSES = [
     "n": 13,
     "quizzes": 4,
     "art": "graph",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "cryptography",
+  "title": "Codes and Secrets",
+  "tagline": "How secrets are kept, and how they get broken.",
+  "category": "Technology",
+  "description": "From a queen executed by her own cipher to the maths guarding your bank login. Learn why clever ciphers fall, what 'unbreakable' actually means, and what a quantum computer would and would not break.",
+  "cardCount": 50,
+  "lessons": [
+   {
+    "id": "ciphers-that-fell",
+    "title": "Ciphers That Fell",
+    "summary": "Substitution, frequency analysis, the Vigenere cipher and Enigma - four schemes their users believed in, and the specific weakness that opened each one.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "key",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "perfect-and-impractical",
+    "title": "Perfect and Impractical",
+    "summary": "The one-time pad is the only cipher ever proved unbreakable - and almost nobody uses it. Why the proof holds, how reuse destroyed it, and why secrecy belongs in the key.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "shield",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "keys-in-the-open",
+    "title": "Keys in the Open",
+    "summary": "How Diffie-Hellman and RSA let strangers agree secrets in public, what factoring has to do with it, and how signatures and certificates turn keys into identity.",
+    "n": 13,
+    "quizzes": 4,
+    "art": "bridge",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "crypto-in-your-pocket",
+    "title": "Crypto in Your Pocket",
+    "summary": "Why passwords are hashed and salted rather than encrypted, what end-to-end encryption does and does not hide, where the access debate stands, and what quantum computers threaten.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "flame",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "mental-health",
+  "title": "Understanding Mental Health",
+  "tagline": "What diagnosis means, what helps, and what to say.",
+  "category": "Health",
+  "description": "A clear-eyed tour of how mental illness is defined, what depression and anxiety actually do, and which treatments the evidence supports. Educational only - it does not replace care from a professional.",
+  "cardCount": 50,
+  "lessons": [
+   {
+    "id": "what-a-diagnosis-is",
+    "title": "What a Diagnosis Is",
+    "summary": "Why psychiatric categories are useful conventions rather than lab results, how the categorical and dimensional views differ, and how common these conditions really are.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "book",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "depression-and-anxiety",
+    "title": "Depression and Anxiety Up Close",
+    "summary": "The symptoms that are not about mood, the chemical-imbalance story told accurately, and what CBT, behavioural activation, exercise and sleep actually do.",
+    "n": 13,
+    "quizzes": 4,
+    "art": "wave",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "what-treatment-can-do",
+    "title": "What Treatment Can Do",
+    "summary": "The common-factors finding and where it frays, what antidepressant trials actually show, the placebo argument, and why the choice between good options belongs to you.",
+    "n": 13,
+    "quizzes": 4,
+    "art": "balance",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "stigma-and-help",
+    "title": "Stigma, Help and What to Say",
+    "summary": "Why people wait years to ask for help, what actually shifts stigma, how to talk to someone struggling, which warning signs matter, and where education stops.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "clock",
     "cards": [],
     "review": []
    }

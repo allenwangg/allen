@@ -571,6 +571,12 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
 
+/* Keyboard affordances are noise on a device without a keyboard: a phone user
+   reading "keys 1-4" has nothing to press. */
+@media (hover: none) and (pointer: coarse) {
+  .key-hint { display: none; }
+}
+
 /* keyboard shortcut list */
 .keys { margin: 4px 0 0; }
 .key-row { display: flex; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }

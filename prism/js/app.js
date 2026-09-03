@@ -1019,14 +1019,14 @@
         inner += '<button class="choice" data-i="' + j + '"><span class="key">' + (j + 1) + '</span>' + esc(card.choices[j]) + '</button>';
       }
       inner += '</div><div class="explain" id="explain" hidden></div>';
-      footer = '<span class="hint">Pick an answer — keys 1–' + card.choices.length + '</span>';
+      footer = '<span class="hint">Pick an answer<span class="key-hint"> — keys 1–' + card.choices.length + '</span></span>';
     } else if (card.type === 'truefalse') {
       inner = '<span class="kicker quiz">True or false?</span><h2 class="prompt">' + esc(card.statement) + '</h2>' +
         '<div class="choices tf">' +
           '<button class="choice" data-tf="true"><span class="key">1</span>True</button>' +
           '<button class="choice" data-tf="false"><span class="key">2</span>False</button>' +
         '</div><div class="explain" id="explain" hidden></div>';
-      footer = '<span class="hint">Keys 1 · 2</span>';
+      footer = '<span class="hint">True or false?<span class="key-hint"> — keys 1 · 2</span></span>';
     } else if (card.type === 'reveal') {
       inner = '<span class="kicker think">Think first</span><h2 class="prompt">' + esc(card.prompt) + '</h2>' +
         '<div class="reveal-slot" id="reveal-slot"><button class="btn ghost" id="btn-reveal">Reveal answer</button></div>';
@@ -1843,7 +1843,7 @@
         '<textarea id="bk-text" class="backup-text" rows="3" placeholder="Paste a backup here, then press Restore" hidden></textarea>' +
       '</details>' +
       '<button class="danger-link" id="set-reset">Reset all progress…</button>' +
-      '<p class="version">Prism — ' + COURSES.length + ' courses, ' + libraryCardCount().toLocaleString() + ' cards, one memory that keeps them.<br>Press <kbd>?</kbd> any time for keyboard shortcuts.</p>' +
+      '<p class="version">Prism — ' + COURSES.length + ' courses, ' + libraryCardCount().toLocaleString() + ' cards, one memory that keeps them.<span class="key-hint"><br>Press <kbd>?</kbd> any time for keyboard shortcuts.</span></p>' +
     '</div>';
     document.body.appendChild(wrap);
     function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }

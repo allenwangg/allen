@@ -11,7 +11,7 @@
    VERSION is stamped from a hash of the shell by ship.mjs, so shipping new
    content automatically invalidates every old cache. */
 
-var VERSION = '8ac464ab0cf1';
+var VERSION = 'e4bfe723f7a1';
 var SHELL_CACHE = 'prism-shell-' + VERSION;
 var FONT_CACHE = 'prism-fonts-v1';
 
