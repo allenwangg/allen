@@ -962,7 +962,7 @@ export function discover(entries, opts = {}) {
       pAdjusted: round4(adjusted[i]),
       ci: correlationCI(c.r, effectiveN(c.xs, c.ys)),
       passesFDR: passing.has(i),
-      effect: effectSize(c.r),
+      effect: effectSize(c.r, attainableR(c.xs, c.ys)),
       practical: practicalEffect({ xs: c.rawXs, ys: c.rawYs }),
       // Carried on the object rather than read from floors[i] in the filter:
       // positional indexing across a map/filter chain silently desyncs the
@@ -1018,8 +1018,17 @@ function isSelfReport(field) {
   return ['mood', 'energy', 'stress', 'sleepQuality'].includes(field);
 }
 
-export function effectSize(r) {
-  const a = Math.abs(r);
+/**
+ * The badge on an insight card.
+ *
+ * Takes the attainable maximum so the label means the same thing for every
+ * shape of variable. Without it the attenuation that bent the reporting floor
+ * bends the wording too: a habit that precedes EVERY one of someone's migraines
+ * scores r = 0.21 against a ceiling of 0.19, and the card called it a SMALL
+ * EFFECT. Relative to what was possible, it is a total one.
+ */
+export function effectSize(r, max = 1) {
+  const a = max > 0 ? Math.abs(r) / max : Math.abs(r);
   if (a >= 0.5) return 'large';
   if (a >= 0.35) return 'moderate';
   if (a >= 0.2) return 'small';
@@ -1060,12 +1069,25 @@ function practicalEffect(c) {
   if (low.length < 5 || high.length < 5) return null;
   const mean = (a) => a.reduce((x, y) => x + y[1], 0) / a.length;
   const meanX = (a) => a.reduce((x, y) => x + y[0], 0) / a.length;
+  const rate = (a) => a.filter((p) => p[1] > 0).length / a.length;
+
+  // For something that simply does not happen on most days, a difference of
+  // means is a poor description of what the person experienced. "On your red
+  // wine days migraine runs 0.31 points higher" is arithmetically true and
+  // almost useless; "migraine turned up on 8% of your red wine days and none
+  // of the rest" is the same fact in the shape of the question they asked.
+  const present = paired.filter((p) => p[1] > 0).length;
+  const episodic = present > 0 && present / n <= 0.35;
+
   return {
     delta: round2(mean(high) - mean(low)),
     lowGroupDriver: round2(meanX(low)),
     highGroupDriver: round2(meanX(high)),
     lowGroupOutcome: round2(mean(low)),
     highGroupOutcome: round2(mean(high)),
+    episodic,
+    lowRate: Math.round(rate(low) * 100),
+    highRate: Math.round(rate(high) * 100),
   };
 }
 
@@ -1142,29 +1164,23 @@ export function phrase(f, symptoms = [], factors = []) {
     verdict = 'This one is costing you.';
   }
 
+  // An episodic symptom is described by how often it turned up, not by how far
+  // a mean shifted. See practicalEffect.
+  const p = f.practical;
+  if (p && p.episodic && f.outcome.startsWith('s_') && p.highRate !== p.lowRate) {
+    const rates = `${oLabel} turned up on ${p.highRate}% of them against ${p.lowRate}% of the rest`;
+    if (windowed) {
+      return `After a week of higher ${dLabel}, ${rates} — this one seems to build up rather than hit the next day. ${verdict}`;
+    }
+    return `On your higher-${dLabel} days, ${rates}, ${when}. ${verdict}`;
+  }
+
   if (windowed) {
     return `After a week of higher ${dLabel}, ${oLabel} runs ${magnitude} ${direction} — this one seems to build up rather than hit the next day. ${verdict}`;
   }
   return `On your higher-${dLabel} days, ${oLabel} runs ${magnitude} ${direction} ${when}. ${verdict}`;
 }
 
-/**
- * What "nothing held up" actually means, in numbers.
- *
- * This is the app's most common output, and presenting it as a settled
- * negative would be the most frequent lie it tells. Measured recall of a
- * genuine planted effect, by history length and true correlation strength:
- *
- *          |r| 0.32     |r| 0.55     |r| 0.71
- *   90d      8%           84%         100%
- *   120d    12%          100%         100%
- *   180d    56%          100%         100%
- *
- * So an empty result rules out a STRONG day-to-day driver among the ones
- * tested. It says very little about a moderate one, and nothing at all about
- * causes the app cannot see — which is most of medicine. The sentence returned
- * here goes wherever an empty result is shown.
- */
 /**
  * Measured recall of THIS engine, as a function of how many days are logged.
  *

@@ -10,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, effectSize, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -1803,6 +1803,67 @@ t('the reporting floor still discards trivia on continuous data', () => {
   }
   const f = discover(es, { symptoms, factors: [] }).findings.find((x) => x.driver === 'sleepHours' && x.outcome === 's_a');
   ok(!f || Math.abs(f.r) >= 0.20, `a trivial continuous link must still be filtered, got r=${f && f.r}`);
+});
+
+t('an episodic symptom is described by how often it happened', () => {
+  // "On your red wine days migraine runs 0.31 points higher" is arithmetically
+  // true and nearly useless to someone who wants to know whether wine is doing
+  // it. The badge was worse: a habit preceding EVERY attack scored r = 0.21
+  // against a ceiling of 0.19 and the card said SMALL EFFECT.
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const factors = [{ id: 'f_x', label: 'Red wine' }];
+  const r = mulberry32(9); const es = []; let d = '2026-01-01';
+  for (let i = 0; i < 330; i++) {
+    const e = emptyEntry(d, symptoms);
+    const ex = r() < 0.6 ? 1 : 0;
+    e.factors = { f_x: ex };
+    e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.symptoms = { s_mig: ex && r() < 0.05 / 0.6 ? 2 + Math.floor(r() * 3) : 0 };
+    es.push(e); d = addDays(d, 1);
+  }
+  const f = discover(es, { symptoms, factors }).findings.find((x) => x.driver === 'f_x');
+  ok(f, 'the trigger must be found at all');
+  eq(f.effect, 'large', 'a trigger that precedes every attack is not a small effect');
+  ok(f.practical.episodic, 'a symptom absent on 95% of days is episodic');
+  eq(f.practical.lowRate, 0, 'no attacks on the other days');
+  ok(f.practical.highRate > 0, 'and some on the exposed ones');
+  const said = phrase(f, symptoms, factors);
+  ok(/turned up on \d+% of them against \d+% of the rest/.test(said), 'wrong shape: ' + said);
+  ok(!/points/.test(said), 'a rate sentence must not also quote a points delta: ' + said);
+  ok(/costing you/.test(said), 'and it must still name the direction: ' + said);
+});
+
+t('a day-to-day symptom keeps the points wording', () => {
+  // The rate framing is for things that mostly do not happen. A symptom
+  // present most days has a meaningful average, and "turned up on 96% of them
+  // against 91% of the rest" would be a worse sentence than the points one.
+  const symptoms = [{ id: 's_ache', label: 'Back ache', primary: true }];
+  const r = mulberry32(23); const es = []; let d = '2026-01-01';
+  for (let i = 0; i < 300; i++) {
+    const e = emptyEntry(d, symptoms);
+    const sleep = 5 + r() * 4;
+    e.sleepHours = sleep; e.steps = Math.round(5000 + r() * 5000);
+    e.symptoms = { s_ache: Math.max(0, Math.min(4, Math.round(3.2 - 0.45 * (sleep - 7) + (r() - 0.5) * 1.1))) };
+    es.push(e); d = addDays(d, 1);
+  }
+  const f = discover(es, { symptoms, factors: [] }).findings.find((x) => x.driver === 'sleepHours');
+  ok(f, 'the link must be found');
+  ok(!f.practical.episodic, 'a symptom present nearly every day is not episodic');
+  ok(/points/.test(phrase(f, symptoms, [])), 'should keep the points wording');
+});
+
+t('effectSize is relative to what was attainable', () => {
+  // Continuous data is unaffected: the maximum is 1, so the thresholds are the
+  // ones they always were.
+  eq(effectSize(0.6), 'large');
+  eq(effectSize(0.4), 'moderate');
+  eq(effectSize(0.25), 'small');
+  eq(effectSize(0.1), 'negligible');
+  // Where ties compress the ceiling, the label follows the ceiling.
+  eq(effectSize(0.19, 0.19), 'large', 'a maxed-out correlation is a large effect');
+  eq(effectSize(0.05, 0.19), 'small');
+  eq(effectSize(0.4, 0), 'moderate', 'a zero ceiling must not divide by zero');
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

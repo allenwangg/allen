@@ -599,3 +599,37 @@ permutation test for most hypotheses; a lower floor means more of them are
 actually tested. Measured: 84 → 100 ms at 200 days, 159 → 197 ms at 365 days.
 This runs inside the memo guard in `recompute()`, so it happens when the log
 changes rather than on every render.
+
+## Describing a thing that mostly does not happen
+
+Fixing the reporting floor for attenuated correlations left the same distortion
+in two places the user actually reads.
+
+**The badge.** `effectSize` thresholded raw `|r|`, so a habit preceding *every
+one* of someone's migraines — r = 0.21 against an attainable ceiling of 0.19 —
+was labelled SMALL EFFECT. It now takes the ceiling, so the label answers the
+same question the floor does: strong relative to how strong it could be. On
+continuous data the ceiling is 1 and every threshold is exactly where it was.
+
+**The sentence.** `practicalEffect` reports a difference of means, which is the
+right description of a symptom you have every day and a poor one for a symptom
+you have four times a month. The card read:
+
+> On your higher-red wine days, migraine runs 0.31 points higher the same day.
+
+Arithmetically true, and nearly useless to someone asking whether wine is doing
+it. Where a symptom is absent on 65% or more of logged days, the same fact is
+now put in the shape of the question:
+
+> On your higher-red wine days, migraine turned up on 10% of them against 0%
+> of the rest, the same day. This one is costing you.
+
+A test asserts the points wording survives for a symptom present nearly every
+day, where "turned up on 96% of them against 91% of the rest" would be the
+worse sentence.
+
+Together with the two floors above, this is the same user rescued at four
+separate points. A yes/no factor was never tested; a 12%-of-days symptom was
+dropped as an outcome; a perfect trigger fell under a floor it could not reach;
+and had it survived all three, it would have been announced as a small effect
+in a sentence about a third of a point.
