@@ -10,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS, binomTailGE } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS, trialOutlook, trialPower, TRIAL_POWER_GRID, MAX_PAIRS as TRIAL_MAX_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, effectSize, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, compareWindows, symptomTrend, TREND_WINDOW, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, effectSize, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -2004,6 +2004,64 @@ t('the exact binomial tail agrees with hand-computed values', () => {
     ok(v <= prev + 1e-12 && v >= 0 && v <= 1, `not monotone or out of range at k=${k}`);
     prev = v;
   }
+});
+
+t('the direction badge is tested, not a coin flip', () => {
+  // REGRESSION, and the most-seen number in the app. The badge was a fixed
+  // 0.3-point threshold on two 14-day halves. Two weeks of an episodic symptom
+  // holds two or three events, so the verdict turned on which side of the split
+  // one attack landed. Measured on symptoms whose true rate never changed: it
+  // claimed a direction 23% of the time at 2 attacks a month, 46% at 5 and 59%
+  // at 10.
+  const mk = (seed, n, early, late) => {
+    const r = mulberry32(seed); const es = [];
+    for (let i = 0; i < n; i++) {
+      es.push({ date: addDays('2026-01-01', i),
+        symptoms: { s_a: r() < (i < n - TREND_WINDOW ? early : late) ? 2 + Math.floor(r() * 3) : 0 } });
+    }
+    return es;
+  };
+  const claims = (t2) => t2 && (t2.direction === 'worse' || t2.direction === 'better');
+
+  for (const perMonth of [2, 10, 25]) {
+    let wrong = 0; const R = 120;
+    for (let k = 0; k < R; k++) {
+      if (claims(symptomTrend(mk(3000 + k * 7919, 60, perMonth / 30, perMonth / 30), 's_a'))) wrong++;
+    }
+    ok(wrong / R <= 0.12, `claims a direction on ${wrong}/${R} unchanged logs at ${perMonth}/month`);
+  }
+  // A real change is still found often enough to be worth showing.
+  let found = 0; const R = 120;
+  for (let k = 0; k < R; k++) {
+    const t2 = symptomTrend(mk(500 + k * 7919, 60, 2 / 30, 10 / 30), 's_a');
+    if (t2 && t2.direction === 'worse') found++;
+  }
+  ok(found / R >= 0.4, `a fivefold rise should usually be caught, got ${found}/${R}`);
+});
+
+t('compareWindows is deterministic, symmetric in naming, and refuses thin data', () => {
+  const r = mulberry32(88);
+  const a = Array.from({ length: 30 }, () => Math.floor(r() * 5));
+  const b = Array.from({ length: 30 }, () => Math.floor(r() * 5));
+  const x = compareWindows(a, b), y = compareWindows(a, b);
+  eq(x.p, y.p, 'a p-value that moves between renders is not a p-value');
+  eq(x.observed, y.observed);
+
+  // Direction follows which window is higher, whatever the labels.
+  const low = new Array(30).fill(0).map((_, i) => (i < 3 ? 2 : 0));
+  const high = new Array(30).fill(0).map((_, i) => (i < 20 ? 3 : 0));
+  eq(compareWindows(low, high).direction, 'worse');
+  eq(compareWindows(high, low).direction, 'better');
+
+  // Identical throughout: a real answer, and not "unclear".
+  eq(compareWindows(new Array(30).fill(0), new Array(30).fill(0)).direction, 'steady');
+
+  eq(compareWindows([1, 2, 3], [1, 2, 3]), null, 'too few days to compare');
+  eq(compareWindows(null, [1, 2, 3]), null);
+  eq(symptomTrend([], 's_a'), null);
+  // Below two full windows plus a margin there is nothing to say.
+  const short = Array.from({ length: TREND_WINDOW + 5 }, (_, i) => ({ date: addDays('2026-01-01', i), symptoms: { s_a: 1 } }));
+  eq(symptomTrend(short, 's_a'), null);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

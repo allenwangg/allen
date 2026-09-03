@@ -10,7 +10,7 @@
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, MAX_PAIRS as TRIAL_MAX_PAIRS, DEFAULT_PAIRS, trialOutlook } from './experiments.js';
-import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
+import { sensitivityNote, labelFor, isLowerBetter, TREND_WINDOW, compareWindows } from './insights.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
@@ -115,13 +115,20 @@ function symptomCard(state, symptoms) {
     const vals = recent.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);
     const all = entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null }));
     const anyDays = vals.filter((v) => v > 0).length;
-    const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
-    const half = Math.floor(vals.length / 2);
-    const shift = vals.length >= 8 ? mean(vals.slice(half)) - mean(vals.slice(0, half)) : null;
-    const dir = shift == null ? null : shift < -0.3 ? 'better' : shift > 0.3 ? 'worse' : 'steady';
+    // Tested, not eyeballed. A fixed 0.3-point threshold on two 14-day halves
+    // claimed a direction on 23-59% of symptoms whose rate never changed at
+    // all — see symptomTrend in insights.js.
+    const trend = state.symptomTrends?.[sym.id] || null;
+    const dir = trend ? trend.direction : null;
+    const dirLabel = dir === 'unclear' ? 'no clear change' : dir;
+    const dirTitle = trend && dir !== 'steady'
+      ? (dir === 'unclear'
+        ? `The last ${TREND_WINDOW} logged days are not different enough from the ${TREND_WINDOW} before them to call it either way (p = ${fmtP(trend.p)}).`
+        : `Compared with the ${TREND_WINDOW} logged days before, tested by shuffling which window each day belongs to (p = ${fmtP(trend.p)}).`)
+      : '';
     return `<div class="card" style="margin:0">
       <div class="card-head"><h3 style="margin:0">${esc(sym.label)}</h3><div class="spacer"></div>
-        ${dir ? `<span class="pill ${dir === 'better' ? 'pill-good' : dir === 'worse' ? 'pill-bad' : 'pill-info'}">${dir}</span>` : ''}</div>
+        ${dir ? `<span class="pill ${dir === 'better' ? 'pill-good' : dir === 'worse' ? 'pill-bad' : 'pill-info'}"${dirTitle ? ` title="${esc(dirTitle)}"` : ''}>${esc(dirLabel)}</span>` : ''}</div>
       <p class="muted" style="margin-bottom:8px">
         ${vals.length ? `Some of it on <strong>${anyDays}</strong> of your last ${vals.length} logged days.`
                       : 'Not logged yet.'}</p>
@@ -672,6 +679,11 @@ export function reportView(state) {
     const firstHalf = vals.slice(0, half), secondHalf = vals.slice(half);
     const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
     const shift = mean(secondHalf) - mean(firstHalf);
+    // Tested rather than eyeballed, and by the same method as the Today badge,
+    // so the app cannot say two different things about one symptom. A fixed
+    // threshold on a difference of means announces a direction for most
+    // episodic symptoms that have not changed at all.
+    const tested = compareWindows(firstHalf, secondHalf);
     // Below a fortnight there are not two halves worth comparing, and the
     // report was telling clinicians a symptom had "got worse" on the strength
     // of a single rated day.
@@ -681,8 +693,11 @@ export function reportView(state) {
       pctAny: Math.round((anyDays / vals.length) * 100),
       pctBad: Math.round((badDays / vals.length) * 100),
       enoughForTrend,
+      tested,
       trend: !enoughForTrend ? 'too early to say'
-        : shift > 0.3 ? 'worse' : shift < -0.3 ? 'better' : 'about the same',
+        : !tested || tested.direction === 'unclear' ? 'no clear change'
+        : tested.direction === 'steady' ? 'no change at all'
+        : tested.direction,
       shift: Math.round(shift * 10) / 10,
       series: entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null })),
     };
@@ -735,8 +750,9 @@ export function reportView(state) {
       <p class="muted">Present on <strong>${main.anyDays} of ${main.logged}</strong> logged days
       (${main.pctAny}%), and severe or worse on <strong>${main.badDays}</strong> of them
       (${main.pctBad}%). ${main.enoughForTrend
-        ? `Over the period it has got <strong>${esc(main.trend)}</strong>${
-            main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale, second half vs first)` : ''}.`
+        ? `Second half of the period against the first: <strong>${esc(main.trend)}</strong>${
+            main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale${
+              main.tested ? `, p = ${main.tested.p < 0.0001 ? '&lt;0.0001' : main.tested.p}` : ''})` : ''}.`
         : `That is too few days to say anything about a direction yet.`}</p>
       ${lineChart(main.series, {
         min: 0, max: 4, yTicks: [0, 1, 2, 3, 4], label: `${main.sym.label} severity over time`,

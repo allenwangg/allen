@@ -734,3 +734,53 @@ from luck.
 **The other five rules were never measured this way either.** They hold up: over
 the same 120 days of daily checks on an ordinary stable person, only `low-mood`
 ever fires, on 0.7% of people, and no other rule cries wolf at all.
+
+## The coin flip on the front page
+
+The pill beside each symptom on the Today screen — `better`, `worse`, `steady` —
+is the most-seen number in the app and the first thing anyone reads about the
+thing they came here for. It was a fixed threshold on a difference of means:
+the last 14 logged days against the 14 before them, `worse` above +0.3 of a
+point and `better` below −0.3.
+
+Two weeks of an episodic symptom contains two or three events. The verdict
+turned on which side of the split one attack happened to fall. Measured over
+1000 simulated people per row, on symptoms whose true rate **never changes**:
+
+| attacks per month | says "better" | says "worse" | claims *some* direction |
+|---|---|---|---|
+| 2 | 0.109 | 0.124 | 0.23 |
+| 5 | 0.201 | 0.256 | 0.46 |
+| 10 | 0.299 | 0.292 | 0.59 |
+| 15 | 0.273 | 0.326 | 0.60 |
+| 25 | 0.254 | 0.289 | 0.54 |
+
+A coin flip in a confident-looking pill, about a person's main health complaint.
+
+`compareWindows` replaces it: 28 logged days against the 28 before them, with a
+permutation test on the difference of means — shuffle which window each day
+belongs to and see how often chance alone produces a gap this size. It assumes
+nothing about the shape of the data, so one test serves a symptom present four
+times a month and one present daily. Where the difference does not survive, the
+badge says **"no clear change"** instead of picking a side.
+
+| attacks per month | claims a direction (unchanged data) |
+|---|---|
+| 2 | 0.008 |
+| 5 | 0.028 |
+| 10 | 0.043 |
+| 15 | 0.035 |
+| 25 | 0.050 |
+
+From 23–59% down to 0.8–5.0%, while a genuine fivefold rise is still caught
+about two thirds of the time on 28 days against 28.
+
+**The report uses the same function**, on its own windows — the second half of
+the whole period against the first — so the app cannot say two different things
+about one symptom by two different methods. It also now prints the p-value
+beside the shift, because "no clear change (−0.1 on a 0–4 scale, p = 0.82)" is
+a fact a clinician can weigh and "about the same" is not.
+
+The two answers can still legitimately differ: one asks about the last month
+against the month before, the other about the whole period split in half. The
+wording says which is which.

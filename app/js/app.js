@@ -8,7 +8,7 @@
 
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
-import { discover, weekdayEffects, loggingBiasChecks, alignedPairs } from './insights.js';
+import { discover, weekdayEffects, loggingBiasChecks, symptomTrend, alignedPairs } from './insights.js';
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
@@ -128,6 +128,12 @@ function recompute() {
     // Whether the log itself is trustworthy is upstream of every finding drawn
     // from it, so it is computed with them and shown above them.
     state.logBias = loggingBiasChecks(state.entries, state.symptoms);
+    // The direction badge on the Today screen. Memoised with the rest because
+    // it runs a permutation test per symptom, and recompute() fires on every
+    // slider drag.
+    state.symptomTrends = Object.fromEntries((state.symptoms || [])
+      .filter((sym) => !sym.archivedAt)
+      .map((sym) => [sym.id, symptomTrend(state.entries, sym.id)]));
     buildPairCache();
     state._insightsRev = state.entriesRev;
     state._insightsSymptoms = symptomsKey;
