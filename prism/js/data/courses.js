@@ -20674,9 +20674,9 @@ window.COURSES_FULL = [
           },
           {
             "type": "truefalse",
-            "statement": "Chinese tradition keeps several creation stories in circulation at once, with no one of them official.",
+            "statement": "Chinese tradition keeps several creation stories in circulation at once, and none of them is the official one.",
             "answer": true,
-            "explain": "Pangu's body becoming the landscape, Nuwa moulding people from yellow earth and mending the sky, and older cosmologies with no maker at all all sit side by side. There was never a single agreed account to be corrupted — Pangu himself is attested only from around the third century CE."
+            "explain": "Pangu's body becoming the landscape, Nuwa moulding people from yellow earth and mending the sky, and older cosmologies with no maker at all sit side by side. There was never one agreed account to be corrupted — Pangu himself is attested only from around the third century CE."
           },
           {
             "type": "concept",
@@ -25512,7 +25512,7 @@ window.COURSES_FULL = [
             "type": "mcq",
             "prompt": "Which of these is closest to what ubuntu actually claims?",
             "choices": [
-              "The group always outranks the individual, whose wishes should give way to what the community wants",
+              "The group always outranks the individual, whose wishes should give way to whatever the community wants",
               "Your personhood is made in relationship: you become fully human through your obligations to others",
               "People are naturally good and will do the right thing as long as nobody interferes with them",
               "Traditional African societies had no concept of an individual self at all, only of the group"
@@ -45388,7 +45388,7 @@ window.COURSES_FULL = [
             "type": "mcq",
             "prompt": "A prison population keeps growing although arrests are falling. What must be true?",
             "choices": [
-              "The arrest figures must be wrong, because both cannot fall at once",
+              "The arrest figures must be wrong, since the population is still rising",
               "Nothing needs explaining, since fewer arrests always shrink the prison population",
               "People are entering faster than they leave, so sentences may be getting longer",
               "The growth must be driven by something outside the prison system"
@@ -46095,7 +46095,7 @@ window.COURSES_FULL = [
             "prompt": "Taking the ape projects together, what does the evidence best support?",
             "choices": [
               "Apes acquire language much as human children do, passing through the same stages and combining signs into sentences",
-              "The projects were fraudulent, and the reported signing was invented by the researchers",
+              "The projects showed nothing at all, since every reported sign turned out to be a trainer's cue",
               "Apes learn symbols and use them to request and label, while evidence for grammar stays weak and contested",
               "Apes can understand spoken sentences perfectly well but cannot produce any symbols themselves"
             ],
@@ -47408,7 +47408,7 @@ window.COURSES_FULL = [
             "prompt": "What makes a lichen a composite organism?",
             "choices": [
               "A fungus housing a photosynthetic partner, and often a yeast as well",
-              "Two unrelated fungi sharing one body and splitting the work",
+              "A fungus and a moss growing pressed together into one crust",
               "A small plant whose leaves have been colonised by a soil fungus",
               "A fungus that has captured chloroplasts and now feeds itself"
             ],
@@ -47466,7 +47466,7 @@ window.COURSES_FULL = [
             "type": "mcq",
             "prompt": "What actually makes a loaf of bread rise?",
             "choices": [
-              "Yeast cells swelling in number as the dough proves",
+              "Yeast cells swelling in size as they multiply",
               "Alcohol from the fermentation boiling into vapour",
               "Carbon dioxide given off by fermenting yeast",
               "Steam from the water in the dough as it bakes"
@@ -47529,9 +47529,9 @@ window.COURSES_FULL = [
           },
           {
             "type": "truefalse",
-            "statement": "Hundreds of essential yeast genes can be swapped for their human versions and the yeast still lives.",
+            "statement": "Replace an essential yeast gene with its human equivalent and, roughly half the time, the yeast lives.",
             "answer": true,
-            "explain": "In a 2015 study led by Aashiq Kachroo, 414 essential yeast genes were replaced one at a time with the human equivalent, and roughly 47 percent of the swaps produced living yeast. A billion years of separation is supposed to leave the parts too alien to interchange, and it does not."
+            "explain": "In a 2015 study led by Aashiq Kachroo, 414 essential yeast genes were each replaced with the human version, and about 47 percent of the swaps produced yeast that lived. A billion years of separation is supposed to leave the parts too alien to interchange, and it does not."
           },
           {
             "type": "recap",

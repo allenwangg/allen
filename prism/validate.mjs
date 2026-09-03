@@ -80,6 +80,25 @@ for (const c of courses || []) {
   }
 }
 
+/* Every course category must belong to exactly one browse filter. A category in
+   no theme leaves its courses reachable only under "All"; a category in two is
+   dead weight, since themeOf() returns the first match. Both are silent in the
+   UI, so they are caught here. */
+const appSrc = readFileSync(join(root, 'js/app.js'), 'utf8');
+const themeSrc = appSrc.match(/var THEMES = \[[\s\S]*?\n  \];/);
+if (!themeSrc) e('could not read THEMES from js/app.js');
+else {
+  const themes = vm.runInNewContext('(' + themeSrc[0].replace('var THEMES = ', '').replace(/;$/, '') + ')');
+  const seen = new Map();
+  for (const t of themes) for (const cat of t.cats) {
+    if (seen.has(cat)) e(`category "${cat}" is in two filters (${seen.get(cat)} and ${t.id}); only the first ever matches`);
+    else seen.set(cat, t.id);
+  }
+  const used = new Set((courses || []).map(c => c.category));
+  for (const cat of used) if (!seen.has(cat)) e(`category "${cat}" is in no browse filter — its courses show only under All`);
+  for (const cat of seen.keys()) if (!used.has(cat)) w(`filter category "${cat}" has no courses`);
+}
+
 const nl = courses ? courses.reduce((n, c) => n + (c.lessons || []).length, 0) : 0;
 const nc = courses ? courses.reduce((n, c) => n + (c.lessons || []).reduce((m, l) => m + (l.cards || []).length, 0), 0) : 0;
 console.log(`${(courses || []).length} courses · ${nl} lessons · ${nc} cards`);

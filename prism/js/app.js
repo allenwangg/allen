@@ -67,7 +67,7 @@
     { id: 'humanities', label: 'Humanities', cats: ['Philosophy', 'History', 'Linguistics', 'Arts & Science', 'Humanities', 'Music', 'Literature'] },
     { id: 'practical', label: 'Practical', cats: ['Communication', 'Health', 'Technology', 'Creativity', 'Design'] },
     { id: 'frontier', label: 'Frontier', cats: ['Longevity', 'Social Science', 'Global Issues'] },
-    { id: 'world', label: 'World', cats: ['Anthropology', 'Literature', 'Society'] }
+    { id: 'world', label: 'World', cats: ['Anthropology', 'Society'] }   // Literature belongs to Humanities; a category in two themes only ever matches the first
   ];
   var activeTheme = 'all';   // resets each load; filtering is a browsing aid, not a setting
 
