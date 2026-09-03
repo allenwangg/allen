@@ -93,6 +93,20 @@ ok(bands.includes('Solid'), `a well-retained lesson reads Solid (${bands.join(',
 ok(bands.includes('Shaky') || bands.includes('Growing'), 'a poorly-retained lesson is not marked Solid');
 ok(bands.filter(b=>b==='Not started').length>=1, 'unstudied lessons read Not started');
 
+// --- stats stays about your progress ---
+// With a hundred-plus courses, listing every one turned "Your progress" into a
+// wall of empty bars. Untouched courses belong behind a disclosure.
+await page.goto(url+'#/stats'); await page.waitForSelector('.badges');
+const visibleBars = await page.locator('.course-bars').first().locator('.course-bar').count();
+const hiddenLabel = await page.locator('.all-courses summary').textContent().catch(()=>'');
+const started = await page.evaluate(()=>window.COURSES.filter(c=>Store.courseProgress(c).done>0).length);
+ok(visibleBars <= Math.max(started,1)+1, `stats lists only courses you have started (${visibleBars} shown of ${await page.evaluate(()=>COURSES.length)})`);
+ok(/\d+ courses/.test(hiddenLabel||''), `the rest sit behind a disclosure ("${(hiddenLabel||'').trim()}")`);
+const collapsed = await page.evaluate(()=>document.documentElement.scrollHeight);
+await page.locator('.all-courses summary').click(); await page.waitForTimeout(220);
+const expanded = await page.evaluate(()=>document.documentElement.scrollHeight);
+ok(expanded > collapsed * 1.5, `expanding it reveals the rest (${collapsed}px -> ${expanded}px)`);
+
 // --- input-appropriate hints ---
 // A phone user has nothing to press, so keyboard affordances must not show there.
 {

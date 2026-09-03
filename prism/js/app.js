@@ -1832,15 +1832,36 @@
     }
     h += '</section>';
 
-    h += '<h2 class="section-title">Courses</h2><section class="course-bars">';
-    for (var k = 0; k < COURSES.length; k++) {
-      var c = COURSES[k], pr2 = Store.courseProgress(c);
-      h += '<a href="#/course/' + esc(c.id) + '" class="course-bar" style="--ah:' + HUES[k % HUES.length] + '">' +
+    /* This page is about your progress, so the courses you have touched come
+       first and the untouched hundred sit behind a disclosure — otherwise the
+       page is mostly empty bars you have to scroll past. */
+    function courseBar(c, k) {
+      var pr2 = Store.courseProgress(c);
+      return '<a href="#/course/' + esc(c.id) + '" class="course-bar" style="--ah:' + HUES[k % HUES.length] + '">' +
         '<span>' + esc(c.title) + '</span>' +
         '<div class="bar"><i style="width:' + (pr2.total ? Math.round(100 * pr2.done / pr2.total) : 0) + '%"></i></div>' +
         '<small>' + pr2.done + '/' + pr2.total + '</small></a>';
     }
-    h += '</section></main>';
+    var started = [], untouched = [];
+    for (var k = 0; k < COURSES.length; k++) {
+      (Store.courseProgress(COURSES[k]).done > 0 ? started : untouched).push({ c: COURSES[k], k: k });
+    }
+    h += '<h2 class="section-title">Courses</h2>';
+    if (started.length) {
+      h += '<section class="course-bars">';
+      for (var s1 = 0; s1 < started.length; s1++) h += courseBar(started[s1].c, started[s1].k);
+      h += '</section>';
+    } else {
+      h += '<p class="stat-note">Finish a lesson and your progress shows up here.</p>';
+    }
+    if (untouched.length) {
+      h += '<details class="all-courses"><summary>' +
+        (started.length ? 'The other ' + untouched.length + ' courses' : 'All ' + untouched.length + ' courses') +
+        '</summary><section class="course-bars">';
+      for (var u = 0; u < untouched.length; u++) h += courseBar(untouched[u].c, untouched[u].k);
+      h += '</section></details>';
+    }
+    h += '</main>';
     $app.innerHTML = h;
     bindChrome();
   }
