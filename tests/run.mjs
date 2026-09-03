@@ -8,7 +8,7 @@ import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness,
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
-import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
+import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS, binomTailGE } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS, trialOutlook, trialPower, TRIAL_POWER_GRID, MAX_PAIRS as TRIAL_MAX_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, effectSize, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
@@ -1938,6 +1938,72 @@ t('an exact reference set stays affordable at the longest trial offered', () => 
   ok(createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: TRIAL_MAX_PAIRS + 1 }).error,
     'a trial past the cap must be refused, not attempted');
   ok(!createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: TRIAL_MAX_PAIRS }).error);
+});
+
+t('a symptom happening more often is flagged, even when each episode is no worse', () => {
+  // REGRESSION. Both symptom rules keyed on mean severity, which is the wrong
+  // instrument for anything episodic. Someone going from two migraines a month
+  // to ten has quadrupled the thing that matters and moved their 28-day mean by
+  // about 0.6 of a point — under the 1.0 threshold — while never approaching
+  // "severe on 10 of the last 14 days". Measured on that log: no flag at all.
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const today = '2026-09-03';
+  const build = (seed, days, early, late) => {
+    const r = mulberry32(seed); const es = [];
+    for (let i = 0; i < days; i++) {
+      const e = emptyEntry(addDays(today, -(days - 1 - i)), symptoms);
+      e.symptoms = { s_mig: r() < (i < days - 28 ? early : late) ? 3 : 0 };
+      e.bodyweightKg = 78; e.restingHR = 60; e.mood = 3; e.energy = 3; e.stress = 3; e.sleepHours = 7;
+      es.push(e);
+    }
+    return es;
+  };
+  const titles = (es) => checkFlags(es, { symptoms }, today, { all: true }).map((f) => f.title);
+  const escalating = titles(build(3, 200, 2 / 30, 10 / 30));
+  ok(escalating.some((t2) => /happening more often/i.test(t2)),
+    'a fivefold rise in frequency must be flagged: ' + JSON.stringify(escalating));
+
+  // The things it must NOT say anything about.
+  eq(titles(build(11, 200, 5 / 30, 5 / 30)).length, 0, 'a stable symptom is not news');
+  eq(titles(build(13, 200, 10 / 30, 2 / 30)).length, 0, 'getting better must never be flagged');
+  eq(titles(build(3, 60, 2 / 30, 10 / 30)).length, 0, 'too little history to compare against');
+});
+
+t('the frequency rule leaves daily symptoms to the persistence rule', () => {
+  // Above 60% of days a rate is the wrong lens: that is what
+  // persistent-symptom is for, and two flags about one symptom is nagging.
+  const symptoms = [{ id: 's_a', label: 'Ache', primary: true }];
+  const today = '2026-09-03';
+  const r = mulberry32(31); const es = [];
+  for (let i = 0; i < 200; i++) {
+    const e = emptyEntry(addDays(today, -(199 - i)), symptoms);
+    e.symptoms = { s_a: r() < (i < 172 ? 0.35 : 0.85) ? 2 : 0 };
+    e.bodyweightKg = 78; e.restingHR = 60; e.mood = 3; e.energy = 3; e.stress = 3; e.sleepHours = 7;
+    es.push(e);
+  }
+  const ids = checkFlags(es, { symptoms }, today, { all: true }).map((f) => f.id);
+  ok(!ids.some((id) => id.startsWith('symptom-more-often')),
+    'a symptom on 85% of days is not a frequency question: ' + JSON.stringify(ids));
+});
+
+t('the exact binomial tail agrees with hand-computed values', () => {
+  // The frequency rule rests on this, and it is the one place in the app that
+  // tells someone to go and be seen.
+  near(binomTailGE(1, 1, 0.5), 0.5, 1e-12);
+  near(binomTailGE(2, 2, 0.5), 0.25, 1e-12);
+  near(binomTailGE(1, 2, 0.5), 0.75, 1e-12);
+  near(binomTailGE(3, 3, 1 / 3), 1 / 27, 1e-12);
+  // P(X >= 8 | n = 10, p = 0.5) = (45 + 10 + 1) / 1024
+  near(binomTailGE(8, 10, 0.5), 56 / 1024, 1e-12);
+  eq(binomTailGE(0, 10, 0.5), 1);
+  eq(binomTailGE(11, 10, 0.5), 0);
+  // Monotone in k, and never outside [0, 1].
+  let prev = 1;
+  for (let k = 0; k <= 20; k++) {
+    const v = binomTailGE(k, 20, 0.3);
+    ok(v <= prev + 1e-12 && v >= 0 && v <= 1, `not monotone or out of range at k=${k}`);
+    prev = v;
+  }
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

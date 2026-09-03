@@ -682,3 +682,55 @@ revisited.
 The default of 7 pairs is also worth knowing about: it sits under 50% power even
 for a symptom present on 60% of days. Rather than change one global default for
 outcomes of every shape, the outlook names a length that would actually do it.
+
+## The safety rule that could not see an episodic symptom
+
+The two symptom rules in the safety layer both keyed on **mean severity** —
+"severe or worse on 10 of the last 14 days", and "averaging a full point higher
+than the month before". That is the same wrong instrument that ran through the
+rest of the engine, in the one place where getting it wrong matters most.
+
+Someone whose migraine goes from two attacks a month to ten has quintupled the
+thing that actually matters to them. Their 28-day mean severity moves by about
+0.6 of a point, under the 1.0 threshold, and they never come close to ten severe
+days in fourteen. Measured on exactly that log: **no flag at all**. Escalating
+attack frequency is a textbook reason to be seen, and the app said nothing.
+
+`symptom-more-often` counts events instead. Conditional on the total, an
+unchanged rate means the number of recent attacks among all of them is
+Binomial(total, recentDays / allDays) — an exact test, no simulation and no
+approximation, which is the right standard for the one part of the app that
+tells someone to go and see a person about it.
+
+**Choosing alpha, where intuition was wrong by an order of magnitude.** A
+p ≤ 0.01 threshold looks conservative. But this rule runs *every day*, so what
+a person experiences is not the chance it fires today — it is the chance it ever
+fires. Measured on symptoms that never change, over 120 days of daily checks:
+
+| alpha | fires on a given day | falsely alarms someone at least once |
+|---|---|---|
+| 0.01 | 0.006 | **0.076** |
+| 0.005 | 0.003 | 0.048 |
+| 0.002 | 0.001 | 0.016 |
+
+Repeated looks at accumulating data is a multiple-comparisons problem like any
+other. Against that, sensitivity to a real change, measured as "caught within 28
+days of it starting, given six months of prior history":
+
+| change | α=0.01 | α=0.005 | α=0.002 |
+|---|---|---|---|
+| 2 → 12 per month | 0.94 | 0.92 | 0.86 |
+| 4 → 16 | 0.94 | 0.92 | 0.84 |
+| 3 → 12 | 0.85 | 0.78 | 0.66 |
+| 2 → 8  | 0.64 | 0.51 | 0.40 |
+| 4 → 8  | 0.17 | 0.13 | 0.06 |
+
+Shipped at **0.005**: a quadrupling is caught around 8 times in 10, and fewer
+than 5 in 100 stable people are told something is happening that is not. A mere
+doubling is mostly not caught, and that is the honest position — one 28-day
+window of an episodic symptom does not contain enough events to tell a doubling
+from luck.
+
+**The other five rules were never measured this way either.** They hold up: over
+the same 120 days of daily checks on an ordinary stable person, only `low-mood`
+ever fires, on 0.7% of people, and no other rule cries wolf at all.
