@@ -1,0 +1,112 @@
+/* Prism — learning paths. Curated multi-course journeys over the library. */
+(function () {
+  'use strict';
+
+  var PATHS = [
+    { id: 'clear-thinking', title: 'Think Clearly', art: 'lens',
+      blurb: 'Find the flaws in your own reasoning, then build the habits that catch them.',
+      courses: ['cognitive-biases', 'logical-fallacies', 'probability-and-luck', 'art-of-strategy', 'world-in-data'] },
+    { id: 'master-mind', title: 'Master Your Mind', art: 'brain',
+      blurb: 'How memory, emotion, attention and habit actually work — and how to steer them.',
+      courses: ['learning-how-to-learn', 'brain-on-emotions', 'attention-age', 'science-of-habits', 'emotional-intelligence', 'psychology-of-happiness'] },
+    { id: 'money-path', title: 'Money & Markets', art: 'coin',
+      blurb: 'From your own behaviour with money to how whole economies move.',
+      courses: ['psychology-of-money', 'how-economies-work', 'stock-market-explained', 'money-in-history', 'negotiation'] },
+    { id: 'examined-life', title: 'The Examined Life', art: 'compass',
+      blurb: 'Twenty-five centuries of arguments about how to live and what a mind is.',
+      courses: ['stoicism', 'eastern-philosophy', 'ethics-big-three', 'meaning-of-life', 'consciousness'] },
+    { id: 'your-body', title: 'Understand Your Body', art: 'shield',
+      blurb: 'Sleep, food, immunity, microbes and aging — the evidence, minus the marketing.',
+      courses: ['science-of-sleep', 'nutrition-without-nonsense', 'immune-system', 'microbiome', 'how-to-live-forever'] },
+    { id: 'how-world-works', title: 'How the World Works', art: 'orbit',
+      blurb: 'The physics, biology and history that produced everything around you.',
+      courses: ['big-ideas-physics', 'story-of-evolution', 'climate-system', 'great-experiments', 'space-exploration', 'turning-points'] },
+    { id: 'modern-tech', title: 'The Modern Frontier', art: 'network',
+      blurb: 'The technologies rewriting this decade, explained without hype.',
+      courses: ['how-internet-works', 'how-ai-works', 'genes-and-editing', 'how-things-spread'] },
+    { id: 'live-forever', title: 'How to Live Forever', art: 'hourglass',
+      blurb: 'Why bodies age, what genuinely extends life, and whether you should want it to.',
+      courses: ['how-to-live-forever', 'biology-of-aging', 'immortal-animals', 'longevity-trials', 'healthspan-playbook', 'radical-life-extension', 'ethics-of-immortality'] },
+    { id: 'arts-and-ear', title: 'Music and the Arts', art: 'bell',
+      blurb: 'How music, film, poetry and pictures actually do what they do.',
+      courses: ['music-theory', 'western-music-history', 'world-music', 'film', 'poetry', 'photography', 'art-history', 'design'] },
+    { id: 'big-questions', title: 'The Big Questions', art: 'mirror',
+      blurb: 'Knowledge, freedom, justice, meaning — the arguments that never close.',
+      courses: ['epistemology', 'free-will', 'existentialism', 'ethics-big-three', 'political-philosophy', 'consciousness'] },
+    { id: 'natural-world', title: 'The Natural World', art: 'seed',
+      blurb: 'From the first cell to the deep ocean and the night sky.',
+      courses: ['origin-of-life', 'story-of-evolution', 'ecology', 'oceans', 'geology', 'astronomy', 'senses'] },
+    { id: 'world-traditions', title: 'The Wider World', art: 'map',
+      blurb: 'Civilisations, ideas and art from beyond the usual syllabus.',
+      courses: ['archaeology', 'islamic-golden-age', 'imperial-china', 'african-kingdoms', 'india-legacy', 'indigenous-knowledge', 'latin-america'] },
+    { id: 'how-things-work', title: 'How Things Actually Work', art: 'puzzle',
+      blurb: 'The systems holding up the built and natural world.',
+      courses: ['architecture', 'energy', 'ecology', 'astronomy', 'geology', 'computing'] },
+    { id: 'evidence', title: 'Thinking With Evidence', art: 'graph',
+      blurb: 'Reading studies, numbers and diagnoses the way professionals should.',
+      courses: ['statistics', 'how-doctors-think', 'media-literacy', 'decisions', 'anthropology'] },
+    { id: 'communicate', title: 'Communicate & Persuade', art: 'dialog',
+      blurb: 'Move people with evidence, story and structure — ethically.',
+      courses: ['persuasion', 'art-of-storytelling', 'genius-of-language', 'music-and-brain'] },
+    { id: 'work-and-ambition', title: 'Work & Ambition', art: 'ladder',
+      blurb: 'Choosing the work, building the thing, leading the room, keeping the money.',
+      courses: ['career', 'entrepreneurship', 'leadership', 'public-speaking', 'conflict', 'personal-finance'] },
+    { id: 'mind-and-medicine', title: 'Mind, Body, Medicine', art: 'balance',
+      blurb: 'What is actually known about minds and bodies in trouble — and how medicine learned it.',
+      courses: ['mental-health', 'pain-and-placebo', 'memory-science', 'child-development', 'exercise-science', 'history-of-medicine'] },
+    { id: 'living-together', title: 'Living Together', art: 'bridge',
+      blurb: 'Cities, populations, laws and faiths — the machinery of living beside strangers.',
+      courses: ['cities', 'demography', 'law-and-justice', 'comparative-religion', 'mythology'] },
+    { id: 'creative-life', title: 'The Creative Life', art: 'flame',
+      blurb: 'Where the work comes from, and how the great makers actually made it.',
+      courses: ['creativity', 'writing-well', 'theatre', 'dance', 'japan-aesthetics', 'russian-literature'] },
+    { id: 'formal-thinking', title: 'Formal Thinking', art: 'pyramid',
+      blurb: 'Proof, infinity, systems and risk — reasoning where intuition stops working.',
+      courses: ['logic', 'infinity', 'philosophy-of-science', 'systems-thinking', 'risk', 'cryptography'] },
+    { id: 'living-world', title: 'The Living World', art: 'eye',
+      blurb: 'Plants, fungi, animal minds and the senses — life as it is lived by everything else.',
+      courses: ['plants', 'fungi', 'animal-minds', 'senses', 'ecology'] },
+    { id: 'matter-and-energy', title: 'Matter & Energy', art: 'layers',
+      blurb: 'What the world is built from, what moves it, and why the weather does that.',
+      courses: ['chemistry', 'materials', 'energy', 'weather', 'geology'] }
+  ];
+
+  function byId(id) {
+    for (var i = 0; i < PATHS.length; i++) if (PATHS[i].id === id) return PATHS[i];
+    return null;
+  }
+
+  /* The courses of a path that actually exist in the loaded library. A path may
+     name a course that has not shipped yet, so every consumer resolves through
+     here and a path never renders a row pointing at nothing. */
+  function coursesOf(path, findCourse) {
+    var out = [];
+    for (var i = 0; i < path.courses.length; i++) {
+      var c = findCourse(path.courses[i]);
+      if (c) out.push(c);
+    }
+    return out;
+  }
+
+  /* {done, total, next} — totals count only courses present in the library. */
+  function progress(path, findCourse, courseProgress) {
+    var cs = coursesOf(path, findCourse), done = 0, next = null;
+    for (var i = 0; i < cs.length; i++) {
+      var p = courseProgress(cs[i]);
+      if (p.total && p.done === p.total) done += 1;
+      else if (!next) next = cs[i].id;
+    }
+    return { done: done, total: cs.length, next: next };
+  }
+
+  /* Paths worth showing: those with at least one course actually available. */
+  function available(findCourse) {
+    var out = [];
+    for (var i = 0; i < PATHS.length; i++) {
+      if (coursesOf(PATHS[i], findCourse).length) out.push(PATHS[i]);
+    }
+    return out;
+  }
+
+  window.Paths = { list: PATHS, byId: byId, progress: progress, coursesOf: coursesOf, available: available };
+})();

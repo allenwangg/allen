@@ -1,0 +1,75 @@
+name: Prism
+
+# Prism ships as static files with no build step, so "it builds" proves nothing.
+# These suites drive the real page in headless Chromium — including tearing the
+# server down mid-run to prove the offline behaviour is genuine.
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['prism/**', '.github/workflows/prism.yml']
+  pull_request:
+    paths: ['prism/**', '.github/workflows/prism.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: prism-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # named distinctly: the repo's other workflow also has a job called "test",
+  # and two identically-named checks on one PR are unreadable
+  prism:
+    name: prism
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Content is checked first: it needs no browser, and a structural error
+      # there would only show up as a confusing failure later.
+      - name: Validate course content
+        working-directory: prism
+        run: node validate.mjs
+
+      # Whether a quiz tests knowledge or is merely guessable. All three metrics
+      # now sit near chance, so this is a gate: content that reintroduces a
+      # position, length or polarity tell fails here rather than shipping.
+      - name: Quiz-design audit
+        working-directory: prism
+        run: node audit.mjs --strict
+
+      - name: Install Playwright + Chromium
+        working-directory: prism
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: End-to-end suites
+        working-directory: prism
+        run: |
+          node test/smoke.mjs
+          node test/features.mjs
+          node test/polish.mjs
+          node test/pwa.mjs
+          node test/contrast.mjs
+
+      # Not a gate — the numbers are printed so a regression is visible in the log.
+      - name: Performance snapshot
+        working-directory: prism
+        continue-on-error: true
+        run: node test/perf.mjs
+
+      # The shareable copy is what gets handed to people, so it is built and then
+      # actually driven over file:// rather than merely produced.
+      - name: Single-file build
+        working-directory: prism
+        run: |
+          node build.mjs
+          node test/single.mjs
