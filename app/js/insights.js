@@ -30,7 +30,7 @@ export const MIN_PAIRS = 21;          // below this, we refuse to report anythin
 export const DEFAULT_LAGS = [0, 1, 2];
 export const PERMUTATIONS = 600;      // circular shifts; deterministic and cheap
 export const FDR_Q = 0.10;            // target false discovery rate
-export const MIN_REPORTABLE_R = 0.20; // findings below this are never shown
+export const MIN_REPORTABLE_R = 0.20; // findings below this share of the attainable maximum are never shown
 
 /* ------------------------------------------------------------------ *
  * Statistics primitives (pure, testable, dependency-free)
@@ -730,6 +730,30 @@ export const MIN_INFORMATIVE = 12;
  * twelve flare days whether they sit in 100 days of log or 400; the second
  * person has a rarer symptom, not a less analysable one.
  */
+/**
+ * The largest |Spearman| these two series could possibly reach, given their own
+ * marginal distributions — which is the correlation when both are optimally
+ * aligned, i.e. both sorted.
+ *
+ * WHY THE REPORTING FLOOR NEEDS IT. Spearman is attenuated by ties, so r is not
+ * comparable across variables of different shapes. Where a common exposure
+ * meets a rare outcome the ceiling drops below the floor: on 300 days with the
+ * habit on 60% of them and the symptom on 5%, a relationship where EVERY flare
+ * follows the habit scores r = 0.187 — and a fixed floor of 0.20 threw it away
+ * as too weak to mention. That is the same episodic user the informative-count
+ * floor above was excluding, failed a second way.
+ *
+ * Comparing against the attainable maximum asks the question the floor was
+ * always meant to ask: is this relationship strong RELATIVE TO HOW STRONG IT
+ * COULD BE? For continuous data the maximum is 1 and nothing changes at all.
+ */
+export function attainableR(xs, ys) {
+  const a = [...xs].sort((p, q) => p - q);
+  const b = [...ys].sort((p, q) => p - q);
+  const m = spearman(a, b);
+  return m == null || !Number.isFinite(m) || m <= 0 ? 1 : m;
+}
+
 function hasUsableVariance(values) {
   const uniq = new Set(values);
   // Two distinct values is enough, PROVIDED the minority is well represented —
@@ -890,8 +914,9 @@ export function discover(entries, opts = {}) {
   // direction for a health product — and the recall scenarios in tests/run.mjs
   // pass unchanged. Measured: ~20x faster on realistic data, because under the
   // null only ~5% of hypotheses clear the threshold.
-  const pValues = raw.map((c) =>
-    Math.abs(c.r) < MIN_REPORTABLE_R ? 1 : permutationP(c.xs, c.ys, c.r)
+  const floors = raw.map((c) => MIN_REPORTABLE_R * attainableR(c.xs, c.ys));
+  const pValues = raw.map((c, i) =>
+    Math.abs(c.r) < floors[i] ? 1 : permutationP(c.xs, c.ys, c.r)
   );
 
   // ONE Benjamini-Hochberg correction across the whole grid.
@@ -939,8 +964,12 @@ export function discover(entries, opts = {}) {
       passesFDR: passing.has(i),
       effect: effectSize(c.r),
       practical: practicalEffect({ xs: c.rawXs, ys: c.rawYs }),
+      // Carried on the object rather than read from floors[i] in the filter:
+      // positional indexing across a map/filter chain silently desyncs the
+      // moment anyone inserts a step above it.
+      floor: round4(floors[i]),
     }))
-    .filter((f) => f.passesFDR && Math.abs(f.r) >= MIN_REPORTABLE_R)
+    .filter((f) => f.passesFDR && Math.abs(f.r) >= f.floor)
     .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
 
   // Keep the best lag per driver/outcome pair; three lags of the same story is

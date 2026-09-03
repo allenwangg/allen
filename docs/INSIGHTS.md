@@ -554,3 +554,48 @@ datasets per cell, two symptoms and several binary factors in play:
 
 Against an FDR target of 0.10. The old floor was buying nothing and costing the
 app its central purpose for anyone with an episodic condition.
+
+## The same user, failed a second way
+
+`MIN_REPORTABLE_R = 0.20` exists so the app does not bother anyone with a
+relationship too weak to act on. Sound idea, wrong implementation: Spearman is
+attenuated by ties, so `r` is not comparable across variables of different
+shapes, and where a common exposure meets a rare outcome the *ceiling* falls
+below the floor.
+
+On 300 days with the habit on 60% of them and the symptom on 5%, a relationship
+in which **every single flare** follows the habit scores r = 0.187. A fixed
+floor of 0.20 discarded it as too weak to mention.
+
+| exposure | flare rate | r for a perfect relationship | old floor |
+|---|---|---|---|
+| 50% | 20% | 0.500 | reported |
+| 50% | 12% | 0.369 | reported |
+| 50% | 5%  | 0.229 | reported, barely |
+| 50% | 4%  | 0.204 | reported, barely |
+| 60% | 5%  | **0.187** | **discarded** |
+
+That is the same episodic user the informative-count floor was excluding,
+failed a second and independent way — and the more common the habit and the
+rarer the flare, the worse it gets, which is precisely the shape of a real
+trigger for a rare attack.
+
+The floor is now `MIN_REPORTABLE_R × attainableR(xs, ys)`, where `attainableR`
+is the correlation of both series sorted — the largest |Spearman| those two
+marginal distributions permit. It asks the question the floor was always meant
+to ask: is this relationship strong *relative to how strong it could be*? On
+continuous data the maximum is 1 and nothing changes at all, which a test
+asserts by checking that a genuine r ≈ 0.1 link is still discarded.
+
+**It costs nothing in false positives.** 150 pure-noise datasets per cell,
+full engine: 0.000 / 0.007 / 0.000 / 0.000 of datasets carried any finding, at
+200 days with 30%, 10% and 6% flare rates and 300 days at 8% — indistinguishable
+from before the change. The FDR correction was always doing that work; the floor
+was only ever a relevance filter, and it had been quietly acting as a second,
+badly calibrated significance test.
+
+**It costs about 20% in time.** The old floor let the engine skip the
+permutation test for most hypotheses; a lower floor means more of them are
+actually tested. Measured: 84 → 100 ms at 200 days, 159 → 197 ms at 365 days.
+This runs inside the memo guard in `recompute()`, so it happens when the log
+changes rather than on every render.

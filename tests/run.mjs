@@ -10,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -1746,6 +1746,63 @@ t('sparse symptoms do not leak false positives', () => {
     if (discover(es, { symptoms, factors }).findings.length) leaked++;
   }
   ok(leaked / R <= 0.12, `sparse symptoms leak noise: ${leaked}/${R}`);
+});
+
+t('attainableR is 1 for continuous data and lower where ties compress it', () => {
+  const r = mulberry32(4);
+  const cont = Array.from({ length: 200 }, () => r());
+  near(attainableR(cont, cont.map(() => r())), 1, 1e-9, 'distinct values can reach 1');
+  // A common exposure against a rare outcome cannot reach 1 however well they line up.
+  const ex = Array.from({ length: 300 }, (_, i) => (i < 180 ? 1 : 0));
+  const flare = Array.from({ length: 300 }, (_, i) => (i < 15 ? 1 : 0));
+  const cap = attainableR(ex, flare);
+  ok(cap < 0.3, `a 60%/5% split cannot exceed ~0.19, got ${cap}`);
+  ok(cap > 0, 'and it is still positive');
+  // Never returns something that would raise the floor above the fixed one.
+  ok(attainableR([1, 1, 1], [1, 1, 1]) === 1, 'a degenerate pair falls back to 1');
+});
+
+t('a perfect trigger for a rare symptom is reported, not filtered as weak', () => {
+  // REGRESSION. Spearman is attenuated by ties, so a fixed 0.20 floor was
+  // unreachable where a common habit meets a rare flare: at 60% exposure and
+  // 5% flares, a relationship in which EVERY flare follows the habit scores
+  // r = 0.187 and was discarded as too weak to mention.
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const factors = [{ id: 'f_x', label: 'Trigger' }];
+  for (const [pe, pf] of [[0.6, 0.05], [0.5, 0.04]]) {
+    const r = mulberry32(9); const es = []; let d = '2026-01-01';
+    for (let i = 0; i < 330; i++) {
+      const e = emptyEntry(d, symptoms);
+      const ex = r() < pe ? 1 : 0;
+      e.factors = { f_x: ex };
+      e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+      e.stress = 1 + Math.floor(r() * 5);
+      e.symptoms = { s_mig: ex && r() < pf / pe ? 2 + Math.floor(r() * 3) : 0 };
+      es.push(e); d = addDays(d, 1);
+    }
+    const f = discover(es, { symptoms, factors }).findings.find((x) => x.driver === 'f_x');
+    ok(f, `a perfect trigger at ${pe * 100}% exposure / ${pf * 100}% flares must be reported`);
+    ok(f.floor < MIN_REPORTABLE_R, 'its floor must reflect what was actually attainable');
+  }
+});
+
+t('the reporting floor still discards trivia on continuous data', () => {
+  // The whole point of the floor. Normalising it must not turn it off where it
+  // was doing its job: with distinct values the attainable maximum is 1, so
+  // the floor is still a flat 0.20.
+  const symptoms = [{ id: 's_a', label: 'Ache', primary: true }];
+  const r = mulberry32(17); const es = []; let d = '2026-01-01';
+  for (let i = 0; i < 400; i++) {
+    const e = emptyEntry(d, symptoms);
+    const sleep = 5 + r() * 4;
+    e.sleepHours = sleep; e.steps = Math.round(5000 + r() * 5000);
+    e.stress = 1 + Math.floor(r() * 5); e.mood = 1 + Math.floor(r() * 5);
+    // A real but tiny link: about r = 0.1, far too weak to act on.
+    e.symptoms = { s_a: Math.max(0, Math.min(4, Math.round(2 - 0.1 * (sleep - 7) + (r() + r() + r() - 1.5) * 1.3))) };
+    es.push(e); d = addDays(d, 1);
+  }
+  const f = discover(es, { symptoms, factors: [] }).findings.find((x) => x.driver === 'sleepHours' && x.outcome === 's_a');
+  ok(!f || Math.abs(f.r) >= 0.20, `a trivial continuous link must still be filtered, got r=${f && f.r}`);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested
