@@ -1627,7 +1627,8 @@
     return searchIndex;
   }
 
-  function snippet(body, lower, q) {
+  function snippet(body, lower, term, phrase) {
+    var q = (phrase && lower.indexOf(phrase) >= 0) ? phrase : term;
     var at = lower.indexOf(q);
     if (at < 0) return esc(body.slice(0, 140)) + '…';
     var from = Math.max(0, at - 55);
@@ -1637,30 +1638,68 @@
       esc(body.slice(at + q.length, to)) + (to < body.length ? '…' : '');
   }
 
+  function reEscape(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  /* Ranked over 5,000+ cards, so a bare substring match is not enough: "art"
+     should not rank Descartes above art history. Every query term must appear,
+     a match on a word boundary outranks one inside a word, and the whole phrase
+     outranks the terms scattered apart. */
   function searchResults(qRaw) {
     var q = qRaw.trim().toLowerCase();
     if (q.length < 2) {
-      return '<p class="search-hint">Search every card in the library — try “anchoring”, “Seneca”, “compound”, or “strawman”.</p>';
+      return '<p class="search-hint">Search every card in the library — try \u201canchoring\u201d, \u201cSeneca\u201d, \u201cplacebo\u201d, or \u201cstrawman\u201d.</p>';
     }
+    var terms = [];
+    var raw = q.split(/\s+/);
+    for (var t = 0; t < raw.length; t++) if (raw[t].length > 1) terms.push(raw[t]);
+    if (!terms.length) terms = [q];
+
     var idx = buildIndex(), hits = [];
     for (var i = 0; i < idx.length; i++) {
-      var e = idx[i], score = 0;
-      if (e.l.title.toLowerCase().indexOf(q) >= 0) score += 5;
-      if (e.c.title.toLowerCase().indexOf(q) >= 0) score += 3;
-      if (e.l.summary.toLowerCase().indexOf(q) >= 0) score += 2;
-      if (e.lower.indexOf(q) >= 0) score += 1;
+      var e = idx[i], score = 0, missing = false;
+      var lt = e.l.title.toLowerCase(), ct = e.c.title.toLowerCase(), sm = e.l.summary.toLowerCase();
+      for (var k = 0; k < terms.length && !missing; k++) {
+        var term = terms[k], word = new RegExp('\\b' + reEscape(term), 'g');
+        // Every term must start a word. That still matches prefixes — "epistem"
+        // finds epistemology — while "art" is not matched by "Descartes" or
+        // "particle", which is what made a short query return half the library.
+        var n = (e.lower.match(word) || []).length;
+        word.lastIndex = 0; var inLt = word.test(lt);
+        word.lastIndex = 0; var inCt = word.test(ct);
+        if (!n && !inLt && !inCt) { missing = true; break; }
+        word.lastIndex = 0;
+        if (word.test(lt)) score += 14; else if (lt.indexOf(term) >= 0) score += 6;
+        word.lastIndex = 0;
+        if (ct.indexOf(term) >= 0) score += 5;
+        if (sm.indexOf(term) >= 0) score += 3;
+        if (n) score += 3 + Math.min(n, 6);
+      }
+      if (missing) continue;
+      // the terms together, in order, beat the same terms scattered
+      if (terms.length > 1) {
+        if (lt.indexOf(q) >= 0) score += 20;
+        else if (e.lower.indexOf(q) >= 0) score += 10;
+      }
       if (score) hits.push({ e: e, score: score });
     }
-    hits.sort(function (a, b) { return b.score - a.score; });
-    if (!hits.length) return '<p class="search-hint">Nothing matches “' + esc(qRaw.trim()) + '”. Try a shorter word.</p>';
-    var h = '';
-    for (var j = 0; j < Math.min(hits.length, 12); j++) {
+    hits.sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.e.ci - b.e.ci || a.e.li - b.e.li;   // stable, so results never jitter
+    });
+    if (!hits.length) {
+      return '<p class="search-hint">Nothing matches \u201c' + esc(qRaw.trim()) + '\u201d.' +
+        (terms.length > 1 ? ' Every word has to appear — try fewer.' : ' Try a shorter word.') + '</p>';
+    }
+    var cap = 20;
+    var h = '<p class="search-count">' + hits.length + (hits.length === 1 ? ' lesson' : ' lessons') +
+      (hits.length > cap ? ' — showing the ' + cap + ' closest' : '') + '</p>';
+    for (var j = 0; j < Math.min(hits.length, cap); j++) {
       var e2 = hits[j].e;
       var done = Store.lessonRecord(e2.c.id, e2.l.id);
       h += '<a class="search-hit" style="--ah:' + HUES[e2.ci % HUES.length] + '" href="#/lesson/' + esc(e2.c.id) + '/' + esc(e2.l.id) + '">' +
-        '<span class="hit-course">' + esc(e2.c.title) + ' · Lesson ' + (e2.li + 1) + (done ? ' · ✓' : '') + '</span>' +
+        '<span class="hit-course">' + esc(e2.c.title) + ' · Lesson ' + (e2.li + 1) + (done ? ' · \u2713' : '') + '</span>' +
         '<b>' + esc(e2.l.title) + '</b>' +
-        '<p>' + snippet(e2.body, e2.lower, q) + '</p></a>';
+        '<p>' + snippet(e2.body, e2.lower, terms[0], q) + '</p></a>';
     }
     return h;
   }
@@ -1668,7 +1707,7 @@
   function renderSearch() {
     $app.innerHTML = headerHTML() + '<main class="page">' +
       '<a class="back" href="#/">‹ Home</a>' +
-      '<input id="search-in" class="search-in" type="search" placeholder="Search all 6 courses…" autocomplete="off" aria-label="Search courses">' +
+      '<input id="search-in" class="search-in" type="search" placeholder="Search ' + libraryCardCount().toLocaleString() + ' cards across ' + COURSES.length + ' courses…" autocomplete="off" aria-label="Search courses">' +
       '<div id="search-out" class="search-out">' + searchResults('') + '</div></main>';
     bindChrome();
     var input = document.getElementById('search-in');

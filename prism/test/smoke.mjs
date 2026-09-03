@@ -170,6 +170,25 @@ await page.fill('#search-in', 'anchor');
 await page.waitForTimeout(120);
 ok(await page.locator('.search-hit').count() >= 1, 'search finds lessons for "anchor"');
 ok((await page.locator('.search-hit mark').count()) >= 1, 'search highlights matches');
+// ranking: every term must appear, short terms need a word boundary, phrases win
+const ph = await page.getAttribute('#search-in','placeholder');
+ok(/across \d{2,} courses/.test(ph||''), `the placeholder names the real library size (${ph})`);
+async function find(q){ await page.fill('#search-in', q); await page.waitForTimeout(180);
+  return { n: Number(((await page.locator('.search-count').textContent().catch(()=>'0'))||'0').match(/\d+/)?.[0]||0),
+           top: (await page.locator('.search-hit b').allTextContents()).slice(0,3) }; }
+const two = await find('memory spacing');
+ok(two.n>0 && two.n<12, `a two-word query narrows rather than widens (${two.n} lessons)`);
+const impossible = await find('memory zzzqx');
+ok(impossible.n===0, 'a query with one absent term returns nothing');
+const short = await find('art');
+ok(short.n>0, `a short word still matches (${short.n} lessons)`);
+ok(short.top.every(t=>t.length>0), 'short-word results are real lessons');
+const substr = await find('artes');
+ok(substr.n===0, 'a short word does not match inside other words (no "Descartes" for "artes")');
+const prefix = await find('epistem');
+ok(prefix.n>0, `a prefix still matches the whole word (${prefix.n} lessons for "epistem")`);
+await page.fill('#search-in','entropy'); await page.waitForTimeout(180);
+ok((await page.locator('.search-count').textContent()||'').includes('lesson'), 'the result count is shown');
 const xpBefore = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);
 await page.reload({ waitUntil: 'networkidle' });
 const xpAfter = await page.evaluate(() => JSON.parse(localStorage.getItem('prism.v1')).xp);

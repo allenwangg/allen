@@ -577,6 +577,8 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
   .key-hint { display: none; }
 }
 
+.search-count { color: var(--mut); font-size: 13px; margin: 2px 0 12px; }
+
 /* keyboard shortcut list */
 .keys { margin: 4px 0 0; }
 .key-row { display: flex; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }

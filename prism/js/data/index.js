@@ -5104,37 +5104,37 @@ window.COURSES = [
  {
   "id": "anthropology",
   "title": "What Anthropology Sees",
-  "tagline": "Making the familiar strange, and taking it seriously.",
+  "tagline": "The discipline that makes the familiar strange.",
   "category": "Anthropology",
-  "description": "How anthropologists learn a way of life from the inside — participant observation, kinship, gift and ritual — and how the discipline reckons with a past entangled in empire. It ends with the WEIRD critique and what it means to take other lives seriously without romanticising them.",
-  "cardCount": 51,
+  "description": "How anthropologists learn a way of life from the inside — and what that method has found, cost and got wrong. Fieldwork, gifts, ritual, a colonial inheritance, and the discovery that most of psychology had studied a very unusual slice of humanity.",
+  "cardCount": 52,
   "lessons": [
    {
     "id": "the-method",
-    "title": "The Method",
-    "summary": "Participant observation, thick description, and the emic-etic split — why a year of living somewhere reveals what a survey cannot, and what that costs in reliability.",
-    "n": 12,
-    "quizzes": 4,
+    "title": "Living There",
+    "summary": "Participant observation, thick description, and the insider-outsider distinction — plus the reliability problem that comes with making one person the instrument.",
+    "n": 13,
+    "quizzes": 5,
     "art": "map",
     "cards": [],
     "review": []
    },
    {
     "id": "kinship-exchange-ritual",
-    "title": "Kinship, Exchange and Ritual",
-    "summary": "Kinship as a system rather than biology, the obligations hidden inside a gift, the three-part shape of every rite of passage, and why dirt is a matter of category.",
+    "title": "Gifts, Kin and Thresholds",
+    "summary": "Kinship as a rule system rather than biology, Mauss on why gifts bind, the kula and the potlatch, liminality, and why some things feel polluting.",
     "n": 13,
-    "quizzes": 4,
+    "quizzes": 5,
     "art": "network",
     "cards": [],
     "review": []
    },
    {
-    "id": "the-hard-history",
+    "id": "hard-history",
     "title": "The Hard History",
-    "summary": "Colonial patronage, Boas against scientific racism, the unresolved Mead-Freeman fight over Samoa, repatriation, and ethics codes written in the wake of real harm.",
+    "summary": "Colonial funding and access, Boas against race science, the Mead-Freeman fight over evidence, repatriation, and ethics rules written after real harm.",
     "n": 13,
-    "quizzes": 4,
+    "quizzes": 5,
     "art": "map",
     "cards": [],
     "review": []
@@ -5142,9 +5142,9 @@ window.COURSES = [
    {
     "id": "anthropology-now",
     "title": "Anthropology Now",
-    "summary": "The WEIRD samples problem, the difference between relativism as method and as moral position, and ethnographers working inside finance, medicine and technology.",
+    "summary": "WEIRD samples, the difference between relativism as a method and as a moral position, and fieldwork on trading floors, in clinics and around machines.",
     "n": 13,
-    "quizzes": 4,
+    "quizzes": 5,
     "art": "graph",
     "cards": [],
     "review": []
@@ -5496,6 +5496,206 @@ window.COURSES = [
     "n": 12,
     "quizzes": 4,
     "art": "clock",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "cities",
+  "title": "How Cities Work",
+  "tagline": "Why they exist, how they move, and who they are for.",
+  "category": "Society",
+  "description": "A city is the most consequential machine humans build, and most of its workings are invisible: scaling laws, induced demand, and zoning codes written a century ago. Here is the mechanism, with the evidence in place of the slogans.",
+  "cardCount": 50,
+  "lessons": [
+   {
+    "id": "why-cities-exist",
+    "title": "Why Cities Exist at All",
+    "summary": "Agglomeration, the superlinear scaling of wages and patents with population, the costs that scale too, and the sorting problem underneath it.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "map",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "how-cities-move",
+    "title": "How Cities Move",
+    "summary": "Induced demand, the geometry of a road lane, bus rapid transit that worked and one that did not, the 15-minute city, parking, and pricing.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "bridge",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "housing-and-rent",
+    "title": "Housing, Rent and the Rules",
+    "summary": "Where rent comes from, how new homes move down the market, the exclusionary roots of zoning, and gentrification stated with the evidence.",
+    "n": 12,
+    "quizzes": 4,
+    "art": "seed",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "liveable",
+    "title": "What Makes a City Liveable",
+    "summary": "Public space, third places, the eyes-on-the-street hypothesis tested properly, designing for heat, and why the same idea travels badly.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "path",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "demography",
+  "title": "The Story of Population",
+  "tagline": "Eight billion people, and the curve already bent.",
+  "category": "Global Issues",
+  "description": "Where eight billion people actually came from, why the growth rate peaked in 1968, and what falling fertility is doing to the shape of every society. The numbers are stranger, and calmer, than the headlines.",
+  "cardCount": 49,
+  "lessons": [
+   {
+    "id": "demographic-transition",
+    "title": "The Gap Between Two Curves",
+    "summary": "Deaths fall first, births fall later, and the gap between them is where nearly all of the eight billion came from.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "wave",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "fertility",
+    "title": "What Actually Lowers Fertility",
+    "summary": "Child survival, schooling, cities and contraception — and why below-replacement fertility is now the condition of most of humanity.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "seed",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "ageing-societies",
+    "title": "The Shape Changes",
+    "summary": "Dependency ratios, the demographic dividend and the bill that follows it, Japan and Korea at the leading edge, and what immigration can and cannot fix.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "pyramid",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "projections",
+    "title": "Forecasts, Failed and Current",
+    "summary": "Malthus, the escape from his trap, why the population bomb never went off, and how far the UN and its rivals disagree about 2100.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "hourglass",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "pain-and-placebo",
+  "title": "Pain and the Placebo Effect",
+  "tagline": "Your brain decides how much it hurts.",
+  "category": "Neuroscience",
+  "description": "Pain is produced by the brain rather than read off the tissue, which is why a phantom limb can ache and a pill labelled placebo can help. Nociception, gate control, the placebo effect done properly, and what actually works for persistent pain.",
+  "cardCount": 49,
+  "lessons": [
+   {
+    "id": "pain-is-an-output",
+    "title": "Pain Is an Output, Not a Reading",
+    "summary": "Nociception versus pain, the nail through the boot, phantom limbs, wounded soldiers, and what a spine scan really tells you.",
+    "n": 13,
+    "quizzes": 4,
+    "art": "flame",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "gate-and-modulation",
+    "title": "Turning the Volume Up and Down",
+    "summary": "Gate control theory, the brain's descending volume control, and how attention, context and meaning change what a stimulus costs you.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "wave",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "placebo-properly",
+    "title": "The Placebo Effect, Properly",
+    "summary": "What a placebo effect actually is, open-label pills, the opioid evidence, nocebo, and why placebo response complicates every trial.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "seed",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "what-follows",
+    "title": "What Follows From All This",
+    "summary": "The ethics of placebo in practice, why it is just placebo misreads the finding, and what the evidence supports for persistent pain.",
+    "n": 12,
+    "quizzes": 5,
+    "art": "fork",
+    "cards": [],
+    "review": []
+   }
+  ]
+ },
+ {
+  "id": "theatre",
+  "title": "The Art of Theatre",
+  "tagline": "Live bodies, shared air, and nothing on record.",
+  "category": "Arts & Science",
+  "description": "Why an art form with no special effects has outlived every technology that should have replaced it. From the City Dionysia to the technical rehearsal, by way of a bare platform in Southwark, a cedar stage in Kyoto and a Paris cellar.",
+  "cardCount": 52,
+  "lessons": [
+   {
+    "id": "why-theatre-persists",
+    "title": "Live in the Room",
+    "summary": "Liveness and shared presence, the Greek festival that started it, the chorus, and why Aristotle's Poetics was never a rulebook.",
+    "n": 13,
+    "quizzes": 4,
+    "art": "dialog",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "traditions",
+    "title": "The Room Writes the Play",
+    "summary": "Shakespeare's bare thrust stage, commedia's rigid frame for improvisation, Noh and Kabuki on their own terms, and the Sanskrit theory of rasa.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "layers",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "modern-turns",
+    "title": "Realism and Its Enemies",
+    "summary": "Ibsen putting social problems in the living room, what Stanislavski actually taught, Brecht's deliberate opposite, and the absurdists who dropped resolution altogether.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "fork",
+    "cards": [],
+    "review": []
+   },
+   {
+    "id": "making-a-production",
+    "title": "How a Production Is Made",
+    "summary": "The director as a recent invention, the road from table work to opening night, design and light as argument, and why blocking is meaning.",
+    "n": 13,
+    "quizzes": 5,
+    "art": "compass",
     "cards": [],
     "review": []
    }
