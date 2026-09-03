@@ -1178,6 +1178,39 @@ t('a driver that accumulates over a week is found', () => {
   console.log(`\n  [window] weekly sleep-debt effect found in ${found}/${T} datasets`);
   ok(found / T >= 0.7, `cumulative effects still missed: ${found}/${T}`);
 });
+t('a windowed finding reads as a sentence and names the driver plainly', () => {
+  // Substituting the windowed label into the day-to-day template produced
+  // "On your higher-stress at work over the past week days, ..." — a run-on
+  // that reads like a rendering bug.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const facs = validateFactors([{ label: 'Stress at work' }]);
+  const sid = syms[0].id, fid = facs[0].id;
+  const es = synth(170, 9, (e, i, r) => {
+    e.sleepHours = 6 + r() * 2.5;
+    e.steps = Math.round(3000 + r() * 8000);
+    e.alcoholUnits = Math.round(r() * 4);
+    e.mood = 1 + Math.floor(r() * 5);
+    e.energy = 1 + Math.floor(r() * 5);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.sleepQuality = 1 + Math.floor(r() * 5);
+    e.factors = { [fid]: Math.floor(r() * 4) };
+    e.symptoms = { [sid]: 0 };
+  });
+  const rn = mulberry32(21);
+  for (let i = 7; i < es.length; i++) {
+    let load = 0;
+    for (let k = 1; k <= 7; k++) load += es[i - k].factors[fid];
+    es[i].symptoms[sid] = Math.max(0, Math.min(4, Math.round((load / 7) * 1.5 - 0.5 + (rn() - 0.5) * 1.3)));
+  }
+  const hit = discover(es, { symptoms: syms, factors: facs })
+    .findings.find((f) => f.driver === 'w7_' + fid);
+  ok(hit, 'the cumulative factor effect must be found');
+  ok(!/over the past week days/.test(hit.text), 'run-on phrasing: ' + hit.text);
+  ok(/build(s)? up/.test(hit.text), 'must say it accumulates: ' + hit.text);
+  ok(!/[sf]_[a-z0-9]{6,}/.test(hit.text), 'raw id leaked: ' + hit.text);
+  eq((hit.text.match(/This one/g) || []).length <= 1, true, 'repetitive copy: ' + hit.text);
+});
+
 t('a weekly window is never compared against its own outcome', () => {
   // A window ending on day d contains day d, so "stress over the past week"
   // against "stress today" is a variable correlated with itself. That was the

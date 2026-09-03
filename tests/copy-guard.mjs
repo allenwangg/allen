@@ -96,6 +96,27 @@ for (const rel of FILES) {
   });
 }
 
+/**
+ * Published test counts must match reality.
+ *
+ * This has now drifted three times. The app's entire pitch is that its numbers
+ * can be checked, so a README claiming 128 tests when there are 133 undermines
+ * the one thing it is asking to be trusted about — and it is exactly the kind
+ * of thing nobody remembers to update.
+ */
+const RUN = readFileSync(path.join(ROOT, 'tests/run.mjs'), 'utf8');
+const realCount = (RUN.match(/^t\(/gm) || []).length;
+for (const rel of ['README.md', 'docs/SCORING.md', 'docs/INSIGHTS.md']) {
+  let text;
+  try { text = readFileSync(path.join(ROOT, rel), 'utf8'); } catch { continue; }
+  for (const m of text.matchAll(/(\d+)\s+(?:unit tests|checks)/g)) {
+    if (Number(m[1]) !== realCount) {
+      console.error(`  ${rel}  [stale test count]\n    says "${m[0]}" but tests/run.mjs defines ${realCount}`);
+      issues++;
+    }
+  }
+}
+
 if (issues) {
   console.error(`\ncopy-guard: ${issues} phrase(s) claim more than this app can support.`);
   process.exit(1);

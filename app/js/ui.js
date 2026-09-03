@@ -733,13 +733,18 @@ export function reportView(state) {
         <tbody>${(state.factors || []).filter((f) => !f.archivedAt).map((fac) => {
           const vals = entries.map((e) => e.factors?.[fac.id]).filter((v) => v != null);
           const present = vals.filter((v) => v > 0).length;
-          const hits = findings.filter((f) => f.driver === fac.id);
+          // Match windowed drivers too: a factor whose effect builds over a
+          // week is found as "w7_<id>", and matching only the bare id made the
+          // report say "nothing found" about a factor the engine HAD explained.
+          const hits = findings.filter((f) => f.driver === fac.id || f.driver === `w7_${fac.id}`);
           return `<tr>
             <td>${esc(fac.label)}</td>
             <td class="num">${vals.length}</td>
             <td class="num">${present}</td>
             <td>${hits.length
-              ? hits.map((h) => `linked to ${esc(fieldLabel(h.outcome, state))}${h.lag ? ` (${h.lag}-day lag)` : ''}, r = ${h.r}`).join('; ')
+              ? hits.map((h) => `linked to ${esc(fieldLabel(h.outcome, state))}${
+                  h.driver.startsWith('w7_') ? ' (builds over a week)' : h.lag ? ` (${h.lag}-day lag)` : ''
+                }, r = ${h.r}`).join('; ')
               : vals.length >= 21 ? 'nothing found' : 'not enough days yet'}</td>
           </tr>`;
         }).join('')}</tbody>

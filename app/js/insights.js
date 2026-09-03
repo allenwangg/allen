@@ -1033,7 +1033,13 @@ export function labelFor(field, symptoms, factors) {
 }
 
 export function phrase(f, symptoms = [], factors = []) {
-  const dLabel = labelFor(f.driver, symptoms, factors).toLowerCase();
+  const windowed = f.driver.startsWith(WINDOW_PREFIX);
+  // A windowed driver needs its own sentence shape. Substituting the label
+  // into the day-to-day template produced "On your higher-stress at work over
+  // the past week days, ..." — a run-on that reads like a bug.
+  const dLabel = (windowed
+    ? labelFor(f.driver.slice(WINDOW_PREFIX.length), symptoms, factors)
+    : labelFor(f.driver, symptoms, factors)).toLowerCase();
   const oLabel = labelFor(f.outcome, symptoms, factors).toLowerCase();
   const when = f.lag === 0 ? 'the same day' : f.lag === 1 ? 'the next day' : `${f.lag} days later`;
 
@@ -1067,6 +1073,9 @@ export function phrase(f, symptoms = [], factors = []) {
     verdict = 'This one is costing you.';
   }
 
+  if (windowed) {
+    return `After a week of higher ${dLabel}, ${oLabel} runs ${magnitude} ${direction} — this one seems to build up rather than hit the next day. ${verdict}`;
+  }
   return `On your higher-${dLabel} days, ${oLabel} runs ${magnitude} ${direction} ${when}. ${verdict}`;
 }
 
