@@ -218,8 +218,22 @@ export function schedule(t) {
   return out;
 }
 
+/**
+ * Days still to go, counting today as one of them.
+ *
+ * The old form subtracted one, so on the final day this returned 0 and the app
+ * declared the trial finished — revealing and offering to save a verdict
+ * computed from a trial whose last day had not been logged yet. That verdict
+ * could then change once the day was entered, which is exactly the peeking the
+ * design goes to such lengths to prevent.
+ */
 export function daysRemaining(t, today = dateKey()) {
-  return Math.max(0, trialDays(t) - 1 - daysBetween(t.startDate, today));
+  return Math.max(0, trialDays(t) - daysBetween(t.startDate, today));
+}
+
+/** A trial is over only once its last day is in the past. */
+export function isComplete(t, today = dateKey()) {
+  return daysBetween(t.startDate, today) >= trialDays(t);
 }
 
 /* ------------------------------------------------------------------ *
@@ -237,6 +251,7 @@ export function daysRemaining(t, today = dateKey()) {
  */
 export function adherence(t, entries, factors = []) {
   const lever = getLever(t.leverId, factors);
+  if (!lever) return { logged: 0, loggedRatio: 0, onAdherence: 0, offContrast: 0, onTotal: 0, offTotal: 0, missingLever: true };
   const byDate = new Map(entries.map((e) => [e.date, e]));
   let onTotal = 0, onMet = 0, offTotal = 0, offContrast = 0, logged = 0;
 
@@ -382,6 +397,18 @@ function lowerIsBetter(outcome) {
  */
 export function verdict(t, entries, factors = []) {
   const lever = getLever(t.leverId, factors);
+  // The thing this trial was testing has been deleted. Removing a tracked
+  // factor used to leave getLever returning null and every later read of
+  // lever.onText threw, which took the whole app down with no way back in.
+  if (!lever) {
+    return {
+      kind: 'orphaned',
+      adherence: adherence(t, entries, factors),
+      analysis: { status: 'inconclusive', reason: 'lever-removed' },
+      headline: 'This trial was measuring something you no longer track',
+      body: 'You stopped tracking the thing this trial was changing, so there is nothing left to compare. The days you logged are still here — you can start a fresh trial whenever you like.',
+    };
+  }
   const adh = adherence(t, entries, factors);
   const res = analyze(t, entries);
   const unit = t.outcome.startsWith('s_') ? '' : (FIELDS[t.outcome]?.unit === '/5' ? ' points' : '');

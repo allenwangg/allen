@@ -44,6 +44,22 @@ export const SNOOZE_DAYS = 30;
  */
 export const REOPEN_ON_WORSENING = 1.5;
 
+/**
+ * Rules whose severity is a COUNT OF DAYS IN A FIXED WINDOW cannot grow by
+ * half again once they are near the top of that window: low mood maxes out at
+ * 14 of the last 14 days, and 14 >= 14 * 1.5 is never true. So the person
+ * whose situation is worst — the one the reopen was written for — was the one
+ * it could never reach.
+ *
+ * For those rules a reopen instead needs a fixed absolute step, which a
+ * saturated count can still clear from a lower starting point, plus a
+ * near-maximum override so an acknowledged flag that then saturates speaks up
+ * once more rather than going quiet for a month at its worst.
+ */
+export const COUNT_RULES = new Set(['low-mood', 'persistent-symptom', 'symptom-worsening']);
+export const REOPEN_COUNT_STEP = 3;
+export const SATURATION_RATIO = 0.92;
+
 const within = (entries, days, today) => {
   const from = addDays(today, -(days - 1));
   return entries.filter((e) => e.date >= from && e.date <= today);
@@ -116,6 +132,7 @@ export const RULES = [
         // More low days is worse; used to reopen a dismissed card if this
         // gets materially worse rather than waiting out the snooze.
         severity: low,
+        severityMax: days.length,
         title: 'It has been a hard couple of weeks',
         detail: `You have rated your mood low on ${low} of the last ${days.length} days you logged.`,
         ask: 'Two weeks of feeling like this is the point at which talking to a doctor is genuinely worth it — not because something is wrong with you, but because this is treatable and you do not have to wait it out alone.',
@@ -137,6 +154,7 @@ export const RULES = [
         if (bad < 10) continue;
         return {
           severity: bad,
+          severityMax: days.length,
           id: `persistent-symptom:${sym.id}`,
           title: `Your ${sym.label.toLowerCase()} has not let up`,
           detail: `You have rated it severe or worse on ${bad} of the last ${days.length} days.`,
@@ -205,8 +223,17 @@ export function checkFlags(entries, ctx = {}, today = dateKey(), opts = {}) {
     const seenSeverity = typeof record === 'object' ? record?.severity : null;
 
     if (!opts.all && seenAt && daysBetween(seenAt, today) < SNOOZE_DAYS) {
-      const worsened = Number.isFinite(seenSeverity) && Number.isFinite(flag.severity)
-        && flag.severity >= seenSeverity * REOPEN_ON_WORSENING;
+      const ruleKey = id.split(':')[0];
+      const isCount = COUNT_RULES.has(ruleKey);
+      const max = Number.isFinite(flag.severityMax) ? flag.severityMax : null;
+      const worsened = Number.isFinite(seenSeverity) && Number.isFinite(flag.severity) && (
+        isCount
+          // A count in a fixed window: a fixed step it can actually reach, or
+          // reaching the top of that window having been acknowledged lower.
+          ? (flag.severity >= seenSeverity + REOPEN_COUNT_STEP
+             || (max != null && flag.severity >= max * SATURATION_RATIO && seenSeverity < max * SATURATION_RATIO))
+          : flag.severity >= seenSeverity * REOPEN_ON_WORSENING
+      );
       if (!worsened) continue;
       out.push({ ...flag, id, kind: rule.kind || 'general', reopened: true });
       continue;

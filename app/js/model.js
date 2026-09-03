@@ -300,7 +300,7 @@ export function emptyEntry(key = dateKey(), symptoms = [], factors = []) {
  * Returns { entry, errors } — never throws, because a bad import should
  * degrade gracefully rather than nuke the user's history.
  */
-export function validateEntry(raw, symptoms = null, factors = null) {
+export function validateEntry(raw, symptoms = null, factors = null, opts = {}) {
   const errors = [];
   if (!raw || typeof raw !== 'object') return { entry: null, errors: ['not an object'] };
   if (typeof raw.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.date)) {
@@ -312,8 +312,10 @@ export function validateEntry(raw, symptoms = null, factors = null) {
     createdAt: Number(raw.createdAt) || Date.now(),
     updatedAt: Date.now(),
     notes: typeof raw.notes === 'string' ? raw.notes.slice(0, 2000) : '',
-    symptoms: validateSymptomRatings(raw.symptoms, symptoms),
-    factors: validateFactorAmounts(raw.factors, factors),
+    // keepUnknown preserves ratings for symptoms the user has stopped
+    // tracking, so re-saving an old day does not erase its history.
+    symptoms: validateSymptomRatings(raw.symptoms, opts.keepUnknown ? null : symptoms),
+    factors: validateFactorAmounts(raw.factors, opts.keepUnknown ? null : factors),
   };
   for (const [name, f] of Object.entries(FIELDS)) {
     const val = raw[name];

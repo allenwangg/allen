@@ -9,7 +9,7 @@
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
-import { createTrial, verdict, daysRemaining, DEFAULT_PAIRS } from './experiments.js';
+import { createTrial, verdict, daysRemaining, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
@@ -138,7 +138,7 @@ function recompute() {
   state.reportFlags = checkFlags(state.entries, flagCtx, dateKey(), { all: true });
 
   const running = state.trials.find((t) => t.status === 'running');
-  state.trialVerdict = running && daysRemaining(running, dateKey()) === 0
+  state.trialVerdict = running && isComplete(running, dateKey())
     ? verdict(running, state.entries, state.factors)
     : null;
 }
@@ -193,7 +193,7 @@ function render() {
 function safetyBanner(state) {
   let html = '';
   if (state.crisis) {
-    html += `<div class="card" style="border-color:var(--border-strong)">
+    html += `<div class="card" data-crisis-card style="border-color:var(--border-strong)">
       <h3 style="margin-bottom:.3em">${esc(SUPPORT.title)}</h3>
       <p class="muted">${esc(SUPPORT.body)}</p>
       <ul style="margin:0 0 10px;padding-left:18px">
@@ -315,7 +315,7 @@ const actions = {
     await store.deleteEntry(state.draft.date);
     state.entries = state.entries.filter((e) => e.date !== state.draft.date);
     state.entriesRev++;
-    state.draft = emptyEntry(state.draft.date);
+    state.draft = emptyEntry(state.draft.date, state.symptoms, state.factors);
     state.dirty = false;
     recompute();
     toast('Entry deleted');
@@ -334,12 +334,23 @@ const actions = {
   },
 
   'export-csv': async () => {
+    // Symptom and factor ids live outside FIELDS, so a header built from
+    // Object.keys(FIELDS) silently omitted every column the person actually
+    // came here to track — the export looked complete and was not.
     const fields = Object.keys(FIELDS);
-    const header = ['date', 'score', ...fields, 'notes'];
+    const syms = (state.symptoms || []).filter((x) => !x.archivedAt);
+    const facs = (state.factors || []).filter((x) => !x.archivedAt);
+    const header = ['date', 'score', ...fields,
+      ...syms.map((x) => `symptom: ${x.label}`),
+      ...facs.map((x) => `suspected: ${x.label}`),
+      'notes'];
     const ctx = profileCtx();
     const rows = state.entries.map((e) => {
       const s = scoreDay(e, ctx).score;
-      return [e.date, s, ...fields.map((f) => (e[f] ?? '')), csvEscape(e.notes || '')].join(',');
+      return [e.date, s, ...fields.map((f) => (e[f] ?? '')),
+        ...syms.map((x) => e.symptoms?.[x.id] ?? ''),
+        ...facs.map((x) => e.factors?.[x.id] ?? ''),
+        csvEscape(e.notes || '')].join(',');
     });
     download(`vitalarc-${dateKey()}.csv`, [header.join(','), ...rows].join('\n'), 'text/csv');
     toast('Exported CSV');
@@ -382,7 +393,11 @@ const actions = {
   'abandon-trial': async (el) => {
     const t = state.trials.find((x) => x.id === el.dataset.id);
     if (!t) return;
-    if (!confirm('Stop this trial? A part-finished trial cannot give you an answer.')) return;
+    const done = el.dataset.done === 'true';
+    const msg = done
+      ? 'Discard this result? The trial finished and has a valid answer; discarding it cannot be undone.'
+      : 'Stop this trial? A part-finished trial cannot give you an answer.';
+    if (!confirm(msg)) return;
     t.status = 'abandoned';
     t.endedAt = Date.now();
     await store.setMeta('trials', state.trials);
@@ -495,6 +510,11 @@ const actions = {
     state.sampleMode = false;
     state.symptoms = [];
     state.factors = [];
+    // A trial started during the tour measures a symptom that no longer
+    // exists; carrying it into the real log leaves an un-completable trial
+    // pointing at nothing.
+    state.trials = [];
+    state.dismissedFlags = {};
     state.profile = { age: 35, weightKg: 75, heightCm: null };
     state.draft = emptyEntry(dateKey(), state.symptoms, state.factors);
     state.dirty = false;
@@ -544,6 +564,10 @@ function download(filename, content, mime) {
 async function loadDraft(date) {
   const existing = await store.getEntry(date);
   const blank = emptyEntry(date, state.symptoms, state.factors);
+  // The stored day's own ratings win, INCLUDING ids no longer tracked. The
+  // settings copy promises "days you already logged keep their ratings", and
+  // saving a re-opened day used to drop every rating for a removed symptom —
+  // making that promise false the moment you edited an old day.
   state.draft = existing
     ? { ...blank, ...existing,
         symptoms: { ...blank.symptoms, ...(existing.symptoms || {}) },
@@ -558,8 +582,14 @@ async function saveDraft() {
     toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
-  const { entry } = validateEntry(state.draft, state.symptoms, state.factors);
+  const { entry } = validateEntry(state.draft, state.symptoms, state.factors, { keepUnknown: true });
   if (!entry) { toast('Could not save — invalid date.'); return false; }
+  if ((state.draft.notes || '').length > 2000 && entry.notes.length === 2000) {
+    // validateEntry caps notes at 2000 characters. Saying "Day saved" over a
+    // silent truncation is the same class of lie as claiming a save that did
+    // not happen.
+    toast(`Saved, but your note was cut to 2000 characters (you wrote ${state.draft.notes.length}).`);
+  }
   try {
     await store.putEntry(entry);
   } catch (err) {
@@ -670,7 +700,12 @@ function wire() {
 
     if (t.dataset.trial) {
       state.trialDraft[t.dataset.trial] = t.type === 'range' ? Number(t.value) : t.value;
-      render();
+      // Same lesson as the log form and the simulator: a full render during a
+      // drag replaces the slider and releases the pointer capture, so the
+      // "How long" control moved exactly one step and then stopped. Patch the
+      // readout in place; the change event re-renders when the drag ends.
+      if (t.type === 'range') updateTrialReadout(t);
+      else render();
       return;
     }
 
@@ -683,14 +718,24 @@ function wire() {
 
     if (t.id === 'log-date') {
       const d = t.value;
-      if (d && d <= dateKey()) persistDraftIfDirty().then(() => loadDraft(d)).then(render);
+      if (!d) return;
+      if (d > dateKey()) {
+        // The input has a max, but typing past it still fires input events.
+        // Silently ignoring them left the field showing a date the app was not
+        // editing, and the heading disagreeing with it.
+        toast('You can only log days that have happened.');
+        t.value = state.draft.date;
+        return;
+      }
+      persistDraftIfDirty().then(() => loadDraft(d)).then(render);
     }
   });
 
   // A slider drag ends -> now it's worth a full re-render for the charts.
   document.addEventListener('change', (ev) => {
     if (ev.target.dataset.trial) {
-      state.trialDraft[ev.target.dataset.trial] = ev.target.value;
+      state.trialDraft[ev.target.dataset.trial] =
+        ev.target.type === 'range' ? Number(ev.target.value) : ev.target.value;
       render();
       return;
     }
@@ -704,9 +749,18 @@ function wire() {
     try {
       const payload = JSON.parse(await file.text());
       const { imported, problems } = await store.importAll(payload, validateEntry);
+      // Re-read EVERYTHING the import may have written. Reading only entries
+      // left state.symptoms and state.factors empty, so the whole
+      // symptom-explanation feature was dead until a reload — and the next
+      // Settings write persisted that empty list over the imported catalogue,
+      // permanently destroying it.
       state.entries = await store.allEntries();
       state.entriesRev++;
       state.profile = (await store.getMeta('profile')) || state.profile;
+      state.symptoms = validateSymptoms((await store.getMeta('symptoms')) || []);
+      state.factors = validateFactors((await store.getMeta('factors')) || []);
+      const importedTrials = await store.getMeta('trials');
+      state.trials = Array.isArray(importedTrials) ? importedTrials : state.trials;
       // Rebuild the draft from the store: the import may have replaced the
       // very day the draft mirrors, and saving the stale pre-import draft
       // afterwards would clobber the imported entry.
@@ -737,6 +791,20 @@ function wire() {
   window.addEventListener('beforeunload', (ev) => {
     if (state.dirty) { ev.preventDefault(); ev.returnValue = ''; }
   });
+}
+
+/**
+ * Patch the trial-length readout in place during a drag: the day count, and
+ * the smallest p-value the chosen length could ever produce.
+ */
+function updateTrialReadout(input) {
+  const pairs = Number(input.value);
+  const out = input.closest('.field')?.querySelector('.field-value');
+  const lever = getLever(state.trialDraft.leverId || 'no-late-caffeine', state.factors);
+  const blockDays = lever?.blockDays || 2;
+  if (out) out.textContent = `${pairs * 2 * blockDays} days`;
+  const note = input.closest('.field')?.querySelector('.subtle strong');
+  if (note) note.textContent = `p = ${floorP(pairs).toFixed(3)}`;
 }
 
 /** Patch the simulator's readout numbers in place during a slider drag. */
@@ -842,8 +910,17 @@ if (typeof window !== 'undefined') window.__vitalarc = { state };
  */
 function watchForUpdate(reg) {
   if (!reg) return;
+  // Whether a worker was ALREADY controlling this page when it loaded.
+  //
+  // Checking navigator.serviceWorker.controller inside the handler is too
+  // late: the first install activates and calls clients.claim(), so by the
+  // time the statechange fires there IS a controller and the very first visit
+  // was told "a new version of VitalArc is ready" — a banner about an update
+  // that had just been installed for the first time, floating over the UI on
+  // every launch with nothing to apply.
+  const hadController = !!navigator.serviceWorker.controller;
   const offer = (worker) => {
-    if (!worker || !navigator.serviceWorker.controller) return;  // first install, nothing to replace
+    if (!worker || !hadController) return;   // nothing was there to replace
     let reloading = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (reloading) return;

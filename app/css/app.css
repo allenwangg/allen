@@ -156,7 +156,9 @@ a  { color: var(--accent); }
   padding: 7px 13px; border-radius: 999px; white-space: nowrap;
 }
 .tab:hover { background: var(--surface-2); color: var(--text); }
-.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-text); }
+/* The nav emits aria-current="page", not aria-selected — the old selector
+   matched nothing, so no section was ever marked as the current one. */
+.tab[aria-current="page"] { background: var(--accent); color: var(--accent-text); }
 .tab .lock { font-size: .72em; opacity: .8; margin-left: 4px; }
 
 /* ---------------- cards ---------------- */
@@ -415,12 +417,16 @@ textarea { min-height: 76px; resize: vertical; }
 .table-wrap { overflow-x: auto; }
 
 .toast {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(120%);
+  /* Hidden means hidden. A 120% translate only moves the pill about fifty
+     pixels, so a sixteen-pixel sliver stayed poking above the bottom edge of
+     every screen — swallowing taps there — for the entire life of the app. */
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(200%);
+  opacity: 0; pointer-events: none;
   background: var(--text); color: var(--bg); padding: 11px 20px; border-radius: 999px;
   font-weight: 600; font-size: .9rem; box-shadow: var(--shadow-lg); z-index: 100;
   transition: transform .3s cubic-bezier(.2,.9,.3,1); max-width: 90vw; text-align: center;
 }
-.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
 
 .update-banner {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
@@ -500,7 +506,10 @@ textarea { min-height: 76px; resize: vertical; }
    * on top of the report and duplicate its own "things I wanted to mention"
    * section. */
   .topbar, .no-print, .toast, .lock-overlay,
-  .banner, [data-flag], #update-banner, .tabs { display: none !important; }
+  .banner, [data-flag], #update-banner, .tabs,
+  /* The crisis support card is for the person, on their device. It is not
+     part of a summary they hand to anyone. */
+  [data-crisis-card] { display: none !important; }
 
   body { background: #fff; color: #111; font-size: 11.5px; }
   .app { max-width: none; padding: 0; }

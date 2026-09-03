@@ -9,7 +9,7 @@
 
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
-import { LEVERS, leversFor, getLever, trialDays, trialEndDate, daysRemaining, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { LEVERS, leversFor, getLever, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
 import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
 
@@ -70,7 +70,7 @@ export function todayView(state) {
   <div class="grid grid-2">
     <div class="card">
       <div class="card-head"><h2>How your habits have been</h2><div class="spacer"></div>
-        <span class="subtle">${t.score ?? '--'} today</span></div>
+        <span class="subtle">${t.score ?? '--'} on ${t.date === dateKey() ? 'today' : esc(t.date)}</span></div>
       ${lineChart(report.scored.map((x) => ({ date: x.date, value: x.score })), {
         smooth: state.smoothed, bands: [{ from: 70, to: 100 }],
         label: 'Habit score over time',
@@ -137,12 +137,12 @@ function todayFocus(state, running) {
   if (running) {
     const lever = getLever(running.leverId, state.factors);
     const arm = schedule(running).find((d) => d.date === dateKey())?.arm;
-    if (arm) {
+    if (lever && arm) {
       return `<div class="card">
         <div class="card-head"><h2>Today's job</h2><div class="spacer"></div>
           <span class="pill pill-info">trial day</span></div>
         <p style="font-size:1.1rem;margin-bottom:6px"><strong>${arm === 'on' ? esc(lever.onText) : esc(lever.offText)}</strong>.</p>
-        <p class="muted">You are ${daysRemaining(running, dateKey())} days from the end of your
+        <p class="muted">You are ${daysRemaining(running, dateKey())} ${daysRemaining(running, dateKey()) === 1 ? 'day' : 'days'} from the end of your
         ${esc(lever.label.toLowerCase())} trial. Doing the OFF days properly matters as much as the
         ON days — without the contrast there is nothing to compare.</p>
         <button class="btn btn-sm" data-action="goto" data-view="trials">See the trial</button>
@@ -626,18 +626,31 @@ export function reportView(state) {
     const firstHalf = vals.slice(0, half), secondHalf = vals.slice(half);
     const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
     const shift = mean(secondHalf) - mean(firstHalf);
+    // Below a fortnight there are not two halves worth comparing, and the
+    // report was telling clinicians a symptom had "got worse" on the strength
+    // of a single rated day.
+    const enoughForTrend = vals.length >= 14;
     return {
       sym, logged: vals.length, anyDays, badDays,
       pctAny: Math.round((anyDays / vals.length) * 100),
       pctBad: Math.round((badDays / vals.length) * 100),
-      trend: shift > 0.3 ? 'worse' : shift < -0.3 ? 'better' : 'about the same',
+      enoughForTrend,
+      trend: !enoughForTrend ? 'too early to say'
+        : shift > 0.3 ? 'worse' : shift < -0.3 ? 'better' : 'about the same',
       shift: Math.round(shift * 10) / 10,
       series: entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null })),
     };
   };
 
   const summaries = symptoms.map(symptomSummary).filter(Boolean);
-  const main = primary ? summaries.find((x) => x.sym.id === primary.id) : null;
+  // The chosen main symptom may have no logged days yet — someone adds a new
+  // one and marks it as the main concern before recording a single day. Falling
+  // through to `null` there removed the main section AND, because the
+  // "everything else" table required more than one summary, silently dropped
+  // every other symptom from the report as well. Fall back to whichever
+  // symptom actually has data.
+  const main = (primary && summaries.find((x) => x.sym.id === primary.id)) || summaries[0] || null;
+  const others = summaries.filter((x) => !main || x.sym.id !== main.sym.id);
 
   const objective = [
     { label: 'Weight', field: 'bodyweightKg', unit: 'kg' },
@@ -675,19 +688,21 @@ export function reportView(state) {
       <h2>Main problem: ${esc(main.sym.label)}</h2>
       <p class="muted">Present on <strong>${main.anyDays} of ${main.logged}</strong> logged days
       (${main.pctAny}%), and severe or worse on <strong>${main.badDays}</strong> of them
-      (${main.pctBad}%). Over the period it has got <strong>${esc(main.trend)}</strong>${
-        main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale, second half vs first)` : ''}.</p>
+      (${main.pctBad}%). ${main.enoughForTrend
+        ? `Over the period it has got <strong>${esc(main.trend)}</strong>${
+            main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale, second half vs first)` : ''}.`
+        : `That is too few days to say anything about a direction yet.`}</p>
       ${lineChart(main.series, {
         min: 0, max: 4, yTicks: [0, 1, 2, 3, 4], label: `${main.sym.label} severity over time`,
         width: state.narrow ? 380 : 720, height: state.narrow ? 200 : 220,
       })}
     </div>` : ''}
 
-    ${summaries.length > 1 ? `<div class="card">
+    ${others.length ? `<div class="card">
       <h2>Everything else I track</h2>
       <div class="table-wrap"><table class="table">
         <thead><tr><th>Symptom</th><th class="num">Days present</th><th class="num">Days severe+</th><th>Direction</th></tr></thead>
-        <tbody>${summaries.filter((x) => !main || x.sym.id !== main.sym.id).map((x) => `<tr>
+        <tbody>${others.map((x) => `<tr>
           <td>${esc(x.sym.label)}</td>
           <td class="num">${x.anyDays}/${x.logged} (${x.pctAny}%)</td>
           <td class="num">${x.badDays}</td>
@@ -1002,15 +1017,24 @@ function trialOutcomeOptions(state) {
 
 function activeTrialCard(state, t) {
   const lever = getLever(t.leverId, state.factors);
+  if (!lever) {
+    return `<div class="card">
+      <div class="card-head"><h2>An unfinished trial</h2><div class="spacer"></div>
+        <span class="pill pill-info">can't continue</span></div>
+      <p class="muted">This trial was changing something you have since stopped tracking, so it
+      cannot be finished or judged. Your logged days are untouched.</p>
+      <button class="btn btn-danger btn-sm" data-action="abandon-trial" data-id="${esc(t.id)}">Close it</button>
+    </div>`;
+  }
   const left = daysRemaining(t, dateKey());
-  const done = left === 0;
+  const done = isComplete(t, dateKey());
   const todayArm = schedule(t).find((d) => d.date === dateKey())?.arm;
   const v = done ? state.trialVerdict : null;
 
   return `<div class="card">
     <div class="card-head"><h2>${esc(lever.label)} &rarr; ${esc(t.outcomeLabel || t.outcome)}</h2>
       <div class="spacer"></div>
-      <span class="pill ${done ? 'pill-good' : 'pill-info'}">${done ? 'finished' : `${left} days to go`}</span></div>
+      <span class="pill ${done ? 'pill-good' : 'pill-info'}">${done ? 'finished' : `${left} ${left === 1 ? 'day' : 'days'} to go`}</span></div>
 
     ${!done && todayArm ? `<div class="banner ${todayArm === 'on' ? 'banner-pro' : 'banner-info'}">
       <strong>Today:</strong>
@@ -1029,7 +1053,7 @@ function activeTrialCard(state, t) {
 
     <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
       ${done ? `<button class="btn btn-primary" data-action="finish-trial" data-id="${esc(t.id)}">Save this result</button>` : ''}
-      <button class="btn btn-danger btn-sm" data-action="abandon-trial" data-id="${esc(t.id)}">${done ? 'Discard' : 'Stop this trial'}</button>
+      <button class="btn btn-danger btn-sm" data-action="abandon-trial" data-id="${esc(t.id)}" data-done="${done}">${done ? 'Discard this result' : 'Stop this trial'}</button>
     </div>
   </div>`;
 }
@@ -1055,7 +1079,7 @@ function verdictBlock(v) {
     <h3 style="margin:.2em 0 .4em">${esc(v.headline)}</h3>
     <p class="muted">${esc(v.body)}</p>
     ${v.caveat ? `<p class="disclaimer">${esc(v.caveat)}</p>` : ''}
-    ${v.analysis?.status === 'analysed' ? `<div class="insight-stats">
+    ${v.analysis?.status === 'analysed' && ['helped', 'hurt', 'no-effect'].includes(v.kind) ? `<div class="insight-stats">
       <span>on: ${v.analysis.meanOn}</span>
       <span>off: ${v.analysis.meanOff}</span>
       <span>difference: ${v.analysis.observedDiff}</span>
