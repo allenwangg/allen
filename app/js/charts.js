@@ -210,12 +210,15 @@ export function scoreRing(score, opts = {}) {
  * ------------------------------------------------------------------ */
 
 export function barChart(items, opts = {}) {
-  const { width = 720, barHeight = 26, gap = 8, pad = { t: 8, r: 14, b: 8, l: 118 }, label = 'Comparison', signed = false } = opts;
+  const { width = 720, barHeight = 26, gap = 8, pad = { t: 8, r: 14, b: 8, l: 118 }, label = 'Comparison', signed = false, max = null } = opts;
   if (!items.length) return emptyChart(width, 120, 'Nothing to compare yet.');
 
   const height = pad.t + pad.b + items.length * (barHeight + gap) - gap;
   const iw = width - pad.l - pad.r;
-  const maxAbs = Math.max(...items.map((i) => Math.abs(i.value ?? 0)), 1);
+  // An explicit max fixes the scale to the measurement's own range, so bars
+  // stay comparable between charts instead of each one being rescaled to
+  // whatever its own largest value happens to be.
+  const maxAbs = max != null ? max : Math.max(...items.map((i) => Math.abs(i.value ?? 0)), 1);
   const zeroX = signed ? pad.l + iw / 2 : pad.l;
   const scale = signed ? (iw / 2) / maxAbs : iw / maxAbs;
 

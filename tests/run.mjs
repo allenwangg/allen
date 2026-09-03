@@ -9,7 +9,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -626,13 +626,6 @@ t('gaps break pairs rather than interpolating', () => {
   const gapped = es.filter((_, i) => i % 2 === 0);   // every other day missing
   const res = discover(gapped, { lags: [1] });
   ok(res.status === 'insufficient-data' || res.findings.length === 0, 'must not fabricate pairs across gaps');
-});
-
-t('weekdayPattern finds a planted bad Friday', () => {
-  const es = synth(120, 11, (e, i, r) => { e.sleepHours = 7 + r() * 0.5; e.steps = 8000; });
-  const scoreFn = (e) => (new Date(...e.date.split('-').map((v, i) => (i === 1 ? +v - 1 : +v))).getDay() === 5 ? 60 : 78);
-  const wp = weekdayPattern(es, scoreFn);
-  eq(wp.worst.day, 'Friday');
 });
 
 t('conditionalDetrend leaves an untrended series alone', () => {
@@ -1397,6 +1390,81 @@ t('the null verdict states the floor rather than claiming proof', () => {
   eq(v.kind, 'no-effect');
   ok(/does not prove it does nothing/i.test(v.caveat), 'must not overclaim a null');
   ok(v.caveat.includes(String(v.analysis.floorP)), 'must state the smallest p it could have found');
+});
+
+
+t('a real weekday pattern is found, and a fake one is not', () => {
+  const mk = (bump, dow, seed) => {
+    const r = mulberry32(seed); const es = []; let z = 0;
+    for (let i = 0; i < 140; i++) {
+      z = 0.5 * z + Math.sqrt(0.75) * (r() + r() + r() + r() - 2) * 1.2;
+      const date = addDays('2026-01-05', i);
+      const [y, m, d] = date.split('-').map(Number);
+      const isDow = new Date(y, m - 1, d).getDay() === dow;
+      es.push({ date, symptoms: { s_a: Math.max(0, Math.min(4, Math.round(1.4 + z + (isDow ? bump : 0)))) } });
+    }
+    return es;
+  };
+  const hit = weekdayEffect(mk(1.2, 1, 4242), 's_a');
+  eq(hit.worst.day, 'Monday');
+  ok(hit.p <= 0.01, `planted Monday effect should be found, got p=${hit.p}`);
+
+  // The same generator with no bump must not produce a confident claim.
+  let leaked = 0;
+  for (let k = 0; k < 30; k++) if (weekdayEffect(mk(0, 1, 900 + k * 7919), 's_a').p <= 0.05) leaked++;
+  ok(leaked <= 4, `too many false weekday patterns: ${leaked}/30 at p<=.05`);
+});
+
+t('a weekday claim needs enough days, enough of each day, and enough symptom', () => {
+  const flat = (n, val, seed) => {
+    const r = mulberry32(seed);
+    return Array.from({ length: n }, (_, i) => ({
+      date: addDays('2026-01-05', i), symptoms: { s_a: val == null ? (r() < 0.5 ? 0 : 1) : val },
+    }));
+  };
+  eq(weekdayEffect(flat(14, null, 1), 's_a'), null, 'under three weeks says nothing');
+  eq(weekdayEffect(flat(60, 2, 2), 's_a'), null, 'a constant series has no pattern');
+  // Present on only a handful of days: a perfect-looking week that means nothing.
+  const sparse = Array.from({ length: 60 }, (_, i) => ({ date: addDays('2026-01-05', i), symptoms: { s_a: i % 20 === 0 ? 3 : 0 } }));
+  eq(weekdayEffect(sparse, 's_a'), null, 'three flare days cannot carry a weekday claim');
+  // Weekends only — five weekdays never observed.
+  const weekendsOnly = [];
+  for (let i = 0; i < 120; i++) {
+    const [y, m, d] = addDays('2026-01-05', i).split('-').map(Number);
+    const dw = new Date(y, m - 1, d).getDay();
+    if (dw === 0 || dw === 6) weekendsOnly.push({ date: addDays('2026-01-05', i), symptoms: { s_a: dw === 0 ? 3 : 1 } });
+  }
+  eq(weekdayEffect(weekendsOnly, 's_a'), null, 'cannot rank days that were never logged');
+});
+
+t('the same log always gives the same weekday p-value', () => {
+  const r = mulberry32(77); const es = [];
+  for (let i = 0; i < 100; i++) es.push({ date: addDays('2026-01-05', i), symptoms: { s_a: Math.round(r() * 4) } });
+  const a = weekdayEffect(es, 's_a'), b = weekdayEffect(es, 's_a');
+  eq(a.p, b.p, 'a p-value that moves between renders is not a p-value');
+  eq(a.eta2, b.eta2);
+});
+
+t('testing several symptoms for weekday patterns is corrected for', () => {
+  const r = mulberry32(31337);
+  const es = [];
+  for (let i = 0; i < 140; i++) {
+    const date = addDays('2026-01-05', i);
+    const [y, m, d] = date.split('-').map(Number);
+    const isMon = new Date(y, m - 1, d).getDay() === 1;
+    const sym = { s_real: Math.max(0, Math.min(4, Math.round(1.4 + (r() + r() - 1) + (isMon ? 1.4 : 0)))) };
+    for (const id of ['s_n1', 's_n2', 's_n3', 's_n4', 's_n5']) sym[id] = Math.round(r() * 3);
+    es.push({ date, symptoms: sym });
+  }
+  const syms = [{ id: 's_real', label: 'Migraine', primary: true },
+    ...['s_n1', 's_n2', 's_n3', 's_n4', 's_n5'].map((id) => ({ id, label: id }))];
+  const out = weekdayEffects(es, syms);
+  ok(out.length >= 1, 'the planted pattern should survive correction');
+  eq(out[0].field, 's_real');
+  eq(out[0].worst.day, 'Monday');
+  ok(out.every((w) => w.pAdjusted >= w.p), 'correction can only ever raise a p-value');
+  // An archived symptom is not tested at all.
+  eq(weekdayEffects(es, syms.map((x) => ({ ...x, archivedAt: 1 }))).length, 0);
 });
 
 /* ================= report ================= */

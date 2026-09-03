@@ -525,3 +525,6 @@ textarea { min-height: 76px; resize: vertical; }
   .chart { break-inside: avoid; page-break-inside: avoid; }
 }
 }
+
+/* Divider between stacked results inside one card. */
+.sep { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }

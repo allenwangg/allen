@@ -7,7 +7,7 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT } from './model.js';
+import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
@@ -389,19 +389,29 @@ export function insightsView(state) {
   const res = state.insights;
   const wp = state.weekday;
 
-  const weekdayCard = wp ? `<div class="card">
-    <div class="card-head"><h2>Your week</h2></div>
-    ${barChart(wp.stats.filter((s) => s.mean != null).map((s) => ({
-      label: s.day, value: Math.round((s.mean - wp.overall) * 10) / 10,
-      display: `${s.mean.toFixed(1)} (${s.mean >= wp.overall ? '+' : ''}${(s.mean - wp.overall).toFixed(1)})`,
-    })), {
-      signed: true, label: 'Score by weekday, relative to your average',
-      width: state.narrow ? 380 : 720,
-      pad: state.narrow ? { t: 8, r: 14, b: 8, l: 78 } : { t: 8, r: 14, b: 8, l: 118 },
-    })}
-    <p class="muted" style="margin-top:10px">Your best day is <strong>${esc(wp.best.day)}</strong> (${wp.best.mean}) and your worst is
-    <strong>${esc(wp.worst.day)}</strong> (${wp.worst.mean}) — a spread of ${wp.spread} points.
-    Most people find one specific day is quietly costing them; fixing that one day is usually easier than changing every day.</p>
+  const weekdayCard = wp && wp.length ? `<div class="card">
+    <div class="card-head"><h2>When it lands in the week</h2></div>
+    ${wp.map((w) => `
+      ${barChart(w.byDay.filter((b) => b.mean != null).map((b) => ({
+        // Charted from zero, not from the best day: severity is an absolute
+        // 0-4 scale, and anchoring at the minimum made a 1.9-vs-0.7 gap look
+        // like a fourfold one.
+        label: b.day, value: b.mean, display: `${b.mean.toFixed(1)}`,
+      })), { max: SEVERITY_MAX,
+        label: `${w.label} by day of the week, averaged over ${w.n} logged days`,
+        width: state.narrow ? 380 : 720,
+        pad: state.narrow ? { t: 8, r: 14, b: 8, l: 78 } : { t: 8, r: 14, b: 8, l: 118 },
+      })}
+      <p class="muted" style="margin-top:10px"><strong>${esc(w.label)}</strong> is worst on
+      <strong>${esc(w.worst.day)}</strong> (${w.worst.mean.toFixed(1)} on a 0&ndash;4 scale) and
+      best on <strong>${esc(w.best.day)}</strong> (${w.best.mean.toFixed(1)}) &mdash; a spread of
+      ${w.spread.toFixed(1)} points. The day of the week accounts for
+      ${Math.round(w.eta2 * 100)}% of how much it varies.</p>
+      <div class="insight-stats"><span>&eta;&sup2; = ${w.eta2}</span><span>p<sub>adj</sub> = ${fmtP(w.pAdjusted)}</span><span>n = ${w.n}</span></div>
+    `).join('<hr class="sep">')}
+    <p class="subtle">This says when it happens, not why. A day of the week cannot cause anything
+    on its own &mdash; it stands in for whatever is different about that day, which is worth
+    thinking about and worth mentioning at an appointment.</p>
   </div>` : '';
 
   // A user without enough data yet gets the explanation unblurred, whatever
@@ -724,6 +734,23 @@ export function reportView(state) {
       </table></div>
     </div>` : ''}
 
+    ${(state.weekday || []).length ? `<div class="card">
+      <h2>When it lands in the week</h2>
+      <p class="muted">Day-of-week differences that held up against a permutation test, corrected
+      for testing every symptom I track. A weekday is not a cause &mdash; it stands in for whatever
+      is different about those days.</p>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Symptom</th><th>Worst day</th><th>Best day</th><th class="num">Spread</th><th class="num">Share of variation</th><th class="num">p (corrected)</th></tr></thead>
+        <tbody>${(state.weekday || []).map((w) => `<tr>
+          <td>${esc(w.label)}</td>
+          <td>${esc(w.worst.day)} (${w.worst.mean.toFixed(1)})</td>
+          <td>${esc(w.best.day)} (${w.best.mean.toFixed(1)})</td>
+          <td class="num">${w.spread.toFixed(1)}</td>
+          <td class="num">${Math.round(w.eta2 * 100)}%</td>
+          <td class="num">${w.pAdjusted < 0.0001 ? '&lt;0.0001' : w.pAdjusted}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>` : ''}
+
     ${objective.length ? `<div class="card">
       <h2>Measurements</h2>
       <div class="table-wrap"><table class="table">
@@ -808,7 +835,9 @@ export function reportView(state) {
       p-values come from a permutation null (circular shifts plus a moving-block bootstrap) and
       are corrected for multiple comparisons across every relationship tested, by
       Benjamini-Hochberg at a 10% false-discovery rate. Confidence intervals
-      use an effective sample size adjusted for autocorrelation. Trials are block-randomised with
+      use an effective sample size adjusted for autocorrelation. Day-of-week differences are tested by
+      shuffling the day labels within each symptom and are corrected across symptoms the same way.
+      Trials are block-randomised with
       the outcome fixed in advance and analysed by exact randomisation test.</p>
       <p class="subtle">This was produced by a self-tracking app with no clinical input. It is a
       record of what I noticed and measured, not an assessment of what is wrong.</p>

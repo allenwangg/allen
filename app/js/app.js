@@ -8,7 +8,7 @@
 
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
-import { discover, weekdayPattern, alignedPairs } from './insights.js';
+import { discover, weekdayEffects, alignedPairs } from './insights.js';
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
@@ -116,13 +116,21 @@ function recompute() {
       || symptomsKey !== state._insightsSymptoms
       || factorsKey !== state._insightsFactors) {
     state.insights = discover(state.entries, { symptoms: state.symptoms, factors: state.factors });
+    // Per-symptom, not per-score: after the pivot the composite score is not
+    // what anyone is here for, and "your Fridays cost you 6 points" was never
+    // significance-tested at all — it named a worst day for everybody.
+    //
+    // Inside the memo, not after it: 3000 shuffles per symptom is 160ms on a
+    // seven-symptom, six-month log, and recompute() runs on every slider drag.
+    // Its inputs are exactly the memo key's, so there is nothing to recompute
+    // between edits anyway.
+    state.weekday = weekdayEffects(state.entries, state.symptoms);
     buildPairCache();
     state._insightsRev = state.entriesRev;
     state._insightsSymptoms = symptomsKey;
     state._insightsFactors = factorsKey;
   }
 
-  state.weekday = weekdayPattern(state.visible, (e) => scoreDay(e, ctx).score);
   state.leverage = topLeverage(state.entries, ctx);
   state.simulation = simulate(state.entries, state.simChanges, ctx);
   state.draftScore = scoreDay(state.draft, ctx);

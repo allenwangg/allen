@@ -289,3 +289,72 @@ trial's coins could have landed, so fewer than six block-pairs cannot produce a
 significant result however large the effect, and the app refuses to create one.
 
 Run `npm test` to reproduce every number in this document.
+
+## The weekday, reported instead of only removed
+
+Guard 5 measures each series' day-of-week effect and subtracts it where it is
+strong enough, so that two habits sharing a weekly rhythm do not correlate
+through the calendar. For a long time that measurement was used to clean the
+data and then discarded — which threw away one of the most useful things a log
+can say. "Your migraines are a weekend thing" does not point at a habit; it
+points at something structural about those days, and it is worth an appointment.
+
+The app now reports it, per symptom, with a test attached.
+
+**What it replaced.** The old version scored the composite health score by
+weekday and told everybody their worst day, with no significance test at all —
+best-mean-minus-worst-mean, which noise produces every time. It also carried
+the line "most people find one specific day is quietly costing them", which was
+never measured and is not the kind of claim this app makes.
+
+**Why a plain shuffle, when the correlation engine next door uses circular
+shifts.** Circular shifts are right there because they preserve each series'
+own structure while destroying the alignment *between* two series. Here there
+is one series, and its 7-day periodicity *is* the hypothesis — and a circular
+shift preserves periodicity. Shifting a series whose Mondays are bad simply
+makes some other weekday the bad one, with almost the same η², so the null is
+nearly invariant under the alternative it is meant to detect.
+
+Measured over 200 datasets of 120 days with a real 1-point Monday effect:
+
+| lag-1 autocorrelation | circular shift | free shuffle |
+|---|---|---|
+| 0.0 | 0.46 | 0.99 |
+| 0.4 | 0.50 | 0.99 |
+| 0.6 | 0.57 | 0.99 |
+| 0.8 | 0.62 | 0.99 |
+
+**The cost of the shuffle, measured rather than assumed.** A free shuffle
+destroys the series' autocorrelation, which is normally the reason to avoid
+one. Here the error runs in the safe direction: runs of bad days land across
+all seven weekday buckets, because consecutive days are always in different
+buckets, so the observed η² is if anything suppressed relative to the shuffled
+null. False-positive rate at p ≤ .05, 1000 datasets per cell, on series with no
+weekday structure at all:
+
+| condition | P(p ≤ .05) |
+|---|---|
+| autocorrelation 0 | 0.046 |
+| autocorrelation 0.5 | 0.013 |
+| autocorrelation 0.75 | 0.002 |
+| autocorrelation 0.85 | 0.000 |
+| only 70% of days logged | 0.021 |
+| symptom nearly always absent | 0.030 |
+| symptom nearly always present | 0.029 |
+
+Nominal where it matters and conservative everywhere else — at the cost of
+missing real effects in the most strongly clustered series.
+
+**A hypothesis that did not survive contact with measurement.** A 28-day cycle
+is exactly four weeks, so it looked as though a monthly symptom cycle would
+alias onto the weekly grid and manufacture a weekday pattern. It does not: each
+weekday collects days spaced 7 apart, which sample the full cycle at four
+phases that average out. Measured false-positive rate on a real 28-day cycle
+with no weekday cause: 0.015. The concern was real enough to test and wrong.
+
+**The other guards still apply.** Testing seven symptoms and reporting the one
+with the best-looking week is the same multiple-comparisons trap the rest of
+the engine exists to avoid, so the same Benjamini-Hochberg correction runs
+across the family. A claim also needs 21 logged days, at least three
+observations on six of the seven weekdays, and at least seven days on which the
+symptom was actually present — three flare days make a perfect-looking week.

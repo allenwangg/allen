@@ -848,6 +848,30 @@ console.log("\n--- the example-data tour ---");
   }
   console.log('  a finding carries straight into a pre-filled trial:', prefilled.lever);
 
+  // The weekday finding has to reach BOTH surfaces. It is computed once in
+  // recompute() and read by two views, which is exactly the shape of wiring
+  // that has silently broken before.
+  await show(tp, 'insights');
+  const wd = await tp.evaluate(() => {
+    const h = [...document.querySelectorAll('#main h2')].find(x => /lands in the week/i.test(x.textContent));
+    return h ? h.closest('.card').innerText : null;
+  });
+  if (!wd) throw new Error('the sample log has a weekday pattern but the insights view does not show it');
+  if (!/p.{0,4}adj/i.test(wd)) throw new Error('the weekday card states no corrected p-value');
+  const worstDay = (wd.match(/is worst on (\w+)/) || [])[1];
+  if (!worstDay) throw new Error('the weekday card names no worst day: ' + wd.slice(0, 200));
+
+  await show(tp, 'report');
+  const inReport = await tp.evaluate(() => {
+    const h = [...document.querySelectorAll('#print-report h2')].find(x => /lands in the week/i.test(x.textContent));
+    return h ? h.closest('.card').innerText : null;
+  });
+  if (!inReport) throw new Error('the weekday finding never reaches the printed report');
+  if (!inReport.includes(worstDay)) {
+    throw new Error(`report and insights disagree on the worst day (${worstDay} not in report)`);
+  }
+  console.log('  weekday pattern reaches insights and the report, agreeing on:', worstDay);
+
   const facRows = await tp.evaluate(async () => {
     const { store } = await import('./js/store.js');
     return ((await store.getMeta('factors')) || []).length;

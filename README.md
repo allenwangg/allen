@@ -16,7 +16,7 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 135 unit tests + the copy guard, no dependencies
+npm test          # 138 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run stamp-sw  # before deploying — see below
 ```
@@ -41,6 +41,10 @@ No build step. The app is ES modules served as they are.
   the end. This is the only part of the app that can support the sentence
   "this helped". Every finding that names something you can deliberately change
   offers the trial that would settle it, pre-filled.
+- **Notices when it lands.** If a symptom is reliably worse on particular days
+  of the week, it says so — tested, and corrected for the fact that it looks at
+  every symptom you track. A weekday is not a cause, but it is a strong hint
+  about what is different on those days.
 - **Notices what builds up.** Some things do not act in a day. Trailing weekly
   averages catch a symptom that follows a bad *week* — sleep debt, accumulated
   stress — which single-day correlation cannot see at all.
@@ -75,7 +79,7 @@ app/
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  135 unit tests, a copy guard, a browser walkthrough
+tests/                  138 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.
