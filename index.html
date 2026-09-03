@@ -1500,6 +1500,21 @@ $("#defendBtn").addEventListener("click", () => {
   if (t) openBid(t);
 });
 
+/* Held across the ledger fetch so a dare link can be re-resolved the moment the
+   real board lands. `final` is the give-up path: open a fresh listing instead. */
+let pendingTake = null;
+function resolveTake(final){
+  if (!pendingTake) return false;
+  const t = state.entries.find(e => e.name.toLowerCase() === pendingTake.toLowerCase());
+  if (t){ pendingTake = null; openBid(t.id); return true; }
+  if (final){
+    const missing = pendingTake; pendingTake = null;
+    openBid(null);
+    toast(`⚔️ ${esc(missing)} isn't on the board any more — take their spot instead.`);
+  }
+  return false;
+}
+
 /* ============ viral loops ============ */
 const SHARE_LINK = SITE + "?r=x";              // tag shares so analytics shows what X drives
 function tweetIntent(text){
@@ -1696,12 +1711,21 @@ if (!CONFIG.STRIPE_PAYMENT_LINK) $("#demoRibbon").classList.add("show");
   const takeName = new URLSearchParams(location.search).get("take");
   if (!takeName) return;
   history.replaceState(null, "", location.pathname);
-  /* after first render + ledger merge, so the target exists */
-  setTimeout(()=>{
-    const t = state.entries.find(e => e.name.toLowerCase() === takeName.toLowerCase());
-    if (t){ openBid(t.id); }
-    else { openBid(null); toast(`⚔️ ${esc(takeName)} isn't on the board any more — take their spot instead.`); }
-  }, 600);
+  /* A dare link is the landing step of the entire viral loop, and on a live
+     board its target does not exist until the Stripe ledger has been fetched —
+     a network round trip, not a fixed 600ms. The old timer resolved against the
+     demo seed board and then never retried (the URL had already been wiped, so
+     the name survived only in this closure), which told the visitor their target
+     "isn't on the board any more" and dropped them on a blank form. Now the name
+     is held and re-resolved on every ledger merge; the clock only decides when
+     to give up. */
+  pendingTake = takeName;
+  /* On a board with no ledger the entries are already there, so a short tick is
+     the whole story. On a live board the authoritative answer arrives with the
+     ledger, so giving up is driven by that arrival rather than by a guessed
+     duration — with one long backstop for a ledger that never answers at all. */
+  setTimeout(()=>resolveTake(!CONFIG.BOARD_FEED_URL), 600);
+  setTimeout(()=>resolveTake(true), 20000);
 })();
 
 /* Stripe return: thank the bidder the moment they land back */
@@ -1738,13 +1762,29 @@ if (CONFIG.GOATCOUNTER){
 /* Bids are encoded into Stripe's client_reference_id, so /api/board can
    rebuild the entire leaderboard from completed payments — no database. */
 function encodeRef(name, url, decree, defend){
-  const parts = [name.slice(0,24), (url||"").slice(0,48), (decree||"").slice(0,48)];
-  /* Only appended when set, so existing three-field refs stay byte-identical. */
-  if (defend > 0) parts.push(String(Math.min(999999, Math.floor(defend))));
-  const raw = parts.map(s => String(s).replace(/\|/g, "/")).join("|");
-  const b64 = btoa(unescape(encodeURIComponent(raw)))
-    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-  return ("b64." + b64).slice(0, 200);
+  /* The 200-char cap is on the ENCODED ref, but the fields were sliced by code
+     unit — so any non-Latin name or decree overflowed and the base64 was cut
+     mid-character. The two decoders then disagreed about the wreckage: this one
+     threw and returned "Anonymous" while the server recovered the real name, so
+     a paying customer showed as Anonymous on the board they paid for, and every
+     corrupted bid pooled into one shared "Anonymous" listing. Shrink the inputs
+     by whole characters until the encoded ref fits, and never cut the base64. */
+  const encode = parts => "b64." + btoa(unescape(encodeURIComponent(
+      parts.map(x => String(x).replace(/\|/g, "/")).join("|")
+    ))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  const chars = (str, n) => [...String(str || "")].slice(0, n).join("");
+  const budget = defend > 0 ? String(Math.min(999999, Math.floor(defend))) : null;
+  let n = chars(name, 24), u = chars(url, 48), d = chars(decree, 48);
+  const drop = str => [...str].slice(0, -1).join("");
+  let ref = encode(budget ? [n,u,d,budget] : [n,u,d]);
+  while (ref.length > 200){
+    if (d) d = drop(d);
+    else if (u) u = drop(u);
+    else if ([...n].length > 1) n = drop(n);
+    else break;                                   /* a bare name always fits */
+    ref = encode(budget ? [n,u,d,budget] : [n,u,d]);
+  }
+  return ref;
 }
 function decodeRef(ref){
   if (!ref) return {name:"Anonymous", url:"", decree:"", defend:0};
@@ -1752,7 +1792,11 @@ function decodeRef(ref){
   const body = ref.slice(4);
   if (!/^[A-Za-z0-9\-_]+$/.test(body)) return {name:"Anonymous", url:"", decree:"", defend:0};
   try {
-    const raw = decodeURIComponent(escape(atob(body.replace(/-/g,"+").replace(/_/g,"/"))));
+    /* TextDecoder substitutes U+FFFD on a malformed tail exactly as the server's
+       Buffer.toString("utf8") does. escape/decodeURIComponent threw instead, so
+       the two sides used to disagree about the same paid session. */
+    const bin = atob(body.replace(/-/g,"+").replace(/_/g,"/"));
+    const raw = new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
     const [name,url,decree,defend] = raw.split("|");
     return {name:(name||"Anonymous").slice(0,30), url:(url||"").slice(0,60), decree:(decree||"").slice(0,60),
             defend: Math.max(0, Math.min(999999, parseInt(defend,10) || 0))};
@@ -1817,6 +1861,39 @@ function goLive(){
     "we offer a one-tap retake priced exactly to win — up to the budget you committed.";
   const dh = $("#defendHelp");
   if (dh) dh.textContent = "If outbid, we'll offer a one-tap retake priced to win, up to:";
+}
+
+/* The Hall of Fame was written only by rollover(), which needs a browser to be
+   open across midnight — so on a live board it was empty for every new visitor,
+   and stayed empty forever, while the ledger held every past day in full. The
+   Oracle silently suffered for it too: it scores a prophecy by looking up the
+   picked day here, so on a live board no prophecy ever resolved. The ledger is
+   replayed in full on every poll anyway, so the record is derived from it. */
+function hallFromLedger(confirmed){
+  const byDay = new Map();
+  for (const c of confirmed){
+    if (!c || !c.id) continue;
+    const amount = Math.floor(+c.amount || 0);
+    if (amount < 1) continue;
+    const day = new Date((c.at || 0) * 1000).toISOString().slice(0, 10);
+    if (day >= todayStr()) continue;              /* today is not history yet */
+    const { name } = decodeRef(c.ref);
+    if (!byDay.has(day)) byDay.set(day, new Map());
+    const m = byDay.get(day);
+    m.set(name, (m.get(name) || 0) + amount);
+  }
+  const hall = [];
+  for (const [date, m] of byDay){
+    let best = null;
+    for (const [name, amount] of m){
+      /* Ties go to nobody new: the first name seen for the day keeps it, which
+         matches the board's own first-paid-wins tiebreak. */
+      if (!best || amount > best.amount) best = { date, name, amount };
+    }
+    if (best) hall.push(best);
+  }
+  hall.sort((a, b) => b.date.localeCompare(a.date));
+  return hall.slice(0, 30);
 }
 
 async function mergeBoardFeed(){
@@ -1895,8 +1972,15 @@ async function mergeBoardFeed(){
     if (amount > (entry.topBid || 0)) entry.topBid = amount;
     changed = true;
   }
+  if (state.live){
+    state.hall = hallFromLedger(confirmed);
+    resolveOracle();          /* now that past days exist, a prophecy can be scored */
+  }
   if (changed && state.entries.length) checkCrown(sorted()[0]);
   if (changed || wentLive) render();
+  /* The real board just landed. If the dare's target is not on it, the ledger
+     has genuinely spoken and the visitor should be offered a fresh listing. */
+  if (!resolveTake(false) && state.live) resolveTake(true);
   checkDefendWatch();
 }
 mergeBoardFeed();
