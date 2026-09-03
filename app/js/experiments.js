@@ -39,6 +39,26 @@ import { FIELDS, dateKey, addDays, daysBetween } from './model.js';
 
 export const MIN_PAIRS = 6;            // below this the p-value floor exceeds 0.05
 export const DEFAULT_PAIRS = 7;
+
+/**
+ * Longest trial the app will let someone set up.
+ *
+ * The slider used to stop at 10 pairs — 40 days — which quietly made a whole
+ * class of question unanswerable. A trial's power is governed by how many days
+ * carrying the symptom fall inside it, so for anything that does not happen
+ * most days, 40 days is not a short trial, it is a futile one: measured, with a
+ * lever that removes the symptom ENTIRELY, a 48-day trial on a symptom present
+ * 20% of days comes back "helped" 17% of the time. Capping the slider there
+ * offered people six weeks of effort for a foregone conclusion.
+ *
+ * It does not go higher than 20 because analyze() enumerates the exact
+ * reference set — all 2^pairs sign flips — and that is what makes the p-value
+ * exact rather than sampled. The cost doubles per pair: 91 ms at 20 pairs,
+ * 376 ms at 22, and around a minute and a half at 30, which is a frozen app.
+ * Twenty pairs is where an exact test stops being affordable, so it is where
+ * the slider stops.
+ */
+export const MAX_PAIRS = 20;
 export const DEFAULT_BLOCK_DAYS = 2;
 export const ALPHA = 0.05;
 export const MIN_ADHERENCE = 0.75;     // of ON-block days
@@ -184,6 +204,9 @@ export function createTrial({ leverId, outcome, outcomeLabel, pairs = DEFAULT_PA
   const lever = getLever(leverId, factors);
   if (!lever) return { error: 'Unknown lever.' };
   if (!outcome) return { error: 'Pick something to measure first.' };
+  if (pairs > MAX_PAIRS) {
+    return { error: `A trial of more than ${MAX_PAIRS} block-pairs (${MAX_PAIRS * 2 * 2} days) is longer than anyone will see through.` };
+  }
   if (pairs < MIN_PAIRS) {
     return { error: `A trial needs at least ${MIN_PAIRS} block-pairs. With fewer, the smallest possible p-value is above 0.05 — it could not come back significant even if the effect were enormous.` };
   }
@@ -479,5 +502,106 @@ export function verdict(t, entries, factors = []) {
     headline: `No sign that ${lever.label.toLowerCase()} changed anything`,
     body: `${outcomeName[0].toUpperCase() + outcomeName.slice(1)} came out ${size}${unit} different between the two halves, which is well inside what the coin tosses alone could produce (p = ${res.p}). You stuck to it ${Math.round(adh.onAdherence * 100)}% of the time, so this was a fair test.`,
     caveat: `This does not prove it does nothing. A trial this size can only see a fairly large effect — the smallest p-value it could possibly have returned was ${res.floorP} — so read this as "not big enough for this trial to see", not as "no effect". It does mean it is reasonable to stop wondering and try something else.`,
+  };
+}
+
+/**
+ * Measured power of this trial design, by how often the symptom actually occurs.
+ *
+ * Every cell is 250 simulated trials through the real createTrial / armForDate /
+ * analyze path, at 90% adherence, with a lever that works PERFECTLY — avoiding
+ * the trigger removes the symptom entirely. So these are upper bounds. A real
+ * lever that helps somewhat does worse.
+ *
+ * WHY THIS HAD TO EXIST. The insights page offers "Test this properly" on any
+ * finding naming something you can change, and that offer was unconditional.
+ * For a symptom you get four times a month it was an offer of eleven weeks of
+ * daily effort for a foregone conclusion: at a 5% rate not one of 250 perfect
+ * trials came back with a verdict, at any length the app can run.
+ *
+ * The consolation is real and worth telling people, because it is the exact
+ * mirror of the correlation engine's own limits: a rare symptom is the case
+ * where simply logging DOES work. The engine found a red-wine trigger for a
+ * 5%-of-days migraine over 330 days of ordinary observation. Trials are for
+ * frequent symptoms; patience is for rare ones.
+ */
+export const TRIAL_POWER_GRID = {
+  rates: [0.60, 0.35, 0.20, 0.12, 0.08, 0.05],
+  pairs: [6, 8, 12, 16, 20],
+  power: [
+    [0.21, 0.74, 0.96, 1.00, 1.00],
+    [0.04, 0.21, 0.63, 0.86, 0.94],
+    [0.00, 0.03, 0.17, 0.38, 0.60],
+    [0.00, 0.00, 0.01, 0.12, 0.28],
+    // 8% at 12 pairs was not run; it is bracketed by 0.00 at 5% and 0.01 at 12%.
+    [0.00, 0.00, 0.00, 0.01, 0.05],
+    [0.00, 0.00, 0.00, 0.00, 0.00],
+  ],
+};
+
+/** Interpolated chance this trial design detects a lever that works perfectly. */
+export function trialPower(rate, pairs) {
+  const { rates, pairs: ps, power } = TRIAL_POWER_GRID;
+  if (!Number.isFinite(rate) || !Number.isFinite(pairs)) return null;
+  const axis = (arr, v, descending) => {
+    // Returns [index, fraction] for linear interpolation, clamped at both ends.
+    for (let i = 1; i < arr.length; i++) {
+      const lo = arr[i - 1], hi = arr[i];
+      const between = descending ? v <= lo && v >= hi : v >= lo && v <= hi;
+      if (between) return [i - 1, (v - lo) / (hi - lo)];
+    }
+    return descending
+      ? (v > arr[0] ? [0, 0] : [arr.length - 2, 1])
+      : (v < arr[0] ? [0, 0] : [arr.length - 2, 1]);
+  };
+  const [ri, rf] = axis(rates, rate, true);
+  const [pi, pf] = axis(ps, pairs, false);
+  const top = power[ri][pi] + pf * (power[ri][pi + 1] - power[ri][pi]);
+  const bot = power[ri + 1][pi] + pf * (power[ri + 1][pi + 1] - power[ri + 1][pi]);
+  return Math.max(0, Math.min(1, top + rf * (bot - top)));
+}
+
+/**
+ * What to tell someone before they commit weeks to a trial.
+ *
+ * `rate` is the share of their logged days on which the outcome was present.
+ * Never scolds and never simply refuses: where a trial cannot work it says so
+ * and names the thing that can.
+ */
+export function trialOutlook(rate, pairs, outcomeLabel = 'this') {
+  if (!Number.isFinite(rate) || rate <= 0) return null;
+  const power = trialPower(rate, pairs);
+  const best = trialPower(rate, MAX_PAIRS);
+  const pct = Math.round(rate * 100);
+  const days = pairs * 2 * 2;
+
+  if (best < 0.25) {
+    return {
+      kind: 'futile', power, best,
+      headline: `A trial is the wrong tool for this one.`,
+      detail: `${outcomeLabel} has turned up on ${pct}% of your logged days. Even at the longest `
+        + `trial this app will run, and even if the change worked perfectly, too few of those days `
+        + `would land inside it to tell the two halves apart — measured, `
+        + `${best < 0.015 ? 'fewer than 2 times in 100' : `about ${Math.round(best * 100)} times in 100`}. `
+        + `Something that happens this rarely is the case where simply carrying on logging does `
+        + `work, because every month adds more of the days that count.`,
+    };
+  }
+  if (power < 0.5) {
+    const enough = TRIAL_POWER_GRID.pairs.find((p) => trialPower(rate, p) >= 0.6);
+    return {
+      kind: 'too-short', power, best,
+      headline: `${days} days is likely to come back inconclusive.`,
+      detail: `${outcomeLabel} has turned up on ${pct}% of your logged days, so a trial this length `
+        + `would settle it ${power < 0.15 ? 'about 1 time in 10 at best' : `about ${Math.round(power * 10)} times in 10`} even if the change worked `
+        + `perfectly.${enough ? ` At ${enough} pairs — ${enough * 2 * 2} days — that becomes about `
+        + `${Math.round(trialPower(rate, enough) * 10)} in 10.` : ''}`,
+    };
+  }
+  return {
+    kind: 'ok', power, best,
+    headline: `${days} days should be enough to settle this.`,
+    detail: `${outcomeLabel} has turned up on ${pct}% of your logged days. If the change works, a `
+      + `trial this length finds it about ${Math.round(power * 10)} times in 10.`,
   };
 }

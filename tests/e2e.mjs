@@ -1012,7 +1012,24 @@ console.log('\n--- an episodic symptom gets a real answer ---');
   // And it must still offer the experiment that would settle it.
   const offered = await ep.evaluate(() => !!document.querySelector('[data-action="test-finding"]'));
   if (!offered) throw new Error('the episodic finding offers no trial');
-  console.log('  a rare symptom with a real trigger: found, sized and offered a trial');
+
+  // ...and the trial screen must then be honest about what that trial can do.
+  // A symptom occurring twice a month cannot be settled by any trial this app
+  // will run, so offering one without saying so costs someone eleven weeks.
+  await ep.click('[data-action="test-finding"]');
+  await show(ep, null);
+  const outlook = await ep.evaluate(() => {
+    const el = document.querySelector('[data-outlook]');
+    return el ? { kind: el.dataset.outlook, text: el.innerText } : null;
+  });
+  if (!outlook) throw new Error('the trial screen offers no outlook for a rare symptom');
+  if (outlook.kind !== 'futile') {
+    throw new Error(`a 5%-of-days symptom cannot be trialled; got "${outlook.kind}": ${outlook.text}`);
+  }
+  if (!/logging does work/i.test(outlook.text)) {
+    throw new Error('refusing a trial must name what does work: ' + outlook.text);
+  }
+  console.log('  a rare symptom: found, sized, and told plainly that a trial cannot settle it');
 
   await ectx.close();
 }

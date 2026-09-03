@@ -9,7 +9,7 @@
 
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
-import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, MAX_PAIRS as TRIAL_MAX_PAIRS, DEFAULT_PAIRS, trialOutlook } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 
@@ -1051,6 +1051,22 @@ function newTrialCard(state) {
   const blockDays = lever.blockDays || 2;
   const days = pairs * 2 * blockDays;
 
+  // What this trial can realistically detect, given how often the thing being
+  // watched actually happens. A trial's power is governed by how many days
+  // carrying the symptom fall inside it, so offering one fixed length for every
+  // outcome sends someone with an infrequent symptom on a long walk to nowhere.
+  // Only symptoms have a meaningful occurrence rate; the measured grid in
+  // experiments.js does not describe a continuous outcome like mood.
+  const chosenOutcome = state.trialDraft?.outcome || outcomes[0]?.value;
+  const outlook = (() => {
+    if (!chosenOutcome || !chosenOutcome.startsWith('s_')) return null;
+    const vals = (state.entries || []).map((e) => e.symptoms?.[chosenOutcome]).filter((v) => v != null);
+    if (vals.length < 21) return null;
+    const rate = vals.filter((v) => v > 0).length / vals.length;
+    const label = (state.symptoms || []).find((x) => x.id === chosenOutcome)?.label || 'It';
+    return trialOutlook(rate, pairs, label);
+  })();
+
   return `<div class="card">
     <div class="card-head"><h2>Start a trial</h2></div>
     <div class="grid grid-2">
@@ -1074,7 +1090,7 @@ function newTrialCard(state) {
     <div class="field">
       <div class="field-head"><label for="trial-pairs">How long</label><div class="spacer"></div>
         <span class="field-value">${days} days</span></div>
-      <input type="range" id="trial-pairs" data-trial="pairs" min="${TRIAL_MIN_PAIRS}" max="10" step="1" value="${pairs}">
+      <input type="range" id="trial-pairs" data-trial="pairs" min="${TRIAL_MIN_PAIRS}" max="${TRIAL_MAX_PAIRS}" step="1" value="${pairs}">
       <p class="subtle" style="margin-top:6px">
         ${pairs} pairs of ${blockDays}-day blocks. The best this length could ever show is
         <strong>p = ${floorP(pairs).toFixed(3)}</strong> — that is the arithmetic of ${Math.pow(2, pairs)} possible
@@ -1082,6 +1098,11 @@ function newTrialCard(state) {
         significant at all, however well it goes, so the app will not offer it.
       </p>
     </div>
+
+    ${outlook ? `<div class="card-inset${outlook.kind === 'ok' ? '' : ' card-warn'}" data-outlook="${esc(outlook.kind)}">
+      <p style="margin:0 0 6px"><strong>${esc(outlook.headline)}</strong></p>
+      <p class="muted" style="margin:0">${esc(outlook.detail)}</p>
+    </div>` : ''}
 
     <button class="btn btn-primary" data-action="start-trial">Start on ${esc(dateKey())}</button>
   </div>`;

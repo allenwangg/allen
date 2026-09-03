@@ -9,7 +9,7 @@ import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
-import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
+import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS, trialOutlook, trialPower, TRIAL_POWER_GRID, MAX_PAIRS as TRIAL_MAX_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, MIN_INFORMATIVE, attainableR, MIN_REPORTABLE_R, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, effectSize, sensitivityNote, detectionChance, daysForChance, chancePhrase, POWER_CURVE, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
@@ -1864,6 +1864,80 @@ t('effectSize is relative to what was attainable', () => {
   eq(effectSize(0.19, 0.19), 'large', 'a maxed-out correlation is a large effect');
   eq(effectSize(0.05, 0.19), 'small');
   eq(effectSize(0.4, 0), 'moderate', 'a zero ceiling must not divide by zero');
+});
+
+t('the measured trial-power grid is monotone in both directions', () => {
+  const { rates, pairs, power } = TRIAL_POWER_GRID;
+  eq(power.length, rates.length);
+  for (const row of power) eq(row.length, pairs.length);
+  for (let i = 0; i < power.length; i++) {
+    for (let j = 1; j < pairs.length; j++) {
+      ok(power[i][j] >= power[i][j - 1], `a longer trial cannot be worse (rate ${rates[i]})`);
+    }
+  }
+  // rates are listed most-common first, so power must fall down each column.
+  for (let j = 0; j < pairs.length; j++) {
+    for (let i = 1; i < power.length; i++) {
+      ok(power[i][j] <= power[i - 1][j], `a rarer symptom cannot be easier (pairs ${pairs[j]})`);
+    }
+  }
+});
+
+t('trialPower interpolates and clamps to the measured surface', () => {
+  const { rates, pairs, power } = TRIAL_POWER_GRID;
+  for (let i = 0; i < rates.length; i++) {
+    for (let j = 0; j < pairs.length; j++) near(trialPower(rates[i], pairs[j]), power[i][j], 1e-9);
+  }
+  const mid = trialPower(0.275, 12);   // between the 35% and 20% rows
+  ok(mid > power[2][2] && mid < power[1][2], `should sit between measured rows, got ${mid}`);
+  // Beyond the measured surface, hold the edge — never extrapolate upward.
+  eq(trialPower(0.95, 20), power[0][4]);
+  eq(trialPower(0.01, 20), power[5][4]);
+  ok(trialPower(0.6, 100) <= 1);
+});
+
+t('a trial that cannot work says so instead of offering itself', () => {
+  // The "Test this properly" button is offered on any finding naming something
+  // changeable. For a symptom occurring four times a month that was an offer of
+  // eleven weeks of daily effort for a foregone conclusion.
+  const futile = trialOutlook(0.05, TRIAL_MAX_PAIRS, 'Migraine');
+  eq(futile.kind, 'futile');
+  ok(/wrong tool/i.test(futile.headline), futile.headline);
+  // It must name what DOES work, not just refuse.
+  ok(/logging does work/i.test(futile.detail), 'must point at the thing that can work: ' + futile.detail);
+  ok(!/should have|you must|failed/i.test(futile.detail), 'must not scold: ' + futile.detail);
+
+  // A frequent symptom at a sensible length is fine.
+  const fine = trialOutlook(0.6, 12, 'Back ache');
+  eq(fine.kind, 'ok');
+  ok(fine.power >= 0.9, `expected high power, got ${fine.power}`);
+
+  // In between: too short, and it says how much longer would do it.
+  const short = trialOutlook(0.2, 8, 'Nausea');
+  eq(short.kind, 'too-short');
+  ok(/inconclusive/i.test(short.headline), short.headline);
+  ok(/\d+ pairs — \d+ days/.test(short.detail), 'must name a length that would work: ' + short.detail);
+
+  eq(trialOutlook(0, 12, 'X'), null, 'a symptom never logged has no outlook');
+  // Grammar: never "1 times".
+  for (const r of [0.05, 0.08, 0.12, 0.2, 0.35, 0.6]) {
+    for (const p of [6, 8, 12, 16, 20]) {
+      const o = trialOutlook(r, p, 'It');
+      ok(!/\b1 times\b/.test(o.detail + o.headline), `"1 times" at rate ${r}, pairs ${p}`);
+    }
+  }
+});
+
+t('an exact reference set stays affordable at the longest trial offered', () => {
+  // analyze() enumerates all 2^pairs sign flips, which is what makes the
+  // p-value exact rather than sampled. The cost doubles per pair: 91 ms at 20,
+  // 376 ms at 22, and about a minute and a half at 30. The cap is where an
+  // exact test stops being affordable, so it must not drift upward silently.
+  eq(TRIAL_MAX_PAIRS, 20);
+  ok(Math.pow(2, TRIAL_MAX_PAIRS) <= 1048576, 'reference set too large to enumerate');
+  ok(createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: TRIAL_MAX_PAIRS + 1 }).error,
+    'a trial past the cap must be refused, not attempted');
+  ok(!createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: TRIAL_MAX_PAIRS }).error);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

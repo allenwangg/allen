@@ -531,3 +531,6 @@ textarea { min-height: 76px; resize: vertical; }
 
 /* A card that qualifies what follows it, rather than reporting a result. */
 .card-warn { border-color: var(--warn-border, var(--border-strong)); background: var(--warn-bg, var(--surface-2)); }
+
+/* A panel nested inside a card, for a caveat attached to a control above it. */
+.card-inset { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 12px 14px; margin-top: 14px; }

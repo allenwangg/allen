@@ -633,3 +633,52 @@ separate points. A yes/no factor was never tested; a 12%-of-days symptom was
 dropped as an outcome; a perfect trigger fell under a floor it could not reach;
 and had it survived all three, it would have been announced as a small effect
 in a sentence about a third of a point.
+
+## When a trial is the wrong tool, and saying so
+
+The "Test this properly" button is offered on any finding that names something
+you can deliberately change. That offer was unconditional, and for an episodic
+symptom it was an offer of weeks of daily effort for a foregone conclusion.
+
+A trial's power is governed by how many days carrying the symptom fall inside
+it. Measured — 250 simulated trials per cell through the real
+`createTrial`/`armForDate`/`analyze` path, at 90% adherence, with a lever that
+works **perfectly** (avoiding the trigger removes the symptom entirely, so these
+are upper bounds):
+
+| symptom on … of days | 6 pairs (24d) | 8 (32d) | 12 (48d) | 16 (64d) | 20 (80d) |
+|---|---|---|---|---|---|
+| 60% | 0.21 | 0.74 | 0.96 | 1.00 | 1.00 |
+| 35% | 0.04 | 0.21 | 0.63 | 0.86 | 0.94 |
+| 20% | 0.00 | 0.03 | 0.17 | 0.38 | 0.60 |
+| 12% | 0.00 | 0.00 | 0.01 | 0.12 | 0.28 |
+| 8%  | 0.00 | 0.00 | — | 0.01 | 0.05 |
+| 5%  | 0.00 | 0.00 | 0.00 | 0.00 | **0.00** |
+
+At a 5% rate, not one of 250 perfect trials produced a verdict at any length the
+app can run. The trial setup screen now says that, in those terms, before
+anyone starts.
+
+**The consolation is real, and it is the exact mirror of the correlation
+engine's limits.** A rare symptom is precisely the case where simply logging
+does work: the engine found a red-wine trigger for a 5%-of-days migraine over
+330 days of ordinary observation. Trials are for frequent symptoms; patience is
+for rare ones. Neither half of the app is the answer on its own, and each one
+now points at the other where it should.
+
+**Two things this measurement caught on the way.**
+
+The slider stopped at 10 pairs — 40 days — which made every question about an
+infrequent symptom unanswerable by construction. It now runs to 20.
+
+It does not run further, and the reason is not taste. `analyze` enumerates the
+exact reference set, all 2^pairs sign flips, and that enumeration is what makes
+the p-value exact rather than sampled. The cost doubles per pair: 91 ms at 20,
+376 ms at 22, and roughly a minute and a half at 30 — a frozen app. Twenty pairs
+is where an exact test stops being affordable, so it is where the slider stops,
+and a test asserts the cap does not drift upward without that trade being
+revisited.
+
+The default of 7 pairs is also worth knowing about: it sits under 50% power even
+for a symptom present on 60% of days. Rather than change one global default for
+outcomes of every shape, the outlook names a length that would actually do it.
