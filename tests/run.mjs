@@ -8,7 +8,7 @@ import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
-import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, LEVERS, leversFor, factorLever, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
+import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
 import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayPattern, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
@@ -1292,6 +1292,40 @@ t('missing days block a verdict rather than shrinking the test', () => {
   eq(analyze(trial, sparse).status, 'inconclusive');
   eq(verdict(trial, sparse).kind, 'inconclusive');
 });
+t('a trial is not finished until its last day is past', () => {
+  // It used to be declared finished ON the final day, revealing and offering
+  // to save a verdict computed before that day was logged — the exact peeking
+  // the whole design exists to prevent, and the answer could then change.
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 7, startDate: '2026-05-01', seed: 3 });
+  const last = addDays(trial.startDate, trialDays(trial) - 1);
+  eq(isComplete(trial, last), false, 'the final day is still part of the trial');
+  eq(isComplete(trial, addDays(last, 1)), true, 'the day after it is over');
+  eq(daysRemaining(trial, last), 1, 'the final day counts as one still to go');
+  eq(daysRemaining(trial, addDays(last, 1)), 0);
+});
+t('a trial whose lever was deleted degrades instead of throwing', () => {
+  // Removing a tracked suspicion with a running trial used to take the whole
+  // app down: getLever returned null and every read of lever.onText threw.
+  const syms = validateSymptoms([{ label: 'Migraine' }]);
+  const facs = validateFactors([{ label: 'Dairy' }]);
+  const { trial } = createTrial({
+    leverId: factorLever(facs[0]).id, outcome: syms[0].id, outcomeLabel: 'Migraine',
+    pairs: 7, startDate: '2026-05-01', seed: 1, factors: facs,
+  });
+  const es = [];
+  for (let i = 0; i < trialDays(trial); i++) {
+    const date = addDays(trial.startDate, i);
+    const e = emptyEntry(date, syms, facs);
+    e.factors[facs[0].id] = armForDate(trial, date) === 'on' ? 0 : 2;
+    e.symptoms[syms[0].id] = i % 3;
+    es.push(e);
+  }
+  ok(['helped', 'hurt', 'no-effect', 'not-run', 'no-contrast'].includes(verdict(trial, es, facs).kind));
+  const orphan = verdict(trial, es, []);          // factor removed
+  eq(orphan.kind, 'orphaned');
+  ok(orphan.headline && orphan.body, 'must still say something useful');
+});
+
 t('every lever is a plain behaviour, never a medicine', () => {
   // What defines the intervention is the label and id, not the prose note —
   // an earlier version of this test flagged "works fastest of the lot" for

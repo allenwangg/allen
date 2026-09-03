@@ -9,7 +9,7 @@
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayPattern, alignedPairs } from './insights.js';
-import { createTrial, verdict, daysRemaining, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
+import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';

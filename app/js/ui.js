@@ -9,9 +9,9 @@
 
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT } from './model.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
-import { LEVERS, leversFor, getLever, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
+import { leversFor, getLever, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, DEFAULT_PAIRS } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter } from './insights.js';
-import { lineChart, radarChart, scoreRing, barChart, scatterChart, sparkline, esc } from './charts.js';
+import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
 

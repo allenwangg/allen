@@ -4,6 +4,33 @@ const BASE = process.env.BASE_URL || 'http://localhost:8080';
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, deviceScaleFactor: 2 });
 const page = await ctx.newPage();
+
+/**
+ * Navigate and wait for the view to actually settle.
+ *
+ * The suite had 59 seconds of fixed sleeps across 57 calls, which is both slow
+ * and unreliable: a fixed 2.5s is wasted when a view renders in 200ms and too
+ * short when the correlation engine has a year of data to chew. Waiting for
+ * #main to stop changing is faster in the common case and safer in the slow
+ * one.
+ */
+async function show(page, view, { minLength = 150, timeout = 30000 } = {}) {
+  if (view) await page.evaluate((v) => { location.hash = '#' + v; }, view);
+  await page.waitForFunction(
+    (min) => {
+      const el = document.querySelector('#main');
+      if (!el || el.innerHTML.length < min) return false;
+      const now = el.innerHTML.length;
+      const stable = window.__lastLen === now;
+      window.__lastLen = now;
+      return stable;
+    },
+    minLength,
+    { timeout, polling: 120 },
+  ).catch(() => {});
+  await page.evaluate(() => { delete window.__lastLen; });
+}
+
 const errors = [];
 page.on('console', m => { if (m.type()==='error') errors.push('CONSOLE: '+m.text()); });
 page.on('pageerror', e => errors.push('PAGEERROR: '+e.message));
@@ -70,7 +97,7 @@ console.log('seeded rows:', seeded);
 
 await page.evaluate(() => { location.hash = '#today'; });
 await page.reload({ waitUntil: 'networkidle' });
-await page.waitForTimeout(1400);
+  await show(page, null);
 
 console.log("\n--- TODAY view ---");
 console.log('sections in order:', await page.$$eval('#main .card h2, #main .card h3', els => els.map(e => e.textContent.trim()).slice(0, 5)));
@@ -138,7 +165,7 @@ console.log('\n--- SYMPTOMS end to end ---');
   });
   await sp.evaluate(() => { location.hash = '#insights'; });
   await sp.reload({ waitUntil: 'networkidle' });
-  await sp.waitForTimeout(3000);
+  await show(sp, null);
 
   const cards = await sp.$$eval('.insight', els => els.map(e => ({
     text: e.querySelector('.insight-text')?.textContent.trim() || '',
@@ -180,6 +207,134 @@ await page.waitForTimeout(500);
 console.log('history rows:', await page.$$eval('.table tbody tr', e=>e.length));
 await page.screenshot({ path: OUT+'/06-history.png', fullPage: true });
 
+console.log("\n--- data survives import, wipe and deletion ---");
+{
+  const dctx = await browser.newContext();
+  const dp = await dctx.newPage();
+  dp.on('pageerror', e => errors.push('DATA PAGEERROR: ' + e.message));
+  await dp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await dp.waitForTimeout(700);
+
+  // Import must refresh STATE, not only storage. Reading back only entries
+  // left the symptom feature dead until a reload, and the next Settings write
+  // then persisted the empty list over the imported catalogue.
+  const backup = await dp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, dateKey, validateSymptoms, validateFactors } = await import('./js/model.js');
+    const syms = validateSymptoms([{ label: 'Migraine' }]);
+    const facs = validateFactors([{ label: 'Dairy' }]);
+    await store.setMeta('symptoms', syms);
+    await store.setMeta('factors', facs);
+    const rows = []; let d = addDays(dateKey(), -27);
+    for (let i = 0; i < 28; i++) {
+      const e = emptyEntry(d, syms, facs);
+      e.symptoms[syms[0].id] = i % 3;
+      e.factors[facs[0].id] = i % 2;
+      rows.push(e); d = addDays(d, 1);
+    }
+    await store.putMany(rows);
+    const exp = await store.exportAll();
+    await store.clearAll();
+    return JSON.stringify(exp);
+  });
+  await dp.reload({ waitUntil: 'networkidle' });
+  await show(dp, null);
+  await dp.evaluate((json) => {
+    const dt = new DataTransfer();
+    dt.items.add(new File([json], 'b.json', { type: 'application/json' }));
+    const input = document.getElementById('import-file');
+    input.files = dt.files;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }, backup);
+  await dp.waitForTimeout(1600);
+  await show(dp, 'log');
+  const live = await dp.evaluate(() => ({
+    symptoms: new Set([...document.querySelectorAll('[data-symptom]')].map(e => e.dataset.symptom)).size,
+    factors: new Set([...document.querySelectorAll('[data-factor]')].map(e => e.dataset.factor)).size,
+  }));
+  if (live.symptoms < 1 || live.factors < 1) {
+    throw new Error('after import the catalogues are not live without a reload: ' + JSON.stringify(live));
+  }
+  console.log('  import brings symptoms and factors back without a reload');
+
+  // Delete everything must clear STATE too, or the next write resurrects it.
+  await dp.evaluate(() => { window.confirm = () => true; location.hash = '#settings'; });
+  await dp.waitForTimeout(700);
+  await dp.click('[data-action="wipe"]');
+  await dp.waitForTimeout(1200);
+  const wiped = await dp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    // Force a settings write, which is what used to re-persist the "deleted" data.
+    document.getElementById('p-age')?.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 400));
+    return {
+      entries: (await store.allEntries()).length,
+      symptoms: ((await store.getMeta('symptoms')) || []).length,
+      factors: ((await store.getMeta('factors')) || []).length,
+    };
+  });
+  if (wiped.entries || wiped.symptoms || wiped.factors) {
+    throw new Error('deleted data came back after a write: ' + JSON.stringify(wiped));
+  }
+  console.log('  deleted data stays deleted after a subsequent write');
+  await dctx.close();
+}
+
+console.log("\n--- removing a suspicion mid-trial does not break the app ---");
+{
+  const bctx = await browser.newContext();
+  const bp = await bctx.newPage();
+  bp.on('pageerror', e => errors.push('BRICK PAGEERROR: ' + e.message));
+  await bp.goto(`${BASE}/app/index.html#settings`, { waitUntil: 'networkidle' });
+  await bp.waitForTimeout(800);
+  await bp.fill('#new-symptom', 'Migraine');
+  await bp.click('[data-action="add-symptom"]');
+  await bp.waitForTimeout(500);
+  await bp.fill('#new-factor', 'Dairy');
+  await bp.click('[data-action="add-factor"]');
+  await bp.waitForTimeout(500);
+  // Log some days first, so the report has something to summarise and the
+  // scenario resembles a real user rather than a fresh install.
+  await bp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, dateKey } = await import('./js/model.js');
+    const syms = await store.getMeta('symptoms');
+    const facs = await store.getMeta('factors');
+    const rows = []; let d = addDays(dateKey(), -29);
+    for (let i = 0; i < 30; i++) {
+      const e = emptyEntry(d, syms, facs);
+      e.symptoms[syms[0].id] = i % 3;
+      e.factors[facs[0].id] = i % 2;
+      rows.push(e); d = addDays(d, 1);
+    }
+    await store.putMany(rows);
+  });
+  await bp.evaluate(() => { location.hash = '#trials'; });
+  await bp.reload({ waitUntil: 'networkidle' });
+  await show(bp, null);
+  // pick the user's own factor lever (last option) and start
+  await bp.evaluate(() => {
+    const sel = document.getElementById('trial-lever');
+    sel.value = sel.options[sel.options.length - 1].value;
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await bp.waitForTimeout(600);
+  await bp.click('[data-action="start-trial"]');
+  await bp.waitForTimeout(900);
+  await bp.evaluate(() => { window.confirm = () => true; location.hash = '#settings'; });
+  await bp.waitForTimeout(700);
+  await bp.click('[data-action="remove-factor"]');
+  await bp.waitForTimeout(1000);
+  for (const view of ['trials', 'today', 'report']) {
+    await show(bp, view);
+    const t = await bp.$eval('#main', e => e.textContent);
+    if (/Something went wrong/.test(t)) throw new Error(view + ' broke after removing a factor mid-trial');
+    if (t.length < 200) throw new Error(view + ' rendered almost nothing after removing a factor mid-trial');
+  }
+  console.log('  the app survives, and the orphaned trial says so');
+  await bctx.close();
+}
+
 console.log("\n--- working with the network off ---");
 {
   // Local-first is the app's central promise: no account, no server, and it
@@ -208,8 +363,7 @@ console.log("\n--- working with the network off ---");
   await op.waitForTimeout(2000);
 
   for (const view of ['today', 'log', 'insights', 'trials', 'report', 'settings']) {
-    await op.evaluate((v) => { location.hash = '#' + v; }, view);
-    await op.waitForTimeout(view === 'insights' ? 2500 : 800);
+    await show(op, view);
     const r = await op.evaluate(() => {
       const t = document.querySelector('#main').textContent;
       return { len: t.length, broke: /Something went wrong/.test(t) };
@@ -219,8 +373,7 @@ console.log("\n--- working with the network off ---");
   }
 
   // Logging a day is the thing you most need to work on a train.
-  await op.evaluate(() => { location.hash = '#log'; });
-  await op.waitForTimeout(700);
+  await show(op, 'log');
   const saved = await op.evaluate(async () => {
     const { store } = await import('./js/store.js');
     const { dateKey } = await import('./js/model.js');
@@ -315,11 +468,10 @@ console.log("\n--- the symptom lifecycle ---");
     return { migraine: syms[0].id };
   });
   await lp.reload({ waitUntil: 'networkidle' });
-  await lp.waitForTimeout(1200);
+  await show(lp, null);
 
   // Editing a past day must load THAT day's ratings.
-  await lp.evaluate(() => { location.hash = '#log'; });
-  await lp.waitForTimeout(600);
+  await show(lp, 'log');
   const past = await lp.evaluate(async (ids) => {
     const { store } = await import('./js/store.js');
     const { addDays, dateKey } = await import('./js/model.js');
@@ -340,8 +492,7 @@ console.log("\n--- the symptom lifecycle ---");
   console.log('  a past day loads its own ratings:', past.stored);
 
   // Adding a symptom must not backfill fabricated zeros onto old days.
-  await lp.evaluate(() => { location.hash = '#settings'; });
-  await lp.waitForTimeout(600);
+  await show(lp, 'settings');
   await lp.fill('#new-symptom', 'Nausea');
   await lp.click('[data-action="add-symptom"]');
   await lp.waitForTimeout(900);
@@ -375,8 +526,7 @@ console.log("\n--- the symptom lifecycle ---");
 
   // And nothing may break afterwards — orphaned ids must not surface.
   for (const view of ['today', 'insights', 'report', 'history', 'log']) {
-    await lp.evaluate((v) => { location.hash = '#' + v; }, view);
-    await lp.waitForTimeout(view === 'insights' ? 1800 : 600);
+    await show(lp, view);
     const t = await lp.$eval('#main', (e) => e.textContent);
     if (/Something went wrong/.test(t)) throw new Error(view + ' throws after a symptom is removed');
     if (/\bundefined\b/.test(t)) throw new Error(view + ' renders "undefined" after a symptom is removed');
@@ -464,7 +614,7 @@ for (const scheme of ['light', 'dark']) {
   });
   await pp.evaluate(() => { location.hash = '#report'; });
   await pp.reload({ waitUntil: 'networkidle' });
-  await pp.waitForTimeout(2500);
+  await show(pp, null);
   await pp.emulateMedia({ media: 'print' });
   await pp.waitForTimeout(400);
 
@@ -546,7 +696,7 @@ console.log("\n--- a trial from start to verdict ---");
     }, cfg);
     await kp.evaluate(() => { location.hash = '#trials'; });
     await kp.reload({ waitUntil: 'networkidle' });
-    await kp.waitForTimeout(2200);
+  await show(kp, null);
     const res = await kp.evaluate(async () => {
       const { store } = await import('./js/store.js');
       const { verdict } = await import('./js/experiments.js');
@@ -596,7 +746,7 @@ console.log("\n--- a trial from start to verdict ---");
   });
   await fp.evaluate(() => { location.hash = '#trials'; });
   await fp.reload({ waitUntil: 'networkidle' });
-  await fp.waitForTimeout(2200);
+  await show(fp, null);
   await fp.click('[data-action="finish-trial"]');
   await fp.waitForTimeout(1000);
   const saved = await fp.evaluate(async () => {
@@ -605,8 +755,7 @@ console.log("\n--- a trial from start to verdict ---");
     return { status: t.status, kind: t.result?.kind };
   });
   if (saved.status !== 'complete' || !saved.kind) throw new Error('saving a finished trial did not persist it');
-  await fp.evaluate(() => { location.hash = '#report'; });
-  await fp.waitForTimeout(1200);
+  await show(fp, 'report');
   const rep = await fp.$eval('#print-report', e => e.textContent);
   if (!/already tried/i.test(rep) || !/caffeine/i.test(rep)) {
     throw new Error('a completed trial never reaches the doctor report');
@@ -632,7 +781,7 @@ console.log("\n--- the report tells a doctor what was ruled out ---");
   });
   await rp.evaluate(() => { location.hash = '#report'; });
   await rp.reload({ waitUntil: 'networkidle' });
-  await rp.waitForTimeout(3000);
+  await show(rp, null);
   const rows = await rp.$$eval('#print-report table tbody tr', els => els.map(e => e.textContent.replace(/\s+/g, ' ').trim()));
   // The row that saves the most appointment time is the negative one: it stops
   // a clinician spending ten minutes suggesting something already ruled out.
@@ -662,8 +811,7 @@ console.log("\n--- the example-data tour ---");
   await tp.waitForTimeout(3000);
   if (!(await tp.$('[data-sample-banner]'))) throw new Error('example data is not labelled as such');
 
-  await tp.evaluate(() => { location.hash = '#insights'; });
-  await tp.waitForTimeout(3500);
+  await show(tp, 'insights');
   const cards = await tp.$$eval('.insight', els => els.map(e => e.querySelector('.insight-text')?.textContent || ''));
   console.log('tour insight cards:', cards.length);
   if (cards.length < 3) throw new Error('example data lit up only ' + cards.length + ' insights');
@@ -690,8 +838,7 @@ console.log("\n--- the example-data tour ---");
   });
   if (facRows < 2) throw new Error('the tour did not load its factors');
 
-  await tp.evaluate(() => { location.hash = '#log'; });
-  await tp.waitForTimeout(700);
+  await show(tp, 'log');
   const rows = await tp.$$eval('.sym-seg', e => e.length);
   console.log('  symptom rows on the log screen:', rows);
   if (rows < 2) throw new Error('the tour does not show the symptom log');

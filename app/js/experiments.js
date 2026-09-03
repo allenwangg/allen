@@ -35,7 +35,7 @@
  * It also only ever tests ONE thing, on ONE person, over a few weeks.
  */
 
-import { FIELDS, dateKey, addDays, daysBetween, SEVERITY_MAX } from './model.js';
+import { FIELDS, dateKey, addDays, daysBetween } from './model.js';
 
 export const MIN_PAIRS = 6;            // below this the p-value floor exceeds 0.05
 export const DEFAULT_PAIRS = 7;
