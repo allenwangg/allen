@@ -960,6 +960,63 @@ console.log('\n--- a log that skips the bad days is told so ---');
   await bctx.close();
 }
 
+console.log('\n--- an episodic symptom gets a real answer ---');
+{
+  const ectx = await browser.newContext();
+  const ep = await ectx.newPage();
+  ep.on('pageerror', e => errors.push('EPISODIC PAGEERROR: ' + e.message));
+  await ep.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await ep.waitForTimeout(700);
+
+  // Migraine on ~5% of days, every attack following red wine, wine on 60% of
+  // days. Four separate thresholds used to make this finding unreachable.
+  await ep.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays } = await import('./js/model.js');
+    await store.setMeta('symptoms', [{ id: 's_mig', label: 'Migraine', primary: true }]);
+    await store.setMeta('factors', [{ id: 'f_x', label: 'Red wine' }]);
+    let s = 9;
+    const r = () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const start = addDays(new Date().toISOString().slice(0, 10), -330);
+    for (let i = 0; i < 330; i++) {
+      const e = emptyEntry(addDays(start, i));
+      const ex = r() < 0.6 ? 1 : 0;
+      e.factors = { f_x: ex };
+      e.sleepHours = 6.5 + r() * 2;
+      e.steps = Math.round(5000 + r() * 5000);
+      e.stress = 1 + Math.floor(r() * 5);
+      e.symptoms = { s_mig: ex && r() < 0.05 / 0.6 ? 2 + Math.floor(r() * 3) : 0 };
+      await store.putEntry(e);
+    }
+  });
+  await ep.reload({ waitUntil: 'networkidle' });
+  await ep.waitForTimeout(1500);
+  await show(ep, 'insights');
+  await ep.waitForTimeout(2500);
+
+  const card = await ep.evaluate(() => {
+    const el = [...document.querySelectorAll('.insight')]
+      .find(x => /red wine/i.test(x.innerText) && /migraine/i.test(x.innerText));
+    return el ? el.innerText : null;
+  });
+  if (!card) throw new Error('a trigger preceding every attack produced no insight card');
+  // The badge must reflect the strength relative to what was attainable.
+  if (!/LARGE EFFECT/i.test(card)) {
+    throw new Error('a trigger preceding every attack is not a small effect: ' + card.slice(0, 200));
+  }
+  // The sentence must describe how often it happened, not a fraction of a point.
+  if (!/turned up on \d+% of them against \d+% of the rest/i.test(card)) {
+    throw new Error('an episodic symptom must be described as a rate: ' + card.slice(0, 200));
+  }
+  // And it must still offer the experiment that would settle it.
+  const offered = await ep.evaluate(() => !!document.querySelector('[data-action="test-finding"]'));
+  if (!offered) throw new Error('the episodic finding offers no trial');
+  console.log('  a rare symptom with a real trigger: found, sized and offered a trial');
+
+  await ectx.close();
+}
+
 console.log('\n--- dark mode ---');
 await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });
