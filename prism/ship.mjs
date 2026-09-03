@@ -76,6 +76,18 @@ for (const c of courses) for (const l of c.lessons) { nl++; nc += l.cards.length
 let readme = readFileSync(join(root, 'README.md'), 'utf8');
 readme = readme.replace(/- \*\*\d+ courses, \d+ lessons, [\d,]+ cards\*\*[^\n]*\n  [^\n]*/,
   `- **${courses.length} courses, ${nl} lessons, ${nc.toLocaleString()} cards** of original, fact-checked content spanning psychology, philosophy, science, history, economics, health, technology, business, world cultures and the arts:\n  ${courses.map(c => c.title).join(', ')}.`);
+
+// Counts that live outside courses.js drift silently, so they are rewritten here
+// from the code rather than trusted to be updated by hand.
+const count = (file, re) => (readFileSync(join(root, file), 'utf8').match(re) || []).length;
+const glyphs = count('js/art.js', /^    [a-z]+: '/gm);
+const pathCount = count('js/paths.js', /^    \{ id: '/gm);
+const badges = count('js/achieve.js', /^    \{ id: '/gm);
+readme = readme.replace(/\*\*\d+ hand-drawn SVG illustrations\*\*/, `**${glyphs} hand-drawn SVG illustrations**`);
+readme = readme.replace(/\*\*\d+ learning paths\*\*/, `**${pathCount} learning paths**`);
+if (badges) readme = readme.replace(/\*\*\d+ achievements\*\*/, `**${badges} achievements**`);
+readme = readme.replace(/all [\d,]+ cards were verified/, `all ${nc.toLocaleString()} cards were verified`);
+
 writeFileSync(join(root, 'README.md'), readme);
 
 console.log(`added ${added.length}${added.length ? ': ' + added.join(', ') : ''}`);
