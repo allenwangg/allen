@@ -8,7 +8,7 @@
 
 import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSymptoms, validateFactors } from './model.js';
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
-import { discover, weekdayEffects, alignedPairs } from './insights.js';
+import { discover, weekdayEffects, loggingBiasChecks, alignedPairs } from './insights.js';
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
@@ -125,6 +125,9 @@ function recompute() {
     // Its inputs are exactly the memo key's, so there is nothing to recompute
     // between edits anyway.
     state.weekday = weekdayEffects(state.entries, state.symptoms);
+    // Whether the log itself is trustworthy is upstream of every finding drawn
+    // from it, so it is computed with them and shown above them.
+    state.logBias = loggingBiasChecks(state.entries, state.symptoms);
     buildPairCache();
     state._insightsRev = state.entriesRev;
     state._insightsSymptoms = symptomsKey;

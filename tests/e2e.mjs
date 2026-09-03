@@ -905,6 +905,61 @@ console.log("\n--- the example-data tour ---");
   await tctx.close();
 }
 
+console.log('\n--- a log that skips the bad days is told so ---');
+{
+  const bctx = await browser.newContext();
+  const bp = await bctx.newPage();
+  bp.on('pageerror', e => errors.push('BIAS PAGEERROR: ' + e.message));
+  await bp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await bp.waitForTimeout(700);
+
+  // Seed through the app's own store, so this exercises the real read path.
+  await bp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays } = await import('./js/model.js');
+    await store.setMeta('symptoms', [{ id: 's_mig', label: 'Migraine', primary: true }]);
+    await store.setMeta('factors', []);
+    let s = 12345;
+    const r = () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+    const sev = []; let z = 0;
+    for (let i = 0; i < 150; i++) {
+      z = 0.5 * z + Math.sqrt(0.75) * (r() + r() + r() + r() - 2) * 1.2;
+      sev.push(Math.max(0, Math.min(4, Math.round(1.6 + z))));
+    }
+    const start = addDays(new Date().toISOString().slice(0, 10), -150);
+    for (let i = 0; i < 150; i++) {
+      if (sev[i] >= 3 ? r() < 0.8 : r() < 0.03) continue;   // the bad days go unlogged
+      const e = emptyEntry(addDays(start, i));
+      e.symptoms = { s_mig: sev[i] };
+      e.sleepHours = 6.5 + r() * 2;
+      e.steps = 6000 + Math.round(r() * 4000);
+      await store.putEntry(e);
+    }
+  });
+  await bp.reload({ waitUntil: 'networkidle' });
+  await bp.waitForTimeout(1200);
+
+  await show(bp, 'insights');
+  const card = await bp.evaluate(() => {
+    const h = [...document.querySelectorAll('#main h2')].find(x => /gaps in your log/i.test(x.textContent));
+    return h ? h.closest('.card').innerText : null;
+  });
+  if (!card) throw new Error('bad days were systematically unlogged and the app said nothing');
+  if (!/p.{0,4}adj/i.test(card)) throw new Error('the logging-bias card states no corrected p-value');
+  // It must be a caveat, not a telling-off.
+  if (/should have|failed to|you must|be better/i.test(card)) {
+    throw new Error('the logging-bias card scolds the user: ' + card.slice(0, 200));
+  }
+
+  await show(bp, 'report');
+  const inReport = await bp.evaluate(() => [...document.querySelectorAll('#print-report h2')]
+    .some(x => /caveat on all/i.test(x.textContent)));
+  if (!inReport) throw new Error('the logging-bias caveat never reaches the printed report');
+  console.log('  under-logged bad days are flagged on both the insights view and the report');
+
+  await bctx.close();
+}
+
 console.log('\n--- dark mode ---');
 await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });

@@ -1240,3 +1240,118 @@ export function weekdayEffects(entries, symptoms) {
     .filter((w) => w.significant)
     .sort((a, b) => a.pAdjusted - b.pAdjusted);
 }
+
+/**
+ * Are the days you skip logging different from the days you log?
+ *
+ * WHY THIS EXISTS. Every correlation in this app is computed on logged days
+ * only, and silently assumes the unlogged ones are missing for reasons
+ * unrelated to how you felt. That assumption is often false in exactly the
+ * way that matters: people stop logging during the worst stretches — too ill,
+ * too busy, too demoralised — and resume when things settle. If that is
+ * happening, the engine is drawing its conclusions from a systematically
+ * milder version of your life, and nothing else in the app would notice.
+ *
+ * It cannot be tested directly, because the severity of an unlogged day is
+ * precisely what is unknown. What CAN be tested is the severity of the logged
+ * days that sit on either side of a gap. If bad stretches go unrecorded, the
+ * days bordering the gaps are the shoulders of those stretches and run worse
+ * than the rest.
+ *
+ * THE NULL. Two series again — the severity series and the pattern of gaps —
+ * with the alignment between them under test, so here circular shifts are
+ * right (contrast weekdayEffect, where the periodicity of a single series is
+ * the hypothesis). Shifting the gap mask around the calendar preserves both
+ * the clustering of the gaps and the autocorrelation of the symptom, and
+ * changes only which days the gaps happen to land beside.
+ *
+ * Reported as a caveat on the findings, never as a reprimand. Someone who
+ * stopped logging for a fortnight because they were floored does not need to
+ * be told off by a phone.
+ */
+export function loggingBias(entries, field, samples = 2000) {
+  if (!entries || entries.length < 21) return null;
+  const first = entries[0].date, last = entries[entries.length - 1].date;
+  const span = daysBetween(first, last) + 1;
+  if (span < 28) return null;
+
+  const byDate = new Map(entries.map((e) => [e.date, e]));
+  const vals = new Array(span).fill(null);
+  for (let i = 0; i < span; i++) {
+    const e = byDate.get(addDays(first, i));
+    if (!e) continue;
+    const v = readField(e, field);
+    if (v != null && Number.isFinite(v)) vals[i] = v;
+  }
+
+  const logged = vals.reduce((a, v) => a + (v != null ? 1 : 0), 0);
+  const missing = span - logged;
+  // Nothing to say when almost nothing is missing, and nothing trustworthy to
+  // say when almost everything is.
+  if (missing < 5 || logged < 21 || missing / span > 0.6) return null;
+
+  const gap = vals.map((v) => v == null);
+
+  const diffAt = (shift) => {
+    let adjSum = 0, adjN = 0, restSum = 0, restN = 0;
+    for (let i = 0; i < span; i++) {
+      if (vals[i] == null) continue;
+      const before = gap[(i - 1 + shift + span) % span];
+      const after = gap[(i + 1 + shift) % span];
+      if (before || after) { adjSum += vals[i]; adjN++; } else { restSum += vals[i]; restN++; }
+    }
+    if (adjN < 4 || restN < 8) return null;
+    return adjSum / adjN - restSum / restN;
+  };
+
+  const observed = diffAt(0);
+  if (observed == null) return null;
+
+  let ge = 0, tried = 0;
+  const step = Math.max(1, Math.floor(span / samples));
+  for (let k = step; k < span; k += step) {
+    const d = diffAt(k);
+    if (d == null) continue;
+    tried++;
+    // One-sided: the concern is that the WORST days go unlogged. A log that
+    // skips the good days biases findings too, but not in a way that would
+    // make someone act on a symptom they do not have.
+    if (d >= observed) ge++;
+  }
+  if (tried < 20) return null;
+
+  let adjSum = 0, adjN = 0, restSum = 0, restN = 0;
+  for (let i = 0; i < span; i++) {
+    if (vals[i] == null) continue;
+    if (gap[(i - 1 + span) % span] || gap[(i + 1) % span]) { adjSum += vals[i]; adjN++; }
+    else { restSum += vals[i]; restN++; }
+  }
+
+  return {
+    field, span, logged, missing,
+    coverage: Math.round((logged / span) * 100),
+    beside: Math.round((adjSum / adjN) * 100) / 100,
+    away: Math.round((restSum / restN) * 100) / 100,
+    diff: Math.round(observed * 100) / 100,
+    p: (1 + ge) / (tried + 1),
+    shifts: tried,
+  };
+}
+
+/**
+ * Logging-bias check across every tracked symptom, corrected for testing several.
+ */
+export function loggingBiasChecks(entries, symptoms) {
+  const live = (symptoms || []).filter((x) => !x.archivedAt);
+  if (!live.length) return [];
+  const raw = live.map((sym) => {
+    const b = loggingBias(entries, sym.id);
+    return b ? { ...b, label: sym.label, primary: !!sym.primary } : null;
+  }).filter(Boolean);
+  if (!raw.length) return [];
+  const { passing, adjusted } = benjaminiHochberg(raw.map((b) => b.p), FDR_Q);
+  return raw
+    .map((b, i) => ({ ...b, pAdjusted: Math.round(adjusted[i] * 10000) / 10000, significant: passing.has(i) }))
+    .filter((b) => b.significant)
+    .sort((a, b) => a.pAdjusted - b.pAdjusted);
+}

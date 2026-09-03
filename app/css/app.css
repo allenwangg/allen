@@ -528,3 +528,6 @@ textarea { min-height: 76px; resize: vertical; }
 
 /* Divider between stacked results inside one card. */
 .sep { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
+
+/* A card that qualifies what follows it, rather than reporting a result. */
+.card-warn { border-color: var(--warn-border, var(--border-strong)); background: var(--warn-bg, var(--surface-2)); }

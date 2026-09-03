@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
  * Covers the two things that must not break: scoring monotonicity and the
@@ -9,7 +10,7 @@ const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
 import { checkFlags, checkNotesForCrisis, RULES as SAFETY_RULES, SNOOZE_DAYS } from '../app/js/safety.js';
 import { createTrial, verdict, analyze, adherence, armForDate, trialDays, schedule, floorP, isComplete, daysRemaining, LEVERS, leversFor, factorLever, leverForDriver, MIN_PAIRS as TRIAL_MIN_PAIRS } from '../app/js/experiments.js';
-import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
+import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, correlationCI, weekdayEffect, weekdayEffects, loggingBias, loggingBiasChecks, detrend, conditionalDetrend, linearFit, studentTTwoSided, betai, phrase, weekdayFit, conditionalDeseasonalize, effectiveN, lag1Autocorr, sensitivityNote, labelFor, isLowerBetter } from '../app/js/insights.js';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -1455,6 +1456,7 @@ t('testing several symptoms for weekday patterns is corrected for', () => {
     const sym = { s_real: Math.max(0, Math.min(4, Math.round(1.4 + (r() + r() - 1) + (isMon ? 1.4 : 0)))) };
     for (const id of ['s_n1', 's_n2', 's_n3', 's_n4', 's_n5']) sym[id] = Math.round(r() * 3);
     es.push({ date, symptoms: sym });
+
   }
   const syms = [{ id: 's_real', label: 'Migraine', primary: true },
     ...['s_n1', 's_n2', 's_n3', 's_n4', 's_n5'].map((id) => ({ id, label: id }))];
@@ -1468,6 +1470,74 @@ t('testing several symptoms for weekday patterns is corrected for', () => {
 });
 
 /* ================= report ================= */
+t('a log that skips the bad days is caught; one with random gaps is not', () => {
+  const build = (seed, mnar) => {
+    const r = mulberry32(seed); const sev = []; let z = 0;
+    for (let i = 0; i < 150; i++) {
+      z = 0.5 * z + Math.sqrt(0.75) * (r() + r() + r() + r() - 2) * 1.2;
+      sev.push(Math.max(0, Math.min(4, Math.round(1.6 + z))));
+    }
+    const es = [];
+    for (let i = 0; i < 150; i++) {
+      const drop = mnar ? (sev[i] >= 3 ? r() < 0.75 : r() < 0.03) : r() < 0.14;
+      if (!drop) es.push({ date: addDays('2026-01-05', i), symptoms: { s_a: sev[i] } });
+    }
+    return es;
+  };
+  // Bad days deliberately dropped: the shoulders of those stretches run worse.
+  let caught = 0;
+  for (let k = 0; k < 12; k++) {
+    const b = loggingBias(build(3000 + k * 7919, true), 's_a');
+    if (b && b.p <= 0.05) caught++;
+  }
+  ok(caught >= 4, `missing-not-at-random should usually be caught, got ${caught}/12`);
+
+  // Gaps unrelated to severity: accusing someone of hiding their bad days on
+  // the strength of a random gap is worse than saying nothing.
+  let leaked = 0;
+  for (let k = 0; k < 40; k++) {
+    const b = loggingBias(build(500 + k * 104729, false), 's_a');
+    if (b && b.p <= 0.05) leaked++;
+  }
+  ok(leaked <= 6, `too many false logging-bias accusations: ${leaked}/40`);
+});
+
+t('logging bias stays quiet when there is nothing to judge', () => {
+  const full = Array.from({ length: 90 }, (_, i) => ({ date: addDays('2026-01-05', i), symptoms: { s_a: i % 5 } }));
+  eq(loggingBias(full, 's_a'), null, 'a complete log has no gaps to test');
+  const short = full.slice(0, 20);
+  eq(loggingBias(short, 's_a'), null, 'too few days to judge');
+  // Barely logged at all: the gaps outnumber the data and nothing can be said.
+  const sparse = full.filter((_, i) => i % 4 === 0);
+  eq(loggingBias(sparse, 's_a'), null, 'a mostly-empty log cannot be assessed');
+});
+
+t('logging bias is one-sided and corrected across symptoms', () => {
+  const r = mulberry32(6060); const es = [];
+  const sev = [];
+  for (let i = 0; i < 150; i++) sev.push(Math.max(0, Math.min(4, Math.round(1.6 + (r() + r() + r() + r() - 2) * 1.2))));
+  for (let i = 0; i < 150; i++) {
+    const drop = sev[i] >= 3 ? r() < 0.75 : r() < 0.03;
+    if (drop) continue;
+    es.push({ date: addDays('2026-01-05', i), symptoms: { s_a: sev[i], s_b: Math.round(r() * 4) } });
+  }
+  const out = loggingBiasChecks(es, [{ id: 's_a', label: 'Migraine' }, { id: 's_b', label: 'Noise' }]);
+  ok(out.every((b) => b.pAdjusted >= b.p), 'correction can only raise a p-value');
+  ok(out.every((b) => b.diff > 0), 'only under-logged BAD days are worth flagging');
+  eq(loggingBiasChecks(es, []).length, 0);
+});
+
+// Every t(...) in this file must run exactly once. A test accidentally nested
+// inside another test's loop still passes — it just runs 140 times and is not
+// where anyone thinks it is. That happened, and the only reason it surfaced
+// was a stale-count message from the copy guard.
+const DEFINED = (readFileSync(new URL(import.meta.url), 'utf8').match(/^t\(/gm) || []).length;
+if (pass + fail !== DEFINED) {
+  console.error(`\n\nBROKEN SUITE: ${DEFINED} tests are defined but ${pass + fail} ran.`);
+  console.error('A test is probably nested inside another test\'s body or loop.');
+  process.exit(1);
+}
+
 console.log(`\n\n${pass} passed, ${fail} failed`);
 if (failures.length) {
   console.log('\nFailures:');

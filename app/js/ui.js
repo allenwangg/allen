@@ -389,6 +389,22 @@ export function insightsView(state) {
   const res = state.insights;
   const wp = state.weekday;
 
+  // Shown ABOVE the findings, because it qualifies all of them.
+  const biasCard = (state.logBias || []).length ? `<div class="card card-warn">
+    <div class="card-head"><h2>About the gaps in your log</h2></div>
+    ${state.logBias.map((b) => `<p>You logged <strong>${b.logged} of ${b.span} days</strong>
+      (${b.coverage}%). The days you logged either side of a gap average
+      <strong>${b.beside.toFixed(1)}</strong> for ${esc(b.label)}, against
+      <strong>${b.away.toFixed(1)}</strong> on the rest &mdash; ${b.diff.toFixed(1)} points worse
+      <span class="mono subtle">(p<sub>adj</sub> = ${fmtP(b.pAdjusted)})</span>.</p>`).join('')}
+    <p class="muted">That is the pattern you would expect if the harder stretches are the ones
+    that go unrecorded. It is completely understandable &mdash; logging is the first thing to go
+    when you feel awful &mdash; but it means everything below is measured on a milder version of
+    your life, and real effects will look smaller than they are.</p>
+    <p class="subtle">Even a severity rating and nothing else, on the days you feel worst, would
+    close this. It does not have to be a full entry.</p>
+  </div>` : '';
+
   const weekdayCard = wp && wp.length ? `<div class="card">
     <div class="card-head"><h2>When it lands in the week</h2></div>
     ${wp.map((w) => `
@@ -429,6 +445,7 @@ export function insightsView(state) {
         anything we found would be noise — and a health app that confidently reports noise is worse than one that says nothing.</p>
       </div>
     </div>
+    ${biasCard}
     ${weekdayCard}`;
   }
 
@@ -444,6 +461,7 @@ export function insightsView(state) {
   }
 
   return `
+  ${biasCard}
   <div class="card">
     <div class="card-head"><h1 style="margin:0">Personal insights</h1></div>
     <p class="muted">These are correlations found in <strong>your</strong> data — not population averages, and not advice
@@ -808,6 +826,17 @@ export function reportView(state) {
             <td class="num">${t.result.analysis?.p ?? '—'}</td></tr>`;
         }).join('')}</tbody>
       </table></div>
+    </div>` : ''}
+
+    ${(state.logBias || []).length ? `<div class="card">
+      <h2>A caveat on all of the above</h2>
+      ${state.logBias.map((b) => `<p>I logged ${b.logged} of ${b.span} days (${b.coverage}%), and the
+      days I did log next to a gap average ${b.beside.toFixed(1)} for ${esc(b.label)} against
+      ${b.away.toFixed(1)} elsewhere &mdash; ${b.diff.toFixed(1)} points worse, p = ${b.pAdjusted < 0.0001 ? '&lt;0.0001' : b.pAdjusted}
+      after correction.</p>`).join('')}
+      <p class="muted">That is what it looks like when the worst stretches are the ones that go
+      unrecorded, so everything here is measured on my better days and the effects below are
+      likely understated.</p>
     </div>` : ''}
 
     <div class="card">

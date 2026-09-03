@@ -358,3 +358,52 @@ the engine exists to avoid, so the same Benjamini-Hochberg correction runs
 across the family. A claim also needs 21 logged days, at least three
 observations on six of the seven weekdays, and at least seven days on which the
 symptom was actually present — three flare days make a perfect-looking week.
+
+## The assumption every other guard rests on
+
+Everything in this document is computed on the days that were logged, and
+silently assumes the unlogged ones went missing for reasons unrelated to how
+the person felt. That assumption fails in exactly the way that matters most:
+people stop logging during the worst stretches — too ill, too busy, too
+demoralised — and pick it up again when things settle. When that happens the
+engine draws its conclusions from a systematically milder version of someone's
+life, every effect is attenuated, and no other guard here would notice.
+
+It cannot be tested directly, because the severity of an unlogged day is
+precisely what is unknown. What can be tested is the severity of the logged
+days on either side of a gap: if bad stretches go unrecorded, those days are
+the shoulders of those stretches and run worse than the rest.
+
+**The null.** Two series — the symptom and the pattern of gaps — with the
+alignment between them under test, so circular shifts are right here, exactly
+as they are for correlations and exactly as they are *not* for the weekday
+test above. Shifting the gap mask around the calendar preserves both the
+clustering of the gaps and the autocorrelation of the symptom, and changes only
+which days the gaps happen to land beside.
+
+Measured over 2500 datasets per cell where days go missing for reasons
+unrelated to severity, the p-values come out uniform, which is what a
+calibrated test looks like across its whole range:
+
+| condition | P(p≤.05) | P(p≤.10) | P(p≤.20) | P(p≤.50) |
+|---|---|---|---|---|
+| 180 days, isolated missing days | 0.052 | 0.103 | 0.206 | 0.504 |
+| 120 days, isolated missing days | 0.056 | 0.107 | 0.207 | 0.496 |
+| 120 days, autocorrelation 0.7 | 0.051 | 0.095 | 0.203 | 0.491 |
+| 180 days, multi-day gaps | 0.046 | 0.098 | 0.203 | 0.515 |
+| 120 days, multi-day gaps | 0.037 | 0.086 | 0.191 | 0.493 |
+
+Against logs where the bad days genuinely were dropped, it fires 32–47% of the
+time. That is deliberately unhurried: this claim undermines every other finding
+on the page, and telling someone their data is untrustworthy on the strength of
+a coincidence is worse than missing it.
+
+**One-sided, on purpose.** A log that skips the *good* days is biased too, but
+not in a direction that would make someone act on a symptom they do not have.
+
+**It is a caveat, not a reprimand.** Someone who stopped logging for a
+fortnight because they were floored does not need to be told off by a phone.
+The wording says what the gaps do to the numbers, notes that a severity rating
+on its own would close it, and stops there. An end-to-end test asserts the card
+appears on both the insights view and the report, and separately that it
+contains none of "should have", "failed to", "you must", "be better".
