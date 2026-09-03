@@ -703,7 +703,18 @@ export function conditionalDeseasonalize(values, dows, minEta2 = DESEASON_MIN_ET
 /** Guard against a "correlation" driven by three outlier days on a flat series. */
 function hasUsableVariance(values) {
   const uniq = new Set(values);
-  if (uniq.size < 3) return false;
+  // Two distinct values is enough, PROVIDED the minority is well represented —
+  // which is exactly what the modal-share check below enforces. Requiring three
+  // used to be the rule, and it silently excluded every yes/no habit from the
+  // engine: strengthSession, a built-in driver, could never produce a finding
+  // at all, and a user tracking "dairy: yes/no" — the most natural way to track
+  // a suspicion — was never tested against their symptom. The report then said
+  // "nothing found" about a question it had not asked.
+  //
+  // The windowed driver made it worse than a silent omission. A 7-day trailing
+  // average of a binary habit IS continuous, so it passed, and a same-day dairy
+  // effect came back to the user as "this one builds up over a week".
+  if (uniq.size < 2) return false;
   const n = values.length;
   const mean = values.reduce((a, b) => a + b, 0) / n;
   const sd = Math.sqrt(values.reduce((a, b) => a + (b - mean) ** 2, 0) / n);

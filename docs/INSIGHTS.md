@@ -458,3 +458,46 @@ about two years. Tests assert the curve is monotone in both days and effect
 size, that `daysForChance` returns a length that genuinely delivers the target,
 that it returns null for the weak curve rather than inventing one, and that the
 note at 60 days does not contain the word "reliably".
+
+## Where correlation does not merely stop — it gets worse
+
+The finding-to-trial button exists because a correlation is a hypothesis. It is
+worth stating precisely how much of a hypothesis, because the intuitive answer
+is wrong in a way that matters.
+
+**A trial is not faster than watching.** Measured head-to-head on one generating
+process — symptom = 1.3 + δ·(late caffeine) + noise(sd 0.8), the only difference
+being whether the caffeine is decided by the person or by a coin — watching wins
+per day when nothing is confounding it:
+
+| effect | watching, 90 days | watching, 120 days | trial, 32 days | trial, 48 days |
+|---|---|---|---|---|
+| δ = 0.6 | 0.61 | 0.85 | 0.34 | 0.63 |
+| δ = 1.0 | 1.00 | 1.00 | 0.69 | 0.93 |
+
+So the app does not tell anyone a trial will get them an answer sooner. It
+would sound plausible and it is false.
+
+**What a trial actually buys is the thing extra days cannot.** Same engine,
+same lengths, but now late caffeine causes *nothing*: stress drives the
+migraines, and stress also makes a late coffee more likely. How often does each
+method blame the caffeine?
+
+| method | rate of blaming the innocent habit |
+|---|---|
+| watching, 90 days | 0.36 |
+| watching, 120 days | 0.64 |
+| watching, 180 days | 0.93 |
+| watching, 240 days | **0.99** |
+| trial, 32 days | 0.02 |
+| trial, 40 days | 0.02 |
+| trial, 48 days | 0.04 |
+
+More data does not dilute a confound; it sharpens it. The correlation engine
+converges, with increasing confidence, on the wrong answer — 99 times in 100 by
+240 days — while a five-week randomised trial refuses to blame it at all.
+
+This is why "keep logging" and "test it properly" are different advice for
+different problems, and the insights page now says so in as many words. Longer
+logs buy power against a real effect that is currently too small to see. They
+buy nothing whatsoever against a confounded one.

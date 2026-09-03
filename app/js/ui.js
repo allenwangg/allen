@@ -477,6 +477,10 @@ export function insightsView(state) {
     than "nothing wrong". ${esc(sensitivityNote((state.entries || []).length))}</p>` : ''}
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
+    <p class="disclaimer">And more logging will not settle it. Where a third factor is really behind both &mdash; stress
+    driving the bad days <em>and</em> the late coffee &mdash; longer logs make this page more confident, not more correct:
+    in simulation the innocent habit gets named 36% of the time at 90 days and 99% at 240. Only deliberately varying
+    something breaks that, which is what a trial does.</p>
   </div>
   ${body}
   ${weekdayCard}`;

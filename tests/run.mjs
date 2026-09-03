@@ -1590,6 +1590,80 @@ t('chancePhrase never rounds a near-miss up to a certainty', () => {
   ok(!/always|certain|guarantee/i.test([0, 0.3, 0.6, 0.9, 1].map(chancePhrase).join(' ')));
 });
 
+t('a yes/no habit is a real driver, at the lag it actually acts on', () => {
+  // REGRESSION. hasUsableVariance required three distinct values, so every
+  // binary habit was silently dropped: strengthSession could never produce a
+  // finding, and a user tracking "dairy: yes/no" was never tested at all while
+  // the report told them "nothing found".
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const factors = [{ id: 'f_dairy', label: 'Dairy' }];
+  const r = mulberry32(11);
+  const es = []; let d = '2026-01-01';
+  for (let i = 0; i < 220; i++) {
+    const e = emptyEntry(d, symptoms);
+    const dairy = r() < 0.5 ? 1 : 0;
+    e.factors = { f_dairy: dairy };
+    e.strengthSession = r() < 0.45 ? 1 : 0;
+    e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+    e.stress = 1 + Math.floor(r() * 5);
+    e.symptoms = { s_mig: Math.max(0, Math.min(4, Math.round(1.0 + dairy * 1.6 + (r() + r() - 1) * 0.6))) };
+    es.push(e); d = addDays(d, 1);
+  }
+  const res = discover(es, { symptoms, factors });
+  const direct = res.findings.find((f) => f.driver === 'f_dairy');
+  ok(direct, 'a same-day binary effect must be found: ' + res.findings.map((f) => f.driver).join(','));
+  eq(direct.lag, 0, 'and attributed to the day it actually happened on');
+  // The windowed version alone used to be the ONLY thing that surfaced, which
+  // told the user a same-day effect "builds up over a week".
+  const win = res.findings.findIndex((f) => f.driver === 'w7_f_dairy');
+  const dir = res.findings.findIndex((f) => f.driver === 'f_dairy');
+  ok(win === -1 || dir < win, 'the same-day cause must outrank its own weekly average');
+});
+
+t('a yes/no habit logged too rarely is still refused', () => {
+  // The modal-share floor is what makes two distinct values safe. A habit
+  // present on a handful of days out of hundreds is three outliers, not a
+  // variable, however strongly it lines up.
+  const symptoms = [{ id: 's_a', label: 'Ache', primary: true }];
+  const factors = [{ id: 'f_rare', label: 'Rare thing' }];
+  const r = mulberry32(3);
+  const es = []; let d = '2026-01-01';
+  for (let i = 0; i < 200; i++) {
+    const e = emptyEntry(d, symptoms);
+    const rare = i % 25 === 0 ? 1 : 0;                 // 4% of days
+    e.factors = { f_rare: rare };
+    e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+    e.symptoms = { s_a: rare ? 4 : Math.round(r()) };  // perfectly aligned, still not enough
+    es.push(e); d = addDays(d, 1);
+  }
+  const res = discover(es, { symptoms, factors });
+  ok(!res.findings.some((f) => f.driver === 'f_rare'),
+    'a 4%-of-days habit must not be reportable however well it lines up');
+});
+
+t('binary drivers do not leak false positives', () => {
+  const symptoms = [{ id: 's_a', label: 'Symptom', primary: true }];
+  const factors = [{ id: 'f_a', label: 'A' }, { id: 'f_b', label: 'B' }, { id: 'f_c', label: 'C' }];
+  let leaked = 0;
+  const R = 30;
+  for (let k = 0; k < R; k++) {
+    const r = mulberry32(9000 + k * 7919);
+    const es = []; let d = '2026-01-01';
+    for (let i = 0; i < 180; i++) {
+      const e = emptyEntry(d, symptoms);
+      e.factors = { f_a: r() < 0.5 ? 1 : 0, f_b: r() < 0.5 ? 1 : 0, f_c: r() < 0.5 ? 1 : 0 };
+      e.strengthSession = r() < 0.5 ? 1 : 0;
+      e.caffeineAfter2pm = r() < 0.5 ? 0 : 150;
+      e.sleepHours = 6.5 + r() * 2; e.steps = Math.round(5000 + r() * 5000);
+      e.stress = 1 + Math.floor(r() * 5); e.mood = 1 + Math.floor(r() * 5);
+      e.symptoms = { s_a: Math.max(0, Math.min(4, Math.round(1.5 + (r() + r() + r() + r() - 2) * 1.1))) };
+      es.push(e); d = addDays(d, 1);
+    }
+    if (discover(es, { symptoms, factors }).findings.length) leaked++;
+  }
+  ok(leaked / R <= 0.15, `binary drivers leak too much noise: ${leaked}/${R}`);
+});
+
 // Every t(...) in this file must run exactly once. A test accidentally nested
 // inside another test's loop still passes — it just runs 140 times and is not
 // where anyone thinks it is. That happened, and the only reason it surfaced
