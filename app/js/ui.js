@@ -156,6 +156,48 @@ function todayFocus(state, running) {
       </div>`;
     }
   }
+  // Evidence outranks simulation. topLeverage answers "what would move an
+  // abstract habit score", which is a fine question when the app knows nothing
+  // about you and the wrong one the moment it does. On the example log it put
+  // "add 20 min of training" on the front page while the engine had already
+  // found that this person's alcohol raises their headache by 1.12 points the
+  // next day — the app burying its own best finding under a simulation.
+  //
+  // Only "costing you" findings about a symptom qualify: the levers are all of
+  // the form "avoid X for a day", so a protective factor has no action to
+  // offer, and a finding about sleep quality is not what someone tracking
+  // migraines came here for.
+  //
+  // Ranked by the main complaint first, then by strength. Someone who marked
+  // headache as the thing they are here for should not be handed advice about
+  // their bloating just because that correlation happened to be larger.
+  const primaryId = (state.symptoms || []).find((x) => x.primary && !x.archivedAt)?.id;
+  const evidenced = (state.insights?.findings || [])
+    .filter((f) => f.outcome.startsWith('s_') && f.r > 0)
+    .map((f) => ({ f, lever: leverForDriver(f.driver, state.factors) }))
+    .filter((x) => x.lever)
+    .sort((a, bb) => (bb.f.outcome === primaryId) - (a.f.outcome === primaryId))[0];
+
+  if (evidenced) {
+    const { f, lever } = evidenced;
+    const sym = labelFor(f.outcome, state.symptoms, state.factors).toLowerCase();
+    const windowed = f.driver.startsWith('w7_');
+    const when = windowed ? 'over a week' : f.lag === 0 ? 'the same day' : f.lag === 1 ? 'the next day' : `${f.lag} days later`;
+    const size = f.practical?.episodic
+      ? `your ${sym} turned up on ${f.practical.highRate}% of them against ${f.practical.lowRate}% of the rest`
+      : `your ${sym} runs ${Math.abs(f.practical?.delta ?? 0)} points higher`;
+    return `<div class="card">
+      <div class="card-head"><h2>If you change one thing today</h2><div class="spacer"></div>
+        <span class="pill pill-info" title="Chosen from what the app found in your own log, not from a simulation.">from your log</span></div>
+      <p style="font-size:1.1rem;margin-bottom:6px"><strong>${esc(lever.onText)}.</strong></p>
+      <p class="muted">On your higher-${esc(labelFor(windowed ? f.driver.slice(3) : f.driver, state.symptoms, state.factors).toLowerCase())}
+      days, ${esc(size)} ${esc(when)} — the strongest driver of your ${esc(sym)} that you can
+      actually do something about. It is still a correlation, so the way to know whether it is
+      really doing it to <em>you</em> is to vary it on purpose.</p>
+      <button class="btn btn-sm" data-action="test-finding" data-lever="${esc(lever.id)}" data-outcome="${esc(f.outcome)}">Test it properly</button>
+    </div>`;
+  }
+
   const top = (state.leverage || [])[0];
   if (!top) return '';
   return `<div class="card">

@@ -122,6 +122,13 @@ export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTO
   // Planted effect 4: dairy is a real headache trigger for this person, on top
   // of the drinking. Screens after 10pm is a red herring — a suspicion the data
   // does not support, which is the more common outcome and worth showing.
+  //
+  // The coefficient is 0.65 rather than 0.55 because the sample window ends on
+  // TODAY, so its 90 days cover a different mix of weekdays each day it is
+  // generated. At 0.55 the dairy finding sat right on the correction boundary
+  // and vanished whenever that window ended on a Friday: the tour lost the
+  // confirmed half of its confirmed-versus-ruled-out contrast one day in seven,
+  // and the end-to-end test asserting it failed every Friday.
   const rd = mulberry32(777005);
   for (const e of entries) {
     e.factors.f_dairy = Math.max(0, Math.min(3, Math.round(rd() * 3.4 - 0.7)));
@@ -130,7 +137,7 @@ export function generateSampleData(endDate = dateKey(), symptoms = SAMPLE_SYMPTO
   const rh2 = mulberry32(777006);
   for (let i = 1; i < entries.length; i++) {
     entries[i].symptoms.s_headache = clamp04(Math.round(
-      entries[i - 1].alcoholUnits * 0.55 + entries[i].factors.f_dairy * 0.55 + (rh2() - 0.5) * 1.4
+      entries[i - 1].alcoholUnits * 0.7 + entries[i].factors.f_dairy * 0.65 + (rh2() - 0.5) * 1.4
     ));
   }
 

@@ -784,3 +784,58 @@ a fact a clinician can weigh and "about the same" is not.
 The two answers can still legitimately differ: one asks about the last month
 against the month before, the other about the whole period split in half. The
 wording says which is which.
+
+## The front page was burying the app's own best finding
+
+`topLeverage` answers "what would move an abstract habit score most against your
+own average day". That is a reasonable question when the app knows nothing about
+you, and the wrong one the moment it does.
+
+On the example log it put **"add 20 min of training"** on the front page — the
+single most prominent call to action in the app — while the engine had already
+found that this person's alcohol raises their headache by 1.3 points the next
+day. The copy was honest about what it was doing ("a statement about your
+habits, not a promise about how you will feel"), which meant the app knew it was
+offering the weaker signal and said so instead of offering the stronger one.
+
+Evidence now outranks simulation. Where a finding names a symptom, points the
+wrong way, and maps to something you can deliberately change, the card leads
+with that instead — labelled *from your log*, quoting the effect in the same
+words the insight card uses, and carrying through to the pre-filled trial.
+`topLeverage` remains the fallback for someone with no findings yet, which is
+everyone for their first few months.
+
+Two details that matter:
+
+- **The main complaint wins ties.** Findings are ranked with the symptom marked
+  as primary first, then by strength. On the example log the largest correlation
+  is ultra-processed → bloating (r = 0.68), but the person came here about their
+  headache, and being handed advice about their bloating because that number
+  happened to be bigger is the kind of thing that makes people close the app.
+- **Only "costing you" findings qualify.** Every lever is of the form "avoid X
+  for a day", so a protective factor has no action to offer.
+
+## A test that failed every Friday
+
+Fixing the above surfaced something worse than a bug: an end-to-end assertion
+that passed or failed **depending on the day of the week it was run**.
+
+`generateSampleData()` ends its 90-day window on *today*, and the generator has
+day-of-week structure, so the mix of weekdays in that window shifts every day.
+Both symptom findings sat right on the false-discovery-rate boundary. Measured
+across 120 consecutive end dates: dairy → headache was found on 111 of them and
+missing on 9 — precisely the Fridays. Alcohol → headache was worse, present on
+only 69 of 120.
+
+So the tour lost the confirmed half of its confirmed-versus-ruled-out contrast
+one day in seven, and the test asserting that contrast failed weekly. A suite
+that is untrustworthy on Fridays is worse than one that is simply red.
+
+The planted coefficients move from 0.55 to 0.65 (dairy) and 0.55 to 0.7
+(alcohol) — the smallest changes that clear the boundary. Across 120 end dates
+both findings are now present 120/120, the red herring is still found 0/120, and
+every date yields exactly five findings.
+
+The guard is a unit test rather than the e2e assertion that happened to catch
+it: seven consecutive end dates cover every weekday alignment, deterministically,
+in milliseconds, whenever anyone runs the suite.

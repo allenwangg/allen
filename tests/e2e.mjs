@@ -905,6 +905,46 @@ console.log("\n--- the example-data tour ---");
   await tctx.close();
 }
 
+console.log('\n--- the front page leads with evidence, not a simulation ---');
+{
+  const fctx = await browser.newContext();
+  const fp = await fctx.newPage();
+  fp.on('pageerror', e => errors.push('FOCUS PAGEERROR: ' + e.message));
+  await fp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await fp.waitForTimeout(700);
+  await fp.click('[data-action="load-sample"]');
+  await fp.waitForTimeout(4500);
+
+  const card = await fp.evaluate(() => {
+    const h = [...document.querySelectorAll('#main h2')].find(x => /change one thing/i.test(x.textContent));
+    return h ? h.closest('.card').innerText : null;
+  });
+  if (!card) throw new Error('the front page offers nothing to do');
+  // It must come from a finding about a symptom, not from the habit simulator.
+  if (/habit score/i.test(card)) {
+    throw new Error('the front page leads with a simulation while real findings exist: ' + card.slice(0, 180));
+  }
+  if (!/from your log/i.test(card)) throw new Error('an evidenced action must say where it came from: ' + card.slice(0, 180));
+  // The example log's main complaint is the headache, not the bloating, and a
+  // larger correlation about a secondary symptom must not outrank it.
+  if (!/headache/i.test(card)) {
+    throw new Error('the action ignores the symptom marked as the main problem: ' + card.slice(0, 180));
+  }
+  // And it must carry through to the trial that would settle it.
+  await fp.click('[data-action="test-finding"]');
+  await show(fp, null);
+  const landed = await fp.evaluate(() => ({
+    view: document.querySelector('[aria-current="page"]')?.textContent.trim(),
+    lever: document.getElementById('trial-lever')?.value,
+  }));
+  if (landed.view !== 'Trials' || !landed.lever) {
+    throw new Error('the front-page action does not reach a pre-filled trial: ' + JSON.stringify(landed));
+  }
+  console.log('  front page acts on the strongest finding about the main complaint:', landed.lever);
+
+  await fctx.close();
+}
+
 console.log('\n--- a log that skips the bad days is told so ---');
 {
   const bctx = await browser.newContext();

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
  * Covers the two things that must not break: scoring monotonicity and the
@@ -2062,6 +2063,30 @@ t('compareWindows is deterministic, symmetric in naming, and refuses thin data',
   // Below two full windows plus a margin there is nothing to say.
   const short = Array.from({ length: TREND_WINDOW + 5 }, (_, i) => ({ date: addDays('2026-01-01', i), symptoms: { s_a: 1 } }));
   eq(symptomTrend(short, 's_a'), null);
+});
+
+t('the example data tells the same story whatever day it is generated', () => {
+  // The sample window ends on TODAY, so its 90 days cover a different mix of
+  // weekdays each day it is generated, and the generator has weekday structure.
+  // Both symptom findings used to sit on the correction boundary: dairy
+  // vanished whenever the window ended on a Friday, taking the confirmed half
+  // of the tour's confirmed-versus-ruled-out contrast with it. The end-to-end
+  // test asserting it therefore failed one day in seven, which is worse than
+  // failing outright — a suite nobody trusts on Fridays.
+  //
+  // Seven consecutive end dates cover every weekday alignment, deterministically.
+  for (let d = 0; d < 7; d++) {
+    const end = addDays('2026-09-04', d);
+    const res = discover(generateSampleData(end), { symptoms: SAMPLE_SYMPTOMS, factors: SAMPLE_FACTORS });
+    const names = res.findings.map((f) => `${f.driver}->${f.outcome}`);
+    ok(names.some((n) => /f_dairy->s_headache/.test(n)),
+      `the tour's confirmed suspicion is missing on ${end}: ${names.join(', ')}`);
+    ok(names.some((n) => n === 'alcoholUnits->s_headache'),
+      `the tour's headline habit-explains-symptom finding is missing on ${end}: ${names.join(', ')}`);
+    ok(!names.some((n) => /f_screens/.test(n)),
+      `the red herring must never be found, but was on ${end}`);
+    ok(res.findings.length >= 4, `too few findings on ${end}: ${res.findings.length}`);
+  }
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested
