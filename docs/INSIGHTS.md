@@ -913,3 +913,48 @@ compute it reliably by hand. It walks every text node on all eight views in both
 themes, and clicks a severity and a factor button first, since nothing selects
 them on load and the selected state is where the worst offender lived. Verified
 to exit 1 when `--on-bad` is reverted.
+
+## A guard against one sentence is a guard against nothing
+
+The copy guard enforces the one rule in this product that is not a matter of
+taste: it must never diagnose, treat, cure or falsely reassure. Every pattern in
+it was written in response to a specific sentence someone nearly shipped, and
+that turned out to be exactly the problem.
+
+The README described the false-discovery-rate correction as "done per symptom so
+tracking a second one never costs accuracy on the first" — the design this
+project measured, found to leak noise into 3–4 of 40 pure-noise datasets, and
+reverted. It survived for two reasons. The README was not in the guard's file
+list at all, and the pattern required the word "symptom" after "tracking a
+second" while the README said "tracking a second **one**". The guard's own
+docstring records that this claim had already been chased down three times.
+
+That prompted testing every rule against realistic rephrasings rather than the
+sentence it was born from. **Ten of eighteen walked straight through:**
+
+| phrase | caught before |
+|---|---|
+| you probably have a thyroid condition | **no** |
+| this is likely IBS | no |
+| try taking magnesium for this | no |
+| this will resolve your headaches | no |
+| nothing to be concerned about | no |
+| this is likely harmless | no |
+| your biological age is 41 | no |
+| unlock the premium plan | no |
+| start your 7-day free trial of Plus | no |
+
+The first is the worst. The diagnosis rule required "condition" to follow the
+article directly, so any *named* condition — the likelier way anyone would write
+it — passed the single most important rule in the product.
+
+Every rule is now written to the shape of the claim, and a self-test asserts all
+twenty-three phrases are caught **and** that ten pieces of the app's own honest
+copy are not, because a guard that fires on "it cannot diagnose you, treat you,
+or cure anything" gets muted within a week.
+
+The self-test calls the guard's real verdict, negation window and all. The first
+version tested the bare regexes and duly reported the app's own disclaimer as a
+violation — a test of a reimplementation of half the thing it was testing. The
+guard's scan now runs only when the file is executed directly, so importing its
+rules cannot take the unit suite down with a `process.exit(1)`.

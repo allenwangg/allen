@@ -23,13 +23,26 @@ const FILES = [
   'README.md',
 ];
 
-const RULES = [
-  [/\byou (?:probably )?have (?:a |an )?(?:condition|disease|disorder|syndrome|deficiency|infection)\b/i, 'asserts a diagnosis'],
-  [/\b(?:this|it|that) (?:is|looks like|could be|might be|sounds like) (?:a |an )?(?:migraine|ibs|anxiety|depression|apn(?:o|oe)a|diabetes|an(?:a)?emia|deficiency)\b/i, 'names a condition as a conclusion'],
+export const RULES = [
+  // Each of these is written to the SHAPE of the claim, not to one sentence.
+  // The original diagnosis rule required the word "condition" to follow the
+  // article directly, so "you probably have a thyroid condition" — a named
+  // condition, which is the likelier way anyone would ever write it — walked
+  // straight past the single most important rule in the product. Ten of
+  // eighteen realistic rephrasings did. See the self-test in tests/run.mjs.
+  [/\byou (?:probably |likely |may |might |possibly )?(?:have|'ve got|are showing signs of) (?:a |an )?(?:[\w-]+ ){0,3}(?:condition|disease|disorder|syndrome|deficiency|infection|intolerance|allergy)\b/i,
+    'asserts a diagnosis'],
+  [/\b(?:this|it|that) (?:is|looks like|could be|might be|may be|sounds like|seems like|is likely|is probably|is consistent with|points to|suggests)\b[^.]{0,24}\b(?:migraine|ibs|anxiety|depression|apn(?:o|oe)a|diabetes|an(?:a)?emia|deficiency|fibromyalgia|c(?:o)?eliac|thyroid)\b/i,
+    'names a condition as a conclusion'],
+  [/\b(?:you should|try|consider|start|worth) (?:taking|stopping|cutting out|supplementing)\b/i,
+    'directs treatment'],
   [/\byou should (?:take|stop taking|start taking|increase|reduce|double|halve)\b/i, 'directs treatment'],
   [/\b(?:cures?|cured|curing|will fix|will heal)\b/i, 'claims a cure'],
+  [/\bwill (?:resolve|clear up|get rid of|eliminate|sort out)\b/i, 'claims a cure'],
   [/\bprobably nothing\b/i, 'false reassurance'],
-  [/\bnothing to worry about\b/i, 'false reassurance'],
+  [/\bnothing to (?:worry about|be concerned about|be worried about)\b/i, 'false reassurance'],
+  [/\b(?:no cause for concern|nothing serious|likely harmless|probably harmless|perfectly normal)\b/i,
+    'false reassurance'],
   [/\bdon'?t worry\b/i, 'false reassurance'],
   [/\byou'?re fine\b/i, 'false reassurance'],
   [/\bguarantee[ds]?\b/i, 'guarantees an outcome'],
@@ -52,7 +65,7 @@ const NEGATED = /\b(?:does not|do not|cannot|can't|never|not a medical|no clinic
  *
  * A retraction is only real if something enforces it.
  */
-const RETRACTED = [
+export const RETRACTED = [
   {
     // Broadened after a fourth sighting. The previous pattern required the
     // word "symptom" after "tracking a second", and the README said "tracking
@@ -64,18 +77,49 @@ const RETRACTED = [
     why: 'Per-symptom FDR families were reverted: measured 3-4 of 40 noise datasets leaking against 0 of 40 for one global correction, with no recall gained. See docs/INSIGHTS.md Guard 8.',
   },
   {
-    pattern: /\bhealthspan age\b/i,
-    why: 'The bio-age figure was removed; it existed because it was shareable, not because it helped anyone.',
+    pattern: /\b(?:healthspan|biological|body|metabolic|health|real|true|fitness) age\b/i,
+    why: 'The bio-age figure was removed; it existed because it was shareable, not because it helped anyone. Any renaming of it is the same claim.',
   },
   {
     pattern: /(cannot explain|rules? (?:it|them|that) out)\b(?![^.]*\b(?:systematic|by luck)\b)/i,
     why: 'Randomisation makes a confound unlikely as systematic bias; it does not rule it out in a single trial.',
   },
   {
-    pattern: /\b(?:free tier|upgrade to pro|pro plan|subscription|paywall)\b/i,
+    // "trial" alone is not here on purpose: this app runs n-of-1 trials and
+    // the word is load-bearing throughout. "free trial" is the paywall sense.
+    pattern: /\b(?:free tier|free trial|upgrade to (?:pro|premium|plus)|pro plan|paid plan|premium|subscription|paywall|unlock (?:the |all )?(?:full|premium|pro)|billing)\b/i,
     why: 'The business layer was removed entirely; every feature is available to everyone.',
   },
 ];
+
+/**
+ * The guard's actual verdict on one line, negation window included.
+ *
+ * Exported so the self-test in tests/run.mjs exercises THIS, not a hand-rolled
+ * reimplementation of half of it — my first attempt tested the bare regexes
+ * and duly reported that the app's own disclaimer ("it cannot diagnose you,
+ * treat you, or cure anything") was a violation.
+ */
+export function violations(line, context = line) {
+  if (isComment(line)) return [];
+  const out = [];
+  for (const [re, why] of RULES) {
+    if (re.test(line) && !NEGATED.test(context)) out.push(why);
+  }
+  for (const { pattern, why } of RETRACTED) {
+    if (pattern.test(line)) out.push(`retracted: ${why}`);
+  }
+  return out;
+}
+
+/**
+ * The scan runs only when this file is executed directly. tests/run.mjs imports
+ * RULES and RETRACTED to prove the guard catches the shape of a claim rather
+ * than one sentence of it, and an import that runs a process.exit(1) on failure
+ * would take the unit suite down with it.
+ */
+const IS_MAIN = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (!IS_MAIN) { /* imported for its rules only */ } else {
 
 let issues = 0;
 for (const rel of FILES) {
@@ -132,3 +176,5 @@ if (issues) {
   process.exit(1);
 }
 console.log('copy-guard: clean — nothing diagnoses, cures, falsely reassures, or repeats a retracted claim.');
+
+}

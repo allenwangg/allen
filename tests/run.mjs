@@ -1,4 +1,5 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { violations as guardViolations } from './copy-guard.mjs';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2125,6 +2126,59 @@ t('the service worker precaches exactly the files that exist', () => {
     ok(existsSync(new URL(rel, appDir)),
       `SHELL lists "${entry}" which does not exist — cache.addAll is atomic, so this disables offline entirely`);
   }
+});
+
+t('the copy guard catches the shape of a claim, not one sentence of it', () => {
+  // A guard written against the exact wording that prompted it is a guard
+  // against nothing. Measured before this test existed: ten of these eighteen
+  // walked straight through, including "you probably have a thyroid condition"
+  // — a named condition, which is the likelier way anyone would write it, and
+  // the single most important rule in the product.
+  const caught = (text) => guardViolations(text).length > 0;
+
+  const mustCatch = [
+    'you probably have a thyroid condition',
+    'you may have an iron deficiency',
+    'This looks like migraine',
+    'this is likely IBS',
+    'that is consistent with sleep apnoea',
+    'You should take magnesium',
+    'try taking magnesium for this',
+    'consider cutting out gluten',
+    'this will cure your headaches',
+    'this will resolve your headaches',
+    'probably nothing',
+    'nothing to be concerned about',
+    'this is likely harmless',
+    'no cause for concern',
+    'your healthspan age is 41',
+    'your biological age is 41',
+    'your body age is 41',
+    'upgrade to Pro',
+    'unlock the premium plan',
+    'start your 7-day free trial of Plus',
+    'each symptom is corrected on its own',
+    'correction per-symptom',
+    'tracking a second one never costs accuracy on the first',
+  ];
+  const missed = mustCatch.filter((x) => !caught(x));
+  eq(missed.length, 0, `the guard would not catch: ${missed.join(' | ')}`);
+
+  // And it must not fire on the app's own honest language, or it gets muted.
+  const mustAllow = [
+    'It cannot diagnose you, treat you, or cure anything.',
+    'Block-randomised n-of-1 trials with the outcome fixed in advance.',
+    'You are 3 days from the end of your no-alcohol trial.',
+    'A trial is the wrong tool for this one.',
+    'This one is costing you.',
+    'Nothing held up, which is mostly a statement about how much history there is.',
+    'Take the report with you.',
+    'no caffeine after 2pm, decided by coin toss',
+    'Something this persistent is worth having looked at properly.',
+    'the day of the week accounts for 33% of how much it varies',
+  ];
+  const wrong = mustAllow.filter((x) => caught(x));
+  eq(wrong.length, 0, `the guard fires on the app's own honest copy: ${wrong.join(' | ')}`);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested
