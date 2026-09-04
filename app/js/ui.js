@@ -127,7 +127,7 @@ function symptomCard(state, symptoms) {
         : `Compared with the ${TREND_WINDOW} logged days before, tested by shuffling which window each day belongs to (p = ${fmtP(trend.p)}).`)
       : '';
     return `<div class="card" style="margin:0">
-      <div class="card-head"><h3 style="margin:0">${esc(sym.label)}</h3><div class="spacer"></div>
+      <div class="card-head"><h2 style="margin:0">${esc(sym.label)}</h2><div class="spacer"></div>
         ${dir ? `<span class="pill ${dir === 'better' ? 'pill-good' : dir === 'worse' ? 'pill-bad' : 'pill-info'}"${dirTitle ? ` title="${esc(dirTitle)}"` : ''}>${esc(dirLabel)}</span>` : ''}</div>
       <p class="muted" style="margin-bottom:8px">
         ${vals.length ? `Some of it on <strong>${anyDays}</strong> of your last ${vals.length} logged days.`
@@ -274,7 +274,7 @@ export function logView(state) {
     if (!fields.length) return '';
     const inner = fields.map(([name, f]) => fieldControl(name, f, entry[name])).join('');
     return `<div class="card">
-      <div class="card-head"><h3>${esc(g.label)}</h3></div>
+      <div class="card-head"><h2>${esc(g.label)}</h2></div>
       ${inner}
     </div>`;
   }).join('');
@@ -330,7 +330,7 @@ function symptomLogCard(state) {
   const active = (state.symptoms || []).filter((s) => !s.archivedAt);
   if (!active.length) {
     return `<div class="card">
-      <div class="card-head"><h3>Symptoms</h3></div>
+      <div class="card-head"><h2>Symptoms</h2></div>
       <p class="muted">Nothing tracked yet. If something specific brought you here — headaches,
       gut trouble, joint pain, low mood, whatever it is — name it and this will try to work out
       what moves with it.</p>
@@ -349,7 +349,7 @@ function symptomLogCard(state) {
     </div>`;
   }).join('');
   return `<div class="card">
-    <div class="card-head"><h3>Symptoms</h3><div class="spacer"></div>
+    <div class="card-head"><h2>Symptoms</h2><div class="spacer"></div>
       <span class="subtle">Left alone means you didn't have it</span></div>
     ${rows}
   </div>`;
@@ -367,7 +367,7 @@ function factorLogCard(state) {
   const active = (state.factors || []).filter((f) => !f.archivedAt);
   if (!active.length) {
     return `<div class="card">
-      <div class="card-head"><h3>Things you suspect</h3></div>
+      <div class="card-head"><h2>Things you suspect</h2></div>
       <p class="muted">If you have a hunch — dairy, a warm bedroom, screen time late, a long
       commute — track it here and the app will check whether your log agrees with you. The
       built-in habits below are a guess at what matters for most people; this is for what
@@ -387,7 +387,7 @@ function factorLogCard(state) {
     </div>`;
   }).join('');
   return `<div class="card">
-    <div class="card-head"><h3>Things you suspect</h3><div class="spacer"></div>
+    <div class="card-head"><h2>Things you suspect</h2><div class="spacer"></div>
       <span class="subtle">Left alone means none of it</span></div>
     ${rows}
   </div>`;
@@ -629,7 +629,7 @@ export function simulatorView(state) {
   const inner = `
     <div class="grid grid-2">
       <div>
-        <h3>Adjust your average day</h3>
+        <h2>Adjust your average day</h2>
         <p class="subtle">Each slider is a change relative to your 28-day average, not an absolute value.</p>
         ${sliders}
         <button class="btn btn-ghost btn-sm" data-action="reset-sim">Reset all</button>
@@ -998,7 +998,7 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
-    <div class="card-head"><h3>Things you suspect</h3></div>
+    <div class="card-head"><h2>Things you suspect</h2></div>
     <p class="muted">The twenty habits this app tracks by default are a guess at what matters for
     most people. If your hunch is dairy, a stuffy bedroom, or the days you drive to work, add it
     here — it goes into the analysis exactly like the built-in ones, and can be tested properly
@@ -1019,7 +1019,7 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
-    <div class="card-head"><h3>What you're tracking</h3></div>
+    <div class="card-head"><h2>What you're tracking</h2></div>
     <p class="muted">Name the things that actually bother you, in your own words. They get rated
     on the log screen each day, and the analysis goes looking for whatever moves with them.</p>
     ${symptomRows}
@@ -1034,7 +1034,7 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
-    <h3>About you</h3>
+    <h2>About you</h2>
     <div class="grid grid-2">
       <div class="field"><div class="field-head"><label for="p-age">Age</label></div>
         <input type="number" id="p-age" data-profile="age" min="13" max="110" value="${esc(String(p.age ?? 35))}"></div>
@@ -1048,14 +1048,14 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
-    <h3>Appearance</h3>
+    <h2>Appearance</h2>
     <div class="seg" style="max-width:340px">
       ${['system', 'light', 'dark'].map((t) => `<button type="button" data-theme-set="${t}" aria-pressed="${state.theme === t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}
     </div>
   </div>
 
   <div class="card">
-    <h3>Your data</h3>
+    <h2>Your data</h2>
     <p class="muted">Everything you log is stored on this device only. There is no account, no server copy, and
     no analytics on your health data. That's why export matters — it's your only backup.</p>
     <div style="display:flex;gap:9px;flex-wrap:wrap">
@@ -1070,7 +1070,7 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
-    <h3>About the science</h3>
+    <h2>About the science</h2>
     <p class="muted">The scoring curves, their sources, and the statistical method behind insights are documented
     in full rather than hidden. You should be able to argue with your own score.</p>
     <p class="disclaimer">VitalArc is a wellness tool, not a medical device. It does not diagnose, treat, cure or

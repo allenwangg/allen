@@ -1091,6 +1091,39 @@ console.log('\n--- an episodic symptom gets a real answer ---');
   await ectx.close();
 }
 
+console.log('\n--- heading outlines are navigable ---');
+{
+  // Screen-reader users navigate by heading. A view whose outline jumps from
+  // h1 straight to h3 presents its sections as nested under nothing. Log and
+  // Settings both did, and the Today view opened with h3 cards before its h2
+  // ones, which is the same defect in a different shape.
+  const hctx = await browser.newContext();
+  const hp = await hctx.newPage();
+  hp.on('pageerror', e => errors.push('HEADING PAGEERROR: ' + e.message));
+  await hp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await hp.waitForTimeout(700);
+  await hp.click('[data-action="load-sample"]');
+  await hp.waitForTimeout(4000);
+
+  const bad = [];
+  for (const view of ['today', 'insights', 'trials', 'report', 'log', 'settings', 'simulator', 'history']) {
+    await show(hp, view);
+    const outline = await hp.evaluate(() =>
+      [...document.querySelectorAll('#main h1,#main h2,#main h3,#main h4')].map(h => +h.tagName[1]));
+    for (let i = 1; i < outline.length; i++) {
+      if (outline[i] > outline[i - 1] + 1) bad.push(`${view}: h${outline[i - 1]} -> h${outline[i]}`);
+    }
+    // A view must not open with a heading deeper than the ones that follow it.
+    if (outline.length > 1 && outline[0] > Math.min(...outline.slice(1))) {
+      bad.push(`${view}: opens at h${outline[0]} above later h${Math.min(...outline.slice(1))}`);
+    }
+  }
+  if (bad.length) throw new Error('broken heading outlines: ' + bad.join('; '));
+  console.log('  every view has a navigable heading outline');
+
+  await hctx.close();
+}
+
 console.log('\n--- dark mode ---');
 await ctx.close();
 const dark = await browser.newContext({ viewport:{width:1280,height:1000}, deviceScaleFactor:2, colorScheme:'dark' });
