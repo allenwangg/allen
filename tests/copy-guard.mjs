@@ -17,6 +17,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FILES = [
   'app/js/ui.js', 'app/js/app.js', 'app/js/safety.js', 'app/js/experiments.js',
   'app/js/sample.js', 'index.html', 'app/index.html',
+  // The README describes the app to everyone who ever looks at it, and was
+  // outside this guard entirely — which is how a retracted statistical claim
+  // survived in it after being chased out of four other files.
+  'README.md',
 ];
 
 const RULES = [
@@ -50,7 +54,13 @@ const NEGATED = /\b(?:does not|do not|cannot|can't|never|not a medical|no clinic
  */
 const RETRACTED = [
   {
-    pattern: /(within each symptom separately|each symptom is (?:corrected|judged) (?:as its own|on its own)|tracking (?:a second|more) symptoms? never (?:costs|makes))/i,
+    // Broadened after a fourth sighting. The previous pattern required the
+    // word "symptom" after "tracking a second", and the README said "tracking
+    // a second ONE never costs accuracy on the first" — the same retracted
+    // claim, in the project's most-read file, invisible to the guard written
+    // to stop it. A guard that only catches the exact sentence it was born
+    // from is a guard against nothing.
+    pattern: /(within each symptom separately|each symptom is (?:corrected|judged) (?:as its own|on its own)|tracking (?:a second|another|more)\b[^.]{0,40}never (?:costs|makes|hurts|reduces)|correction (?:done |applied )?(?:\*)?per[- ]symptom)/i,
     why: 'Per-symptom FDR families were reverted: measured 3-4 of 40 noise datasets leaking against 0 of 40 for one global correction, with no recall gained. See docs/INSIGHTS.md Guard 8.',
   },
   {

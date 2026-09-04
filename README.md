@@ -18,6 +18,7 @@ npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
 npm test          # 169 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
+npm run contrast  # WCAG AA check, both themes (needs the server running)
 npm run stamp-sw  # before deploying — see below
 ```
 
@@ -33,8 +34,10 @@ No build step. The app is ES modules served as they are.
   and they enter the analysis exactly like the built-in ones.
 - **Finds what moves with them.** Lagged rank correlations across your own log,
   with time trends and weekly rhythms removed first, permutation-based
-  p-values, and multiple-comparison correction done *per symptom* so tracking a
-  second one never costs accuracy on the first.
+  p-values, and one false-discovery-rate correction across everything tested.
+  Giving each symptom its own separate error budget was tried and reverted: it
+  leaked noise into 3-4 of 40 pure-noise datasets, against 0 of 40 for one
+  global correction, and gained no recall. See docs/INSIGHTS.md, Guard 8.
 - **Tests a suspicion properly.** Block-randomised n-of-1 trials: pick one
   change — including one of your own factors, as "avoid it" versus "carry on" —
   pre-register what you are measuring, and get an exact randomisation test at
@@ -52,8 +55,23 @@ No build step. The app is ES modules served as they are.
 - **Notices what builds up.** Some things do not act in a day. Trailing weekly
   averages catch a symptom that follows a bad *week* — sleep debt, accumulated
   stress — which single-day correlation cannot see at all.
+- **Works for symptoms you get four times a month**, not just daily ones. A
+  yes/no habit is a real driver, an episodic symptom is a real outcome, and a
+  trigger preceding *every* attack is described as what it is rather than as a
+  small effect and a fraction of a point.
+- **Says when a trial cannot work.** A trial's power depends on how many days
+  carrying the symptom fall inside it. Measured, a symptom you get twice a month
+  cannot be settled by any trial this app will run, and it says so before you
+  spend eleven weeks on it — and points at the thing that does work for a rare
+  symptom, which is patience.
+- **Tells you when the answer is not in your columns.** If nothing explains a
+  symptom, "keep logging" is bad advice; the app can only test what you write
+  down, and it says so rather than sending you back for another three months of
+  the same.
 - **Knows when to send you elsewhere.** Conservative flags for patterns worth
-  raising with a doctor — never a diagnosis, never reassurance.
+  raising with a doctor — never a diagnosis, never reassurance. Including a
+  symptom that is simply happening more often, which every severity-based rule
+  misses entirely.
 - **Prints for an appointment.** Chief complaint and timeline first, then
   measurements, then what you have already ruled out, then correlations last.
 - **Works offline**, installs as a PWA, and never sends anything anywhere.
