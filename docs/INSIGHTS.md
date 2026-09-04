@@ -839,3 +839,31 @@ every date yields exactly five findings.
 The guard is a unit test rather than the e2e assertion that happened to catch
 it: seven consecutive end dates cover every weekday alignment, deterministically,
 in milliseconds, whenever anyone runs the suite.
+
+## The answer cannot be in a column that does not exist
+
+This document is largely about making the engine test the right things
+correctly. None of it helps with the failure mode that no amount of statistics
+can reach: the thing actually driving someone's symptom is not among the things
+they are recording.
+
+When a symptom survives every relationship the engine can build and nothing
+holds up, the app used to say "keep logging". For someone whose trigger is a
+food, a room, a medication or a point in their cycle, that is advice to spend
+another three months filling in the same columns that already came back empty.
+
+The insights page now says the useful thing instead: *nothing here explains your
+joint pain — this engine can only test what you write down, and adding a
+suspicion of your own is worth more than another month of the same columns.*
+With a button that goes where the suspicion can be added.
+
+It is gated on days logged, not on how many relationships were tested. A low
+tested count means the person is tracking almost nothing beyond the symptom
+itself, which makes the suggestion more apt rather than less — a log where only
+two habits vary produces ten relationships, all empty, and "track something you
+actually suspect" is precisely the right thing to say to it.
+
+It names no candidate. Suggesting *what* someone should suspect about their own
+symptom is diagnosis, and this app does not do that. It names the category of
+thing — something you eat, somewhere you are, something you take — and leaves
+the content to the person who has the symptom.

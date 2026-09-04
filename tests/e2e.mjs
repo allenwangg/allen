@@ -985,6 +985,23 @@ console.log('\n--- a log that skips the bad days is told so ---');
     return h ? h.closest('.card').innerText : null;
   });
   if (!card) throw new Error('bad days were systematically unlogged and the app said nothing');
+
+  // Nothing in that seeded log explains the migraine, so the app must say the
+  // useful thing rather than "keep logging": the answer cannot be in a column
+  // that does not exist.
+  const nudge = await bp.evaluate(() => {
+    const el = [...document.querySelectorAll('#main .card-inset')]
+      .find(x => /Nothing here explains/i.test(x.innerText));
+    return el ? el.innerText : null;
+  });
+  if (!nudge) throw new Error('an unexplained symptom gets no suggestion to track something new');
+  if (!/migraine/i.test(nudge)) throw new Error('the suggestion does not name the symptom: ' + nudge.slice(0, 160));
+  const wired = await bp.evaluate(() => {
+    const el = [...document.querySelectorAll('#main .card-inset')]
+      .find(x => /Nothing here explains/i.test(x.innerText));
+    return el?.querySelector('[data-action="goto"][data-view="settings"]') ? true : false;
+  });
+  if (!wired) throw new Error('the suggestion offers no way to act on it');
   if (!/p.{0,4}adj/i.test(card)) throw new Error('the logging-bias card states no corrected p-value');
   // It must be a caveat, not a telling-off.
   if (/should have|failed to|you must|be better/i.test(card)) {

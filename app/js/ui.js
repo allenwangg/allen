@@ -524,6 +524,31 @@ export function insightsView(state) {
     one correction covers all of it, so a finding has to clear the same bar whichever row it came from.
     A zero in the last column is a real answer, but read it as "nothing strong enough to see" rather
     than "nothing wrong". ${esc(sensitivityNote((state.entries || []).length))}</p>` : ''}
+    ${(() => {
+      // A symptom the app has tested hard and explained not at all. The honest
+      // next step is not "keep logging" — it is that the engine can only ask
+      // the questions it was given, and the person almost certainly has a
+      // suspicion nobody has written down yet.
+      //
+      // Gated on days logged, not on how many relationships were tested. A low
+      // tested count means the person is tracking almost nothing beyond the
+      // symptom itself, which makes "add what you suspect" more apt, not less.
+      const unexplained = (res?.families || []).filter((f) => f.kind === 'symptom' && f.found === 0);
+      if (!unexplained.length || (state.entries || []).length < 40) return '';
+      const names = unexplained.map((f) => f.label.toLowerCase());
+      const list = names.length === 1 ? names[0]
+        : `${names.slice(0, -1).join(', ')} or ${names[names.length - 1]}`;
+      const tracked = (state.factors || []).filter((f) => !f.archivedAt).length;
+      return `<div class="card-inset" style="margin-top:14px">
+        <p style="margin:0 0 6px"><strong>Nothing here explains your ${esc(list)}.</strong></p>
+        <p class="muted" style="margin:0 0 10px">This engine can only test what you write down, and
+        so far that is ${tracked ? `the ${tracked} thing${tracked === 1 ? '' : 's'} you added plus` : ''}
+        a fixed list of everyday habits. If you have a suspicion of your own &mdash; a food, a room, a
+        medication, a time of the month, anything &mdash; adding it is worth more than another month of
+        the same columns, because the answer cannot be in a column that does not exist.</p>
+        <button class="btn btn-sm" data-action="goto" data-view="settings">Add something to track</button>
+      </div>`;
+    })()}
     <p class="disclaimer">Correlation is not causation. These patterns show what moves together in your log; they cannot
     prove one thing caused another, and a third factor may drive both. Treat them as hypotheses worth testing, not conclusions.</p>
     <p class="disclaimer">And more logging will not settle it. Where a third factor is really behind both &mdash; stress
