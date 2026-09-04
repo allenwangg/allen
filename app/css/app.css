@@ -27,7 +27,16 @@
   --good-text:     #1f6f5c;   /* 6.02:1 on surface; --good is 3.48 and stays for fills */
   --warn:          #c9821f;
   --bad:           #c14a3d;
+  /* Text ON a solid --bad / --info fill, and text for the small uppercase
+     pills, which sit on a 16% tint of their own colour. At 11.5px the
+     full-strength hue measures 3.55:1 there — under WCAG AA — so the pills get
+     their own darkened variant. Every value here was measured against the
+     actually-composited background, not guessed. */
+  --on-bad:        #ffffff;
+  --on-info:       #ffffff;
+  --bad-pill:      #9d3a2f;
   --info:          #3b6fb0;
+  --info-pill:     #2f5b93;
 
   --band:          #e3f2ed;
   --grid:          #e4e8ef;
@@ -72,6 +81,13 @@
     --warn:          #e0a54a;
     --bad:           #e07a6b;
     --info:          #6fa3e0;
+    /* Dark theme inverts the problem: --bad and --info are light here, so
+       white text on a solid fill measures 2.63:1 on the selected severity
+       button — the app's primary input control. */
+    --on-bad:        #17100e;
+    --on-info:       #0d141c;
+    --bad-pill:      #ec8878;
+    --info-pill:     #6fa3e0;
 
     --band:          #13291f;
     --grid:          #232b35;
@@ -91,6 +107,7 @@
   --text: #e8ecf2; --text-2: #a3adbd; --text-3: #939eae;
   --accent: #3fb894; --accent-2: #56d3ad; --accent-soft: #14302a; --accent-text: #06120f;
   --good: #3fb894; --good-text: #3fb894; --warn: #e0a54a; --bad: #e07a6b; --info: #6fa3e0;
+  --on-bad: #17100e; --on-info: #0d141c; --bad-pill: #ec8878; --info-pill: #6fa3e0;
   --band: #13291f; --grid: #232b35;
   --pro: #a488f0; --pro-text: #140c2e; --pro-soft: #221a3a;
   --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
@@ -277,11 +294,11 @@ textarea { min-height: 76px; resize: vertical; }
 .sym-label { font-weight: 550; font-size: .93rem; }
 .sym-seg button { min-width: 38px; font-size: .82rem; padding: 7px 4px; }
 .sym-seg button[aria-pressed="true"][data-value="0"] { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
-.sym-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--bad); border-color: var(--bad); color: #fff; }
+.sym-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--bad); border-color: var(--bad); color: var(--on-bad, #fff); }
 /* A factor is not a symptom. Colouring "a lot of dairy" red would have the app
    pre-judging the answer to the exact question the user is asking it, before
    any evidence exists. Neutral until the analysis says otherwise. */
-.fac-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--info); border-color: var(--info); color: #fff; }
+.fac-seg button[aria-pressed="true"]:not([data-value="0"]) { background: var(--info); border-color: var(--info); color: var(--on-info, #fff); }
 @media (max-width: 520px) { .sym-row { grid-template-columns: 1fr; gap: 6px; } }
 .seg button {
   flex: 1 1 auto; min-width: 42px; appearance: none; font: inherit; cursor: pointer;
@@ -356,9 +373,9 @@ textarea { min-height: 76px; resize: vertical; }
 
 .pill { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
 .pill-good { background: var(--accent-soft); color: var(--accent); }
-.pill-bad  { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.pill-bad  { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad-pill, var(--bad)); }
 .pill-pro  { background: var(--pro-soft); color: var(--pro); }
-.pill-info { background: color-mix(in srgb, var(--info) 16%, transparent); color: var(--info); }
+.pill-info { background: color-mix(in srgb, var(--info) 16%, transparent); color: var(--info-pill, var(--info)); }
 
 /* ---------------- paywall ---------------- */
 

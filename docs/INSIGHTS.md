@@ -867,3 +867,49 @@ It names no candidate. Suggesting *what* someone should suspect about their own
 symptom is diagnosis, and this app does not do that. It names the category of
 thing — something you eat, somewhere you are, something you take — and leaves
 the content to the person who has the symptom.
+
+## Measuring contrast, and three measurements that were fiction
+
+The verdict pills on every insight card, and the selected severity button on the
+log screen, both failed WCAG AA. Finding that took four attempts, three of which
+produced confident numbers that were wrong.
+
+**Attempt one** compared each text colour against the nearest ancestor with a
+non-transparent background. The pills' background is
+`color-mix(in srgb, var(--bad) 16%, transparent)` — semi-transparent — so the
+comparison was against a colour nothing ever displays. It reported 4.3:1.
+
+**Attempt two** composited the alpha down through ancestors, which is correct,
+and reported 3.03:1 — a different wrong answer.
+
+**Attempt three** "fixed" the colours and reported that things had got *worse*,
+which is what finally made the measurement itself suspect rather than the CSS.
+
+**The actual cause**, found by printing the raw value: Chromium serialises
+`color-mix()` as `color(srgb 0.756863 0.290196 0.239216 / 0.16)`, with
+components in 0–1, while `rgb()`/`rgba()` uses 0–255. A parser that assumes
+0–255 turns a pale pink into near-black, and every ratio derived from it is
+nonsense in an unpredictable direction.
+
+Corrected, and confirmed against a contrast calculation done by hand:
+
+| what | before | after |
+|---|---|---|
+| `pill-bad` "COSTING YOU", light | 3.55 | 4.62 |
+| `pill-info` "LARGE EFFECT", light | 3.78 | 4.71 |
+| `pill-bad`, dark | 4.31 | 4.83 |
+| **selected severity button, dark** | **2.63** | **6.42** |
+| selected factor button, dark | 2.62 | 7.05 |
+
+The last two are the ones that matter. `--bad` is a deep red in the light theme,
+where white text on it is fine, and a light salmon in the dark theme, where
+white text on it is not — and that is the app's primary input control, the thing
+someone taps every day to say how bad they feel. `--on-bad` and `--on-info` are
+now per-theme.
+
+It ships as `npm run contrast` rather than as a note in this document, because
+the failure it catches is invisible to a screenshot and I demonstrably could not
+compute it reliably by hand. It walks every text node on all eight views in both
+themes, and clicks a severity and a factor button first, since nothing selects
+them on load and the selected state is where the worst offender lived. Verified
+to exit 1 when `--on-bad` is reverted.
