@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2086,6 +2086,44 @@ t('the example data tells the same story whatever day it is generated', () => {
     ok(!names.some((n) => /f_screens/.test(n)),
       `the red herring must never be found, but was on ${end}`);
     ok(res.findings.length >= 4, `too few findings on ${end}: ${res.findings.length}`);
+  }
+});
+
+t('the service worker precaches exactly the files that exist', () => {
+  // This app's whole proposition is that it works offline on your own device.
+  // Two ways that breaks silently, neither visible in any other test:
+  //
+  //   A file added to app/ and imported, but not added to SHELL. Online it
+  //   works perfectly. Offline the import 404s and the app is a blank page.
+  //
+  //   A typo in SHELL. cache.addAll() is ATOMIC — one missing entry rejects
+  //   the whole install, so the service worker caches NOTHING and offline is
+  //   gone entirely, while everything looks fine with a network.
+  const sw = readFileSync(new URL('../app/sw.js', import.meta.url), 'utf8');
+  const m = sw.match(/const SHELL = \[([\s\S]*?)\];/);
+  ok(m, 'could not find the SHELL list in app/sw.js');
+  const shell = [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]);
+
+  const appDir = new URL('../app/', import.meta.url);
+  const walk = (dir, prefix = '') => {
+    const out = [];
+    for (const name of readdirSync(new URL(dir, appDir), { withFileTypes: true })) {
+      if (name.name === 'sw.js') continue;                 // the worker never caches itself
+      if (name.isDirectory()) out.push(...walk(`${dir}${name.name}/`, `${prefix}${name.name}/`));
+      else if (/\.(js|css|html|webmanifest)$/.test(name.name)) out.push(`${prefix}${name.name}`);
+    }
+    return out;
+  };
+  const onDisk = walk('');
+
+  const missing = onDisk.filter((f) => !shell.includes(`./${f}`));
+  eq(missing.length, 0, `files exist but are never precached, so the app breaks offline: ${missing.join(', ')}`);
+
+  for (const entry of shell) {
+    if (entry === './') continue;                          // the directory index
+    const rel = entry.replace(/^\.\//, '');
+    ok(existsSync(new URL(rel, appDir)),
+      `SHELL lists "${entry}" which does not exist — cache.addAll is atomic, so this disables offline entirely`);
   }
 });
 
