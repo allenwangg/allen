@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { violations as guardViolations } from './copy-guard.mjs';
 import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from '../app/js/prereg.js';
+import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert } from '../app/js/certificate.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2258,6 +2259,95 @@ t('the same design always commits to the same digest', async () => {
   // And a different seed is a different design, because the coins differ.
   const c = createTrial({ leverId: 'no-alcohol', outcome: 's_a', pairs: 6, startDate: '2026-01-01', seed: 100 }).trial;
   ok((await commitPrereg(c)).digest !== (await commitPrereg(a)).digest);
+});
+
+/** A finished trial with a real analysis, for the certificate tests. */
+function certifiableTrial(seed = 4242, effect = 1.4) {
+  const symptoms = validateSymptoms([{ label: 'Migraine' }]);
+  const sid = symptoms[0].id;
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: sid, outcomeLabel: 'Migraine',
+    pairs: 8, startDate: '2026-05-01', seed });
+  const r = mulberry32(seed + 1);
+  const es = [];
+  for (let i = 0; i < trialDays(trial); i++) {
+    const date = addDays(trial.startDate, i);
+    const e = emptyEntry(date, symptoms);
+    const on = armForDate(trial, date) === 'on';
+    e.alcoholUnits = on ? 0 : 2;
+    e.symptoms[sid] = Math.max(0, Math.min(4, Math.round(1 + (on ? 0 : effect) + (r() - 0.5) * 1.4)));
+    es.push(e);
+  }
+  return { trial, es, analysis: analyze(trial, es) };
+}
+
+t('the certificate reproduces its own p-value from the numbers it publishes', async () => {
+  // The whole point: K within-pair differences are sufficient to rederive the
+  // exact test, so the verifiable claim travels without the diary behind it.
+  const { trial, analysis } = certifiableTrial();
+  trial.prereg = await commitPrereg(trial);
+  const cert = await issueCert(trial, analysis, { verdictKind: 'helped', leverLabel: 'No alcohol', adherence: 96 });
+
+  const good = await checkCert(cert, trial.prereg.short);
+  ok(good.ok, 'a freshly issued certificate must verify: ' + good.problems.join('; '));
+  near(good.recomputedP, analysis.p, 0.0002, 'the independent implementation must agree with the app');
+  ok(/registration code/i.test(good.notes.join(' ')), 'should confirm the design matches the start code');
+
+  // It must carry no raw diary: no dates, no daily values.
+  const text = JSON.stringify(cert);
+  ok(!/2026-05-0\d/.test(text.replace(/"design":"[^"]*"/, '')), 'a certificate must not carry logged dates');
+});
+
+t('the two implementations of the exact test agree', async () => {
+  // certificate.js reimplements the randomisation test so a verifier needs
+  // only that file. Reimplementation is a licence to drift, so this pins them
+  // together: if they ever disagree, one is wrong and the suite says which.
+  for (let s = 0; s < 12; s++) {
+    const { analysis } = certifiableTrial(1000 + s * 7919, s % 3 === 0 ? 0 : 1.2);
+    if (analysis.status !== 'analysed') continue;
+    near(certExactP(analysis.pairDiffs), analysis.p, 0.0002, `disagreement on seed ${1000 + s * 7919}`);
+  }
+  eq(certExactP([]), null);
+});
+
+t('a doctored certificate is rejected however carefully it is doctored', async () => {
+  const { trial, analysis } = certifiableTrial();
+  trial.prereg = await commitPrereg(trial);
+  const cert = await issueCert(trial, analysis, { verdictKind: 'helped', leverLabel: 'No alcohol' });
+  const rejects = async (c, code, why) => {
+    const v = await checkCert(c, code);
+    ok(!v.ok, `should have been rejected (${why})`);
+  };
+  await rejects({ ...cert, p: 0.0001 }, trial.prereg.short, 'p-value improved');
+  await rejects({ ...cert, observedDiff: -3 }, trial.prereg.short, 'effect exaggerated');
+  await rejects({ ...cert, pairDiffs: [...cert.pairDiffs.slice(0, 7), -4] }, trial.prereg.short, 'a difference edited');
+  await rejects(cert, 'aaaaaaaaaaaa', 'wrong registration code');
+
+  // The careful forgery: edit the p-value AND recompute the digest so the
+  // envelope is internally consistent. It still fails, because the p-value has
+  // to follow from the differences, and those are published.
+  const forged = { ...cert, p: 0.0001 };
+  forged.digest = undefined;
+  const reissued = await issueCert(trial, { ...analysis, p: 0.0001 }, { verdictKind: 'helped', leverLabel: 'No alcohol' });
+  await rejects(reissued, trial.prereg.short, 'digest recomputed after editing the p-value');
+
+  eq((await checkCert(null)).ok, false);
+  eq((await checkCert({ version: 99 })).ok, false);
+});
+
+t('a certificate says plainly what it cannot establish', async () => {
+  const { trial, analysis } = certifiableTrial();
+  // Issued with no pre-registration at all.
+  const cert = await issueCert(trial, analysis, { verdictKind: 'helped', leverLabel: 'No alcohol' });
+  const v = await checkCert(cert);
+  ok(v.ok, 'arithmetic alone should still check out');
+  ok(/question came first is not|not been supplied|unchecked/i.test(v.notes.join(' ')),
+    'must say the pre-registration half is unestablished: ' + v.notes.join('; '));
+
+  // And the rendered form must tell a reader how to check it themselves.
+  const text = renderCert(cert);
+  ok(/flip the\s+sign/i.test(text), 'should explain the check: ' + text.slice(0, 120));
+  ok(/No access to the underlying diary/i.test(text));
+  eq(renderCert(null), '');
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

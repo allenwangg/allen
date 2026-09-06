@@ -551,3 +551,8 @@ textarea { min-height: 76px; resize: vertical; }
 
 /* A panel nested inside a card, for a caveat attached to a control above it. */
 .card-inset { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 12px 14px; margin-top: 14px; }
+
+/* A trial certificate: fixed-width, selectable, meant to be copied out whole. */
+.cert { font-family: var(--mono); font-size: .74rem; line-height: 1.5; white-space: pre-wrap;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s);
+  padding: 12px 14px; margin: 10px 0 0; overflow-x: auto; }

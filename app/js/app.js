@@ -11,6 +11,7 @@ import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js'
 import { discover, weekdayEffects, loggingBiasChecks, symptomTrend, alignedPairs } from './insights.js';
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { commit as commitPrereg, verify as verifyPrereg } from './prereg.js';
+import { issue as issueCertificate } from './certificate.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
@@ -420,6 +421,15 @@ const actions = {
     // cannot show the question came first is still arithmetic, but it is not
     // pre-registered evidence and must not be presented as though it were.
     t.preregCheck = await verifyPrereg(t);
+    // The portable form of the result: design, registration digest, and the
+    // per-pair differences that reproduce the p-value. Everything a third
+    // party needs to check the claim, and nothing about the rest of the log.
+    const lever = getLever(t.leverId, state.factors);
+    t.certificate = await issueCertificate(t, t.result?.analysis, {
+      verdictKind: t.result?.kind ?? null,
+      leverLabel: lever?.label ?? t.leverId,
+      adherence: t.result?.adherence ?? null,
+    });
     t.status = 'complete';
     t.endedAt = Date.now();
     await store.setMeta('trials', state.trials);

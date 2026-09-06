@@ -11,6 +11,7 @@ import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, S
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, MAX_PAIRS as TRIAL_MAX_PAIRS, DEFAULT_PAIRS, trialOutlook } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter, TREND_WINDOW, compareWindows } from './insights.js';
+import { render as renderCertificate } from './certificate.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 
 /* ---------------- shared bits ---------------- */
@@ -903,16 +904,28 @@ export function reportView(state) {
       done on randomly chosen blocks of days and not others, with the thing being measured
       chosen before the trial started.</p>
       <div class="table-wrap"><table class="table">
-        <thead><tr><th>Change</th><th>Measured</th><th>Result</th><th class="num">p</th></tr></thead>
+        <thead><tr><th>Change</th><th>Measured</th><th>Result</th><th class="num">p</th><th>Registered</th></tr></thead>
         <tbody>${trials.map((t) => {
           const lever = getLever(t.leverId, state.factors);
+          const reg = t.prereg?.short;
+          const chk = t.preregCheck?.status;
           return `<tr>
             <td>${esc(lever?.label || t.leverId)}</td>
             <td>${esc(t.outcomeLabel || t.outcome)}</td>
             <td>${esc(t.result.headline)}</td>
-            <td class="num">${t.result.analysis?.p ?? '—'}</td></tr>`;
+            <td class="num">${t.result.analysis?.p ?? '—'}</td>
+            <td class="mono">${reg
+              ? `${esc(reg)}${chk === 'altered' ? ' — design changed after registration' : ''}`
+              : '<span class="subtle">not registered</span>'}</td></tr>`;
         }).join('')}</tbody>
       </table></div>
+      ${trials.some((t) => t.prereg?.short) ? `<p class="subtle">The code in the last column is a
+      fingerprint of the trial's design — the change, the measurement, the length and the exact
+      coin tosses — taken before the first day was logged. If I gave you that code at the time,
+      it shows the question was not chosen after seeing the data.</p>` : ''}
+      ${trials.some((t) => t.certificate) ? `<details class="no-print"><summary class="muted">Show
+      the checkable certificates</summary>${trials.filter((t) => t.certificate).map((t) =>
+        `<pre class="cert">${esc(renderCertificate(t.certificate))}</pre>`).join('')}</details>` : ''}
     </div>` : ''}
 
     ${(state.logBias || []).length ? `<div class="card">
