@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { violations as guardViolations } from './copy-guard.mjs';
+import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from '../app/js/prereg.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -17,9 +18,30 @@ import { rank, spearman, pearson, benjaminiHochberg, permutationP, discover, cor
 let pass = 0, fail = 0;
 const failures = [];
 
+const pending = [];
+
+/**
+ * Runs a test, synchronous or not.
+ *
+ * The async branch is not decoration. This runner used to call fn() and move
+ * on, so an async test body that threw produced a rejected promise nobody
+ * awaited: the test printed a dot, counted as passed, and Node shrugged. The
+ * first async test written against it — a pre-registration check that
+ * deliberately tampers with a trial — would have passed no matter what the
+ * code did.
+ */
 function t(name, fn) {
-  try { fn(); pass++; process.stdout.write('.'); }
-  catch (e) { fail++; failures.push([name, e.message]); process.stdout.write('F'); }
+  let out;
+  try { out = fn(); }
+  catch (e) { fail++; failures.push([name, e.message]); process.stdout.write('F'); return; }
+  if (out && typeof out.then === 'function') {
+    pending.push(out.then(
+      () => { pass++; process.stdout.write('.'); },
+      (e) => { fail++; failures.push([name, e && e.message ? e.message : String(e)]); process.stdout.write('F'); },
+    ));
+    return;
+  }
+  pass++; process.stdout.write('.');
 }
 function eq(a, b, msg = '') {
   if (a !== b) throw new Error(`${msg} expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
@@ -2181,11 +2203,71 @@ t('the copy guard catches the shape of a claim, not one sentence of it', () => {
   eq(wrong.length, 0, `the guard fires on the app's own honest copy: ${wrong.join(' | ')}`);
 });
 
+t('a pre-registration commits the question before any data exists', async () => {
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: 's_mig', outcomeLabel: 'Migraine',
+    pairs: 8, startDate: '2026-09-01', seed: 12345 });
+  trial.prereg = await commitPrereg(trial);
+  ok(trial.prereg.digest && trial.prereg.digest.length === 64, 'expected a sha-256 hex digest');
+  eq(trial.prereg.short, trial.prereg.digest.slice(0, 12));
+  eq((await verifyPrereg(trial)).status, 'intact');
+
+  // Every field the commitment claims to cover must actually break it. Walked
+  // rather than hand-listed, so a design that gains a field cannot quietly
+  // fall outside the commitment.
+  for (const field of COMMITTED_FIELDS) {
+    const tampered = { ...trial };
+    const v = trial[field];
+    tampered[field] = Array.isArray(v) ? [...v].reverse()
+      : typeof v === 'number' ? v + 1
+      : `${v}-changed`;
+    const check = await verifyPrereg(tampered);
+    eq(check.status, 'altered', `changing ${field} after registration must be detectable`);
+  }
+
+  // A trial that legitimately runs its course must still verify. Committing
+  // the whole object would break the moment status changed.
+  const finished = { ...trial, status: 'complete', endedAt: 1, result: { headline: 'helped' },
+    preregCheck: { status: 'intact' } };
+  eq((await verifyPrereg(finished)).status, 'intact', 'finishing a trial must not break its registration');
+});
+
+t('an unregistered trial is reported as such, not as tampered with', async () => {
+  // Trials created before this existed carry no commitment. Their arithmetic is
+  // untouched and calling them altered would be an accusation the data does not
+  // support.
+  const { trial } = createTrial({ leverId: 'no-alcohol', outcome: 'mood', pairs: 7, seed: 5 });
+  const v = await verifyPrereg(trial);
+  eq(v.status, 'unregistered');
+  ok(!/alter|tamper/i.test(v.detail), 'must not imply wrongdoing: ' + v.detail);
+
+  eq((await verifyPrereg(null)).status, 'no-trial');
+  eq((await verifyPrereg({ ...trial, prereg: { version: 99, digest: 'x'.repeat(64) } })).status, 'unknown-version');
+});
+
+t('the same design always commits to the same digest', async () => {
+  // A commitment that moves is not a commitment. Two identical designs built
+  // by different code paths must agree, which is why the canonical form is
+  // written out field by field instead of JSON.stringify-ing an object whose
+  // key order depends on how it was assembled.
+  const a = createTrial({ leverId: 'no-alcohol', outcome: 's_a', pairs: 6, startDate: '2026-01-01', seed: 99 }).trial;
+  const b = createTrial({ leverId: 'no-alcohol', outcome: 's_a', pairs: 6, startDate: '2026-01-01', seed: 99 }).trial;
+  eq((await commitPrereg(a)).digest, (await commitPrereg(b)).digest);
+  // Built with the keys in a different order: same design, same digest.
+  const reordered = {}; for (const k of Object.keys(a).reverse()) reordered[k] = a[k];
+  eq((await commitPrereg(reordered)).digest, (await commitPrereg(a)).digest);
+  // And a different seed is a different design, because the coins differ.
+  const c = createTrial({ leverId: 'no-alcohol', outcome: 's_a', pairs: 6, startDate: '2026-01-01', seed: 100 }).trial;
+  ok((await commitPrereg(c)).digest !== (await commitPrereg(a)).digest);
+});
+
 // Every t(...) in this file must run exactly once. A test accidentally nested
 // inside another test's loop still passes — it just runs 140 times and is not
 // where anyone thinks it is. That happened, and the only reason it surfaced
 // was a stale-count message from the copy guard.
 const DEFINED = (readFileSync(new URL(import.meta.url), 'utf8').match(/^t\(/gm) || []).length;
+// Async tests resolve after the synchronous ones have all been registered.
+await Promise.all(pending);
+
 if (pass + fail !== DEFINED) {
   console.error(`\n\nBROKEN SUITE: ${DEFINED} tests are defined but ${pass + fail} ran.`);
   console.error('A test is probably nested inside another test\'s body or loop.');

@@ -1236,10 +1236,33 @@ function activeTrialCard(state, t) {
 
     ${trialCalendar(t)}
 
+    ${preregBlock(t, done)}
+
     <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
       ${done ? `<button class="btn btn-primary" data-action="finish-trial" data-id="${esc(t.id)}">Save this result</button>` : ''}
       <button class="btn btn-danger btn-sm" data-action="abandon-trial" data-id="${esc(t.id)}" data-done="${done}">${done ? 'Discard this result' : 'Stop this trial'}</button>
     </div>
+  </div>`;
+}
+
+/**
+ * The registration receipt.
+ *
+ * Shown while the trial is still running, deliberately and prominently: a
+ * commitment is only binding once somebody else has it. Handed over at the end
+ * it proves nothing, because by then you have seen the data.
+ */
+function preregBlock(t, done) {
+  const p = t.prereg;
+  if (!p || !p.short) return '';
+  return `<div class="card-inset" data-prereg="${esc(p.short)}">
+    <p style="margin:0 0 6px"><strong>Registration code <code class="mono">${esc(p.short)}</code></strong></p>
+    <p class="muted" style="margin:0 0 8px">This is a fingerprint of what you just committed to:
+    the change, the measurement, the length, and the exact coin tosses. If any of them are
+    altered later, the code no longer matches and anyone can see it.</p>
+    <p class="${done ? 'subtle' : 'muted'}" style="margin:0">${done
+      ? 'Show it alongside the result. Whoever you gave it to at the start can confirm the question was not chosen afterwards.'
+      : '<strong>Give it to someone now</strong> &mdash; text it to a friend, write it on a form, or take it to your next appointment. A code you keep to yourself proves nothing; one somebody else is holding is the whole point.'}</p>
   </div>`;
 }
 

@@ -10,6 +10,7 @@ import { FIELDS, emptyEntry, validateEntry, dateKey, addDays, series, validateSy
 import { buildReport, scoreDay, simulate, topLeverage, ewma } from './engine.js';
 import { discover, weekdayEffects, loggingBiasChecks, symptomTrend, alignedPairs } from './insights.js';
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
+import { commit as commitPrereg, verify as verifyPrereg } from './prereg.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
@@ -401,16 +402,24 @@ const actions = {
       startDate: dateKey(),
     });
     if (error) { toast(error); return; }
+    // Commit the design before the first day can possibly be logged. After
+    // this the question, the length and the coin tosses are all fixed, and
+    // any later change to them is detectable by anyone holding the digest.
+    trial.prereg = await commitPrereg(trial);
     state.trials = [...state.trials, trial];
     await store.setMeta('trials', state.trials);
     recompute(); render();
-    toast('Trial started — log every day and do not peek');
+    toast('Trial registered — log every day and do not peek');
   },
 
   'finish-trial': async (el) => {
     const t = state.trials.find((x) => x.id === el.dataset.id);
     if (!t) return;
     t.result = state.trialVerdict || verdict(t, state.entries, state.factors);
+    // Check the finished trial against its own registration. A result that
+    // cannot show the question came first is still arithmetic, but it is not
+    // pre-registered evidence and must not be presented as though it were.
+    t.preregCheck = await verifyPrereg(t);
     t.status = 'complete';
     t.endedAt = Date.now();
     await store.setMeta('trials', state.trials);
