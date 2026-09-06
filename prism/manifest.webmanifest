@@ -1,0 +1,27 @@
+{
+  "name": "Prism — learn visually, remember forever",
+  "short_name": "Prism",
+  "description": "Visual, bite-sized lessons with built-in spaced repetition, so what you learn actually sticks.",
+  "id": "/prism/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0e0d17",
+  "theme_color": "#0e0d17",
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Today's session", "short_name": "Today", "url": "./#/today", "description": "Reviews, a lesson and a practice round in one plan" },
+    { "name": "Review due cards", "short_name": "Review", "url": "./#/review", "description": "Clear everything your memory is due to see" },
+    { "name": "Browse courses", "short_name": "Browse", "url": "./#/", "description": "The full library" }
+  ]
+}
