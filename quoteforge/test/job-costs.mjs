@@ -479,6 +479,9 @@ await log('2026-08-17', 'labor', 'Payroll wk2', '2600');
 const bad = await page.locator('#forecastCoach').textContent();
 check('the coaching names the trade that is ahead of pace', /^\s*Labor is \$[\d,]+\.\d\d ahead of pace/.test(bad), `(${bad.slice(0, 60)})`);
 check('it says how much is still avoidable', /has not been spent yet/.test(bad));
+// Labor: $3,300 spent of $2,400 at 50% → finishes $6,600, $4,200 over, $900 of it already over.
+check('the unspent share is the trade\'s own, not the job total',
+  /finishes \$4,200\.00 over budget — \$3,300\.00 of that has not been spent yet/.test(bad), `(${bad.slice(0, 160)})`);
 check('it points at the change order, not at the invoice', /change order/.test(bad));
 check('the chart turns the spend line red past budget',
   (await page.locator('#burnChart .spend.over').count()) === 1);

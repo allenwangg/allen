@@ -2113,9 +2113,15 @@ function renderForecastPanel(est, f) {
     coach = `<strong>On pace to keep what you priced.</strong> At ${pct}% done nothing is burning faster than the job is getting built.${lowNote}`;
   } else {
     const trade = worst ? CATEGORY_LABELS[f.worstCategory] : 'Spend';
+    // Keep the sentence on one footing: the trade's projected overrun and the
+    // trade's unspent share of it. Mixing in the job-level figure produced
+    // "$9,296 over — $9,000 of that unspent" when the trade's own unspent
+    // share was $6,400.
+    const over = worst ? worst.projectedOverrunCents : f.projectedOverrunCents;
+    const unspent = worst ? worst.projectedOverrunCents - worst.overrunCents : f.fadeAheadCents;
     coach = `<strong>${trade} is ${worst ? formatMoney(worst.aheadCents) : ''} ahead of pace.</strong>
-      At this rate ${worst ? 'it' : 'the job'} finishes ${formatMoney(worst ? worst.projectedOverrunCents : f.projectedOverrunCents)} over budget${
-        f.fadeAheadCents > 0 ? ` — ${formatMoney(f.fadeAheadCents)} of that has not been spent yet, so it is still yours to keep` : ''}.
+      At this rate ${worst ? 'it' : 'the job'} finishes ${formatMoney(over)} over budget${
+        unspent > 0 ? ` — ${formatMoney(unspent)} of that has not been spent yet, so it is still yours to keep` : ''}.
       ${f.status === 'bad'
         ? `That puts the job under your ${formatPercent(floor)} floor. If a client request is behind it, it belongs on a change order now, while you are still on site and they still need you.`
         : 'If a client request is behind it, write the change order now rather than remembering it at the final invoice.'}${lowNote}`;
