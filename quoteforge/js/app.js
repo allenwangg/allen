@@ -2295,6 +2295,9 @@ function wireAuditIntake() {
     for (const id of ['#aTitle', '#aClient', '#aQuoted', '#aPaste']) $(id).value = '';
     $('#aState').value = 'done';
     $('#aPct').value = '50';
+    $('#aUpdateWrap').hidden = true;
+    $('#aUpdate').checked = true;
+    matchedJobId = null;
     syncAuditState();
     $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
     $('#aChecks').innerHTML = '';
@@ -2345,6 +2348,14 @@ function wireAuditIntake() {
       row.querySelector('[data-csigned]').checked = ch.signed;
     }
     if (!data.changes.length) addChangeRow();
+    const existing = findExistingReconstruction(data.title);
+    matchedJobId = existing ? existing.id : null;
+    $('#aUpdateWrap').hidden = !existing;
+    if (existing) {
+      $('#aUpdate').checked = true;
+      $('#aUpdateNote').textContent =
+        `Update ${existing.number} — the copy of this job you already have, rather than adding a second one`;
+    }
     $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}${
       data.progress < 1 ? `, ${Math.round(data.progress * 100)}% done` : ''}, ${
       data.changes.length} change${data.changes.length === 1 ? '' : 's'}. Check it over and build.`;
@@ -2373,10 +2384,19 @@ function wireAuditIntake() {
     }
 
     const running = form.progress < 1;
-    const { impliedMarkup } = store.createAuditJob({
+    const payload = {
       ...form,
       title: form.title || (running ? 'Running job' : 'Audited job'),
-    });
+    };
+    // Updating in place is only offered for a job the paste actually matched;
+    // an operator who retyped the numbers by hand gets a new job as before.
+    const updating = matchedJobId
+      && $('#aUpdate').checked
+      && store.state.estimates.some((e) => e.id === matchedJobId);
+    const { impliedMarkup } = updating
+      ? store.updateAuditJob(matchedJobId, payload)
+      : store.createAuditJob(payload);
+    const updatedNumber = updating ? store.active().number : '';
 
     dlg.close();
     ui.tab = 'costs';
@@ -2388,19 +2408,21 @@ function wireAuditIntake() {
       // is the figure the weekly review is built to move.
       const f = forecastJob(store.active(), store.state.settings);
       const recoverable = c.contract.atRiskCents + Math.max(0, f.fadeAheadCents || 0);
+      const verb = updating ? `${updatedNumber} updated to` : 'Added at';
       toast(
         recoverable > 0
-          ? `Added at ${formatPercent(form.progress, 0)} done. ${formatMoney(recoverable)} is still recoverable on it.`
-          : `Added at ${formatPercent(form.progress, 0)} done. Nothing recoverable showing yet.`,
+          ? `${verb} ${formatPercent(form.progress, 0)} done. ${formatMoney(recoverable)} is still recoverable on it.`
+          : `${verb} ${formatPercent(form.progress, 0)} done. Nothing recoverable showing yet.`,
         { ms: 7000 },
       );
       return;
     }
     const found = Math.max(0, c.overrunCents) + c.contract.atRiskCents;
+    const built = updating ? `${updatedNumber} updated.` : 'Built.';
     toast(
       found > 0
-        ? `Built. They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)} — ${formatMoney(found)} found so far.`
-        : `Built. They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)}.`,
+        ? `${built} They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)} — ${formatMoney(found)} found so far.`
+        : `${built} They marked up ${formatPercent(impliedMarkup, 0)} and kept ${formatPercent(c.adjustedMargin)}.`,
       { ms: 7000 },
     );
   };
@@ -2414,6 +2436,26 @@ function wireAuditIntake() {
  * what "actually paid" means and what the numbers are used for afterwards: a
  * finished job becomes an audit, a running one joins the weekly review.
  */
+/**
+ * The job this link is another week of, if the app already has it.
+ *
+ * Matching on title is crude, and it is what the contractor controls: they
+ * fill the same form each week and type the same job name. The consequence of
+ * a wrong match is visible and reversible — the checkbox names the job and can
+ * be unticked — while the consequence of no matching at all is five copies of
+ * one kitchen on the review, each claiming the same recoverable money.
+ */
+let matchedJobId = null;
+
+const normalizeTitle = (t) => String(t || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+function findExistingReconstruction(title) {
+  const want = normalizeTitle(title);
+  if (!want) return null;
+  return store.state.estimates.find(
+    (e) => e.isAudit && normalizeTitle(e.title) === want) || null;
+}
+
 function auditProgress() {
   if ($('#aState').value !== 'running') return 1;
   return Math.min(1, Math.max(0, (Number($('#aPct').value) || 0) / 100));

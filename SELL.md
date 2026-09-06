@@ -152,8 +152,11 @@ far along.
 **Monday, you (under an hour for five jobs).**
 
 1. Paste each link into **Audit a job**. It arrives forecast and lands on the
-   review. Delete last week's copy of that job first, or you will read a stale
-   one — they are separate jobs to the app, not versions of one.
+   review. If you already have that job, the dialog says so and names it —
+   leave the box ticked and this week replaces last week rather than adding a
+   second copy. It matches on the job title they type, so if they rename a job
+   mid-engagement you will get a fresh one; untick the box when the match is
+   wrong.
 2. Open **Jobs → Job review — this week** and read it before you print it. The
    app proposes an action; you decide whether it survives what you know about
    the client. A change order you would not actually ask for is worse than

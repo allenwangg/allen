@@ -937,7 +937,14 @@ Object.assign(Store.prototype, {
  * @param {Array}  [input.changes]        {title, amount, signed}
  */
 Object.assign(Store.prototype, {
-  createAuditJob(input) {
+  /**
+   * Build the reconstruction WITHOUT touching state.
+   *
+   * Split out because the weekly check sends the same job again with two
+   * numbers changed: creating and updating need identical arithmetic, and two
+   * copies of it would drift apart exactly where being wrong is expensive.
+   */
+  buildAuditEstimate(input) {
     const cats = ['labor', 'material', 'subcontractor', 'equipment', 'other'];
     const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
@@ -1030,6 +1037,12 @@ Object.assign(Store.prototype, {
         })],
       }));
 
+    return { estimate, impliedMarkup };
+  },
+
+  createAuditJob(input) {
+    const { estimate, impliedMarkup } = this.buildAuditEstimate(input);
+
     // ONE undo step for the whole build. Assembling this through the granular
     // add* methods pushed a snapshot per sub-step, so a single Ctrl+Z after
     // "Build the audit" silently demoted the last signed change order to draft
@@ -1043,6 +1056,42 @@ Object.assign(Store.prototype, {
       st.activeChangeOrderId = estimate.changeOrders[0]?.id || null;
     }, { label: 'build audit' });
 
+    return { estimate: this.active(), impliedMarkup };
+  },
+
+  /**
+   * Replace an existing reconstruction with a fresh week's figures.
+   *
+   * The weekly check sends the same job again. Adding it as a new estimate
+   * every week would put five copies of one kitchen on the review and report
+   * the same recoverable money five times over, so this replaces everything
+   * that was reconstructed from their numbers and keeps the job's identity —
+   * same id, same number, same created date — so week to week compares like
+   * with like.
+   *
+   * Only reconstructed fields are touched. Nothing the operator adds by hand
+   * lives in them: their change list, their costs and their budget are all
+   * restated by the new link, and their latest figures are the only source of
+   * truth for it.
+   */
+  updateAuditJob(id, input) {
+    const { estimate: fresh, impliedMarkup } = this.buildAuditEstimate(input);
+    this.update((st) => {
+      const est = st.estimates.find((e) => e.id === id);
+      if (!est) return;
+      est.title = fresh.title;
+      est.updatedAt = fresh.updatedAt;
+      est.client = { ...est.client, name: input.client || est.client.name };
+      est.scopeSummary = fresh.scopeSummary;
+      est.progress = fresh.progress;
+      est.settings = fresh.settings;
+      est.items = fresh.items;
+      est.actuals = fresh.actuals;
+      est.changeOrders = fresh.changeOrders;
+      est.isAudit = true;
+      st.activeId = id;
+      st.activeChangeOrderId = est.changeOrders[0]?.id || null;
+    }, { label: 'update audited job' });
     return { estimate: this.active(), impliedMarkup };
   },
 });

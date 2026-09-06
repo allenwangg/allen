@@ -928,5 +928,61 @@ t('a job reconstructed mid-flight keeps the progress it was given', () => {
 });
 
 
+t('a second week of the same job replaces it rather than adding a copy', () => {
+  const s = mkStore();
+  const week1 = {
+    title: 'Kitchen — Alder St', client: 'Whitmore', quotedTotal: 42000, progress: 0.4,
+    budget: { labor: 12000, material: 9000 }, spent: { labor: 7000 }, changes: [],
+  };
+  const a = s.createAuditJob(week1);
+  const id = a.estimate.id;
+  const number = a.estimate.number;
+  const created = a.estimate.createdAt;
+
+  const b = s.updateAuditJob(id, {
+    ...week1, progress: 0.65, spent: { labor: 11000, material: 4000 },
+    changes: [{ title: 'Rot', amount: 2400, signed: false }],
+  });
+  eq(s.state.estimates.length, 1, 'a weekly update must not create a second job:');
+  eq(b.estimate.id, id, 'the job keeps its identity, so week to week compares like with like:');
+  eq(b.estimate.number, number);
+  eq(b.estimate.createdAt, created);
+  eq(b.estimate.progress.pct, 0.65);
+  eq(b.estimate.actuals.length, 2, 'the new week\'s spend replaces the old, not appends:');
+  eq(b.estimate.actuals.reduce((x, y) => x + y.amount, 0), 15000);
+  eq(b.estimate.changeOrders.length, 1);
+  eq(s.state.activeId, id);
+  // And only one job reaches the review, carrying this week's figures.
+  const rv = summarizeRunning(s.state.estimates, s.state.settings);
+  eq(rv.count, 1);
+  eq(rv.jobs[0].spentCents, 1500000);
+});
+
+t('updating an id that is gone changes nothing rather than throwing', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'A', quotedTotal: 1000, budget: { labor: 500 }, spent: {}, changes: [] });
+  const before = JSON.stringify(s.state.estimates);
+  s.updateAuditJob('no-such-id', { title: 'B', quotedTotal: 2000, budget: { labor: 900 }, spent: {}, changes: [] });
+  eq(JSON.stringify(s.state.estimates), before);
+});
+
+t('a weekly update is one undo step', () => {
+  const s = mkStore();
+  const { estimate } = s.createAuditJob({
+    title: 'K', quotedTotal: 42000, progress: 0.4,
+    budget: { labor: 12000 }, spent: { labor: 7000 }, changes: [],
+  });
+  s.updateAuditJob(estimate.id, {
+    title: 'K', quotedTotal: 42000, progress: 0.8,
+    budget: { labor: 12000 }, spent: { labor: 13000 },
+    changes: [{ title: 'Rot', amount: 900, signed: true }],
+  });
+  eq(s.active().progress.pct, 0.8);
+  s.undo();
+  eq(s.active().progress.pct, 0.4, 'one Ctrl+Z must undo the whole week, not part of it:');
+  eq(s.active().changeOrders.length, 0);
+  eq(s.state.estimates.length, 1);
+});
+
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

@@ -124,7 +124,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-249 unit assertions with no test framework and no install step, plus 310 browser
+252 unit assertions with no test framework and no install step, plus 317 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 `test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
 themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —
@@ -183,4 +183,6 @@ Worth recording, because both were invisible by inspection:
 - **One form for both.** The link a contractor fills in says whether the job is
   finished or still on site, and how far along it is. Finished, it becomes an
   audit; running, it joins the weekly review with its forecast already built.
-  Links written before the field existed still read, as finished jobs.
+  Links written before the field existed still read, as finished jobs. Next
+  week's link for a job it already has updates that job in place, keeping its
+  number and created date, so the review never shows one kitchen five times.

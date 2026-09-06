@@ -614,6 +614,61 @@ console.log('\n  a running job collected by link');
     '(this is the entire point of collecting it)');
   check('it carries both the signature and the change order to chase',
     /Get the signature \+ Write it up now/.test(rvRun));
+
+  /* --- next week: the same job again ------------------------------------ */
+  const filler2 = await b.newPage();
+  await filler2.goto(`http://localhost:${PORT}/quoteforge/intake.html`, { waitUntil: 'networkidle' });
+  await filler2.locator('#fState').selectOption('running');
+  await filler2.locator('#fPct').fill('70');
+  await filler2.locator('#fTitle').fill('  loft conversion — Mill Rd  ');   // as they typed it
+  await filler2.locator('#fQuoted').fill('42000');
+  await filler2.locator('[data-budget="labor"]').fill('12000');
+  await filler2.locator('[data-budget="material"]').fill('9000');
+  await filler2.locator('[data-spent="labor"]').fill('13500');
+  await filler2.locator('[data-spent="material"]').fill('8600');
+  await filler2.locator('#btnFinish').click();
+  await filler2.waitForTimeout(300);
+  const week2 = await filler2.locator('#outLink').inputValue();
+  await filler2.close();
+
+  const jobsBefore = await page.locator('#estSelect option').count();
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(300);
+  await page.locator('#aPaste').fill(week2);
+  await page.waitForTimeout(500);
+  check('the app recognises next week of a job it already has',
+    await page.locator('#aUpdateWrap').isVisible());
+  check('and names the job it would replace, so a wrong match is visible',
+    /Update Q-\d+/.test(await page.locator('#aUpdateNote').textContent()),
+    '(matching is on the title the contractor types, so it can be wrong)');
+  await page.locator('#btnBuildAudit').click();
+  await page.waitForTimeout(800);
+  check('a weekly update replaces the job instead of adding a copy',
+    (await page.locator('#estSelect option').count()) === jobsBefore,
+    '(five copies of one kitchen would report the same recoverable money five times)');
+  check('and it carries this week\'s progress',
+    (await page.locator('#progressPct').inputValue()) === '70');
+  check('the toast names the job it updated',
+    /Q-\d+ updated to 70% done/.test(await page.locator('#toasts').textContent()));
+
+  await page.locator('.tab[data-tab="jobs"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('#btnReview').click();
+  await page.waitForTimeout(500);
+  const rows = await page.evaluate(() => [...document.querySelectorAll('#rvPrint tbody tr')]
+    .filter((tr) => /Loft conversion/i.test(tr.textContent)).length);
+  check('the review shows that job once, at this week\'s figures', rows === 1, `(${rows} rows)`);
+
+  // Opting out is the escape hatch for a wrong match.
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(300);
+  await page.locator('#aPaste').fill(week2);
+  await page.waitForTimeout(500);
+  await page.locator('#aUpdate').uncheck();
+  await page.locator('#btnBuildAudit').click();
+  await page.waitForTimeout(700);
+  check('unticking it adds a separate job, for when the match is wrong',
+    (await page.locator('#estSelect option').count()) === jobsBefore + 1);
 }
 
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
