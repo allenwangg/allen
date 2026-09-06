@@ -22,6 +22,7 @@
       lastActiveDay: null,    // day key of the last day XP was earned
       certificates: {},       // courseId -> earnedAt
       badges: {},             // badgeId -> earnedAt timestamp
+      pro: null,              // Pro entitlement: {token, plan, until, activatedAt, checkedAt}
       settings: { theme: 'system', dailyGoal: 50, name: '', sound: true, autoRead: false, sessionSize: 20 },
       firstSeen: Date.now()
     };
@@ -255,7 +256,11 @@
 
   function setSetting(k, v) { state.settings[k] = v; save(); }
 
-  function resetAll() { state = defaults(); save(); }
+  function setPro(p) { state.pro = p; save(); }
+  function clearPro() { state.pro = null; save(); }
+
+  /* Progress goes; a purchase stays. Losing Pro on reset would punish the buyer. */
+  function resetAll() { var pro = state.pro; state = defaults(); state.pro = pro; save(); }
 
   window.Store = {
     get state() { return state; },
@@ -268,6 +273,7 @@
     grantFreezeIfEarned: grantFreezeIfEarned, applyFreeze: applyFreeze, noteActive: noteActive,
     isSaved: isSaved, toggleSaved: toggleSaved, savedKey: savedKey, grantCertificate: grantCertificate,
     newestProgress: newestProgress, markToured: markToured,
-    setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
+    setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll,
+    setPro: setPro, clearPro: clearPro
   };
 })();

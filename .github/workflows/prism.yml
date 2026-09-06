@@ -44,6 +44,12 @@ jobs:
         working-directory: prism
         run: node audit.mjs --strict
 
+      # The whole backend is one function; it is tested against a mock Stripe
+      # with no browser and no real key, so it runs before Chromium is installed.
+      - name: Entitlement API against a mock Stripe
+        working-directory: prism
+        run: node test/api.mjs
+
       - name: Install Playwright + Chromium
         working-directory: prism
         run: |
@@ -59,6 +65,7 @@ jobs:
           node test/polish.mjs
           node test/pwa.mjs
           node test/contrast.mjs
+          node test/pro.mjs
 
       # Not a gate — the numbers are printed so a regression is visible in the log.
       - name: Performance snapshot

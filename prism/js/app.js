@@ -364,7 +364,7 @@
       var lc = findCourse(last.courseId);
       if (lc) {
         for (var i = 0; i < lc.lessons.length; i++) {
-          if (!Store.lessonRecord(lc.id, lc.lessons[i].id)) { cont = { course: lc, lesson: lc.lessons[i], index: i }; break; }
+          if (!Store.lessonRecord(lc.id, lc.lessons[i].id) && !Pro.lessonLocked(lc, i)) { cont = { course: lc, lesson: lc.lessons[i], index: i }; break; }
         }
       }
     }
@@ -374,7 +374,7 @@
         var p = Store.courseProgress(COURSES[ci]);
         if (p.done > 0 && p.done < p.total) {
           for (var li = 0; li < COURSES[ci].lessons.length; li++) {
-            if (!Store.lessonRecord(COURSES[ci].id, COURSES[ci].lessons[li].id)) {
+            if (!Store.lessonRecord(COURSES[ci].id, COURSES[ci].lessons[li].id) && !Pro.lessonLocked(COURSES[ci], li)) {
               cont = { course: COURSES[ci], lesson: COURSES[ci].lessons[li], index: li };
               break outer;
             }
@@ -411,6 +411,14 @@
         : 'Everything is done for today. Explore anything below.') + '</p></div>' +
       '<span class="go">›</span></a>';
 
+    if (!Pro.isPro()) {
+      var pc = Pro.lessonCounts(COURSES);
+      h += '<a class="pro-card" href="#/pro">' +
+        '<div class="pro-card-body"><span class="kicker">Prism Pro</span>' +
+        '<h3>Unlock all ' + COURSES.length + ' courses</h3>' +
+        '<p>' + pc.free + ' of ' + pc.total + ' lessons are free. Pro opens the rest — ' + esc(Pro.price().amount) + ', ' + esc(Pro.price().term) + '.</p></div>' +
+        '<span class="go">›</span></a>';
+    }
     h += '<section class="actions">';
     h += '<a class="action-card review-card' + (due.length ? '' : ' calm') + '" href="#/review">' +
       '<div class="action-art">' + Art.svg('orbit') + '</div>' +
@@ -613,7 +621,7 @@
       var c1 = findCourse(last.courseId);
       if (c1) {
         for (var i = 0; i < c1.lessons.length; i++) {
-          if (!Store.lessonRecord(c1.id, c1.lessons[i].id)) return { course: c1, lesson: c1.lessons[i], index: i };
+          if (!Store.lessonRecord(c1.id, c1.lessons[i].id) && !Pro.lessonLocked(c1, i)) return { course: c1, lesson: c1.lessons[i], index: i };
         }
       }
     }
@@ -622,14 +630,14 @@
       var p = Store.courseProgress(COURSES[k]);
       if (p.done > 0 && p.done < p.total) {
         for (var j = 0; j < COURSES[k].lessons.length; j++) {
-          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id)) {
+          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id) && !Pro.lessonLocked(COURSES[k], j)) {
             return { course: COURSES[k], lesson: COURSES[k].lessons[j], index: j };
           }
         }
       }
     }
     for (var m = 0; m < COURSES.length; m++) {
-      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id)) {
+      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id) && !Pro.lessonLocked(COURSES[m], 0)) {
         return { course: COURSES[m], lesson: COURSES[m].lessons[0], index: 0 };
       }
     }
@@ -919,12 +927,14 @@
       var rec = Store.lessonRecord(c.id, l.id);
       var quizN = l.quizzes || 0;
       if (l.cards.length) { quizN = 0; for (var q = 0; q < l.cards.length; q++) if (isInteractive(l.cards[q])) quizN++; }
-      h += '<a class="lesson-row' + (rec ? ' done' : '') + '" href="#/lesson/' + esc(c.id) + '/' + esc(l.id) + '">' +
+      var locked = Pro.lessonLocked(c, i);
+      h += '<a class="lesson-row' + (rec ? ' done' : '') + (locked ? ' locked' : '') + '" href="#/lesson/' + esc(c.id) + '/' + esc(l.id) + '">' +
         '<span class="lesson-n">' + (rec
           ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
           : (i + 1)) + '</span>' +
         '<span class="lesson-txt"><b>' + esc(l.title) + '</b><small>' + esc(l.summary) + '</small></span>' +
-        '<span class="lesson-side">' + (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + lessonCardCount(l) + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
+        '<span class="lesson-side">' + (locked ? '<span class="pro-tag">Pro</span>' : '') +
+          (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + lessonCardCount(l) + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
       '</a>';
     }
     h += '</section></main>';
@@ -941,6 +951,7 @@
     if (!c) return nav('#/');
     var f = findLesson(c, lid);
     if (!f) return nav('#/course/' + cid);
+    if (Pro.lessonLocked(c, f.index)) return renderLocked(c, f.lesson, f.index);
     session = {
       course: c, lesson: f.lesson, lessonIndex: f.index,
       idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], awarded: {}, finished: false
@@ -1237,7 +1248,8 @@
       '</div></div>' +
       '<div class="player-foot col">' +
         (flow ? flowFooter('') : '') +
-        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
+        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) +
+          (Pro.lessonLocked(session.course, session.lessonIndex + 1) ? ' · Pro' : '') + '</button>' : '') +
         (session.lesson.review.length >= 3 && !session.matchPlayed ? '<button class="btn ghost" id="btn-match">Bonus round: match the pairs</button>' : '') +
         '<button class="btn ' + (nextLesson ? 'ghost' : 'primary') + '" id="btn-back-course">' + (nextLesson ? 'Back to course' : 'Done') + '</button>' +
       '</div></main>';
@@ -1896,6 +1908,10 @@
         '<option value="on"' + (s.sound !== false ? ' selected' : '') + '>On</option>' +
         '<option value="off"' + (s.sound === false ? ' selected' : '') + '>Off</option></select></label>' +
       '<div class="modal-row"><button class="btn primary" id="set-save">Save</button><button class="btn ghost" id="set-close">Cancel</button></div>' +
+      '<div class="pro-row">' + (Pro.isPro()
+        ? '<div><b>Prism Pro</b><br><span class="install-note">' + esc(planLabel(Pro.plan())) + '</span></div><button class="btn ghost" id="set-pro">Manage</button>'
+        : '<div><b>Free plan</b><br><span class="install-note">' + Pro.lessonCounts(COURSES).free + ' of ' + Pro.lessonCounts(COURSES).total + ' lessons unlocked</span></div><button class="btn primary" id="set-pro">Get Pro</button>') +
+      '</div>' +
       (installable() ? '<div class="install-row"><div><b>Install Prism</b><br><span class="install-note">Add it to your home screen — it opens full-screen and works offline.</span></div><button class="btn ghost" id="set-install">Install</button></div>' : '') +
       '<details class="backup"><summary>Backup &amp; restore</summary>' +
         '<p class="backup-note">Progress lives in this browser. Copy a backup to move it to another device.</p>' +
@@ -1923,6 +1939,7 @@
       close();
       route();
     };
+    document.getElementById('set-pro').onclick = function () { close(); openPro(); };
     var inst = document.getElementById('set-install');
     if (inst) inst.onclick = function () {
       var btn = this;
@@ -1989,6 +2006,139 @@
     var b = document.getElementById('keys-close');
     b.onclick = close;
     b.focus();
+  }
+
+  /* ---------------- Prism Pro ---------------- */
+
+  var KEY_ERRORS = {
+    empty: 'Paste your key first.',
+    invalid: 'That key isn\u2019t valid.',
+    lapsed: 'That subscription has ended.',
+    refunded: 'That purchase was refunded.',
+    unpaid: 'That checkout was never completed.',
+    network: 'Couldn\u2019t reach the server \u2014 try again when you\u2019re online.',
+    unconfigured: 'Purchases aren\u2019t switched on for this copy yet.',
+    error: 'Something went wrong on the server. Try again in a minute.'
+  };
+
+  function planLabel(plan) {
+    return { demo: 'Demo unlock', lifetime: 'Lifetime \u2014 yours forever', year: 'Annual plan', month: 'Monthly plan' }[plan] || 'Active';
+  }
+
+  /* Shared body for the modal and the #/pro page. */
+  function proHTML() {
+    var price = Pro.price(), counts = Pro.lessonCounts(COURSES);
+    var h = '<span class="kicker">Prism Pro</span>';
+    if (Pro.isPro()) {
+      return h + '<h2>You have Prism Pro</h2>' +
+        '<p class="lead">Every lesson in every course is open on this device \u2014 ' + esc(planLabel(Pro.plan())).toLowerCase() + '.</p>' +
+        '<div class="modal-row">' +
+          (Pro.plan() !== 'demo' ? '<button class="btn ghost" id="pro-copy">Copy license key</button>' : '') +
+          '<button class="btn ghost" id="pro-off">Deactivate on this device</button></div>' +
+        '<p class="pro-msg" id="pro-msg" role="status"></p>';
+    }
+    h += '<h2>Every lesson, every course</h2>' +
+      '<p class="lead">' + counts.free + ' of ' + counts.total + ' lessons are free. Pro opens the other ' + (counts.total - counts.free) + '.</p>' +
+      '<ul class="pro-benefits">' +
+        '<li>All ' + COURSES.length + ' courses, end to end</li>' +
+        '<li>Every learning path, all the way through</li>' +
+        '<li>Certificates for every course you finish</li>' +
+        '<li>Works offline on every device \u2014 one key restores it</li>' +
+      '</ul>' +
+      '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
+    if (Pro.configured() && Pro.checkoutUrl()) {
+      h += '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
+        '<button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
+    } else {
+      h += '<p class="pro-note">Purchases aren\u2019t switched on for this copy yet.</p>' +
+        '<div class="modal-row"><button class="btn primary" id="pro-key-toggle">I have a license key</button></div>';
+    }
+    h += '<form class="key-form" id="pro-key-form" hidden>' +
+        '<input id="pro-key" class="key-in" autocomplete="off" spellcheck="false" placeholder="Paste your license key" aria-label="License key">' +
+        '<button class="btn primary" type="submit">Activate</button></form>' +
+      '<p class="pro-msg" id="pro-msg" role="status"></p>';
+    return h;
+  }
+
+  function bindPro(root, onChange) {
+    var msg = root.querySelector('#pro-msg');
+    var tog = root.querySelector('#pro-key-toggle'), form = root.querySelector('#pro-key-form');
+    if (tog) tog.onclick = function () { form.hidden = false; root.querySelector('#pro-key').focus(); };
+    if (form) form.onsubmit = function (e) {
+      e.preventDefault();
+      var inp = root.querySelector('#pro-key'), btn = form.querySelector('button');
+      btn.disabled = true; msg.className = 'pro-msg'; msg.textContent = 'Checking\u2026';
+      Pro.activateKey(inp.value).then(function (r) {
+        btn.disabled = false;
+        if (r.ok) {
+          msg.textContent = '';
+          toast('<span class="toast-emoji">\u2728</span><span><b>Welcome to Prism Pro</b><br>Every lesson is open.</span>');
+          if (onChange) onChange(true);
+        } else { msg.className = 'pro-msg bad'; msg.textContent = KEY_ERRORS[r.reason] || KEY_ERRORS.invalid; }
+      });
+    };
+    var off = root.querySelector('#pro-off');
+    if (off) off.onclick = function () {
+      if (!confirm('Deactivate Pro on this device? Your key keeps working anywhere else.')) return;
+      Pro.deactivate();
+      if (onChange) onChange(false);
+    };
+    var cp = root.querySelector('#pro-copy');
+    if (cp) cp.onclick = function () {
+      var key = (Store.state.pro || {}).token || '';
+      function done() { cp.textContent = 'Copied \u2713'; setTimeout(function () { cp.textContent = 'Copy license key'; }, 1800); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(key).then(done, function () { window.prompt('Your license key:', key); });
+      else window.prompt('Your license key:', key);
+    };
+  }
+
+  function openPro(showKey) {
+    if (document.querySelector('.modal-wrap')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = '<div class="modal pro-modal" role="dialog" aria-label="Prism Pro">' + proHTML() +
+      '<button class="modal-x" id="pro-close" aria-label="Close">\u00d7</button></div>';
+    document.body.appendChild(wrap);
+    function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
+    function onEsc(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+    document.addEventListener('keydown', onEsc, true);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    document.getElementById('pro-close').onclick = close;
+    bindPro(wrap, function () { close(); route(); });
+    var tog = wrap.querySelector('#pro-key-toggle');
+    if (showKey && tog) tog.click();
+    else { var first = wrap.querySelector('#pro-buy, #pro-key-toggle, #pro-copy, #pro-off'); if (first) first.focus(); }
+  }
+
+  function renderProPage() {
+    $app.innerHTML = headerHTML() + '<main class="page"><a class="back" href="#/">\u2039 Home</a>' +
+      '<section class="pro-page">' + proHTML() + '</section></main>';
+    bindChrome();
+    bindPro($app, function () { route(); });
+  }
+
+  /* What a free user sees in place of a Pro lesson: the lesson's own title and
+     summary, so the page sells the specific thing they came for, and nothing of
+     the card text. */
+  function renderLocked(c, l, li) {
+    var price = Pro.price();
+    $app.innerHTML = headerHTML() + '<main class="page" style="--ah:' + courseHue(c.id) + '">' +
+      '<a class="back" href="#/course/' + esc(c.id) + '">\u2039 ' + esc(c.title) + '</a>' +
+      '<section class="locked-card">' +
+        '<div class="card-art small">' + Art.svg(lessonArt(l)) + '</div>' +
+        '<span class="kicker">Lesson ' + (li + 1) + ' \u00b7 Prism Pro</span>' +
+        '<h1>' + esc(l.title) + '</h1>' +
+        '<p class="lead">' + esc(l.summary) + '</p>' +
+        '<p class="locked-note">The first lesson of every course is free, and ' + Pro.freeCourseCount() + ' courses are free end to end. This one is part of Pro' +
+          (price.amount ? ' \u2014 ' + esc(price.amount) + ', ' + esc(price.term) : '') + '.</p>' +
+        '<div class="modal-row"><button class="btn primary" id="btn-get-pro">' + (Pro.configured() ? 'Get Prism Pro' : 'About Prism Pro') + '</button>' +
+          '<button class="btn ghost" id="btn-have-key">I have a license key</button></div>' +
+      '</section></main>';
+    bindChrome();
+    document.getElementById('btn-get-pro').onclick = function () { openPro(false); };
+    document.getElementById('btn-have-key').onclick = function () { openPro(true); };
+    announce('This lesson is part of Prism Pro');
+    onkey = function (e) { if (e.key === 'Escape') nav('#/course/' + c.id); };
   }
 
   function applyTheme() {
@@ -2063,6 +2213,7 @@
     else if (parts[0] === 'saved') loading(function () { renderSaved(); });
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') loading(function () { renderSearch(); });
+    else if (parts[0] === 'pro') renderProPage();
     else renderHome();
     syncBadge();
   }
@@ -2097,6 +2248,16 @@
     applyTheme();
     var frozen = Store.applyFreeze();
     route();
+    Pro.boot().then(function (r) {
+      if (!r) return;
+      if (r.ok) {
+        toast('<span class="toast-emoji">✨</span><span><b>Welcome to Prism Pro</b><br>Every lesson is open.</span>');
+        route();
+      } else if (KEY_ERRORS[r.reason]) {
+        toast('<span class="toast-emoji">🔒</span><span><b>Pro isn\u2019t active</b><br>' + esc(KEY_ERRORS[r.reason]) + '</span>');
+        route();
+      }
+    });
     // warm the card text straight away so opening a lesson never waits on it
     if (!dataReady) setTimeout(function () { withData(function () {}); }, 0);
     if (frozen) {

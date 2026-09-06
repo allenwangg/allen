@@ -99,6 +99,22 @@ else {
   for (const cat of seen.keys()) if (!used.has(cat)) w(`filter category "${cat}" has no courses`);
 }
 
+/* pricing.js names the free courses by id; a typo there silently locks a course
+   that was meant to be free. */
+const pricingSandbox = { window: {} };
+vm.createContext(pricingSandbox);
+vm.runInContext(readFileSync(join(root, 'js/pricing.js'), 'utf8'), pricingSandbox);
+const pricing = pricingSandbox.window.PRICING;
+if (!pricing) e('js/pricing.js did not define window.PRICING');
+else {
+  if (['stripe', 'none'].indexOf(pricing.provider) < 0) e(`pricing.provider "${pricing.provider}" is not stripe or none`);
+  if (pricing.provider === 'stripe' && !/^https:\/\//.test(pricing.checkoutUrl || '')) e('pricing.provider is stripe but checkoutUrl is not an https URL');
+  if (!Number.isInteger(pricing.freeLessonsPerCourse) || pricing.freeLessonsPerCourse < 0) e('pricing.freeLessonsPerCourse must be a non-negative integer');
+  const ids = new Set((courses || []).map(c => c.id));
+  for (const id of pricing.freeCourses || []) if (!ids.has(id)) e(`pricing.freeCourses names "${id}", which is not a course`);
+  if (!(pricing.freeCourses || []).length) w('no course is free end to end — the free tier is lesson 1 only');
+}
+
 const nl = courses ? courses.reduce((n, c) => n + (c.lessons || []).length, 0) : 0;
 const nc = courses ? courses.reduce((n, c) => n + (c.lessons || []).reduce((m, l) => m + (l.cards || []).length, 0), 0) : 0;
 console.log(`${(courses || []).length} courses · ${nl} lessons · ${nc} cards`);

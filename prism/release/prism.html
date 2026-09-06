@@ -608,6 +608,69 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 .all-courses[open] summary { margin-bottom: 6px; }
 .stat-note { color: var(--mut); font-size: 14px; margin: 4px 0 0; }
 
+/* ---- Prism Pro ---- */
+.pro-card {
+  display: flex; align-items: center; gap: 14px; margin: 14px 0 0; padding: 16px 18px;
+  border-radius: var(--radius); border: 1px solid var(--accent-line);
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+  color: var(--ink); text-decoration: none; box-shadow: var(--shadow);
+}
+.pro-card:hover { box-shadow: var(--shadow-lift); }
+.pro-card-body { flex: 1; min-width: 0; }
+.pro-card h3 { font-size: 18px; margin: 2px 0 4px; }
+.pro-card p { color: var(--mut); font-size: 13.5px; margin: 0; }
+.pro-tag {
+  display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent-strong); background: var(--accent-soft);
+  border-radius: 6px; padding: 2px 6px; margin-right: 8px; vertical-align: 1px;
+}
+.lesson-row.locked .lesson-n { color: var(--mut); }
+.locked-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 26px 22px 22px; box-shadow: var(--shadow); text-align: center; margin-top: 10px;
+}
+.locked-card .card-art { margin: 0 auto 10px; }
+.locked-card h1 { font-size: 26px; margin: 8px 0 6px; }
+.locked-card .lead { color: var(--mut); margin: 0; }
+.locked-note { color: var(--mut); font-size: 14px; margin: 14px auto 6px; max-width: 42ch; }
+.locked-card .modal-row { justify-content: center; }
+.pro-page { max-width: 560px; }
+.pro-page .lead, .pro-modal .lead { color: var(--mut); margin: 6px 0 0; }
+.pro-benefits { list-style: none; padding: 0; margin: 16px 0 6px; display: grid; gap: 9px; }
+.pro-benefits li { padding-left: 28px; position: relative; font-size: 15px; }
+.pro-benefits li::before {
+  content: ''; position: absolute; left: 0; top: .2em; width: 17px; height: 17px; border-radius: 50%;
+  background: var(--good-soft); border: 1.5px solid var(--good);
+}
+.pro-benefits li::after {
+  content: ''; position: absolute; left: 5px; top: .48em; width: 7px; height: 4px;
+  border-left: 2px solid var(--good); border-bottom: 2px solid var(--good); transform: rotate(-45deg);
+}
+.pro-price { margin: 8px 0 14px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pro-price b { font-family: var(--font-display); font-size: 32px; font-weight: 600; }
+.pro-price span { color: var(--mut); font-size: 14px; }
+.pro-note { color: var(--mut); font-size: 13.5px; margin: 0 0 10px; }
+.key-form { display: flex; gap: 8px; margin-top: 12px; }
+.key-form[hidden] { display: none; }   /* display:flex would otherwise defeat the hidden attribute */
+.key-in {
+  flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+  font: 14px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.pro-msg { min-height: 1.2em; color: var(--mut); font-size: 13px; margin: 8px 0 0; }
+.pro-msg.bad { color: var(--bad); }
+.pro-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; font-size: 13px;
+}
+.pro-row .btn { flex: none; }
+.pro-modal { position: relative; }
+.modal-x {
+  position: absolute; top: 8px; right: 10px; border: 0; background: transparent;
+  color: var(--mut); font-size: 26px; line-height: 1; cursor: pointer; padding: 6px 10px; border-radius: 10px;
+}
+.modal-x:hover { color: var(--ink); background: var(--surface-2); }
+
 /* keyboard shortcut list */
 .keys { margin: 4px 0 0; }
 .key-row { display: flex; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }
@@ -1501,6 +1564,7 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
       lastActiveDay: null,    // day key of the last day XP was earned
       certificates: {},       // courseId -> earnedAt
       badges: {},             // badgeId -> earnedAt timestamp
+      pro: null,              // Pro entitlement: {token, plan, until, activatedAt, checkedAt}
       settings: { theme: 'system', dailyGoal: 50, name: '', sound: true, autoRead: false, sessionSize: 20 },
       firstSeen: Date.now()
     };
@@ -1734,7 +1798,11 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
 
   function setSetting(k, v) { state.settings[k] = v; save(); }
 
-  function resetAll() { state = defaults(); save(); }
+  function setPro(p) { state.pro = p; save(); }
+  function clearPro() { state.pro = null; save(); }
+
+  /* Progress goes; a purchase stays. Losing Pro on reset would punish the buyer. */
+  function resetAll() { var pro = state.pro; state = defaults(); state.pro = pro; save(); }
 
   window.Store = {
     get state() { return state; },
@@ -1747,7 +1815,189 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
     grantFreezeIfEarned: grantFreezeIfEarned, applyFreeze: applyFreeze, noteActive: noteActive,
     isSaved: isSaved, toggleSaved: toggleSaved, savedKey: savedKey, grantCertificate: grantCertificate,
     newestProgress: newestProgress, markToured: markToured,
-    setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll
+    setLastLesson: setLastLesson, setSetting: setSetting, resetAll: resetAll,
+    setPro: setPro, clearPro: clearPro
+  };
+})();
+
+</script>
+<script>
+/* Prism — pricing. The one file to edit to start charging.
+
+   What is free, always: the first lesson of every course, the courses listed in
+   freeCourses end to end, reviews on anything you have learned, search, paths,
+   practice, backup. What Pro unlocks: every other lesson in the library.
+
+   To sell:
+   1. Create a Stripe Payment Link. Under "After payment", redirect to your app
+      URL with the session id appended, exactly like this:
+        https://your-app.example/?session_id={CHECKOUT_SESSION_ID}
+   2. Deploy prism/ on Vercel with STRIPE_SECRET_KEY set. api/verify.js is the
+      entire backend: it confirms the session was paid and issues a signed
+      license token the app keeps. Nothing else to run.
+   3. Set provider to 'stripe' and checkoutUrl to the Payment Link below.
+
+   Until then provider is 'none': the app runs as a free preview, and the key
+   PRISM-DEMO unlocks Pro locally so the whole flow can be tried. */
+window.PRICING = {
+  provider: 'none',            // 'stripe' | 'none'
+  checkoutUrl: '',             // your Stripe Payment Link
+  verifyUrl: 'api/verify',     // relative, so it works under any deploy path
+  price: { amount: '$29', term: 'once — yours forever, on every device' },
+  freeLessonsPerCourse: 1,
+  freeCourses: [
+    'cognitive-biases', 'learning-how-to-learn', 'stoicism', 'psychology-of-money',
+    'big-ideas-physics', 'science-of-sleep', 'how-to-live-forever', 'story-of-evolution',
+    'art-of-storytelling', 'islamic-golden-age', 'how-internet-works', 'music-theory'
+  ]
+};
+
+</script>
+<script>
+/* Prism — Pro entitlement.
+
+   The app is offline-first, so the entitlement lives in Store and is trusted
+   offline. It is re-checked with the server at most once a day when online, and
+   only an explicit "no" from the server — refunded, lapsed, invalid — revokes it.
+   A network failure never does.
+
+   Honest note: everything here runs in the browser, and the lesson text ships
+   with the app. Gating keeps the product coherent for honest people; it is not
+   DRM, and Prism does not pretend otherwise. */
+(function () {
+  'use strict';
+
+  var DAY = 24 * 60 * 60 * 1000;
+  var GRACE = 3 * DAY;             // a subscription keeps working this long past its period end
+
+  function cfg() { return window.PRICING || {}; }
+  function provider() { return cfg().provider || 'none'; }
+  function configured() { return provider() !== 'none'; }
+  function verifyUrl() { return cfg().verifyUrl || 'api/verify'; }
+  function entitlement() { return Store.state.pro || null; }
+
+  function isPro() {
+    var p = entitlement();
+    if (!p) return false;
+    if (p.until && p.until * 1000 + GRACE < Date.now()) return false;
+    return true;
+  }
+
+  function plan() { var p = entitlement(); return p ? p.plan : null; }
+
+  function freeCourse(cid) { return (cfg().freeCourses || []).indexOf(cid) >= 0; }
+
+  function freePerCourse() {
+    var n = cfg().freeLessonsPerCourse;
+    return typeof n === 'number' ? n : 1;
+  }
+
+  /* The single question every gate asks. */
+  function lessonLocked(course, lessonIndex) {
+    if (isPro()) return false;
+    if (freeCourse(course.id)) return false;
+    return lessonIndex >= freePerCourse();
+  }
+
+  /* {free, total} lessons across the library at the current entitlement — for copy. */
+  function lessonCounts(courses) {
+    var free = 0, total = 0;
+    for (var i = 0; i < courses.length; i++) {
+      for (var j = 0; j < courses[i].lessons.length; j++) {
+        total++;
+        if (!lessonLocked(courses[i], j)) free++;
+      }
+    }
+    return { free: free, total: total };
+  }
+
+  function freeCourseCount() { return (cfg().freeCourses || []).length; }
+
+  function post(url, body) {
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (j) { return j; }, function () { return { ok: false, reason: 'error' }; });
+    });
+  }
+
+  function grant(fields) {
+    var now = Date.now();
+    Store.setPro({
+      token: fields.token, plan: fields.plan || 'lifetime', until: fields.until || null,
+      activatedAt: now, checkedAt: now
+    });
+  }
+
+  /* Paste a license key (a token issued to another device). */
+  function activateKey(key) {
+    key = String(key || '').trim();
+    if (!key) return Promise.resolve({ ok: false, reason: 'empty' });
+    if (!configured()) {
+      if (key.toUpperCase() === 'PRISM-DEMO') {
+        grant({ token: 'demo', plan: 'demo' });
+        return Promise.resolve({ ok: true, plan: 'demo' });
+      }
+      return Promise.resolve({ ok: false, reason: 'invalid' });
+    }
+    return post(verifyUrl(), { token: key }).then(function (j) {
+      if (j && j.ok) { grant({ token: j.token || key, plan: j.plan, until: j.until }); return { ok: true, plan: j.plan }; }
+      return { ok: false, reason: (j && j.reason) || 'invalid' };
+    }, function () { return { ok: false, reason: 'network' }; });
+  }
+
+  /* After checkout, Stripe sends the buyer back with ?session_id=… */
+  function claimSession(sessionId) {
+    if (!configured()) return Promise.resolve({ ok: false, reason: 'unconfigured' });
+    return post(verifyUrl(), { session_id: sessionId }).then(function (j) {
+      if (j && j.ok) { grant({ token: j.token, plan: j.plan, until: j.until }); return { ok: true, plan: j.plan }; }
+      return { ok: false, reason: (j && j.reason) || 'invalid' };
+    }, function () { return { ok: false, reason: 'network' }; });
+  }
+
+  var REVOKES = { invalid: true, lapsed: true, refunded: true };
+
+  /* Daily re-check. Resolves to null when nothing changed. */
+  function refresh(force) {
+    var p = entitlement();
+    if (!p || p.plan === 'demo' || !configured()) return Promise.resolve(null);
+    if (!force && p.checkedAt && Date.now() - p.checkedAt < DAY) return Promise.resolve(null);
+    if (navigator.onLine === false) return Promise.resolve(null);
+    return post(verifyUrl(), { token: p.token }).then(function (j) {
+      if (j && j.ok) {
+        Store.setPro({ token: j.token || p.token, plan: j.plan || p.plan, until: j.until || null,
+          activatedAt: p.activatedAt, checkedAt: Date.now() });
+        return { ok: true };
+      }
+      if (j && j.ok === false && REVOKES[j.reason]) { Store.clearPro(); return { ok: false, reason: j.reason }; }
+      return null;
+    }, function () { return null; });
+  }
+
+  function deactivate() { Store.clearPro(); }
+
+  function checkoutUrl() { return cfg().checkoutUrl || ''; }
+
+  /* Called once at boot. A checkout return claims its session; otherwise the
+     daily re-check runs. Either way the promise resolves to a result or null. */
+  function boot() {
+    var m = location.search.match(/[?&]session_id=([^&]+)/);
+    if (m) {
+      var id = decodeURIComponent(m[1]);
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* fine */ }
+      return claimSession(id);
+    }
+    return refresh(false);
+  }
+
+  window.Pro = {
+    isPro: isPro, plan: plan, configured: configured, provider: provider,
+    lessonLocked: lessonLocked, lessonCounts: lessonCounts, freeCourseCount: freeCourseCount, freeCourse: freeCourse,
+    activateKey: activateKey, claimSession: claimSession, refresh: refresh, deactivate: deactivate,
+    checkoutUrl: checkoutUrl, boot: boot,
+    price: function () { return cfg().price || { amount: '', term: '' }; }
   };
 })();
 
@@ -61130,7 +61380,7 @@ window.COURSES_FULL = [
       var lc = findCourse(last.courseId);
       if (lc) {
         for (var i = 0; i < lc.lessons.length; i++) {
-          if (!Store.lessonRecord(lc.id, lc.lessons[i].id)) { cont = { course: lc, lesson: lc.lessons[i], index: i }; break; }
+          if (!Store.lessonRecord(lc.id, lc.lessons[i].id) && !Pro.lessonLocked(lc, i)) { cont = { course: lc, lesson: lc.lessons[i], index: i }; break; }
         }
       }
     }
@@ -61140,7 +61390,7 @@ window.COURSES_FULL = [
         var p = Store.courseProgress(COURSES[ci]);
         if (p.done > 0 && p.done < p.total) {
           for (var li = 0; li < COURSES[ci].lessons.length; li++) {
-            if (!Store.lessonRecord(COURSES[ci].id, COURSES[ci].lessons[li].id)) {
+            if (!Store.lessonRecord(COURSES[ci].id, COURSES[ci].lessons[li].id) && !Pro.lessonLocked(COURSES[ci], li)) {
               cont = { course: COURSES[ci], lesson: COURSES[ci].lessons[li], index: li };
               break outer;
             }
@@ -61177,6 +61427,14 @@ window.COURSES_FULL = [
         : 'Everything is done for today. Explore anything below.') + '</p></div>' +
       '<span class="go">›</span></a>';
 
+    if (!Pro.isPro()) {
+      var pc = Pro.lessonCounts(COURSES);
+      h += '<a class="pro-card" href="#/pro">' +
+        '<div class="pro-card-body"><span class="kicker">Prism Pro</span>' +
+        '<h3>Unlock all ' + COURSES.length + ' courses</h3>' +
+        '<p>' + pc.free + ' of ' + pc.total + ' lessons are free. Pro opens the rest — ' + esc(Pro.price().amount) + ', ' + esc(Pro.price().term) + '.</p></div>' +
+        '<span class="go">›</span></a>';
+    }
     h += '<section class="actions">';
     h += '<a class="action-card review-card' + (due.length ? '' : ' calm') + '" href="#/review">' +
       '<div class="action-art">' + Art.svg('orbit') + '</div>' +
@@ -61379,7 +61637,7 @@ window.COURSES_FULL = [
       var c1 = findCourse(last.courseId);
       if (c1) {
         for (var i = 0; i < c1.lessons.length; i++) {
-          if (!Store.lessonRecord(c1.id, c1.lessons[i].id)) return { course: c1, lesson: c1.lessons[i], index: i };
+          if (!Store.lessonRecord(c1.id, c1.lessons[i].id) && !Pro.lessonLocked(c1, i)) return { course: c1, lesson: c1.lessons[i], index: i };
         }
       }
     }
@@ -61388,14 +61646,14 @@ window.COURSES_FULL = [
       var p = Store.courseProgress(COURSES[k]);
       if (p.done > 0 && p.done < p.total) {
         for (var j = 0; j < COURSES[k].lessons.length; j++) {
-          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id)) {
+          if (!Store.lessonRecord(COURSES[k].id, COURSES[k].lessons[j].id) && !Pro.lessonLocked(COURSES[k], j)) {
             return { course: COURSES[k], lesson: COURSES[k].lessons[j], index: j };
           }
         }
       }
     }
     for (var m = 0; m < COURSES.length; m++) {
-      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id)) {
+      if (!Store.lessonRecord(COURSES[m].id, COURSES[m].lessons[0].id) && !Pro.lessonLocked(COURSES[m], 0)) {
         return { course: COURSES[m], lesson: COURSES[m].lessons[0], index: 0 };
       }
     }
@@ -61685,12 +61943,14 @@ window.COURSES_FULL = [
       var rec = Store.lessonRecord(c.id, l.id);
       var quizN = l.quizzes || 0;
       if (l.cards.length) { quizN = 0; for (var q = 0; q < l.cards.length; q++) if (isInteractive(l.cards[q])) quizN++; }
-      h += '<a class="lesson-row' + (rec ? ' done' : '') + '" href="#/lesson/' + esc(c.id) + '/' + esc(l.id) + '">' +
+      var locked = Pro.lessonLocked(c, i);
+      h += '<a class="lesson-row' + (rec ? ' done' : '') + (locked ? ' locked' : '') + '" href="#/lesson/' + esc(c.id) + '/' + esc(l.id) + '">' +
         '<span class="lesson-n">' + (rec
           ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
           : (i + 1)) + '</span>' +
         '<span class="lesson-txt"><b>' + esc(l.title) + '</b><small>' + esc(l.summary) + '</small></span>' +
-        '<span class="lesson-side">' + (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + lessonCardCount(l) + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
+        '<span class="lesson-side">' + (locked ? '<span class="pro-tag">Pro</span>' : '') +
+          (rec ? '<em>' + rec.best + '%</em>' : '<em class="mut">' + lessonCardCount(l) + ' cards · ' + quizN + ' quizzes</em>') + '<span class="go">›</span></span>' +
       '</a>';
     }
     h += '</section></main>';
@@ -61707,6 +61967,7 @@ window.COURSES_FULL = [
     if (!c) return nav('#/');
     var f = findLesson(c, lid);
     if (!f) return nav('#/course/' + cid);
+    if (Pro.lessonLocked(c, f.index)) return renderLocked(c, f.lesson, f.index);
     session = {
       course: c, lesson: f.lesson, lessonIndex: f.index,
       idx: 0, xp: 0, attempted: 0, correct: 0, misses: [], awarded: {}, finished: false
@@ -62003,7 +62264,8 @@ window.COURSES_FULL = [
       '</div></div>' +
       '<div class="player-foot col">' +
         (flow ? flowFooter('') : '') +
-        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) + '</button>' : '') +
+        (nextLesson && !flow ? '<button class="btn primary" id="btn-next-lesson">Next: ' + esc(nextLesson.title) +
+          (Pro.lessonLocked(session.course, session.lessonIndex + 1) ? ' · Pro' : '') + '</button>' : '') +
         (session.lesson.review.length >= 3 && !session.matchPlayed ? '<button class="btn ghost" id="btn-match">Bonus round: match the pairs</button>' : '') +
         '<button class="btn ' + (nextLesson ? 'ghost' : 'primary') + '" id="btn-back-course">' + (nextLesson ? 'Back to course' : 'Done') + '</button>' +
       '</div></main>';
@@ -62662,6 +62924,10 @@ window.COURSES_FULL = [
         '<option value="on"' + (s.sound !== false ? ' selected' : '') + '>On</option>' +
         '<option value="off"' + (s.sound === false ? ' selected' : '') + '>Off</option></select></label>' +
       '<div class="modal-row"><button class="btn primary" id="set-save">Save</button><button class="btn ghost" id="set-close">Cancel</button></div>' +
+      '<div class="pro-row">' + (Pro.isPro()
+        ? '<div><b>Prism Pro</b><br><span class="install-note">' + esc(planLabel(Pro.plan())) + '</span></div><button class="btn ghost" id="set-pro">Manage</button>'
+        : '<div><b>Free plan</b><br><span class="install-note">' + Pro.lessonCounts(COURSES).free + ' of ' + Pro.lessonCounts(COURSES).total + ' lessons unlocked</span></div><button class="btn primary" id="set-pro">Get Pro</button>') +
+      '</div>' +
       (installable() ? '<div class="install-row"><div><b>Install Prism</b><br><span class="install-note">Add it to your home screen — it opens full-screen and works offline.</span></div><button class="btn ghost" id="set-install">Install</button></div>' : '') +
       '<details class="backup"><summary>Backup &amp; restore</summary>' +
         '<p class="backup-note">Progress lives in this browser. Copy a backup to move it to another device.</p>' +
@@ -62689,6 +62955,7 @@ window.COURSES_FULL = [
       close();
       route();
     };
+    document.getElementById('set-pro').onclick = function () { close(); openPro(); };
     var inst = document.getElementById('set-install');
     if (inst) inst.onclick = function () {
       var btn = this;
@@ -62755,6 +63022,139 @@ window.COURSES_FULL = [
     var b = document.getElementById('keys-close');
     b.onclick = close;
     b.focus();
+  }
+
+  /* ---------------- Prism Pro ---------------- */
+
+  var KEY_ERRORS = {
+    empty: 'Paste your key first.',
+    invalid: 'That key isn\u2019t valid.',
+    lapsed: 'That subscription has ended.',
+    refunded: 'That purchase was refunded.',
+    unpaid: 'That checkout was never completed.',
+    network: 'Couldn\u2019t reach the server \u2014 try again when you\u2019re online.',
+    unconfigured: 'Purchases aren\u2019t switched on for this copy yet.',
+    error: 'Something went wrong on the server. Try again in a minute.'
+  };
+
+  function planLabel(plan) {
+    return { demo: 'Demo unlock', lifetime: 'Lifetime \u2014 yours forever', year: 'Annual plan', month: 'Monthly plan' }[plan] || 'Active';
+  }
+
+  /* Shared body for the modal and the #/pro page. */
+  function proHTML() {
+    var price = Pro.price(), counts = Pro.lessonCounts(COURSES);
+    var h = '<span class="kicker">Prism Pro</span>';
+    if (Pro.isPro()) {
+      return h + '<h2>You have Prism Pro</h2>' +
+        '<p class="lead">Every lesson in every course is open on this device \u2014 ' + esc(planLabel(Pro.plan())).toLowerCase() + '.</p>' +
+        '<div class="modal-row">' +
+          (Pro.plan() !== 'demo' ? '<button class="btn ghost" id="pro-copy">Copy license key</button>' : '') +
+          '<button class="btn ghost" id="pro-off">Deactivate on this device</button></div>' +
+        '<p class="pro-msg" id="pro-msg" role="status"></p>';
+    }
+    h += '<h2>Every lesson, every course</h2>' +
+      '<p class="lead">' + counts.free + ' of ' + counts.total + ' lessons are free. Pro opens the other ' + (counts.total - counts.free) + '.</p>' +
+      '<ul class="pro-benefits">' +
+        '<li>All ' + COURSES.length + ' courses, end to end</li>' +
+        '<li>Every learning path, all the way through</li>' +
+        '<li>Certificates for every course you finish</li>' +
+        '<li>Works offline on every device \u2014 one key restores it</li>' +
+      '</ul>' +
+      '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
+    if (Pro.configured() && Pro.checkoutUrl()) {
+      h += '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
+        '<button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
+    } else {
+      h += '<p class="pro-note">Purchases aren\u2019t switched on for this copy yet.</p>' +
+        '<div class="modal-row"><button class="btn primary" id="pro-key-toggle">I have a license key</button></div>';
+    }
+    h += '<form class="key-form" id="pro-key-form" hidden>' +
+        '<input id="pro-key" class="key-in" autocomplete="off" spellcheck="false" placeholder="Paste your license key" aria-label="License key">' +
+        '<button class="btn primary" type="submit">Activate</button></form>' +
+      '<p class="pro-msg" id="pro-msg" role="status"></p>';
+    return h;
+  }
+
+  function bindPro(root, onChange) {
+    var msg = root.querySelector('#pro-msg');
+    var tog = root.querySelector('#pro-key-toggle'), form = root.querySelector('#pro-key-form');
+    if (tog) tog.onclick = function () { form.hidden = false; root.querySelector('#pro-key').focus(); };
+    if (form) form.onsubmit = function (e) {
+      e.preventDefault();
+      var inp = root.querySelector('#pro-key'), btn = form.querySelector('button');
+      btn.disabled = true; msg.className = 'pro-msg'; msg.textContent = 'Checking\u2026';
+      Pro.activateKey(inp.value).then(function (r) {
+        btn.disabled = false;
+        if (r.ok) {
+          msg.textContent = '';
+          toast('<span class="toast-emoji">\u2728</span><span><b>Welcome to Prism Pro</b><br>Every lesson is open.</span>');
+          if (onChange) onChange(true);
+        } else { msg.className = 'pro-msg bad'; msg.textContent = KEY_ERRORS[r.reason] || KEY_ERRORS.invalid; }
+      });
+    };
+    var off = root.querySelector('#pro-off');
+    if (off) off.onclick = function () {
+      if (!confirm('Deactivate Pro on this device? Your key keeps working anywhere else.')) return;
+      Pro.deactivate();
+      if (onChange) onChange(false);
+    };
+    var cp = root.querySelector('#pro-copy');
+    if (cp) cp.onclick = function () {
+      var key = (Store.state.pro || {}).token || '';
+      function done() { cp.textContent = 'Copied \u2713'; setTimeout(function () { cp.textContent = 'Copy license key'; }, 1800); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(key).then(done, function () { window.prompt('Your license key:', key); });
+      else window.prompt('Your license key:', key);
+    };
+  }
+
+  function openPro(showKey) {
+    if (document.querySelector('.modal-wrap')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = '<div class="modal pro-modal" role="dialog" aria-label="Prism Pro">' + proHTML() +
+      '<button class="modal-x" id="pro-close" aria-label="Close">\u00d7</button></div>';
+    document.body.appendChild(wrap);
+    function close() { wrap.remove(); document.removeEventListener('keydown', onEsc, true); }
+    function onEsc(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+    document.addEventListener('keydown', onEsc, true);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    document.getElementById('pro-close').onclick = close;
+    bindPro(wrap, function () { close(); route(); });
+    var tog = wrap.querySelector('#pro-key-toggle');
+    if (showKey && tog) tog.click();
+    else { var first = wrap.querySelector('#pro-buy, #pro-key-toggle, #pro-copy, #pro-off'); if (first) first.focus(); }
+  }
+
+  function renderProPage() {
+    $app.innerHTML = headerHTML() + '<main class="page"><a class="back" href="#/">\u2039 Home</a>' +
+      '<section class="pro-page">' + proHTML() + '</section></main>';
+    bindChrome();
+    bindPro($app, function () { route(); });
+  }
+
+  /* What a free user sees in place of a Pro lesson: the lesson's own title and
+     summary, so the page sells the specific thing they came for, and nothing of
+     the card text. */
+  function renderLocked(c, l, li) {
+    var price = Pro.price();
+    $app.innerHTML = headerHTML() + '<main class="page" style="--ah:' + courseHue(c.id) + '">' +
+      '<a class="back" href="#/course/' + esc(c.id) + '">\u2039 ' + esc(c.title) + '</a>' +
+      '<section class="locked-card">' +
+        '<div class="card-art small">' + Art.svg(lessonArt(l)) + '</div>' +
+        '<span class="kicker">Lesson ' + (li + 1) + ' \u00b7 Prism Pro</span>' +
+        '<h1>' + esc(l.title) + '</h1>' +
+        '<p class="lead">' + esc(l.summary) + '</p>' +
+        '<p class="locked-note">The first lesson of every course is free, and ' + Pro.freeCourseCount() + ' courses are free end to end. This one is part of Pro' +
+          (price.amount ? ' \u2014 ' + esc(price.amount) + ', ' + esc(price.term) : '') + '.</p>' +
+        '<div class="modal-row"><button class="btn primary" id="btn-get-pro">' + (Pro.configured() ? 'Get Prism Pro' : 'About Prism Pro') + '</button>' +
+          '<button class="btn ghost" id="btn-have-key">I have a license key</button></div>' +
+      '</section></main>';
+    bindChrome();
+    document.getElementById('btn-get-pro').onclick = function () { openPro(false); };
+    document.getElementById('btn-have-key').onclick = function () { openPro(true); };
+    announce('This lesson is part of Prism Pro');
+    onkey = function (e) { if (e.key === 'Escape') nav('#/course/' + c.id); };
   }
 
   function applyTheme() {
@@ -62829,6 +63229,7 @@ window.COURSES_FULL = [
     else if (parts[0] === 'saved') loading(function () { renderSaved(); });
     else if (parts[0] === 'stats') renderStats();
     else if (parts[0] === 'search') loading(function () { renderSearch(); });
+    else if (parts[0] === 'pro') renderProPage();
     else renderHome();
     syncBadge();
   }
@@ -62863,6 +63264,16 @@ window.COURSES_FULL = [
     applyTheme();
     var frozen = Store.applyFreeze();
     route();
+    Pro.boot().then(function (r) {
+      if (!r) return;
+      if (r.ok) {
+        toast('<span class="toast-emoji">✨</span><span><b>Welcome to Prism Pro</b><br>Every lesson is open.</span>');
+        route();
+      } else if (KEY_ERRORS[r.reason]) {
+        toast('<span class="toast-emoji">🔒</span><span><b>Pro isn\u2019t active</b><br>' + esc(KEY_ERRORS[r.reason]) + '</span>');
+        route();
+      }
+    });
     // warm the card text straight away so opening a lesson never waits on it
     if (!dataReady) setTimeout(function () { withData(function () {}); }, 0);
     if (frozen) {

@@ -38,7 +38,7 @@ const SWEEP = `(() => {
   return out;
 })()`;
 
-const VIEWS = ['#/','#/paths','#/stats','#/saved'];
+const VIEWS = ['#/','#/paths','#/stats','#/saved','#/pro'];
 let total=0; const agg={}, sel={};
 for (const theme of ['system','light','pastel','dark']) {
   const page = await b.newPage({ viewport:{width:1180,height:1000}, colorScheme: theme==='dark'?'dark':'light' });
@@ -50,6 +50,13 @@ for (const theme of ['system','light','pastel','dark']) {
     const bad = await page.evaluate(SWEEP);
     for (const x of bad) { total++; const k=theme+'|'+x.fg+' on '+x.bg+'|'+x.ratio+'|'+x.need; agg[k]=(agg[k]||0)+1; sel[k]=sel[k]||new Set(); sel[k].add(x.sel); }
   }
+  // a locked lesson page and the Pro modal introduce their own colour pairs
+  const lockedTarget = await page.evaluate(()=>{ const c=window.COURSES.find(c=>!Pro.freeCourse(c.id)); return '#/lesson/'+c.id+'/'+c.lessons[1].id; });
+  await page.goto(url+lockedTarget); await page.reload({waitUntil:'domcontentloaded'}); await page.waitForTimeout(320);
+  for (const x of await page.evaluate(SWEEP)) { total++; const k=theme+'|'+x.fg+' on '+x.bg+'|'+x.ratio+'|'+x.need; agg[k]=(agg[k]||0)+1; sel[k]=sel[k]||new Set(); sel[k].add(x.sel); }
+  await page.click('#btn-get-pro').catch(()=>{}); await page.waitForTimeout(200);
+  for (const x of await page.evaluate(SWEEP)) { total++; const k=theme+'|'+x.fg+' on '+x.bg+'|'+x.ratio+'|'+x.need; agg[k]=(agg[k]||0)+1; sel[k]=sel[k]||new Set(); sel[k].add(x.sel); }
+  await page.keyboard.press('Escape');
   // and the two new dialogs
   await page.goto(url+'#/'); await page.waitForSelector('.cover');
   await page.keyboard.press('?'); await page.waitForSelector('.keys');
@@ -66,6 +73,6 @@ for (const [k,n] of Object.entries(agg).sort((a,b)=>b[1]-a[1])) {
   console.log(`${String(n).padStart(4)}×  ${th.padEnd(7)} ${ratio.padStart(5)} < ${need}  ${pair.padEnd(40)} ${[...sel[k]].slice(0,4).join(', ')}`);
 }
 console.log(total ? `\nFAIL ${total} failures from ${Object.keys(agg).length} distinct colour pairs`
-                  : '\nPASS no text below WCAG AA across 4 themes x 6 views');
+                  : '\nPASS no text below WCAG AA across 4 themes x 9 surfaces');
 await b.close(); server.close();
 process.exit(total ? 1 : 0);
