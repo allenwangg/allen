@@ -21,6 +21,8 @@ if [ "${1:-}" = "--all" ]; then
   node quoteforge/test/accessibility.mjs || fail=1
   echo "  security suite"
   node quoteforge/test/security.mjs || fail=1
+  echo "  mobile suite"
+  node quoteforge/test/mobile.mjs || fail=1
 fi
 
 if [ "$fail" -ne 0 ]; then

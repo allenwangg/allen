@@ -124,10 +124,12 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-200 unit assertions with no test framework and no install step, plus 217 browser
+200 unit assertions with no test framework and no install step, plus 254 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
-`test/security.mjs`, and `test/accessibility.mjs` — which checks every page in both
-themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast. Both figures are what `./run-tests.sh --all` actually reports —
+`test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
+themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —
+and `test/mobile.mjs`, which walks the whole funnel on an emulated 390px touch phone:
+intake form, pasted link, audit, and a change order written and finger-signed. Both figures are what `./run-tests.sh --all` actually reports —
 re-read them from its output rather than trusting this line after a change. The pricing suite includes a
 500-case property check that totals always reconcile, margins stay finite, and no total
 ever lands on a fractional cent.

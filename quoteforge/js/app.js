@@ -966,7 +966,11 @@ function wireSignature() {
 
   canvas.addEventListener('pointerdown', (e) => {
     drawing = true; dirty = true;
-    canvas.setPointerCapture(e.pointerId);
+    // Capture keeps the stroke alive when a finger drifts off the pad. It
+    // throws if the browser has no active pointer under that id (seen with
+    // synthesised events and after a pointercancel); losing capture is a
+    // shorter stroke, losing the whole pad to an exception is a lost signature.
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* draw uncaptured */ }
     const p = pos(e);
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);

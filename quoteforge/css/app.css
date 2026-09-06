@@ -726,6 +726,46 @@ table.pr-table tr.group-head td {
   .items th { position: static; }
 }
 
+/* ------------------------------------------------------------- touch ---- */
+
+/* Row tools appear on hover. A finger cannot hover, so on a touch screen the
+   delete / reorder buttons on every line were invisible until the row held
+   focus — most people would conclude lines cannot be deleted at all. */
+@media (hover: none) {
+  .items .row-tools { opacity: 1; }
+}
+
+/* Fingers, not cursors: the small buttons were 26px tall, under the 24px
+   WCAG floor once you subtract their borders and well under what a thumb
+   hits reliably. Only on coarse pointers so the desktop density stays. */
+@media (pointer: coarse) {
+  .btn.sm { min-height: 36px; padding: 6px 10px; }
+  .btn.icon { min-height: 36px; min-width: 36px; justify-content: center; }
+  /* label.signed outranks the later `.change-row input[type=checkbox]`
+     width:auto rule; a bare .change-row selector here would lose to it. */
+  label.signed input[type="checkbox"], .inline-toggle input[type="checkbox"] { width: 24px; height: 24px; }
+  .change-row > input:not([type="checkbox"]) { min-height: 36px; }
+  .tab { min-height: 40px; }
+}
+
+/* iOS Safari zooms the page when a control with text under 16px takes focus,
+   and does not zoom back out. On the intake form that means every one of the
+   dozen fields shoves the page around. 16px on phones, and the app grid is
+   already a sideways-scrolling region there so wider cells cost nothing. */
+@media (max-width: 720px) {
+  input, select, textarea { font-size: 16px; }
+  .items { font-size: 15px; }
+  /* Keyboard shortcuts on a phone are noise, and hiding the button lets the
+     tools fit beside the brand instead of taking a third row of sticky chrome. */
+  #btnHelp { display: none; }
+  .topbar { gap: 8px; padding: 8px 14px; }
+}
+/* Under 480px the word "QuoteForge" is what pushes Print onto a row of its
+   own; the mark alone identifies the app and the tools fit beside it. */
+@media (max-width: 480px) {
+  .brand > span:not(.mark) { display: none; }
+}
+
 /* ---------------------------------------------------------------- print -- */
 
 /* Screen-hidden print targets. */
@@ -895,7 +935,11 @@ table.pr-table tr.group-head td {
 }
 .change-row input[type="checkbox"] { width: auto; }
 @media (max-width: 620px) {
-  .change-row { grid-template-columns: 1fr 1fr; }
+  /* Two equal 1fr tracks let the inputs' intrinsic width push the row past
+     the screen edge (a 390px phone scrolled sideways by 22px). minmax(0,…)
+     lets them shrink, and the title gets a row to itself. */
+  .change-row { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .change-row > input:first-child { grid-column: 1 / -1; }
 }
 
 /* ------------------------------------------------------ intake warnings --- */
