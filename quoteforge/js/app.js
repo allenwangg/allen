@@ -12,7 +12,7 @@ import {
   CATEGORIES, CATEGORY_LABELS, priceEstimate, formatMoney, formatPercent,
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
-  solveDiscountForTotal, summarizePortfolio, checkIntake,
+  solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, MIN_PROGRESS,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -1903,6 +1903,9 @@ function renderCosts(est) {
   renderActualsGrid(est, c);
   renderBudgetPanel(c);
   renderFadePanel(c);
+  const f = forecastJob(est, store.state.settings);
+  renderForecastPanel(est, f);
+  renderBurnChart(f);
   $('#auditPrint').innerHTML = renderAuditReport({
     estimate: est,
     costed: c,
@@ -2067,8 +2070,155 @@ ${c.overrunCents ? `
   </div>`}`;
 }
 
+/* ------------------------------------------------------------- forecast --- */
+
+const shortDate = (iso) => {
+  const d = new Date(`${iso}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+function renderForecastPanel(est, f) {
+  const slider = $('#progressPct');
+  const pct = Math.round(f.progress * 100);
+  // Never yank the thumb out from under a dragging finger.
+  if (document.activeElement !== slider) slider.value = pct;
+  $('#progressOut').textContent = `${pct}%`;
+  $('#progressAsOf').textContent = f.asOf ? `as of ${shortDate(f.asOf)}` : '';
+
+  const el = $('#forecastPanel');
+  const floor = Number(store.state.settings.floorMargin) || 0;
+  const pace = f.paceCentsPerDay
+    ? `<p class="tiny faint" style="margin:8px 0 0">Spending about ${formatMoney(f.paceCentsPerDay)} a day across the log${
+      f.daysToBudget === 0 ? ' — the direct budget is already gone.'
+        : f.daysToBudget ? ` — at that pace the direct budget lasts about ${f.daysToBudget} more day${f.daysToBudget === 1 ? '' : 's'}.` : '.'}</p>`
+    : '';
+
+  if (f.status === 'nothing-spent') {
+    el.innerHTML = `<div class="coach" style="margin-top:12px"><strong>Nothing to project yet.</strong>
+      Log what you have paid out and say how far along the job is, and this shows where the margin finishes — while there is still time to do something about it.</div>`;
+    return;
+  }
+  if (f.status === 'too-early') {
+    el.innerHTML = `<div class="coach" style="margin-top:12px"><strong>Set how far along the job is.</strong>
+      Below ${Math.round(MIN_PROGRESS * 100)}% a projection would mostly measure that materials land before the labor that installs them, so none is made.</div>${pace}`;
+    return;
+  }
+
+  const worst = f.worstCategory ? f.byCategory[f.worstCategory] : null;
+  const cls = f.status === 'bad' ? 'bad' : f.status === 'warm' ? 'warn' : 'good';
+  const lowNote = f.confidence === 'low'
+    ? ` Early in a job this over-reads, because material is bought before it is installed — treat it as a warning, not a number.` : '';
+  let coach;
+  if (f.status === 'ok') {
+    coach = `<strong>On pace to keep what you priced.</strong> At ${pct}% done nothing is burning faster than the job is getting built.${lowNote}`;
+  } else {
+    const trade = worst ? CATEGORY_LABELS[f.worstCategory] : 'Spend';
+    coach = `<strong>${trade} is ${worst ? formatMoney(worst.aheadCents) : ''} ahead of pace.</strong>
+      At this rate ${worst ? 'it' : 'the job'} finishes ${formatMoney(worst ? worst.projectedOverrunCents : f.projectedOverrunCents)} over budget${
+        f.fadeAheadCents > 0 ? ` — ${formatMoney(f.fadeAheadCents)} of that has not been spent yet, so it is still yours to keep` : ''}.
+      ${f.status === 'bad'
+        ? `That puts the job under your ${formatPercent(floor)} floor. If a client request is behind it, it belongs on a change order now, while you are still on site and they still need you.`
+        : 'If a client request is behind it, write the change order now rather than remembering it at the final invoice.'}${lowNote}`;
+  }
+
+  el.innerHTML = `
+<div class="figure"><span class="label">Cost at completion</span><span class="value">${formatMoney(f.projectedCostCents)}</span></div>
+<div class="figure"><span class="label">Direct-cost budget</span><span class="value">${formatMoney(f.costed.budgetCents)}</span></div>
+<div class="figure"><span class="label">Margin at completion</span>
+  <span class="value" style="${f.status !== 'ok' ? 'color:var(--bad);font-weight:650' : ''}">${formatPercent(f.projectedMargin)}</span></div>
+<div class="figure total"><span class="label">Profit at completion</span><span class="value">${formatMoney(f.projectedProfitCents)}</span></div>
+<div class="coach ${cls}" style="margin-top:12px" id="forecastCoach">${coach}</div>${pace}`;
+}
+
+/**
+ * Cumulative spend against the budget line, with the projection dotted on.
+ * One series, so the title is the legend. Rendered as inline SVG so it prints
+ * and needs nothing from the network. Hover reads the nearest point.
+ */
+function renderBurnChart(f) {
+  const el = $('#burnChart');
+  if (!f.burn.length) {
+    el.innerHTML = `<p class="tiny faint" style="margin:0">${f.costed.spentCents
+      ? 'Dated entries draw here — give each cost the day you paid it.'
+      : 'Nothing logged yet. Each dated cost becomes a point on this line.'}</p>`;
+    return;
+  }
+  // Drawn at the container's real width so text is never stretched: a fixed
+  // viewBox with preserveAspectRatio=none squashed every label on a phone.
+  const cs = getComputedStyle(el);
+  const inner = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const W = Math.max(280, Math.round(inner > 0 ? inner : 640)), H = 180, L = 56, R = 14, T = 14, B = 26;
+  const day = (iso) => Date.parse(`${iso}T00:00:00Z`) / 86400000;
+  const first = day(f.burn[0].date);
+  let last = day(f.burn[f.burn.length - 1].date);
+  const lastCum = f.burn[f.burn.length - 1].cumulativeCents;
+
+  // Projection: at pace, the remaining projected cost lands `days` later.
+  let proj = null;
+  if (f.projectedCostCents !== null && f.paceCentsPerDay && f.projectedCostCents > lastCum) {
+    const days = Math.ceil((f.projectedCostCents - lastCum) / f.paceCentsPerDay);
+    proj = { day: last + days, cents: f.projectedCostCents };
+  }
+  const xMax = Math.max(proj ? proj.day : last, first + 1);
+  const yMax = Math.max(f.costed.budgetCents, lastCum, proj ? proj.cents : 0) * 1.08 || 1;
+  const x = (d) => L + ((d - first) / (xMax - first)) * (W - L - R);
+  const y = (c) => T + (1 - c / yMax) * (H - T - B);
+
+  const pts = f.burn.map((b) => ({ ...b, x: x(day(b.date)), y: y(b.cumulativeCents) }));
+  const path = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const budgetY = y(f.costed.budgetCents);
+  const over = lastCum > f.costed.budgetCents;
+  const ticks = [0, 0.5, 1].map((k) => ({ v: yMax * k / 1.08, y: y(yMax * k / 1.08) }));
+
+  el.innerHTML = `
+<svg class="burn" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative spend over time against the budget"
+     style="width:100%;height:${H}px;display:block">
+  ${ticks.map((t) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${t.y.toFixed(1)}" y2="${t.y.toFixed(1)}"/>
+    <text class="tick" x="${L - 6}" y="${(t.y + 3.5).toFixed(1)}" text-anchor="end">${formatMoney(t.v).replace(/\.00$/, '')}</text>`).join('')}
+  ${f.costed.budgetCents > 0 ? `<line class="budget" x1="${L}" x2="${W - R}" y1="${budgetY.toFixed(1)}" y2="${budgetY.toFixed(1)}"/>
+    <text class="tick" x="${W - R}" y="${(budgetY - 5).toFixed(1)}" text-anchor="end">budget ${formatMoney(f.costed.budgetCents).replace(/\.00$/, '')}</text>` : ''}
+  <path class="spend ${over ? 'over' : ''}" d="${path}"/>
+  ${proj ? `<line class="proj ${f.status === 'bad' || f.status === 'warm' ? 'over' : ''}" x1="${pts[pts.length - 1].x.toFixed(1)}" y1="${pts[pts.length - 1].y.toFixed(1)}" x2="${x(proj.day).toFixed(1)}" y2="${y(proj.cents).toFixed(1)}"/>
+    <circle class="proj-dot" cx="${x(proj.day).toFixed(1)}" cy="${y(proj.cents).toFixed(1)}" r="4"/>
+    <text class="tick" x="${(x(proj.day) - 8).toFixed(1)}" y="${(y(proj.cents) - 8).toFixed(1)}" text-anchor="end">finishes ≈ ${formatMoney(proj.cents).replace(/\.00$/, '')}</text>` : ''}
+  ${pts.map((p, i) => `<circle class="dot ${p.cumulativeCents > f.costed.budgetCents ? 'over' : ''}" data-i="${i}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4"/>`).join('')}
+  <text class="tick" x="${L}" y="${H - 8}" text-anchor="start">${shortDate(f.burn[0].date)}</text>
+  <text class="tick" x="${W - R}" y="${H - 8}" text-anchor="end">${proj ? `≈ ${Math.round(proj.day - last)} days out` : shortDate(f.burn[f.burn.length - 1].date)}</text>
+</svg>
+<div class="burn-tip" hidden></div>`;
+
+  // Hover: nearest logged point by x.
+  const svg = el.querySelector('svg');
+  const tip = el.querySelector('.burn-tip');
+  svg.addEventListener('pointermove', (e) => {
+    const box = svg.getBoundingClientRect();
+    const px = ((e.clientX - box.left) / box.width) * W;
+    let best = pts[0];
+    for (const p of pts) if (Math.abs(p.x - px) < Math.abs(best.x - px)) best = p;
+    tip.hidden = false;
+    tip.innerHTML = `<strong>${shortDate(best.date)}</strong> · ${formatMoney(best.cumulativeCents)} so far
+      <span class="faint">(+${formatMoney(best.cents)} that day)</span>`;
+    tip.style.left = `${Math.min(box.width - 220, Math.max(0, (best.x / W) * box.width - 60))}px`;
+  });
+  svg.addEventListener('pointerleave', () => { tip.hidden = true; });
+}
+
 function wireCosts() {
   $('#btnAddActual').onclick = addActualRow;
+  // The chart is drawn at pixel width; redraw when that changes.
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const est = store.active();
+      if (est && !$('#pane-costs').hidden) renderBurnChart(forecastJob(est, store.state.settings));
+    }, 120);
+  });
+  const slider = $('#progressPct');
+  slider.addEventListener('input', () => {
+    $('#progressOut').textContent = `${slider.value}%`;
+    store.setProgress(Number(slider.value) / 100);
+  });
   $('#btnAuditReport').onclick = () => {
     if (!store.active()) return;
     document.body.dataset.print = 'audit';

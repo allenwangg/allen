@@ -831,6 +831,11 @@ export function renderAuditReport({ estimate, costed, company, targetMargin, flo
       unsigned work also ran past budget. This is the size of the problem, not an invoice, and
       overhead is applied at your stated rate rather than measured.
     </p>
+    <p style="font-size:11px;color:#57534e;margin:8px 0 0">
+      Every figure above was knowable before the final invoice. Logged as it was paid, the same
+      spend projects where a running job finishes — which is when a change order can still be
+      written and signed.
+    </p>
   </div>
 </div>`;
 }

@@ -587,6 +587,28 @@ console.log('\n  audit offer page');
     '(a hardcoded price contradicts the configured one)');
   check('freeSlots 0 hides the calibration badge', !(await page.locator('#freeBadge').isVisible()));
 
+  // The second sale. Same rule as the first: never a button that goes nowhere.
+  await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 0, bookingUrl: '', contactEmail: '', retainer: '$200/mo', retainerUrl: '' }));
+  check('the monthly check stays hidden with no way to reach you',
+    !(await page.locator('#ongoing').isVisible()));
+  await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 0, bookingUrl: '', contactEmail: 'me@example.com', retainer: '$200/mo', retainerUrl: '' }));
+  check('email config reveals the monthly check', await page.locator('#ongoing').isVisible());
+  check('its price flows into the section',
+    (await page.locator('#retainerAmt').textContent()) === '$200/mo'
+    && /\$200\/mo/.test(await page.locator('#ctaNote3').textContent()));
+  check('its CTA is a mailto with its own subject',
+    /^mailto:me@example\.com\?subject=Monthly/.test(await page.locator('#ctaRetainer').getAttribute('href')));
+  check('it is sold as the thing the audit cannot do',
+    /while there is still time|while it can still\s+be kept/.test((await page.locator('#ongoing').textContent()).replace(/\s+/g, ' ')));
+  check('it states the projection caveat on its face',
+    /over-reads/.test(await page.locator('#ongoing').textContent()));
+  await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 0, bookingUrl: '', contactEmail: 'me@example.com', retainer: '', retainerUrl: '' }));
+  check('an empty retainer price hides the section', !(await page.locator('#ongoing').isVisible()));
+  await page.evaluate(() => renderAuditCTA({ price: '$400', freeSlots: 0, bookingUrl: '', contactEmail: '', retainer: '$150/mo', retainerUrl: 'https://buy.stripe.com/test_r' }));
+  check('a retainer URL wires the button directly',
+    (await page.locator('#ctaRetainer').getAttribute('href')) === 'https://buy.stripe.com/test_r'
+    && /\$150\/mo/.test(await page.locator('#ctaRetainer').textContent()));
+
   // The page must claim honestly, and route DIYers to the free app.
   const body = await page.locator('body').textContent();
   check('it says what it is not', /Not an accounting engagement/.test(body));

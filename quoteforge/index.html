@@ -209,8 +209,34 @@
           </header>
           <div id="actualsWrap"></div>
         </section>
+        <section class="card">
+          <header>
+            <h2>Spend over time</h2>
+            <span class="spacer"></span>
+            <span class="tiny faint">Cumulative, against the direct-cost budget</span>
+          </header>
+          <div class="body" id="burnChart"></div>
+        </section>
       </div>
       <aside class="profit-rail">
+        <section class="card">
+          <header>
+            <h2>Where it's heading</h2>
+            <span class="spacer"></span>
+            <span class="tiny faint" id="progressAsOf"></span>
+          </header>
+          <div class="body">
+            <div class="progress-ctl">
+              <label for="progressPct">How far along is the job?</label>
+              <div class="progress-row">
+                <input type="range" id="progressPct" min="0" max="100" step="5" value="0" aria-describedby="progressHint">
+                <output for="progressPct" id="progressOut" class="num">0%</output>
+              </div>
+              <span class="hint" id="progressHint">Your best guess is fine — the forecast scales what you have spent by how much is done.</span>
+            </div>
+            <div id="forecastPanel"></div>
+          </div>
+        </section>
         <section class="card">
           <header><h2>Budget vs spent</h2></header>
           <div class="body" id="budgetPanel"></div>

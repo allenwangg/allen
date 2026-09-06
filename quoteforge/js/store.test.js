@@ -878,5 +878,41 @@ t('an audited job still numbers its change orders uniquely', () => {
 });
 
 
+t('progress survives a reload, is clamped, and garbage reads as zero', () => {
+  const storage = memStorage();
+  const a = new Store({ storage });
+  a.createEstimate();
+  a.setProgress(0.6);
+  eq(a.active().progress.pct, 0.6);
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(a.active().progress.asOf), 'progress must be dated');
+  a.setProgress(4);
+  eq(a.active().progress.pct, 1);
+  a.setProgress('nonsense');
+  eq(a.active().progress.pct, 0);
+  a.save({ immediate: true });
+  const b = new Store({ storage });
+  eq(b.active().progress.pct, 0);
+  // An estimate saved before progress existed reads as not started, not as broken.
+  const old = migrate({ schemaVersion: 1, estimates: [{ id: 'e1', title: 'Old' }], activeId: 'e1' });
+  eq(old.estimates[0].progress.pct, 0);
+  eq(old.estimates[0].progress.asOf, null);
+  const junk = migrate({ estimates: [{ id: 'e2', progress: { pct: 'x', asOf: 7 } }], activeId: 'e2' });
+  eq(junk.estimates[0].progress.pct, 0);
+  eq(junk.estimates[0].progress.asOf, null);
+});
+
+t('a duplicate starts unbegun and an audited job is finished', () => {
+  const s = mkStore();
+  s.createEstimate();
+  s.setProgress(0.7);
+  s.duplicateEstimate(s.active().id);
+  const copies = s.state.estimates;
+  const dup = copies.find((e) => e.progress.pct === 0);
+  ok(dup, 'the duplicate must not inherit progress — it is a new job');
+  s.createAuditJob({ title: 'Done job', quotedTotal: 1000, budget: { labor: 500 }, spent: { labor: 600 }, changes: [] });
+  eq(s.active().progress.pct, 1, 'an audited job is by definition complete:');
+});
+
+
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

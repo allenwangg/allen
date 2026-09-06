@@ -124,7 +124,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-200 unit assertions with no test framework and no install step, plus 254 browser
+215 unit assertions with no test framework and no install step, plus 281 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 `test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
 themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —
@@ -167,3 +167,10 @@ Worth recording, because both were invisible by inspection:
    signature but not the signatures on its change orders, so a new job could ship
    carrying a client's mark authorizing work they had never seen. The test that was
    supposed to cover this was named "drops signatures" and never asserted it.
+- **A forecast, not just a post-mortem.** Say how far along the job is and the Costs
+  tab projects where it finishes: cost at completion, margin at completion, which trade
+  is ahead of pace and how much of the projected overrun is still unspent — the part a
+  change order written this week can still recover. Spend draws as a cumulative line
+  against the budget, with the projection dotted on. It refuses to project under 10%
+  done and flags anything under 25%, because materials land before the labor that
+  installs them.

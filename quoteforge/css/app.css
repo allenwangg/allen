@@ -911,6 +911,32 @@ table.pr-table tr.group-head td {
 .budget-bar .foot { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 .budget-bar .foot.over { color: var(--bad); font-weight: 600; }
 
+/* -------------------------------------------------------------- forecast -- */
+
+.progress-ctl label { font-size: 12.5px; color: var(--text-2); display: block; margin-bottom: 4px; }
+.progress-row { display: flex; align-items: center; gap: 10px; }
+.progress-row input[type="range"] { flex: 1; accent-color: var(--accent); min-height: 24px; }
+.progress-row output { min-width: 4ch; text-align: right; font-weight: 650; }
+.progress-ctl .hint { font-size: 11.5px; color: var(--text-3); display: block; margin-top: 4px; }
+#burnChart { position: relative; }
+.burn .grid { stroke: var(--border); stroke-width: 1; }
+.burn .tick { font: 10.5px var(--mono); fill: var(--text-3); }
+.burn .budget { stroke: var(--text-3); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.burn .spend { fill: none; stroke: var(--text); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.burn .spend.over { stroke: var(--bad); }
+.burn .dot { fill: var(--text); stroke: var(--surface); stroke-width: 2; }
+.burn .dot.over { fill: var(--bad); }
+.burn .proj { stroke: var(--text-2); stroke-width: 2; stroke-dasharray: 2 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.burn .proj.over { stroke: var(--bad); }
+.burn .proj-dot { fill: var(--surface); stroke: var(--text-2); stroke-width: 2; }
+.burn .proj.over + .proj-dot { stroke: var(--bad); }
+.burn-tip {
+  position: absolute; top: 6px; pointer-events: none;
+  font-size: 12px; padding: 5px 9px; border-radius: var(--radius-s);
+  background: var(--surface); border: 1px solid var(--border-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08); white-space: nowrap;
+}
+
 /* ---------------------------------------------------------- audit intake -- */
 
 .intake-head {

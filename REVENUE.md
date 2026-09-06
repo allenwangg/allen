@@ -59,6 +59,31 @@ recently.
 This is the highest-probability path because it converts the product's insight into
 money without requiring you to win a software distribution fight.
 
+### 1b. The retainer the audit sells into — the second sale
+An audit is a one-time fee and it finds money that is already gone. The product now
+does the thing the audit cannot: the Costs tab projects where a *running* job will
+finish from what has been paid out so far and how far along it is, names the trade
+burning faster than the work is getting built, and says how much of the projected
+overrun has not been spent yet — the part that is still recoverable by writing the
+change order this week.
+
+That is a recurring service with a natural cadence (weekly, ten minutes on their side)
+and a natural moment to sell it: the end of the audit call, when the contractor has
+just seen three finished jobs bleed and asks what to do about the ones in progress.
+`audit.html` carries the offer (`retainer` in `AUDIT_CONFIG`, hidden until there is a
+way to reach you), and the first month is included with an audit so the decision to
+keep paying is made after it has caught something.
+
+**Realistic pricing:** $150–250/mo per contractor; the page defaults to $200. **What it
+does to the arithmetic:** 40 audits a year at $400 is $16k. If a third of them keep the
+monthly check for an average of six months, that is another ~$16k — the same revenue
+again, from people who already said yes once, with no new distribution. That ratio is a
+hypothesis until three people have paid a second month; treat it as such.
+
+**Why it is not just "a paid tier":** nothing here needs a server. The contractor keeps
+using the free app; what they pay for is someone reading the forecast every week and
+telling them which change order to write. The software is the fulfilment, not the product.
+
 ### 2. Paid tier for what genuinely needs a server
 The current architecture makes the free tier nearly free to run, which is defensible
 messaging. Charge for what the browser cannot do:

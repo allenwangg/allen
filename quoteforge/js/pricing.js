@@ -639,6 +639,143 @@ export function compareActuals(estimate, settings) {
 }
 
 /**
+ * Where the job is heading, not just where it is.
+ *
+ * compareActuals is a snapshot: budget against spend today. That tells a
+ * contractor a job lost money once it is over, when nothing can be done. The
+ * forecast asks one extra number — how far along the job is — and projects
+ * where costs finish, so the change order gets written while the client still
+ * needs them on site. Every dollar found this way is found BEFORE it is lost,
+ * which is the only kind of found money that ends up in the bank.
+ *
+ * The projection assumes the rest of the job costs what the done part did,
+ * scaled: cost at completion = spent / fraction complete. That is the standard
+ * cost-performance estimate and it is wrong in a known direction early on —
+ * material lands before the labor that installs it, so the first 10% of a
+ * job looks worse than it is. Below MIN_PROGRESS no projection is made;
+ * below LOW_CONFIDENCE it is flagged. The result says so; the UI repeats it.
+ *
+ * The spend log doubles as a time series. `burn` is cumulative spend by date,
+ * `paceCentsPerDay` the average burn between first and last entry, and
+ * `daysToBudget` how long the remaining budget lasts at that pace.
+ */
+export const MIN_PROGRESS = 0.1;
+export const LOW_CONFIDENCE = 0.25;
+
+export function forecastJob(estimate, settings) {
+  const c = compareActuals(estimate, settings);
+  const progress = clampProgress(estimate.progress?.pct);
+  const revenue = c.contract.base.afterDiscountCents + c.contract.approvedTotalCents;
+
+  // Cumulative spend by date, oldest first. Undated entries are excluded
+  // from the series (they still count in totals) rather than pinned to a
+  // fake day that would bend the pace.
+  const byDate = new Map();
+  for (const e of c.entries) {
+    if (!e.date) continue;
+    byDate.set(e.date, (byDate.get(e.date) || 0) + e.amountCents);
+  }
+  let cumulative = 0;
+  const burn = [...byDate.keys()].sort().map((date) => {
+    cumulative += byDate.get(date);
+    return { date, cents: byDate.get(date), cumulativeCents: cumulative };
+  });
+
+  let paceCentsPerDay = null;
+  let daysToBudget = null;
+  if (burn.length >= 2) {
+    const span = daysBetween(burn[0].date, burn[burn.length - 1].date);
+    // Spend logged over a span of days; the first day's spend is at t=0.
+    const burned = burn[burn.length - 1].cumulativeCents - burn[0].cumulativeCents;
+    if (span > 0 && burned > 0) {
+      paceCentsPerDay = Math.round(burned / span);
+      const remaining = c.budgetCents - c.spentCents;
+      daysToBudget = remaining > 0 ? Math.ceil(remaining / paceCentsPerDay) : 0;
+    }
+  }
+
+  const canProject = progress >= MIN_PROGRESS && c.spentCents > 0;
+  const byCategory = {};
+  for (const [cat, v] of Object.entries(c.byCategory)) {
+    const projected = canProject ? Math.round(v.spentCents / progress) : null;
+    byCategory[cat] = {
+      ...v,
+      // Dollars ahead of pace: what is spent beyond what `progress` of the
+      // budget would be. Positive means this trade is burning faster than the
+      // job is getting done.
+      aheadCents: v.spentCents - Math.round(v.budgetCents * progress),
+      projectedCents: projected,
+      projectedOverrunCents: projected === null ? null : Math.max(0, projected - v.budgetCents),
+    };
+  }
+
+  // The trade that is furthest ahead of pace, in dollars — the one to look at.
+  let worst = null;
+  for (const [cat, v] of Object.entries(byCategory)) {
+    if (v.aheadCents > 0 && (!worst || v.aheadCents > byCategory[worst].aheadCents)) worst = cat;
+  }
+
+  let projectedCostCents = null;
+  let projectedOverrunCents = null;
+  let projectedProfitCents = null;
+  let projectedMargin = null;
+  if (canProject) {
+    // Per-category projections do not simply sum: a trade already over budget
+    // cannot un-overrun by finishing, so each is floored at its current
+    // overrun before totalling. That keeps the forecast from ever looking
+    // better than the snapshot it is built on.
+    projectedCostCents = Math.round(c.spentCents / progress);
+    projectedOverrunCents = 0;
+    for (const v of Object.values(byCategory)) {
+      projectedOverrunCents += Math.max(v.projectedOverrunCents, v.overrunCents);
+    }
+    projectedOverrunCents = Math.max(projectedOverrunCents, c.overrunCents);
+    projectedProfitCents = c.estimatedProfitCents - projectedOverrunCents;
+    projectedMargin = revenue === 0 ? 0 : projectedProfitCents / revenue;
+  }
+
+  const floor = Number(settings?.floorMargin) || 0;
+  let status;
+  if (!c.spentCents) status = 'nothing-spent';
+  else if (!canProject) status = 'too-early';
+  else if (projectedMargin < floor) status = 'bad';
+  else if (projectedOverrunCents > 0) status = 'warm';
+  else status = 'ok';
+
+  return {
+    costed: c,
+    progress,
+    asOf: estimate.progress?.asOf || null,
+    confidence: !canProject ? 'none' : progress < LOW_CONFIDENCE ? 'low' : 'normal',
+    burn,
+    paceCentsPerDay,
+    daysToBudget,
+    byCategory,
+    worstCategory: worst,
+    projectedCostCents,
+    projectedOverrunCents,
+    projectedProfitCents,
+    projectedMargin,
+    /** Margin the job loses between today's snapshot and completion, at pace. */
+    fadeAheadCents: projectedOverrunCents === null ? null : projectedOverrunCents - c.overrunCents,
+    status,
+  };
+}
+
+export function clampProgress(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return 0;
+  return Math.min(1, Math.max(0, n));
+}
+
+function daysBetween(isoA, isoB) {
+  const a = Date.parse(`${isoA}T00:00:00Z`);
+  const b = Date.parse(`${isoB}T00:00:00Z`);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return 0;
+  return Math.round((b - a) / 86400000);
+}
+
+/**
  * Distribute a target total across line items so the displayed amounts sum to
  * it EXACTLY, in proportion to each line's own price.
  *

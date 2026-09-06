@@ -84,6 +84,8 @@ export function newEstimate(overrides = {}) {
     items: [],
     changeOrders: [],
     actuals: [],
+    /** How far along the job is, for the cost forecast. pct 0..1. */
+    progress: { pct: 0, asOf: null },
     discount: null,
     milestones: defaultMilestones(),
     terms: [...DEFAULT_TERMS],
@@ -263,6 +265,7 @@ export class Store {
     // source job's receipts over would show the copy as already over budget
     // and quietly corrupt the margin-fade figures on both jobs.
     copy.actuals = [];
+    copy.progress = { pct: 0, asOf: null };
     // Change orders come along, but a duplicate is a NEW job: it must not
     // inherit the client's signature or the date they authorized different
     // work, and every id has to be fresh so edits cannot reach the original.
@@ -595,6 +598,7 @@ function migrateEstimate(raw) {
     isAudit: !!raw.isAudit,
     changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
     actuals: (raw.actuals || []).map(migrateActual),
+    progress: migrateProgress(raw.progress),
     // Present-but-empty means the user deleted every entry on purpose. Only a
     // MISSING key falls back to defaults — otherwise deleted contract terms and
     // a discarded payment schedule silently reappear on the next reload.
@@ -621,6 +625,14 @@ function normalizeItem(i) {
 }
 
 /** One logged cost: a receipt, an invoice from a sub, a week of payroll. */
+function migrateProgress(raw) {
+  const pct = Number(raw?.pct);
+  return {
+    pct: Number.isFinite(pct) ? Math.min(1, Math.max(0, pct)) : 0,
+    asOf: typeof raw?.asOf === 'string' && raw.asOf ? raw.asOf : null,
+  };
+}
+
 function migrateActual(raw) {
   return {
     id: raw.id || uid('ac'),
@@ -862,6 +874,15 @@ Object.assign(Store.prototype, {
       if (est) est.actuals = est.actuals.filter((a) => a.id !== id);
     }, { label: 'remove actual' });
   },
+
+  /** How far along the active job is (0..1). Dated, so a stale answer shows. */
+  setProgress(pct, opts = {}) {
+    const clean = migrateProgress({ pct, asOf: todayISO() });
+    this.update((s) => {
+      const est = s.estimates.find((e) => e.id === s.activeId);
+      if (est) est.progress = clean;
+    }, { label: 'progress', coalesce: true, ...opts });
+  },
 });
 
 /* ----------------------------------------------------------- actuals CSV --- */
@@ -948,6 +969,7 @@ Object.assign(Store.prototype, {
       // Marks this as an audited job rather than one of the operator's own
       // quotes, so the portfolio report includes exactly the right set.
       isAudit: true,
+      progress: { pct: 1, asOf: todayISO() },
       // Overhead is pinned alongside contingency and tax. Without it, changing
       // the global overhead rate silently reprices every audit already
       // delivered — and the implied markup above was derived against THIS

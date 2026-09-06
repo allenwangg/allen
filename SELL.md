@@ -126,6 +126,22 @@ free app. That order matters.
 > billed, and what your next quote has to be. Doing the first five free in exchange for
 > blunt feedback. [link] — and the tool itself is free either way if you'd rather DIY.
 
+## 5b. The second sale — ask at the end of the audit call
+
+The audit ends with a found-money figure for three finished jobs. The next sentence
+is the one that matters: *"Which jobs do you have running right now?"*
+
+Offer the monthly check (`retainer` in `AUDIT_CONFIG`; hidden until an email or link
+is set). What they do: once a week, they add what they have paid out on each live job
+in the Costs tab and drag the progress slider. What you do: read the forecast panel,
+and reply with one line per job — where it finishes, which trade is ahead of pace,
+and whether a change order needs writing this week. First month included with the
+audit, so the renewal decision happens after it has caught something.
+
+Do not sell it before the audit has landed. The audit is what makes the forecast
+credible: they have just watched the same arithmetic explain three jobs they
+remember.
+
 ## 6. First-week checklist
 
 - [ ] Deployed, company profile filled in
@@ -134,6 +150,7 @@ free app. That order matters.
 - [ ] Five free audits offered (names written down, asked in person or by DM first)
 - [ ] Post A published in one community
 - [ ] After each audit: did question 2 land? Note the answer verbatim.
+- [ ] After each audit: asked "which jobs are running right now?" and offered the monthly check
 
 ## When to stop
 

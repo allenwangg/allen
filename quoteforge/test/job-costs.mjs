@@ -414,6 +414,92 @@ await page.locator('tr[data-ac]').first().locator('[data-acdel]').click();
 await page.waitForTimeout(300);
 check('an entry can be deleted', (await page.locator('tr[data-ac]').count()) === rows - 1);
 
+/* --- the forecast: the job costed while it is still running ------------- */
+console.log('\n  forecast');
+// Fresh job so the numbers are known: budget comes from the sample estimate.
+await page.locator('#btnNew').click();
+await page.waitForTimeout(300);
+// One priced line so there is a budget: 40 h of labor at $60 = $2,400 direct.
+await page.locator('#btnAddLine').click();
+await page.waitForTimeout(200);
+const line = page.locator('.items tbody tr').first();
+await line.locator('[data-f="description"]').fill('Carpentry');
+await line.locator('[data-f="category"]').selectOption('labor');
+await line.locator('[data-f="qty"]').fill('40');
+await line.locator('[data-f="unitCost"]').fill('60');
+await page.waitForTimeout(250);
+await page.locator('.tab[data-tab="costs"]').click();
+await page.waitForTimeout(250);
+check('with nothing spent the forecast says so instead of projecting',
+  /Nothing to project yet/.test(await page.locator('#forecastPanel').textContent()));
+check('the empty chart explains what will draw there',
+  /Nothing logged yet/.test(await page.locator('#burnChart').textContent()));
+
+const log = async (date, cat, desc, amt) => {
+  await page.locator('#btnAddActual').click();
+  await page.waitForTimeout(150);
+  const r = page.locator('tr[data-ac]').first();
+  await r.locator('[data-acf="date"]').fill(date);
+  await r.locator('[data-acf="category"]').selectOption(cat);
+  await r.locator('[data-acf="description"]').fill(desc);
+  await r.locator('[data-acf="amount"]').fill(amt);
+  await page.waitForTimeout(200);
+};
+await log('2026-08-03', 'material', 'Lumber', '900');
+await log('2026-08-10', 'labor', 'Payroll wk1', '700');
+check('spend is logged but progress is unset — no projection is made',
+  /Set how far along the job is/.test(await page.locator('#forecastPanel').textContent()));
+check('the chart draws a point per dated entry',
+  (await page.locator('#burnChart .dot').count()) === 2);
+check('the chart shows the budget line',
+  /budget \$/.test(await page.locator('#burnChart').textContent()));
+check('chart text is not stretched: the svg is drawn at its container width',
+  await page.evaluate(() => { const svg = document.querySelector('#burnChart svg');
+    const vb = svg.viewBox.baseVal.width; const w = svg.getBoundingClientRect().width; return Math.abs(vb - w) < 2; }));
+
+await page.locator('#progressPct').fill('50');
+await page.waitForTimeout(350);
+const fc = await page.locator('#forecastPanel').textContent();
+check('setting progress produces a cost at completion', /Cost at completion/.test(fc));
+check('the forecast is dated', /as of \w{3} \d/.test(await page.locator('#progressAsOf').textContent()));
+check('the projection is dotted onto the chart', (await page.locator('#burnChart .proj').count()) === 1);
+check('and labelled with where it finishes', /finishes ≈ \$/.test(await page.locator('#burnChart').textContent()));
+
+// Reconcile against the engine: spent $1600 at 50% → $3200 at completion.
+check('cost at completion is spend scaled by progress', /\$3,200\.00/.test(fc), `(${fc.slice(0, 120)})`);
+check('progress persists across a reload', await (async () => {
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.locator('.tab[data-tab="costs"]').click();
+  await page.waitForTimeout(250);
+  return (await page.locator('#progressPct').inputValue()) === '50';
+})());
+
+// Blow the labor budget and the coaching must name the trade and the fix.
+await log('2026-08-17', 'labor', 'Payroll wk2', '2600');
+const bad = await page.locator('#forecastCoach').textContent();
+check('the coaching names the trade that is ahead of pace', /^\s*Labor is \$[\d,]+\.\d\d ahead of pace/.test(bad), `(${bad.slice(0, 60)})`);
+check('it says how much is still avoidable', /has not been spent yet/.test(bad));
+check('it points at the change order, not at the invoice', /change order/.test(bad));
+check('the chart turns the spend line red past budget',
+  (await page.locator('#burnChart .spend.over').count()) === 1);
+
+// Hover reads the nearest point.
+const svg = page.locator('#burnChart svg');
+const box = await svg.boundingBox();
+await page.mouse.move(box.x + box.width * 0.45, box.y + 60);
+await page.waitForTimeout(100);
+check('hovering the chart reads a logged day', /so far/.test(await page.locator('.burn-tip').textContent()));
+
+// Early progress projects with a warning rather than a confident number.
+await page.locator('#progressPct').fill('15');
+await page.waitForTimeout(300);
+check('an early projection is flagged as over-reading',
+  /over-reads|warning, not a number/.test(await page.locator('#forecastCoach').textContent()));
+await page.locator('#progressPct').fill('5');
+await page.waitForTimeout(300);
+check('under the minimum progress it declines to project',
+  /Set how far along/.test(await page.locator('#forecastPanel').textContent()));
+
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
 if (errs.length) console.log('  ERRORS: ' + [...new Set(errs)].join(' | '));
 await b.close(); srv.close();

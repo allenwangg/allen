@@ -10,7 +10,8 @@ import {
   priceItem, priceEstimate, priceForTargetMargin, discountHeadroom,
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
-  solveDiscountForTotal, summarizePortfolio, checkIntake,
+  solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, clampProgress,
+  MIN_PROGRESS,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -935,6 +936,141 @@ t('checks never throw on hostile or missing input', () => {
   }
 });
 
+
+/* ------------------------------------------------------------ forecast ---- */
+
+// costedJob: $2400 labor + $4000 material budget = $6400 direct.
+const inProgress = (pct, actuals) => ({ ...costedJob(actuals), progress: { pct, asOf: '2026-05-10' } });
+
+t('with nothing spent there is nothing to project', () => {
+  const f = forecastJob(inProgress(0.5, []), S);
+  eq(f.status, 'nothing-spent');
+  eq(f.projectedCostCents, null);
+  eq(f.burn.length, 0);
+  eq(f.paceCentsPerDay, null);
+});
+
+t('below the minimum progress the forecast refuses rather than guesses', () => {
+  const f = forecastJob(inProgress(0.05, [{ date: '2026-05-01', category: 'material', amount: 3000 }]), S);
+  eq(f.status, 'too-early');
+  eq(f.confidence, 'none');
+  eq(f.projectedCostCents, null, 'materials land early — 5% done with 75% of material spent must not project 15x:');
+  ok(MIN_PROGRESS > 0.05);
+});
+
+t('cost at completion scales spend by progress', () => {
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-05-01', category: 'labor', amount: 1500 },   // half done, $1500 of $2400 → finishes $3000
+    { date: '2026-05-01', category: 'material', amount: 2000 }, // on pace
+  ]), S);
+  eq(f.status, 'warm');
+  eq(f.projectedCostCents, 700000);
+  eq(f.byCategory.labor.projectedCents, 300000);
+  eq(f.byCategory.labor.projectedOverrunCents, 60000);
+  eq(f.byCategory.material.projectedOverrunCents, 0);
+  eq(f.projectedOverrunCents, 60000);
+  eq(f.worstCategory, 'labor');
+  eq(f.byCategory.labor.aheadCents, 30000, 'labor is $300 ahead of pace at 50%:');
+  eq(f.byCategory.material.aheadCents, 0);
+  eq(f.projectedProfitCents, f.costed.estimatedProfitCents - 60000);
+  eq(f.fadeAheadCents, 60000, 'nothing is over yet, so every projected dollar is still avoidable:');
+});
+
+t('the forecast can never look better than the snapshot it is built on', () => {
+  // Labor already $600 over at 90% done; projecting spend/0.9 says $3333 → $933 over,
+  // fine. But material was blown early ($5000 of $4000) and is now idle: its
+  // projection ($5555) is over too. A category over budget today stays over.
+  const f = forecastJob(inProgress(0.9, [
+    { date: '2026-05-01', category: 'material', amount: 5000 },
+    { date: '2026-05-02', category: 'labor', amount: 3000 },
+  ]), S);
+  ok(f.projectedOverrunCents >= f.costed.overrunCents, `projected ${f.projectedOverrunCents} < current ${f.costed.overrunCents}`);
+  ok(f.projectedProfitCents <= f.costed.adjustedProfitCents);
+  ok(f.fadeAheadCents >= 0);
+});
+
+t('a job on pace projects no overrun and reads ok', () => {
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-05-01', category: 'labor', amount: 1200 },
+    { date: '2026-05-03', category: 'material', amount: 2000 },
+  ]), S);
+  eq(f.status, 'ok');
+  eq(f.projectedOverrunCents, 0);
+  eq(f.projectedProfitCents, f.costed.estimatedProfitCents);
+  ok(Math.abs(f.projectedMargin - f.costed.estimatedMargin) < 1e-12);
+  eq(f.worstCategory, null);
+});
+
+t('a projected margin under the floor is bad, not merely warm', () => {
+  const f = forecastJob(inProgress(0.5, [{ date: '2026-05-01', category: 'labor', amount: 2400 }]), S);
+  // labor finishes at $4800 → $2400 over on a ~$8.6k job: margin collapses.
+  eq(f.status, 'bad');
+  ok(f.projectedMargin < S.floorMargin);
+});
+
+t('burn is cumulative by date, oldest first, and undated entries stay out of the series', () => {
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-05-03', category: 'labor', amount: 500 },
+    { date: '2026-05-01', category: 'material', amount: 2000 },
+    { date: '2026-05-03', category: 'material', amount: 250 },
+    { date: '', category: 'other', amount: 100 },
+  ]), S);
+  eq(f.burn.map((b) => b.date).join(','), '2026-05-01,2026-05-03');
+  eq(f.burn[0].cumulativeCents, 200000);
+  eq(f.burn[1].cents, 75000);
+  eq(f.burn[1].cumulativeCents, 275000);
+  eq(f.costed.spentCents, 285000, 'the undated $100 still counts in the total:');
+});
+
+t('pace is spend per day across the log, and says how long the budget lasts', () => {
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-05-01', category: 'labor', amount: 1000 },
+    { date: '2026-05-11', category: 'labor', amount: 1000 },  // $1000 over 10 days
+  ]), S);
+  eq(f.paceCentsPerDay, 10000);
+  eq(f.daysToBudget, 44, '$6400 − $2000 = $4400 left at $100/day:');
+});
+
+t('a single day of spend has no pace', () => {
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-05-01', category: 'labor', amount: 1000 },
+    { date: '2026-05-01', category: 'material', amount: 1000 },
+  ]), S);
+  eq(f.paceCentsPerDay, null);
+  eq(f.daysToBudget, null);
+});
+
+t('once the budget is gone the days-to-budget is zero, not negative', () => {
+  const f = forecastJob(inProgress(0.8, [
+    { date: '2026-05-01', category: 'labor', amount: 4000 },
+    { date: '2026-05-05', category: 'material', amount: 4000 },
+  ]), S);
+  eq(f.daysToBudget, 0);
+});
+
+t('progress is clamped and garbage reads as zero', () => {
+  eq(clampProgress(1.7), 1);
+  eq(clampProgress(-3), 0);
+  eq(clampProgress('abc'), 0);
+  eq(clampProgress(undefined), 0);
+  eq(clampProgress('0.35'), 0.35);
+  const f = forecastJob({ ...costedJob([{ date: '2026-05-01', category: 'labor', amount: 100 }]), progress: { pct: 'x' } }, S);
+  eq(f.progress, 0);
+  eq(f.status, 'too-early');
+});
+
+t('early progress is projected but flagged low-confidence', () => {
+  const f = forecastJob(inProgress(0.15, [{ date: '2026-05-01', category: 'labor', amount: 400 }]), S);
+  eq(f.confidence, 'low');
+  ok(f.projectedCostCents !== null);
+});
+
+t('the forecast never throws on a bare estimate', () => {
+  const f = forecastJob({ items: [] }, S);
+  eq(f.status, 'nothing-spent');
+  eq(f.progress, 0);
+  eq(f.asOf, null);
+});
 
 /* -------------------------------------------------------------- report ---- */
 

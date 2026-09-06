@@ -23,6 +23,10 @@ const AUDIT_CONFIG = {
   freeSlots: 5,          // shown as "first N free" while you calibrate; 0 hides it
   bookingUrl: '',        // e.g. 'https://buy.stripe.com/...' or a Calendly link
   contactEmail: '',      // e.g. 'you@yourcompany.com'
+  // The second sale: a monthly check on the jobs that are running now. Set to
+  // '' to hide the section until the first audits have been delivered.
+  retainer: '$200/mo',
+  retainerUrl: '',       // its own payment or booking link; falls back to email
 };
 </script>
 
@@ -180,6 +184,36 @@ footer{border-top:1px solid var(--border);padding:32px 0;color:var(--text-3);fon
   </div>
 </div></section>
 
+<section id="ongoing" hidden><div class="wrap">
+  <h2>Then keep it from happening again</h2>
+  <div class="card">
+    <div class="price-line">
+      <span class="amt" id="retainerAmt">$200/mo</span>
+      <span>every job you have running, costed weekly, while there is still time</span>
+    </div>
+    <p style="margin:0 0 14px;color:var(--text-2)">
+      An audit finds money after it is gone. The monthly check finds it while it can still
+      be kept: each week you send what you have paid out on the jobs in progress and roughly
+      how far along each one is. You get back one line per job — where it is heading to
+      finish, which trade is burning faster than the work is getting done, and whether the
+      change order needs writing this week rather than remembering at the final invoice.
+    </p>
+    <p style="margin:0 0 18px;color:var(--text-2)">
+      Ten minutes a week on your side. The first month is included with an audit, so the
+      decision to keep it is made after you have seen it catch something.
+    </p>
+    <div>
+      <a class="btn" id="ctaRetainer" href="#">Ask about the monthly check</a>
+      <div id="ctaNote3" style="font-size:14px;color:var(--text-3);margin-top:10px"></div>
+    </div>
+    <p class="fineprint" style="margin-top:16px">
+      A projection is what you have spent, scaled by how far along you say you are. Early in a
+      job it over-reads, because materials land before the labor that installs them; the check
+      says so rather than pretending to a precision it does not have.
+    </p>
+  </div>
+</div></section>
+
 <section><div class="wrap">
   <h2>What this is not</h2>
   <div class="not">
@@ -232,6 +266,33 @@ function renderAuditCTA(config) {
     [document.getElementById('ctaBook'), document.getElementById('ctaNote')],
     [document.getElementById('ctaBook2'), document.getElementById('ctaNote2')],
   ];
+
+  // The monthly check is a second sale, made after an audit has landed. It
+  // only shows with a price and a way to reach you, for the same reason as
+  // the badge above: never a button that goes nowhere.
+  const ongoing = document.getElementById('ongoing');
+  const rBtn = document.getElementById('ctaRetainer');
+  const rNote = document.getElementById('ctaNote3');
+  if (config.retainer && (config.retainerUrl || config.contactEmail)) {
+    ongoing.hidden = false;
+    document.getElementById('retainerAmt').textContent = config.retainer;
+    if (config.retainerUrl) {
+      rBtn.href = config.retainerUrl;
+      rBtn.textContent = `Start the monthly check — ${config.retainer}`;
+      rNote.textContent = '';
+    } else {
+      const subject = encodeURIComponent('Monthly margin check');
+      const body = encodeURIComponent(
+        'I would like to hear about the monthly check.\n\n'
+        + 'Company:\nTrade:\nJobs running right now:\n',
+      );
+      rBtn.href = `mailto:${config.contactEmail}?subject=${subject}&body=${body}`;
+      rBtn.textContent = 'Email about the monthly check';
+      rNote.textContent = `${config.retainer}, cancel any month. First month included with an audit.`;
+    }
+  } else {
+    ongoing.hidden = true;
+  }
 
   for (const [btn, note] of slots) {
     if (config.bookingUrl) {
