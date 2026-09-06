@@ -681,6 +681,7 @@ await test("a committed defend budget rides the ledger and offers a one-tap reta
     bids = bids.concat([{ id: "cs_def_3", ref: encodeRef("Rival Inc", "rival.io", ""), amount: 5000, at: now }]);
     await mergeBoardFeed();
     return { defend: mine && mine.defend, inBudget, overBudgetHidden: bar.hidden,
+             overBudgetMsg: document.querySelector("#defendMsg").textContent,
              rivalId: (state.entries.find(e => e.name === "Rival Inc") || {}).id };
   });
   await dctx.close();
@@ -690,8 +691,11 @@ await test("a committed defend budget rides the ledger and offers a one-tap reta
     `retake should be priced to win at $31, got "${shape.inBudget.msg}"`);
   assert(shape.inBudget.target === shape.rivalId,
     "defend button should aim at the listing that passed us");
-  assert(shape.overBudgetHidden === true,
-    "defend watch must go quiet once the retake costs more than the committed budget");
+  // Being passed is the highest-intent moment there is: the retake stays on
+  // offer beyond the budget too, just framed as a choice rather than a promise.
+  assert(shape.overBudgetHidden === false, "the retake should still be offered beyond the committed budget");
+  assert(/beyond your \$100 budget/.test(shape.overBudgetMsg),
+    `over-budget retake should say so, got "${shape.overBudgetMsg}"`);
 });
 
 await test("the leaderboard shows names, and never scrolls sideways, on phones", async () => {
@@ -957,6 +961,42 @@ await test("a dare link finds its target on a live board, not just the demo one"
   assert(+shape.prefill === 701, `should prefill the price to pass $700, got ${shape.prefill}`);
 });
 
+await test("the empire strip sells the next tier and a dying flame with one tap", async () => {
+  // It computed the exact gap to the next tier and rendered it as inert text —
+  // the most personalised upsell in the product, with no way to buy it.
+  const ectx = await browser.newContext();
+  const ep = await ectx.newPage();
+  await ep.goto(url + "?nosim", { waitUntil: "domcontentloaded" });
+  await ep.waitForTimeout(400);
+  const shape = await ep.evaluate(() => {
+    const mine = state.entries.find(e => e.name === "ShipFast");
+    localStorage.setItem("outranked_name", "ShipFast");
+    const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    mine.presence = 3; mine.lastBidDay = y;          // a flame, and no bid yet today
+    render();
+    const emp = document.querySelector("#empire");
+    const tierBtn = emp.querySelector(".next[data-topup]");
+    const flameBtn = emp.querySelector(".flame[data-topup]");
+    const expectedGap = nextTier(mine).at - mine.total;
+    tierBtn.click();
+    return { shown: emp.classList.contains("show"),
+             tierGap: tierBtn && +tierBtn.dataset.topup, expectedGap,
+             flame: flameBtn && +flameBtn.dataset.topup,
+             flameText: flameBtn && flameBtn.textContent,
+             modalOpen: document.querySelector("#bidModal").open,
+             name: document.querySelector("#fName").value,
+             amt: +document.querySelector("#fAmt").value };
+  });
+  await ectx.close();
+  assert(shape.shown, "returning bidder should see their empire strip");
+  assert(shape.tierGap === shape.expectedGap,
+    `tier button should be priced at the exact gap ($${shape.expectedGap}), got ${shape.tierGap}`);
+  assert(shape.flame === 5 && /3-day flame/.test(shape.flameText || ""),
+    `a 3-day flame with no bid today should offer a $5 keep-alive, got "${shape.flameText}"`);
+  assert(shape.modalOpen && shape.name === "ShipFast" && shape.amt === shape.expectedGap,
+    `tapping the tier button should open the form prefilled to $${shape.expectedGap} for ShipFast, got ${shape.name} $${shape.amt}`);
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -1004,6 +1044,19 @@ await test("a genuinely larger bid does take over the decree", () => {
     { id: "b", ref: "b64." + b64("Duel|duel.io|Last word."), amount: 900, at: 20 },
   ]);
   assert(e.decree === "Last word.", `largest bid should hold the decree, got ${e.decree}`);
+});
+
+await test("the largest bid owns the link, so an owner can rebrand and a griefer cannot", () => {
+  // The rules promised "a cheap bid can't repoint your link"; the code blocked
+  // every bid, freezing a listing's URL to its first payment forever — so a typo
+  // or a rebrand was a chargeback, not a purchase.
+  const [e] = rank([
+    { id: "a", ref: "b64." + b64("Rebrand Co|old-name.io|"), amount: 500, at: 10 },
+    { id: "b", ref: "b64." + b64("Rebrand Co|new-name.io|"), amount: 600, at: 20 },  // owner out-bids own record
+    { id: "c", ref: "b64." + b64("rebrand co|evil.example|"), amount: 1, at: 30 },   // griefer
+  ]);
+  assert(e.url === "new-name.io", `a larger bid should repoint the link, got ${e.url}`);
+  assert(e.total === 1101, `every dollar should still count, got ${e.total}`);
 });
 
 await test("ledger reader paginates Stripe, keeps only paid sessions, and leaks no PII", async () => {

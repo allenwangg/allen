@@ -199,6 +199,8 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper
 .empire .next{margin-left:auto;color:var(--status);font-weight:800}
 .empire .bar{flex-basis:100%;height:8px;border-radius:99px;background:var(--card);overflow:hidden;border:1px solid var(--line)}
 .empire .fill{height:100%;background:linear-gradient(90deg,var(--status),var(--crown));border-radius:99px;transition:width .6s}
+.empire .take{padding:8px 13px;font-size:13px}
+.empire .flame{background:var(--heat-btn);color:var(--on-heat);box-shadow:0 4px 0 var(--heat-btn-edge)}
 
 /* ---- toolbar ---- */
 .toolbar{display:flex;gap:10px;margin:8px 0 14px}
@@ -509,7 +511,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
       <li><b>Flames reward the faithful.</b> Bid on any day and your listing's 🔥 flame grows; miss a day and it dies. The hottest flame sits in the record books.</li>
       <li><b>The Oracle is free.</b> Once a day, predict who holds midnight. Streaks are bragging rights — and prophecies have a way of getting funded.</li>
       <li><b>Everything is public:</b> every bid, every overtake, every dethroning — streamed on the live feed. Every listing on this board is a completed payment; there is no other way onto it.</li>
-      <li><b>A listing's link is claimed by its first bid, and its decree belongs to its largest.</b> Anyone may pay into anyone's listing — but a cheap bid can't repoint your link or speak in your name. Attacking someone here just funds them.</li>
+      <li><b>A listing's link and its decree both belong to its largest single bid.</b> Anyone may pay into anyone's listing — but a cheap bid can't repoint your link or speak in your name. Attacking someone here just funds them. Rebranding? Out-bid your own record.</li>
       <li><b>No refunds.</b> Obviously.</li>
     </ol>
   </details>
@@ -985,8 +987,15 @@ function render(){
     const t = tier(mine), nt = nextTier(mine);
     const base = nt ? TIERS.find(x=>x.name===t.name).at : 0;
     const pct = nt ? Math.min(100, Math.round((mine.total-base)/(nt.at-base)*100)) : 100;
+    /* Two buys this strip already knew how to price and never offered: the exact
+       gap to the next tier, and the $5 that keeps a presence flame alive on a day
+       the bidder has not yet paid. Both open the form prefilled to the number. */
+    const gap = nt ? nt.at - mine.total : 0;
+    const flameAtRisk = (mine.presence || 0) > 0 && mine.lastBidDay !== todayStr();
     emp.innerHTML = `👑 <b>${esc(mine.name)}</b> · #${r} all-time · <b class="num">${fmt(mine.total)}</b> · ${t.name}` +
-      `<span class="next num">${nt ? fmt(nt.at-mine.total)+" to "+nt.name : "MAX RANK"}</span>` +
+      (nt ? `<button type="button" class="take next num" data-topup="${gap}">+${fmt(gap)} → ${nt.name}</button>`
+          : `<span class="next num">MAX RANK</span>`) +
+      (flameAtRisk ? `<button type="button" class="take flame" data-topup="5">🔥 ${mine.presence}-day flame dies at midnight — $5 keeps it</button>` : "") +
       `<span class="bar"><span class="fill" style="width:${pct}%"></span></span>`;
     emp.classList.add("show");
   } else emp.classList.remove("show");
@@ -1480,21 +1489,43 @@ function checkDefendWatch(){
   try { myName = (localStorage.getItem("outranked_name") || "").trim(); } catch(e){}
   if (!myName) return hide();
   const mine = state.entries.find(e => e.name.toLowerCase() === myName.toLowerCase());
-  if (!mine || !(mine.defend > 0)) return hide();
+  if (!mine) return hide();
   const board = sortedToday();
   const idx = board.findIndex(e => e.id === mine.id);
   if (idx < 1) return hide();                     // absent, or already #1
   const ahead = board[idx - 1];
   const need = (ahead.todayTotal || 0) - (mine.todayTotal || 0) + 1;
-  if (need < 1 || need > mine.defend) return hide();   // out of budget: stay quiet
+  if (need < 1) return hide();
+  /* Being passed is the single highest-intent moment a bidder has, so the
+     retake is offered to every returning bidder who has been passed, not only
+     the ones who pre-committed a budget. A budget changes the framing — inside
+     it the retake is what they already agreed to; beyond it, it is a choice. */
+  const budget = mine.defend > 0 ? mine.defend : 0;
+  const within = budget > 0 && need <= budget;
   $("#defendMsg").innerHTML =
-    `🛡 <b>${esc(ahead.name)}</b> passed you — <b>${fmt(need)}</b> retakes #${idx} ` +
-    `<span style="color:var(--dim)">(budget ${fmt(mine.defend)})</span>`;
+    `${within ? "🛡" : "⚔️"} <b>${esc(ahead.name)}</b> passed you — <b>${fmt(need)}</b> retakes #${idx}` +
+    (budget ? ` <span style="color:var(--dim)">(${within ? "within" : "beyond"} your ${fmt(budget)} budget)</span>` : "");
   /* Hand openBid the listing AHEAD of us: it already knows how to prefill the
      exact price to pass a given target, so the retake reuses that path. */
   bar.dataset.target = ahead.id;
   bar.hidden = false;
 }
+/* A top-up aimed at a number rather than a rival: same form, prefilled. */
+function openBoost(amount){
+  openBid(null);
+  let myName = "";
+  try { myName = localStorage.getItem("outranked_name") || ""; } catch(e){}
+  if (myName) $("#fName").value = myName;
+  $("#modalTitle").textContent = "Boost your empire";
+  $("#modalSub").textContent = "Topping up your own listing — every dollar counts toward rank, tier and today's crown.";
+  $("#fAmt").value = Math.max(1, Math.floor(amount));
+  $("#amtHint").textContent = "";
+}
+document.addEventListener("click", e => {
+  /* data-topup carries a dollar amount; the dossier's data-boost carries an entry id. */
+  const b = e.target.closest("[data-topup]");
+  if (b) openBoost(+b.dataset.topup);
+});
 $("#defendBtn").addEventListener("click", () => {
   const t = $("#defendBar").dataset.target;
   if (t) openBid(t);
@@ -1927,9 +1958,11 @@ async function mergeBoardFeed(){
     let entry = state.entries.find(e => e.name.toLowerCase() === name.toLowerCase());
     if (entry){
       entry.total += amount; entry.bids++; entry.history.push(entry.total);
-      /* Anyone can pay into anyone's listing, so the link is claimed once and
-         never repointed by a later (possibly hostile) bid. */
-      if (url && (!entry.url || entry.url === "—")) entry.url = url;
+      /* Anyone can pay into anyone's listing, so the link follows the same rule
+         as the decree: only a bid at least as large as the listing's biggest can
+         repoint it. A $1 griefer cannot; the owner rebranding can, by out-bidding
+         their own record — which is a purchase, not a support ticket. */
+      if (url && (!entry.url || entry.url === "—" || amount >= (entry.topBid || 0))) entry.url = url;
     } else {
       entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, topBid:0};
       state.entries.push(entry);
