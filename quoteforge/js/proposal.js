@@ -969,6 +969,13 @@ const ACTION_COPY = {
     why: (j) => `Running ahead of pace but still above the floor. ${formatMoney(j.unspentOverrunCents)} of the
       projected overrun is still unspent, so it stays recoverable while the work is live.`,
   },
+  'under-priced': {
+    label: 'Nothing to do on site',
+    tone: 'warn',
+    why: () => `This one is heading under the floor and it is not the crew: spending is in line with
+      the work getting built. The margin was gone at the bid, so nothing done on site this week
+      recovers it — the fix belongs in the next quote, not in a conversation with this client.`,
+  },
   'set-progress': {
     label: 'Tell me how far along',
     tone: 'ask',

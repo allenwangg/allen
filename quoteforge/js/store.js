@@ -598,7 +598,7 @@ function migrateEstimate(raw) {
     isAudit: !!raw.isAudit,
     changeOrders: (raw.changeOrders || []).map(migrateChangeOrder),
     actuals: (raw.actuals || []).map(migrateActual),
-    progress: migrateProgress(raw.progress),
+    progress: migrateProgress(raw.progress, !!raw.isAudit),
     // Present-but-empty means the user deleted every entry on purpose. Only a
     // MISSING key falls back to defaults — otherwise deleted contract terms and
     // a discarded payment schedule silently reappear on the next reload.
@@ -625,10 +625,22 @@ function normalizeItem(i) {
 }
 
 /** One logged cost: a receipt, an invoice from a sub, a week of payroll. */
-function migrateProgress(raw) {
+/**
+ * @param raw      the stored progress object, or undefined on older saves
+ * @param isAudit  whether the estimate is a reconstruction of someone's job
+ *
+ * A MISSING key is not the same as zero. Every estimate saved before this
+ * field existed has none, and defaulting them all to "not started" put every
+ * finished audit back on the weekly review, counting change orders settled
+ * months ago as recoverable this week. A reconstruction with no progress
+ * recorded was a finished job — that is all the form could describe then —
+ * while one of the operator's own estimates is genuinely unknown, and asking
+ * them is the honest answer.
+ */
+function migrateProgress(raw, isAudit = false) {
   const pct = Number(raw?.pct);
   return {
-    pct: Number.isFinite(pct) ? Math.min(1, Math.max(0, pct)) : 0,
+    pct: Number.isFinite(pct) ? Math.min(1, Math.max(0, pct)) : (isAudit ? 1 : 0),
     asOf: typeof raw?.asOf === 'string' && raw.asOf ? raw.asOf : null,
   };
 }
@@ -980,7 +992,8 @@ Object.assign(Store.prototype, {
       isAudit: true,
       // A finished job unless they said otherwise. A running job reconstructed
       // this way is the subject of the weekly review rather than an audit.
-      progress: { pct: input.progress === undefined ? 1 : num(input.progress), asOf: todayISO() },
+      progress: migrateProgress(
+        { pct: input.progress === undefined ? 1 : num(input.progress), asOf: todayISO() }, true),
       // Overhead is pinned alongside contingency and tax. Without it, changing
       // the global overhead rate silently reprices every audit already
       // delivered — and the implied markup above was derived against THIS

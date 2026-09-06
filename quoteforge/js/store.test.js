@@ -984,5 +984,43 @@ t('a weekly update is one undo step', () => {
   eq(s.state.estimates.length, 1);
 });
 
+t('a save written before progress existed does not rejoin the weekly review', () => {
+  // Exactly the stored shape from before the field: no progress key at all.
+  const saved = {
+    schemaVersion: 1,
+    estimates: [
+      { id: 'a', title: 'Finished audit', isAudit: true, status: 'accepted',
+        items: [{ id: '1', qty: 1, unitCost: 4000, category: 'labor', markup: 0.2 }],
+        actuals: [{ date: '2026-04-01', category: 'labor', amount: 4600 }],
+        changeOrders: [{ id: 'c', number: 'CO-01', status: 'draft', title: 'Verbal extra',
+          items: [{ id: 'i', qty: 1, unitCost: 800, category: 'labor', markup: 0 }] }] },
+      { id: 'b', title: 'My own quote', items: [], actuals: [] },
+    ],
+    activeId: 'a',
+  };
+  const migrated = migrate(saved);
+  eq(migrated.estimates[0].progress.pct, 1,
+    'a reconstruction predating the field was a finished job — that is all the form could describe:');
+  eq(migrated.estimates[1].progress.pct, 0,
+    "the operator's own estimate is genuinely unknown, so ask rather than assume:");
+  const rv = summarizeRunning(migrated.estimates, defaultSettings());
+  eq(rv.count, 0, 'a change order settled months ago must not read as recoverable this week:');
+  eq(rv.recoverableCents, 0);
+});
+
+t('progress stored by createAuditJob is clamped like every other writer', () => {
+  const s = mkStore();
+  s.createAuditJob({ title: 'A', quotedTotal: 1000, progress: 2, budget: { labor: 500 }, spent: {}, changes: [] });
+  eq(s.active().progress.pct, 1);
+  s.createAuditJob({ title: 'B', quotedTotal: 1000, progress: -1, budget: { labor: 500 }, spent: {}, changes: [] });
+  eq(s.active().progress.pct, 0);
+  s.createAuditJob({ title: 'C', quotedTotal: 1000, progress: 'x', budget: { labor: 500 }, spent: {}, changes: [] });
+  eq(s.active().progress.pct, 0,
+    'junk becomes 0, so the job surfaces on the review asking how far along it is rather than '
+    + 'silently marking itself finished and disappearing:');
+  s.createAuditJob({ title: 'D', quotedTotal: 1000, budget: { labor: 500 }, spent: {}, changes: [] });
+  eq(s.active().progress.pct, 1, 'an omitted progress is still a finished audit:');
+});
+
 console.log(`\n  store: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

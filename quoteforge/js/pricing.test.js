@@ -11,7 +11,7 @@ import {
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
   solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, clampProgress,
-  MIN_PROGRESS, summarizeRunning,
+  MIN_PROGRESS, summarizeRunning, isFinished,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -1251,6 +1251,86 @@ t('the totals reconcile to the per-job figures', () => {
   eq(r.recoverableCents, r.jobs.reduce((a, j) => a + j.recoverableCents, 0));
   eq(r.spentCents, r.jobs.reduce((a, j) => a + j.spentCents, 0));
   eq(r.atRiskCents + r.unspentOverrunCents, r.recoverableCents);
+});
+
+/* -------------------------------------------- audit findings, pinned ----- */
+
+t('a job that spends exactly on pace never projects a worse margin than it has', () => {
+  // Taxed job, one approved change order, half done, half the budget spent.
+  // approvedTotalCents carries the sales tax; dividing a pre-tax profit by it
+  // understated the margin enough to trip the floor and demand a change order.
+  const taxed = { ...S, taxMode: 'all', taxRate: 0.0725, floorMargin: 0.2 };
+  const job = {
+    items: [{ id: '1', qty: 1, unitCost: 10000, category: 'labor', markup: null }],
+    changeOrders: [{ id: 'co', number: 'CO-01', status: 'approved', title: 'x',
+      items: [{ id: 'ci', qty: 1, unitCost: 2000, category: 'labor', markup: null }] }],
+    // Budget is $10,000 of items plus the $2,000 approved change; half of it.
+    actuals: [{ date: '2026-05-01', category: 'labor', amount: 6000 }],
+    progress: { pct: 0.5 },
+  };
+  const f = forecastJob(job, taxed);
+  eq(f.projectedOverrunCents, 0, 'nothing is over budget here:');
+  near(f.projectedMargin, f.costed.estimatedMargin, 1e-12,
+    'a job spending exactly on pace must project exactly the margin it was priced at');
+  eq(f.status, 'ok');
+});
+
+t('a credit change order cannot cancel recoverable money on another job', () => {
+  const base = (over) => ({
+    items: [{ id: '1', qty: 1, unitCost: 10000, category: 'labor', markup: null }],
+    actuals: [{ date: '2026-05-01', category: 'labor', amount: 5000 }],
+    progress: { pct: 0.5 }, ...over,
+  });
+  const extra = base({ id: 'a', title: 'Kitchen', changeOrders: [{ id: 'c2', number: 'CO-01', status: 'draft',
+    title: 'Extra', items: [{ id: 'i', qty: 1, unitCost: 6000, category: 'labor', markup: null }] }] });
+  const credit = base({ id: 'b', title: 'Bath', changeOrders: [{ id: 'c1', number: 'CO-01', status: 'draft',
+    title: 'Dropped scope', items: [{ id: 'i', qty: 1, unitCost: -4000, category: 'labor', markup: null }] }] });
+  const only = summarizeRunning([credit], S);
+  eq(only.jobs[0].atRiskCents, 0, 'a credit is not work waiting to be signed for:');
+  eq(only.recoverableCents, 0);
+  const both = summarizeRunning([extra, credit], S);
+  eq(both.recoverableCents, both.jobs.find((j) => j.title === 'Kitchen').recoverableCents,
+    'the credit must not net against real recoverable money on a different job');
+  ok(both.jobs.every((j) => j.recoverableCents >= 0), 'no row may print a negative "recoverable"');
+});
+
+t('a job sold too cheap is not told to raise a change order', () => {
+  const cheap = {
+    items: [{ id: '1', qty: 1, unitCost: 10000, category: 'labor', markup: 0.08 }],
+    actuals: [{ date: '2026-05-01', category: 'labor', amount: 5000 }],
+    progress: { pct: 0.5 }, changeOrders: [],
+  };
+  const j = summarizeRunning([cheap], { ...S, floorMargin: 0.15 }).jobs[0];
+  eq(j.status, 'bad');
+  eq(j.unspentOverrunCents, 0, 'nothing is overspent — the crew is on pace:');
+  eq(j.worstCategory, null);
+  eq(j.actions.join(','), 'under-priced',
+    'sending them to a client who has done nothing wrong, over $0.00, is worse than silence');
+});
+
+t('a pace that rounds to nothing yields no days-to-budget rather than Infinity', () => {
+  // A deposit, then a tool rental almost cancelled by a return: 1c over 147 days.
+  const f = forecastJob({
+    items: [{ id: '1', qty: 1, unitCost: 40000, category: 'labor', markup: null }],
+    changeOrders: [], progress: { pct: 0.5 },
+    actuals: [
+      { date: '2026-01-05', category: 'labor', amount: 20000 },
+      { date: '2026-06-01', category: 'material', amount: 400 },
+      { date: '2026-06-01', category: 'material', amount: -399.99 },
+    ],
+  }, S);
+  eq(f.paceCentsPerDay, null);
+  eq(f.daysToBudget, null, 'Infinity survives a JSON backup as null and reads as "no answer" anyway:');
+  eq(JSON.parse(JSON.stringify({ d: f.daysToBudget })).d, null);
+});
+
+t('isFinished reads a missing progress field the way the record was written', () => {
+  ok(isFinished({ isAudit: true }), 'a reconstruction saved before the field existed was a finished job');
+  ok(!isFinished({ isAudit: false }), "the operator's own estimate is genuinely unknown, so ask");
+  ok(isFinished({ progress: { pct: 1 } }));
+  ok(!isFinished({ progress: { pct: 0.99 } }));
+  ok(isFinished({ progress: { pct: 4 } }), 'a stored value out of range still means finished');
+  ok(!isFinished(null));
 });
 
 /* -------------------------------------------------------------- report ---- */

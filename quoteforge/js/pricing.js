@@ -660,12 +660,33 @@ export function compareActuals(estimate, settings) {
  * `daysToBudget` how long the remaining budget lasts at that pace.
  */
 export const MIN_PROGRESS = 0.1;
+
+/**
+ * Is this job over?
+ *
+ * One definition, because two reports disagree about a job only by getting
+ * this wrong: the audit report says what a job KEPT, which is meaningless
+ * before the last invoice, and the weekly review says what is still
+ * recoverable, which is meaningless after it. A reconstruction with no
+ * progress recorded predates the field and was a finished job by definition —
+ * that is the only thing the form could describe then.
+ */
+export function isFinished(estimate) {
+  if (!estimate) return false;
+  const raw = estimate.progress?.pct;
+  if (raw === undefined || raw === null) return !!estimate.isAudit;
+  return clampProgress(raw) >= 1;
+}
 export const LOW_CONFIDENCE = 0.25;
 
 export function forecastJob(estimate, settings) {
   const c = compareActuals(estimate, settings);
   const progress = clampProgress(estimate.progress?.pct);
-  const revenue = c.contract.base.afterDiscountCents + c.contract.approvedTotalCents;
+  // Pre-tax on both halves. approvedTotalCents carries sales tax, and dividing
+  // a pre-tax profit by a tax-inclusive revenue understated the margin on
+  // every taxed job — enough to trip the floor alarm and demand a change order
+  // on a job spending exactly on pace.
+  const revenue = c.contract.base.afterDiscountCents + c.contract.approvedPreTaxCents;
 
   // Cumulative spend by date, oldest first. Undated entries are excluded
   // from the series (they still count in totals) rather than pinned to a
@@ -688,9 +709,12 @@ export function forecastJob(estimate, settings) {
     // Spend logged over a span of days; the first day's spend is at t=0.
     const burned = burn[burn.length - 1].cumulativeCents - burn[0].cumulativeCents;
     if (span > 0 && burned > 0) {
-      paceCentsPerDay = Math.round(burned / span);
+      // Rounds to zero when less than half a cent a day is moving — a refund
+      // netting off an old payment does it. Dividing by that gave Infinity,
+      // which survives as null through a JSON backup.
+      paceCentsPerDay = Math.round(burned / span) || null;
       const remaining = c.budgetCents - c.spentCents;
-      daysToBudget = remaining > 0 ? Math.ceil(remaining / paceCentsPerDay) : 0;
+      if (paceCentsPerDay) daysToBudget = remaining > 0 ? Math.ceil(remaining / paceCentsPerDay) : 0;
     }
   }
 
@@ -969,11 +993,14 @@ export function summarizeRunning(estimates, settings) {
     if (est.status === 'declined') continue;
     const started = (est.actuals || []).length > 0 || clampProgress(est.progress?.pct) > 0;
     if (!started) continue;
-    if (clampProgress(est.progress?.pct) >= 1) continue;
+    if (isFinished(est)) continue;
 
     const f = forecastJob(est, settings);
     const contract = f.costed.contract;
-    const atRisk = contract.atRiskCents;
+    // A credit change order — the client dropped scope — has a negative total.
+    // It is not money to go and collect, and left signed it cancelled real
+    // recoverable money out of the headline on another job entirely.
+    const atRisk = Math.max(0, contract.atRiskCents);
     // fadeAhead is null when no projection could be made; unknown is not zero,
     // but it cannot be added to a total either.
     const unspentOverrun = f.fadeAheadCents === null ? 0 : Math.max(0, f.fadeAheadCents);
@@ -1050,8 +1077,12 @@ function nextActions({ atRisk, unspentOverrun, f }) {
   const out = [];
   if (atRisk > 0) out.push('sign');
   if (f.status === 'too-early') out.push('set-progress');
-  else if (f.status === 'bad') out.push('change-order');
-  else if (unspentOverrun > 0) out.push('watch');
+  // "Under the floor" and "overspending" are not the same job. A job sold too
+  // cheap that is spending exactly on pace has no overrun to write up, and
+  // telling its owner to raise a change order sends them to a client who has
+  // done nothing wrong — with $0.00 in the sentence.
+  else if (unspentOverrun > 0) out.push(f.status === 'bad' ? 'change-order' : 'watch');
+  else if (f.status === 'bad') out.push('under-priced');
   return out;
 }
 

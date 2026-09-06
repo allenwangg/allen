@@ -13,7 +13,7 @@ import {
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
   solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, MIN_PROGRESS,
-  summarizeRunning,
+  summarizeRunning, isFinished,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -1127,11 +1127,16 @@ function wireJobs() {
   });
 
   $('#btnPortfolio').onclick = () => {
-    // Audited jobs only. Mixing in the operator's own quotes would report a
-    // finding about their business, not the client's.
-    const audited = store.state.estimates.filter((e) => e.isAudit);
+    // Audited jobs only, and only finished ones. Mixing in the operator's own
+    // quotes would report a finding about their business rather than the
+    // client's — and a job still on site has no "kept" to report at all: spend
+    // to date read as final cost showed a quarter-built kitchen keeping 81%.
+    const audited = store.state.estimates.filter((e) => e.isAudit && isFinished(e));
     if (!audited.length) {
-      toast('No audited jobs yet — build one with "Audit a job" first.', { bad: true });
+      const running = store.state.estimates.filter((e) => e.isAudit).length;
+      toast(running
+        ? 'Those jobs are still running — the audit report is for finished ones. Use "Job review" instead.'
+        : 'No audited jobs yet — build one with "Audit a job" first.', { bad: true });
       return;
     }
     const portfolio = summarizePortfolio(audited, store.state.settings);
@@ -2128,16 +2133,25 @@ function renderForecastPanel(est, f) {
   let coach;
   if (f.status === 'ok') {
     coach = `<strong>On pace to keep what you priced.</strong> At ${pct}% done nothing is burning faster than the job is getting built.${lowNote}`;
+  } else if (!worst) {
+    // Under the floor with no trade running ahead: the job was sold too cheap
+    // and the crew is performing. The old sentence read "Spend is  ahead of
+    // pace… finishes $0.00 over budget", which is both empty and an
+    // instruction to go and blame the wrong people.
+    coach = `<strong>Priced under your floor, and spending on pace.</strong>
+      At ${pct}% done nothing is running away — this margin was gone at the bid. It projects
+      ${formatPercent(f.projectedMargin)} against your ${formatPercent(floor)} floor, and nothing
+      done on site recovers that. The fix belongs in the next quote.${lowNote}`;
   } else {
-    const trade = worst ? CATEGORY_LABELS[f.worstCategory] : 'Spend';
+    const trade = CATEGORY_LABELS[f.worstCategory];
     // Keep the sentence on one footing: the trade's projected overrun and the
     // trade's unspent share of it. Mixing in the job-level figure produced
     // "$9,296 over — $9,000 of that unspent" when the trade's own unspent
     // share was $6,400.
-    const over = worst ? worst.projectedOverrunCents : f.projectedOverrunCents;
-    const unspent = worst ? worst.projectedOverrunCents - worst.overrunCents : f.fadeAheadCents;
-    coach = `<strong>${trade} is ${worst ? formatMoney(worst.aheadCents) : ''} ahead of pace.</strong>
-      At this rate ${worst ? 'it' : 'the job'} finishes ${formatMoney(over)} over budget${
+    const over = worst.projectedOverrunCents;
+    const unspent = worst.projectedOverrunCents - worst.overrunCents;
+    coach = `<strong>${trade} is ${formatMoney(worst.aheadCents)} ahead of pace.</strong>
+      At this rate it finishes ${formatMoney(over)} over budget${
         unspent > 0 ? ` — ${formatMoney(unspent)} of that has not been spent yet, so it is still yours to keep` : ''}.
       ${f.status === 'bad'
         ? `That puts the job under your ${formatPercent(floor)} floor. If a client request is behind it, it belongs on a change order now, while you are still on site and they still need you.`

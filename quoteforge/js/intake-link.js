@@ -172,7 +172,11 @@ export function decodeIntake(encoded) {
     quotedTotal: round2(quoted),
     // A v2 link has no progress field. Defaulting to 0 would silently turn
     // every finished job in someone's inbox into a job that had not started.
-    progress: version < 3 ? 1 : clamp01(Number(progress) / 100),
+    // Absent means finished, at any version: that is what a v2 link means and
+    // what a forged v3 payload with the element dropped would otherwise turn
+    // into a job that had never started.
+    progress: version < 3 || progress === undefined || progress === null
+      ? 1 : clamp01(Number(progress) / 100),
     budget: unpack(budgetArr),
     spent: unpack(spentArr),
     changes: (Array.isArray(changesArr) ? changesArr : [])

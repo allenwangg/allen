@@ -671,6 +671,56 @@ console.log('\n  a running job collected by link');
     (await page.locator('#estSelect option').count()) === jobsBefore + 1);
 }
 
+/* --- the two reports must not trade places ----------------------------- */
+console.log('\n  finished and running stay apart');
+{
+  // By now the app holds both: finished reconstructions from the audit flows
+  // above and running ones from the weekly flow. Each report must take its own.
+  await page.locator('.tab[data-tab="jobs"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('#btnPortfolio').click();
+  await page.waitForTimeout(500);
+  const pfText = await page.locator('#pfPrint').textContent();
+  check('the audit report covers the finished jobs', /Deck — 7 Oak/.test(pfText));
+  check('and leaves out the job still on site',
+    !/loft conversion/i.test(pfText),
+    '(spend to date read as final cost showed a quarter-built job keeping 81%)');
+
+  await page.locator('#btnReview').click();
+  await page.waitForTimeout(500);
+  const rvText = await page.locator('#rvPrint').textContent();
+  // Case-insensitive: the update above deliberately used the contractor's own
+  // sloppier spelling, and their latest spelling is what the job now carries.
+  check('the weekly review takes the running job', /loft conversion/i.test(rvText),
+    `(review said: ${rvText.replace(/\s+/g, ' ').slice(0, 200)})`);
+  check('and leaves out the finished ones', !/Deck — 7 Oak/.test(rvText));
+
+  // With nothing finished to report on, the audit report declines rather than
+  // inventing a verdict.
+  const solo = await b.newPage();
+  await solo.goto(`http://localhost:${PORT}/quoteforge/`, { waitUntil: 'networkidle' });
+  await solo.evaluate(() => localStorage.clear());
+  await solo.reload({ waitUntil: 'networkidle' });
+  await solo.locator('#btnAudit').click();
+  await solo.waitForTimeout(300);
+  await solo.locator('#aState').selectOption('running');
+  await solo.locator('#aPct').fill('40');
+  await solo.locator('#aTitle').fill('Only running');
+  await solo.locator('#aQuoted').fill('20000');
+  await solo.locator('[data-budget="labor"]').fill('8000');
+  await solo.locator('[data-spent="labor"]').fill('5000');
+  await solo.locator('#btnBuildAudit').click();
+  await solo.waitForTimeout(700);
+  await solo.locator('.tab[data-tab="jobs"]').click();
+  await solo.waitForTimeout(300);
+  await solo.locator('#btnPortfolio').click();
+  await solo.waitForTimeout(400);
+  const t = await solo.locator('#toasts').textContent();
+  check('with only running jobs the audit report declines', /still running/i.test(t), `(${t.slice(0, 80)})`);
+  check('and names the report that does apply', /Job review/.test(t));
+  await solo.close();
+}
+
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
 if (errs.length) console.log('  ERRORS: ' + [...new Set(errs)].join(' | '));
 await b.close(); srv.close();

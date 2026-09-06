@@ -219,6 +219,15 @@ t('a link written before progress existed still reads, as a finished job', () =>
   eq(got.changes[0].title, 'Rot');
 });
 
+t('a v3 payload with its progress element dropped still reads as finished', () => {
+  // Only reachable by forging a checksum, which is exactly when guessing wrong
+  // matters: a finished job must not arrive looking like one never started.
+  eq(decodeIntake(forge([3, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], []])).progress, 1);
+  eq(decodeIntake(forge([3, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], null])).progress, 1);
+  eq(decodeIntake(forge([3, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], 0])).progress, 0,
+    'an explicit zero is a real answer and must survive:');
+});
+
 t('a version this code has never seen is refused, not guessed at', () => {
   eq(decodeIntake(forge([1, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], []])), null);
   eq(decodeIntake(forge([4, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], 50])), null);
