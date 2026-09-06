@@ -213,6 +213,10 @@
       "pass": true
     },
     {
+      "name": "the empire strip sells the next tier and a dying flame with one tap",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -226,6 +230,10 @@
     },
     {
       "name": "a genuinely larger bid does take over the decree",
+      "pass": true
+    },
+    {
+      "name": "the largest bid owns the link, so an owner can rebrand and a griefer cannot",
       "pass": true
     },
     {
@@ -258,13 +266,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 176,
-    "medianDOMContentLoadedms": 135.3,
-    "medianLoadms": 12535.7,
+    "medianFCPms": 96,
+    "medianDOMContentLoadedms": 71.5,
+    "medianLoadms": 12433.7,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 110401,
-    "gzipBytes": 33398
+    "htmlBytes": 112558,
+    "gzipBytes": 34070
   }
 }

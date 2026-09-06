@@ -144,7 +144,8 @@ function rank(bids) {
     e.total += b.amount;
     e.bids += 1;
     e.last = b.at;
-    if (url && !e.url) e.url = url;
+    // Same rule as the decree below: the largest single bid owns the link.
+    if (url && (!e.url || b.amount >= e.topBid)) e.url = url;
     if (decree && b.amount >= e.topBid) e.decree = decree;
     if (b.amount > e.topBid) e.topBid = b.amount;
     byName.set(keyName, e);
