@@ -122,6 +122,41 @@ await page.locator('.tab[data-tab="estimate"]').click();
 await page.waitForTimeout(300);
 check('a hostile imported file does not execute', fired === 0, `(fired ${fired}x)`);
 
+// A pasted intake LINK is the other path the contractor did not type: a third
+// party writes the string and the operator pastes it, then renders it into two
+// documents and prints them. Everything below reaches the DOM from that string.
+const hostileLink = await page.evaluate(async (payload) => {
+  const m = await import('./js/intake-link.js');
+  return m.encodeIntake({
+    title: payload, client: payload, quotedTotal: 42000, progress: 0.4,
+    budget: { labor: 12000, material: 9000 }, spent: { labor: 7000, material: 8600 },
+    changes: [{ title: payload, amount: 2400, signed: false }],
+  });
+}, '<img src=x onerror=window.__pwned()>');
+
+await page.locator('#btnAudit').click();
+await page.waitForTimeout(300);
+await page.locator('#aPaste').fill(hostileLink);
+await page.waitForTimeout(500);
+check('a hostile link fills the form without executing', fired === 0, `(fired ${fired}x)`);
+await page.locator('#btnBuildAudit').click();
+await page.waitForTimeout(700);
+// The audit report renders on the Costs tab; the review renders on Jobs.
+await page.locator('.tab[data-tab="changes"]').click();
+await page.waitForTimeout(300);
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(300);
+await page.locator('#btnReview').click().catch(() => {});
+await page.waitForTimeout(500);
+check('nothing executes through the audit report or the weekly review',
+  fired === 0, `(fired ${fired}x)`);
+const rvText = await page.locator('#rvPrint').textContent().catch(() => '');
+check('the hostile title still reads as literal text in the review',
+  rvText.includes('<img src=x onerror='),
+  '(escaped, not stripped — a contractor named <b>Dana</b> still sees their own name)');
+check('and it created no elements of its own',
+  (await page.locator('#rvPrint img').count()) === 0);
+
 console.log(`\n  xss: ${pass} passed, ${fail} failed  (handlers fired: ${fired})`);
 await b.close(); srv.close();
 process.exit(fail?1:0);
