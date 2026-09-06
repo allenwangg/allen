@@ -721,6 +721,73 @@ console.log('\n  finished and running stay apart');
   await solo.close();
 }
 
+/* --- the chart has to survive real, awkward spend logs ------------------ */
+console.log('\n  burn chart geometry');
+{
+  const p2 = await b.newPage();
+  await p2.goto(`http://localhost:${PORT}/quoteforge/`, { waitUntil: 'networkidle' });
+  await p2.evaluate(() => localStorage.clear());
+  await p2.reload({ waitUntil: 'networkidle' });
+  // A fresh estimate: the seeded sample carries its own costs, and this is
+  // about what one job's own log draws.
+  await p2.locator('#btnNew').click();
+  await p2.waitForTimeout(300);
+  await p2.locator('.tab[data-tab="costs"]').click();
+  await p2.waitForTimeout(250);
+  const entry = async (date, cat, desc, amt) => {
+    await p2.locator('#btnAddActual').click();
+    await p2.waitForTimeout(150);
+    const r = p2.locator('tr[data-ac]').first();
+    await r.locator('[data-acf="date"]').fill(date);
+    await r.locator('[data-acf="category"]').selectOption(cat);
+    await r.locator('[data-acf="description"]').fill(desc);
+    await r.locator('[data-acf="amount"]').fill(amt);
+    await p2.waitForTimeout(200);
+  };
+  // A returned pallet logged before any payment: the running total starts below
+  // zero, and a scale that assumes zero is the floor drew the line off the box.
+  await entry('2026-08-01', 'material', 'Returned pallet', '-2000');
+  await entry('2026-08-09', 'labor', 'Payroll', '500');
+  await p2.locator('#progressPct').fill('50');
+  await p2.waitForTimeout(300);
+  const geo = await p2.evaluate(() => {
+    const svg = document.querySelector('#burnChart svg');
+    if (!svg) return { noSvg: true };
+    const h = svg.viewBox.baseVal.height;
+    const bad = [];
+    for (const el of svg.querySelectorAll('*')) {
+      for (const a of el.attributes) if (/NaN|Infinity|undefined/.test(a.value)) bad.push(`${el.tagName}.${a.name}`);
+    }
+    const outside = [...svg.querySelectorAll('circle')]
+      .filter((c) => { const y = +c.getAttribute('cy'); return !(y >= 0 && y <= h); }).length;
+    return { bad, outside, text: svg.textContent };
+  });
+  check('a refund before any spend keeps every point inside the chart',
+    geo.outside === 0, `(${geo.outside} points off the box)`);
+  check('and the axis says so rather than pretending zero is the floor',
+    /-\$2,000/.test(geo.text), `(${(geo.text || '').slice(0, 60)})`);
+  check('no coordinate is NaN or Infinity', (geo.bad || []).length === 0, (geo.bad || []).join(','));
+
+  // One dated cost is a legitimate first week and must not divide by a zero span.
+  await p2.locator('#btnNew').click();
+  await p2.waitForTimeout(300);
+  await p2.locator('.tab[data-tab="costs"]').click();
+  await p2.waitForTimeout(250);
+  await entry('2026-08-03', 'labor', 'First payroll', '1000');
+  await p2.waitForTimeout(300);
+  const one = await p2.evaluate(() => {
+    const svg = document.querySelector('#burnChart svg');
+    const bad = [];
+    for (const el of svg.querySelectorAll('*')) {
+      for (const a of el.attributes) if (/NaN|Infinity|undefined/.test(a.value)) bad.push(`${el.tagName}.${a.name}`);
+    }
+    return { dots: svg.querySelectorAll('circle.dot').length, bad };
+  });
+  check('a single dated cost draws one point and no NaN',
+    one.dots === 1 && one.bad.length === 0, JSON.stringify(one));
+  await p2.close();
+}
+
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
 if (errs.length) console.log('  ERRORS: ' + [...new Set(errs)].join(' | '));
 await b.close(); srv.close();

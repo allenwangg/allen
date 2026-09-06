@@ -2197,15 +2197,23 @@ function renderBurnChart(f) {
     proj = { day: last + days, cents: f.projectedCostCents };
   }
   const xMax = Math.max(proj ? proj.day : last, first + 1);
-  const yMax = Math.max(f.costed.budgetCents, lastCum, proj ? proj.cents : 0) * 1.08 || 1;
+  // A refund logged before any spend makes the running total negative, and a
+  // scale that assumes zero is the floor drew those points off the bottom of
+  // the box — the line simply left the chart.
+  const yLow = Math.min(0, ...f.burn.map((b) => b.cumulativeCents));
+  const yHigh = Math.max(f.costed.budgetCents, lastCum, proj ? proj.cents : 0, yLow + 1);
+  const yTop = yHigh + (yHigh - yLow) * 0.08;
   const x = (d) => L + ((d - first) / (xMax - first)) * (W - L - R);
-  const y = (c) => T + (1 - c / yMax) * (H - T - B);
+  const y = (c) => T + (1 - (c - yLow) / (yTop - yLow)) * (H - T - B);
 
   const pts = f.burn.map((b) => ({ ...b, x: x(day(b.date)), y: y(b.cumulativeCents) }));
   const path = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   const budgetY = y(f.costed.budgetCents);
   const over = lastCum > f.costed.budgetCents;
-  const ticks = [0, 0.5, 1].map((k) => ({ v: yMax * k / 1.08, y: y(yMax * k / 1.08) }));
+  const ticks = [0, 0.5, 1].map((k) => {
+    const v = Math.round(yLow + (yHigh - yLow) * k);
+    return { v, y: y(v) };
+  });
 
   el.innerHTML = `
 <svg class="burn" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative spend over time against the budget"
