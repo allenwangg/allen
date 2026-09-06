@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check an n-of-1 trial certificate</title>
+<!--
+  A standalone checker for a single trial certificate.
+
+  Deliberately one file with no dependencies, no build step, no network and no
+  imports, so it runs from a USB stick, an email attachment or a hospital
+  machine with the internet switched off. A format only becomes a standard if
+  checking it is free and requires trusting nobody, least of all the software
+  that produced the thing being checked.
+
+  The arithmetic below is a second implementation of the exact randomisation
+  test. That duplication is the point — a verifier that calls the issuer's own
+  code verifies nothing — and tests/run.mjs pins this copy against
+  app/js/certificate.js so the two cannot drift apart unnoticed.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f8fa; --surface: #fff; --text: #171c24; --text-2: #5a6472;
+    --border: #dfe3ea; --accent: #1f6f5c; --bad: #9d3a2f; --warn: #8a6412;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1319; --surface: #161c25; --text: #e8edf4; --text-2: #9aa6b6;
+            --border: #2a3340; --accent: #3fb894; --bad: #e07a6b; --warn: #e0a54a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px 20px 60px; background: var(--bg); color: var(--text);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .3em; letter-spacing: -.015em; }
+  h2 { font-size: 1.1rem; margin: 0 0 .5em; }
+  p.lede { color: var(--text-2); margin: 0 0 24px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 16px; }
+  label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .hint { color: var(--text-2); font-size: .88rem; font-weight: 400; margin: 0 0 8px; }
+  textarea, input { width: 100%; font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  textarea { min-height: 190px; font-family: var(--mono); font-size: .8rem; resize: vertical; }
+  input { font-family: var(--mono); }
+  textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { font: inherit; font-weight: 650; padding: 11px 20px; border-radius: 8px; cursor: pointer;
+    background: var(--accent); color: #fff; border: 1px solid var(--accent); margin-top: 14px; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .verdict { border-left: 4px solid var(--border); padding-left: 14px; margin: 0 0 14px; }
+  .ok    { border-left-color: var(--accent); }
+  .fail  { border-left-color: var(--bad); }
+  .partial { border-left-color: var(--warn); }
+  .verdict h2 { margin-bottom: .2em; }
+  ul { margin: 8px 0 0; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  .mono { font-family: var(--mono); }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: .92rem; }
+  td { padding: 5px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  td:first-child { color: var(--text-2); width: 38%; padding-right: 12px; }
+  footer { color: var(--text-2); font-size: .88rem; margin-top: 28px; }
+  code { font-family: var(--mono); font-size: .88em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Check an n-of-1 trial certificate</h1>
+  <p class="lede">Paste a certificate below. This page recomputes its p-value from the numbers it
+  carries and tells you whether the result follows from the design. Everything happens in your
+  browser; nothing is sent anywhere, and this file works with the network switched off.</p>
+
+  <div class="card">
+    <label for="cert">The certificate</label>
+    <p class="hint">The JSON block from the trial. It contains no diary, no dates and no symptom
+    log &mdash; only the per-pair differences needed to reproduce the arithmetic.</p>
+    <textarea id="cert" spellcheck="false" placeholder='{ "version": 1, "leverLabel": "No alcohol", ... }'></textarea>
+
+    <label for="code" style="margin-top:16px">Registration code you were given at the start</label>
+    <p class="hint">Optional, and the half that matters most. If someone handed you a twelve-character
+    code before their trial began, enter it here to confirm this is that trial &mdash; same question,
+    same length, same coin tosses. Without it the arithmetic is still checkable, but that the
+    question came first rests on the certificate's own word.</p>
+    <input id="code" spellcheck="false" placeholder="e.g. 36feee0bf7aa" maxlength="64">
+
+    <button id="go">Check it</button>
+  </div>
+
+  <div id="out"></div>
+
+  <footer>
+    <p><strong>What this can and cannot tell you.</strong> It checks that the result follows from the
+    design, that the numbers are internally consistent, and &mdash; given the code &mdash; that the
+    design matches what was registered before any data existed. It does <em>not</em> tell you who
+    produced the certificate. Nothing here is a signature, and someone determined to fabricate one
+    can invent the numbers and compute the digests. Identity comes from whoever held the
+    registration code: the clinician who watched the trial, or a registry that timestamped it on
+    receipt.</p>
+    <p>A single trial on one person is evidence about that person. It is not evidence about you.</p>
+  </footer>
+</main>
+
+<script>
+/* --- the exact randomisation test, reimplemented --- */
+function exactP(pairDiffs) {
+  const k = pairDiffs.length;
+  if (!k) return null;
+  const observed = pairDiffs.reduce((a, b) => a + b, 0) / k;
+  const total = 2 ** k;
+  let asExtreme = 0;
+  for (let mask = 0; mask < total; mask++) {
+    let sum = 0;
+    for (let i = 0; i < k; i++) sum += (mask & (1 << i)) ? -pairDiffs[i] : pairDiffs[i];
+    if (Math.abs(sum / k) >= Math.abs(observed) - 1e-12) asExtreme++;
+  }
+  return asExtreme / total;
+}
+
+function canonicalCertificate(c) {
+  return [
+    'cert-v' + c.version,
+    'design=' + c.design,
+    'preregDigest=' + (c.preregDigest ?? ''),
+    'preregVersion=' + (c.preregVersion ?? ''),
+    'outcomeLabel=' + (c.outcomeLabel ?? ''),
+    'leverLabel=' + (c.leverLabel ?? ''),
+    'usablePairs=' + c.usablePairs,
+    'pairDiffs=' + c.pairDiffs.join(','),
+    'observedDiff=' + c.observedDiff,
+    'p=' + c.p,
+    'verdict=' + (c.verdict ?? ''),
+    'adherence=' + (c.adherence ?? ''),
+  ].join('\n');
+}
+
+async function sha256Hex(text) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+async function check(cert, expectedShort) {
+  const problems = [], notes = [];
+  if (cert.version !== 1) return { problems: ['Certificate format v' + cert.version + '; this page understands v1.'], notes };
+  if (!Array.isArray(cert.pairDiffs) || !cert.pairDiffs.length) {
+    return { problems: ['No pair differences, so nothing can be recomputed.'], notes };
+  }
+  if (await sha256Hex(canonicalCertificate(cert)) !== cert.digest) {
+    problems.push('The certificate has been edited since it was issued.');
+  }
+  const mean = cert.pairDiffs.reduce((a, b) => a + b, 0) / cert.pairDiffs.length;
+  if (Math.abs(mean - cert.observedDiff) > 0.011) {
+    problems.push('The stated effect (' + cert.observedDiff + ') is not the mean of the published differences (' + mean.toFixed(2) + ').');
+  }
+  const p = exactP(cert.pairDiffs);
+  if (Math.abs(p - cert.p) > 0.0002) {
+    problems.push('The stated p-value (' + cert.p + ') is not what these differences give (' + p.toFixed(4) + ').');
+  }
+  if (expectedShort) {
+    if (!cert.preregDigest) problems.push('This trial carries no pre-registration to compare your code against.');
+    else if (!cert.preregDigest.startsWith(expectedShort)) {
+      problems.push('The design does not match the registration code you were given. This is not the trial that was registered.');
+    } else notes.push('Matches registration code ' + expectedShort + ', so the question and the coin tosses are the ones fixed before any day was logged.');
+  } else if (cert.preregDigest) {
+    notes.push('Carries a pre-registration digest, but you have not entered the code you were given, so that half is unchecked.');
+  } else {
+    notes.push('Carries no pre-registration. The arithmetic is still checkable; that the question came first is not.');
+  }
+  return { problems, notes, recomputedP: p };
+}
+
+document.getElementById('go').addEventListener('click', async () => {
+  const out = document.getElementById('out');
+  let cert;
+  try { cert = JSON.parse(document.getElementById('cert').value); }
+  catch (e) {
+    out.innerHTML = '<div class="card verdict fail"><h2>That is not readable JSON</h2><p>' + esc(e.message) + '</p></div>';
+    return;
+  }
+  const code = document.getElementById('code').value.trim().toLowerCase();
+  const r = await check(cert, code || null);
+  const ok = r.problems.length === 0;
+  const cls = ok ? (code ? 'ok' : 'partial') : 'fail';
+  const title = !ok ? 'This certificate does not check out'
+    : code ? 'Checks out, and it is the trial that was registered'
+    : 'The arithmetic checks out';
+
+  out.innerHTML =
+    '<div class="card verdict ' + cls + '">' +
+      '<h2>' + title + '</h2>' +
+      (r.problems.length ? '<ul>' + r.problems.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
+      (r.notes.length ? '<ul>' + r.notes.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul>' : '') +
+    '</div>' +
+    (cert.pairDiffs ? '<div class="card"><h2>What it says</h2><table>' +
+      row('Change tested', cert.leverLabel) +
+      row('Measured', cert.outcomeLabel) +
+      row('Block pairs', cert.usablePairs) +
+      row('Effect', cert.observedDiff + (cert.meanOn != null ? ' (on ' + cert.meanOn + ' vs off ' + cert.meanOff + ')' : '')) +
+      row('p, recomputed here', r.recomputedP != null ? r.recomputedP.toFixed(4) : '—') +
+      row('Best possible at this length', cert.floorP ?? '—') +
+      row('Conclusion', cert.verdict ?? 'not stated') +
+      (cert.adherence != null ? row('Adherence', cert.adherence + '%') : '') +
+      row('Per-pair differences', '<span class="mono">' + esc(cert.pairDiffs.join(', ')) + '</span>') +
+    '</table></div>' : '');
+});
+
+function row(k, v) { return '<tr><td>' + esc(k) + '</td><td>' + (String(v).startsWith('<span') ? v : esc(v)) + '</td></tr>'; }
+</script>
+</body>
+</html>

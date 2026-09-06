@@ -16,9 +16,10 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 182 unit tests + the copy guard, no dependencies
+npm test          # 183 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run contrast  # WCAG AA check, both themes (needs the server running)
+# verify.html      open it in any browser to check a trial certificate
 npm run stamp-sw  # before deploying — see below
 ```
 
@@ -38,6 +39,17 @@ No build step. The app is ES modules served as they are.
   Giving each symptom its own separate error budget was tried and reverted: it
   leaked noise into 3-4 of 40 pure-noise datasets, against 0 of 40 for one
   global correction, and gained no recall. See docs/INSIGHTS.md, Guard 8.
+- **Registers the question before the data exists.** When a trial starts, its
+  design — the change, the measurement, the length and the exact coin tosses —
+  is hashed into a twelve-character code. Give that code to someone at the
+  start and they can later confirm you did not pick the question after seeing
+  how it went. That is the one thing standing between a self-experiment and a
+  testimonial.
+- **Emits a result a stranger can check.** A finished trial produces about a
+  kilobyte that reproduces its own p-value from the per-pair differences it
+  carries, and contains no diary, no dates and no symptom log. `verify.html` in
+  this repo checks one: a single file, no dependencies, works from an email
+  attachment with the network off.
 - **Tests a suspicion properly.** Block-randomised n-of-1 trials: pick one
   change — including one of your own factors, as "avoid it" versus "carry on" —
   pre-register what you are measuring, and get an exact randomisation test at
@@ -101,7 +113,7 @@ app/
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  182 unit tests, a copy guard, a browser walkthrough
+tests/                  183 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.

@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { violations as guardViolations } from './copy-guard.mjs';
 import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from '../app/js/prereg.js';
-import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert } from '../app/js/certificate.js';
+import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert, canonicalCertificate } from '../app/js/certificate.js';
 import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/registry.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
@@ -2432,6 +2432,45 @@ t('the responder interval behaves at the edges', () => {
   eq(wilson(5, 0), null);
   const [a, b] = wilson(50, 100);
   ok(a < 0.5 && b > 0.5 && b - a < 0.25);
+});
+
+t('the standalone verifier agrees with the certificate it checks', async () => {
+  // verify.html reimplements the exact test and the canonical form on purpose:
+  // a verifier that calls the issuer's own code verifies nothing. Deliberate
+  // duplication still has to be pinned, or the two drift and the page starts
+  // rejecting valid certificates — or worse, accepting invalid ones.
+  const html = readFileSync(new URL('../verify.html', import.meta.url), 'utf8');
+
+  // Lift the verifier's implementations out of the page and run them.
+  const grab = (name) => {
+    const at = html.indexOf(`function ${name}(`);
+    ok(at !== -1, `verify.html no longer defines ${name}()`);
+    let depth = 0, i = html.indexOf('{', at);
+    const start = at;
+    for (; i < html.length; i++) {
+      if (html[i] === '{') depth++;
+      else if (html[i] === '}' && --depth === 0) return html.slice(start, i + 1);
+    }
+    throw new Error(`could not extract ${name}() from verify.html`);
+  };
+  const pageExactP = new Function(`${grab('exactP')}; return exactP;`)();
+  const pageCanonical = new Function(`${grab('canonicalCertificate')}; return canonicalCertificate;`)();
+
+  for (let s2 = 0; s2 < 8; s2++) {
+    const { trial, analysis } = certifiableTrial(2000 + s2 * 7919, s2 % 3 === 0 ? 0 : 1.3);
+    if (analysis.status !== 'analysed') continue;
+    trial.prereg = await commitPrereg(trial);
+    const cert = await issueCert(trial, analysis, { verdictKind: 'helped', leverLabel: 'No alcohol' });
+    near(pageExactP(cert.pairDiffs), certExactP(cert.pairDiffs), 1e-12,
+      'the page and the module must compute the same p-value');
+    eq(pageCanonical(cert), canonicalCertificate(cert),
+      'the page and the module must hash the same bytes, or every digest check fails');
+  }
+
+  // The page must stay standalone: no imports, no network, no build step.
+  ok(!/\bimport\s|require\(|<script[^>]+src=/.test(html),
+    'verify.html must have no dependencies — it has to run from an email attachment');
+  ok(/n-of-1 trial certificate/i.test(html));
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested
