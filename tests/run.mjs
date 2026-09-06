@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { violations as guardViolations } from './copy-guard.mjs';
 import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from '../app/js/prereg.js';
 import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert } from '../app/js/certificate.js';
+import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/registry.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2348,6 +2349,89 @@ t('a certificate says plainly what it cannot establish', async () => {
   ok(/flip the\s+sign/i.test(text), 'should explain the check: ' + text.slice(0, 120));
   ok(/No access to the underlying diary/i.test(text));
   eq(renderCert(null), '');
+});
+
+/** n certificates for one cohort: `helped` responders and `nulls` non-responders. */
+function cohortCerts(helped, nulls) {
+  const out = []; let i = 0;
+  const mk = (p, verdict, eff) => ({ digest: `d${i++}`, leverId: 'no-dairy', leverLabel: 'No dairy',
+    outcomeLabel: 'Migraine', outcomeKind: 'migraine', p, verdict, observedDiff: eff, pairDiffs: [1, 2] });
+  for (let k = 0; k < helped; k++) out.push(mk(0.008, 'helped', -1.2));
+  for (let k = 0; k < nulls; k++) out.push(mk(0.42, 'no-effect', -0.1));
+  return out;
+}
+const oneCohort = (certs, registered) =>
+  cohorts(certs, { registrations: registered == null ? null : { 'no-dairy|migraine': registered } }).cohorts[0];
+
+t('a cohort at the false-positive rate is not called a finding', () => {
+  // If a change does nothing for anyone, one trial in twenty still comes back
+  // significant at alpha 0.05. A registry that reports that as "5% of people
+  // were helped" is manufacturing responders out of its own error rate, and it
+  // would do it on every row, forever.
+  const c = oneCohort(cohortCerts(5, 95), 100);
+  eq(c.status, 'no-signal');
+  ok(/luck/i.test(c.headline), c.headline);
+  ok(c.pVsNull > 0.05, `expected no signal against the null, got p=${c.pVsNull}`);
+
+  // A genuine responder group clears it.
+  const real = oneCohort(cohortCerts(22, 78), 100);
+  eq(real.status, 'signal');
+  ok(real.pVsNull < 0.001);
+  ok(real.ci[0] > RESPONDER_ALPHA, 'the interval should exclude the chance rate');
+});
+
+t('a cohort that mostly did not report back refuses to quote its own rate', () => {
+  // Selective contribution is a bigger threat than fabrication and verification
+  // does nothing about it. The denominator is registrations, so trials that
+  // registered and never returned are visible instead of invisible.
+  const c = oneCohort(cohortCerts(20, 20), 100);
+  eq(c.status, 'under-reported');
+  eq(c.reported, 40);
+  eq(c.missing, 60);
+  near(c.reporting, 0.4, 1e-9);
+  // Among reporters it is 50%; if the missing 60 all found nothing it is 20%.
+  near(c.rate, 0.5, 1e-9);
+  near(c.worstCase, 0.2, 1e-9);
+  ok(/only 40 reported back/i.test(c.headline), c.headline);
+  ok(/nearer 20%/.test(c.headline), 'must give the worst case, not just the flattering one');
+  ok(MIN_REPORTING > 0.5 && MIN_REPORTING < 1);
+});
+
+t('the registry counts one trial once and rejects what it cannot read', () => {
+  const dup = cohortCerts(1, 0);
+  const six = [dup[0], dup[0], dup[0], dup[0], dup[0], dup[0]];
+  eq(cohorts(six).cohorts[0].reported, 1, 'resending a good result must not stack');
+  const r = cohorts([null, {}, { leverLabel: 'x' }, ...six]);
+  ok(r.rejected >= 3, `expected malformed and duplicate rejections, got ${r.rejected}`);
+  eq(cohorts([]).cohorts.length, 0);
+  eq(cohorts(null).cohorts.length, 0);
+
+  // A certificate claiming an effect while its own p-value says otherwise is
+  // refused rather than counted.
+  const inconsistent = [{ digest: 'z', leverId: 'l', leverLabel: 'L', outcomeLabel: 'O',
+    p: 0.001, verdict: 'no-effect', observedDiff: -1, pairDiffs: [1] }];
+  eq(cohorts(inconsistent).cohorts.length, 0);
+});
+
+t('a small cohort says so instead of producing a percentage', () => {
+  const c = oneCohort(cohortCerts(2, 1), 3);
+  eq(c.status, 'too-few');
+  ok(/Too few/i.test(c.headline), c.headline);
+  ok(!/%/.test(c.headline.split('Too few')[0]), 'must not lead with a rate from three people');
+});
+
+t('the responder interval behaves at the edges', () => {
+  // Wilson rather than the normal approximation: at 0 successes the normal
+  // interval is [0,0], which asserts certainty from no evidence.
+  const [lo, hi] = wilson(0, 20);
+  eq(lo, 0);
+  ok(hi > 0.1 && hi < 0.3, `0/20 should still admit a real rate, got upper ${hi}`);
+  const [lo2, hi2] = wilson(20, 20);
+  ok(lo2 > 0.8 && lo2 < 1, `20/20 should not claim a lower bound of 1, got ${lo2}`);
+  near(hi2, 1, 1e-9, 'the upper bound at 20/20 is 1 up to floating point');
+  eq(wilson(5, 0), null);
+  const [a, b] = wilson(50, 100);
+  ok(a < 0.5 && b > 0.5 && b - a < 0.25);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested
