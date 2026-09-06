@@ -34,11 +34,11 @@
 
   <div class="form" id="formPane">
     <div class="intro">
-      <h1>One finished job, in about ten minutes</h1>
+      <h1>One job, in about ten minutes</h1>
       <p>
-        Rough numbers are fine — this is about finding where the money went, not auditing your
-        books. You do not need line items or receipts; what you remember and a bank statement
-        is enough.
+        Finished or still on site — both work. Rough numbers are fine: this is about finding
+        where the money went, or where it is going, not auditing your books. You do not need
+        line items or receipts; what you remember and a bank statement is enough.
       </p>
     </div>
 
@@ -64,6 +64,18 @@
             <input id="fQuoted" class="num" type="number" step="0.01" min="0" placeholder="42000">
             <span class="hint">The contract total, before sales tax.</span>
           </div>
+          <div class="field">
+            <label for="fState">Where is it now?</label>
+            <select id="fState">
+              <option value="done">Finished</option>
+              <option value="running">Still on site</option>
+            </select>
+          </div>
+          <div class="field" id="fPctWrap" hidden>
+            <label for="fPct">Roughly how far along?</label>
+            <input id="fPct" class="num" type="number" min="0" max="100" step="5" value="50">
+            <span class="hint">Per cent. A guess is fine — it is what the forecast scales by.</span>
+          </div>
         </div>
       </div>
     </section>
@@ -77,7 +89,7 @@
       <div id="costWrap"></div>
       <div class="body" style="padding-top:0">
         <p class="hint" style="margin:0">
-          Skip any row that does not apply. "What you actually paid" can come straight off bank
+          Skip any row that does not apply. <span id="spentHint">"What you actually paid"</span> can come straight off bank
           lines — close is good enough to be useful.
         </p>
       </div>
@@ -137,7 +149,7 @@ const LABELS = {
 
 $('#costWrap').innerHTML = `
   <table class="items">
-    <thead><tr><th>Category</th><th class="right">You estimated</th><th class="right">You actually paid</th></tr></thead>
+    <thead><tr><th>Category</th><th class="right">You estimated</th><th class="right" id="spentHead">You actually paid</th></tr></thead>
     <tbody>${INTAKE_CATEGORIES.map((c) => `
       <tr>
         <td style="padding-left:10px;color:var(--text-2)">${LABELS[c]}</td>
@@ -164,6 +176,26 @@ $('#changes').onclick = (e) => {
   if (e.target.closest('[data-del]')) e.target.closest('.change-row').remove();
 };
 
+/**
+ * Finished or running. A running job changes what "actually paid" means, so
+ * the column says so rather than leaving them to guess whether it wants
+ * spend-to-date or a final figure.
+ */
+const isRunning = () => $('#fState').value === 'running';
+const progressValue = () => (isRunning()
+  ? Math.min(1, Math.max(0, (Number($('#fPct').value) || 0) / 100))
+  : 1);
+
+function syncState() {
+  const running = isRunning();
+  $('#fPctWrap').hidden = !running;
+  $('#spentHead').textContent = running ? 'Paid so far' : 'You actually paid';
+  $('#spentHint').textContent = running ? '"Paid so far"' : '"What you actually paid"';
+  $('#btnFinish').textContent = running ? 'Create my update' : 'Create my summary';
+}
+$('#fState').addEventListener('change', syncState);
+syncState();
+
 function read(attr) {
   return Object.fromEntries([...document.querySelectorAll(`[data-${attr}]`)]
     .map((el) => [el.dataset[attr], Number(el.value) || 0]));
@@ -174,6 +206,7 @@ function currentInput() {
     title: $('#fTitle').value.trim(),
     client: $('#fClient').value.trim(),
     quotedTotal: Number($('#fQuoted').value) || 0,
+    progress: progressValue(),
     budget: read('budget'),
     spent: read('spent'),
     changes: [...document.querySelectorAll('.change-row')].map((r) => ({
@@ -219,6 +252,7 @@ $('#btnFinish').onclick = () => {
     title: $('#fTitle').value.trim(),
     client: $('#fClient').value.trim(),
     quotedTotal: quoted,
+    progress: progressValue(),
     budget,
     spent: read('spent'),
     changes: [...document.querySelectorAll('.change-row')].map((r) => ({

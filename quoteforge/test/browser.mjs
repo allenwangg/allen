@@ -457,6 +457,35 @@ console.log('\n  contractor intake page');
   await page.waitForTimeout(400);
   check('correcting it clears the flag', (await page.locator('.check.warn').count()) === 0);
 
+  // A job still on site. The same twelve questions, one extra number.
+  check('the form opens on a finished job', !(await page.locator('#fPctWrap').isVisible()));
+  await page.locator('#fState').selectOption('running');
+  await page.waitForTimeout(200);
+  check('choosing "still on site" asks how far along',
+    await page.locator('#fPctWrap').isVisible(),
+    '(a .field sets display:grid, which silently defeats the hidden attribute)');
+  check('and the spend column stops asking for a final figure',
+    (await page.locator('#spentHead').textContent()).trim() === 'Paid so far');
+  check('the button stops calling it a summary',
+    /update/i.test(await page.locator('#btnFinish').textContent()));
+  await page.locator('#fPct').fill('40');
+  await page.locator('#fQuoted').fill('31500');
+  await page.waitForTimeout(300);
+  await page.locator('#btnFinish').click();
+  await page.waitForTimeout(400);
+  const runLink = await page.locator('#outLink').inputValue();
+  check('the link carries how far along the job is',
+    await page.evaluate(async (l) => {
+      const m = await import('./js/intake-link.js');
+      const got = m.readIntakeFrom(l);
+      return got && got.progress === 0.4 && got.version === 3;
+    }, runLink),
+    '(without it a running job arrives looking finished, and the forecast is meaningless)');
+  await page.locator('#btnBack').click();
+  await page.locator('#fState').selectOption('done');
+  await page.waitForTimeout(200);
+  check('switching back hides the question again', !(await page.locator('#fPctWrap').isVisible()));
+
   // A warning must never block them — their numbers, their call.
   await page.locator('#fQuoted').fill('3150');
   await page.waitForTimeout(300);

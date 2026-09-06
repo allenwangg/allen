@@ -138,6 +138,11 @@ and reply with one line per job — where it finishes, which trade is ahead of p
 and whether a change order needs writing this week. First month included with the
 audit, so the renewal decision happens after it has caught something.
 
+What they send: the same `intake.html` link, with *Still on site* chosen and a
+rough percentage complete. You paste it into **Audit a job** exactly as you do
+for a finished one; it arrives forecast and lands on the review. Nothing about
+the weekly cadence needs a backend either.
+
 What you send: **Jobs → Job review — this week**. One page, per running job,
 with the instruction already written. Read it before you send it — the app
 proposes the action, you decide whether it survives contact with what you know

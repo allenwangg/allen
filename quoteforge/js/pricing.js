@@ -958,13 +958,14 @@ export function summarizePortfolio(estimates, settings) {
  * "recoverable" total would be the same lie the audit exists to expose.
  *
  * A job counts as running when it has been started (spend logged or progress
- * set) and is not finished. Reconstructed audit jobs never count: they are
- * somebody else's finished work.
+ * set) and is not finished. Whose job it is does not matter: a client's job,
+ * reconstructed from the weekly numbers they sent, is the entire subject of
+ * this report. Finished work drops off by being finished — including every
+ * audit reconstruction, which is complete by definition.
  */
 export function summarizeRunning(estimates, settings) {
   const jobs = [];
   for (const est of estimates || []) {
-    if (est.isAudit) continue;
     if (est.status === 'declined') continue;
     const started = (est.actuals || []).length > 0 || clampProgress(est.progress?.pct) > 0;
     if (!started) continue;
@@ -1123,13 +1124,30 @@ export function checkIntake(input) {
     }
   }
 
-  // Costs recorded but the total is implausibly small next to the contract.
-  if (spentTotal > 0 && spentTotal < budgetTotal * 0.2) {
+  // How far along the job is, when the form asked. Undefined means the old
+  // finished-job form, which is also what 1 means.
+  const progress = input.progress === undefined ? 1 : Math.min(1, Math.max(0, num(input.progress)));
+  const running = progress < 1;
+
+  if (!running && spentTotal > 0 && spentTotal < budgetTotal * 0.2) {
+    // Only worth saying about a job claimed to be finished. On a job the
+    // contractor has just told us is a quarter done, low spend is the expected
+    // answer and flagging it teaches them to ignore this panel.
     out.push({
       level: 'note',
       field: 'spent',
       message: 'Recorded spend is far below the estimate — if the job is unfinished, margin fade '
         + 'will read better than it will turn out.',
+    });
+  }
+
+  if (running && spentTotal >= budgetTotal && budgetTotal > 0) {
+    out.push({
+      level: 'note',
+      field: 'spent',
+      message: `The whole ${formatMoney(toCents(budgetTotal))} budget is spent with the job `
+        + `${Math.round(progress * 100)}% done. Everything from here comes out of profit — worth `
+        + 'checking the figures went in the right rows before it is read that way.',
     });
   }
 

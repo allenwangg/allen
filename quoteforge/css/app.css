@@ -109,6 +109,9 @@ a { color: var(--accent); }
 .right { text-align: right; }
 .nowrap { white-space: nowrap; }
 .hidden { display: none !important; }
+/* .field and .btn both set display, which silently defeats the hidden
+   attribute — a control the code believes is hidden stays on screen. */
+[hidden] { display: none !important; }
 
 /* --------------------------------------------------------------- chrome -- */
 

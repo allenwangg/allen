@@ -2293,6 +2293,9 @@ function wireAuditIntake() {
     $('#aChanges').innerHTML = '';
     addChangeRow();
     for (const id of ['#aTitle', '#aClient', '#aQuoted', '#aPaste']) $(id).value = '';
+    $('#aState').value = 'done';
+    $('#aPct').value = '50';
+    syncAuditState();
     $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
     $('#aChecks').innerHTML = '';
     dlg.showModal();
@@ -2300,6 +2303,7 @@ function wireAuditIntake() {
   };
 
   $('#btnAddChangeRow').onclick = addChangeRow;
+  $('#aState').addEventListener('change', syncAuditState);
 
   // Re-run plausibility on every edit. The audit is only as good as what goes
   // in, and a dropped digit produces a report that is confident and wrong.
@@ -2319,6 +2323,11 @@ function wireAuditIntake() {
     $('#aTitle').value = data.title;
     $('#aClient').value = data.client;
     $('#aQuoted').value = data.quotedTotal || '';
+    // A v2 link can only mean a finished job, and decodeIntake says so; this
+    // just reflects whatever it reported rather than assuming either way.
+    $('#aState').value = data.progress < 1 ? 'running' : 'done';
+    if (data.progress < 1) $('#aPct').value = String(Math.round(data.progress * 100));
+    syncAuditState();
     for (const [key, value] of Object.entries(data.budget)) {
       const el = $(`[data-budget="${key}"]`);
       if (el) el.value = value || '';
@@ -2336,7 +2345,9 @@ function wireAuditIntake() {
       row.querySelector('[data-csigned]').checked = ch.signed;
     }
     if (!data.changes.length) addChangeRow();
-    $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}, ${data.changes.length} change${data.changes.length === 1 ? '' : 's'}. Check it over and build.`;
+    $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}${
+      data.progress < 1 ? `, ${Math.round(data.progress * 100)}% done` : ''}, ${
+      data.changes.length} change${data.changes.length === 1 ? '' : 's'}. Check it over and build.`;
     renderIntakeChecks();
   });
 
@@ -2361,9 +2372,10 @@ function wireAuditIntake() {
       return;
     }
 
+    const running = form.progress < 1;
     const { impliedMarkup } = store.createAuditJob({
       ...form,
-      title: form.title || 'Audited job',
+      title: form.title || (running ? 'Running job' : 'Audited job'),
     });
 
     dlg.close();
@@ -2371,6 +2383,19 @@ function wireAuditIntake() {
     render();
 
     const c = compareActuals(store.active(), store.state.settings);
+    if (running) {
+      // A running job is not a verdict. Report what is still recoverable, which
+      // is the figure the weekly review is built to move.
+      const f = forecastJob(store.active(), store.state.settings);
+      const recoverable = c.contract.atRiskCents + Math.max(0, f.fadeAheadCents || 0);
+      toast(
+        recoverable > 0
+          ? `Added at ${formatPercent(form.progress, 0)} done. ${formatMoney(recoverable)} is still recoverable on it.`
+          : `Added at ${formatPercent(form.progress, 0)} done. Nothing recoverable showing yet.`,
+        { ms: 7000 },
+      );
+      return;
+    }
     const found = Math.max(0, c.overrunCents) + c.contract.atRiskCents;
     toast(
       found > 0
@@ -2382,6 +2407,26 @@ function wireAuditIntake() {
 }
 
 /** Read the dialog into the shape checkIntake and createAuditJob both expect. */
+/**
+ * Finished, or still on site.
+ *
+ * The same twelve questions describe both, and the only thing that changes is
+ * what "actually paid" means and what the numbers are used for afterwards: a
+ * finished job becomes an audit, a running one joins the weekly review.
+ */
+function auditProgress() {
+  if ($('#aState').value !== 'running') return 1;
+  return Math.min(1, Math.max(0, (Number($('#aPct').value) || 0) / 100));
+}
+
+function syncAuditState() {
+  const running = $('#aState').value === 'running';
+  $('#aPctWrap').hidden = !running;
+  $('#aHeading').textContent = running ? 'Read a running job' : 'Audit a finished job';
+  $('#aSpentHead').textContent = running ? 'Paid so far' : 'Actually paid';
+  $('#btnBuildAudit').textContent = running ? 'Add to the review' : 'Build the audit';
+}
+
 function readIntakeForm() {
   const read = (attr) => Object.fromEntries(
     $$(`[data-${attr}]`).map((el) => [el.dataset[attr], Number(el.value) || 0]),
@@ -2390,6 +2435,7 @@ function readIntakeForm() {
     title: $('#aTitle').value.trim(),
     client: $('#aClient').value.trim(),
     quotedTotal: Number($('#aQuoted').value) || 0,
+    progress: auditProgress(),
     budget: read('budget'),
     spent: read('spent'),
     changes: $$('#aChanges .change-row').map((row) => ({

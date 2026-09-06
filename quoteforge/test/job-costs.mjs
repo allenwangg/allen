@@ -561,6 +561,61 @@ check('and the review now carries a verdict for it',
 check('the money it names is unspent, not already gone',
   /has not been spent yet/.test(rv2) || /Nothing to do/.test(rv2));
 
+/* --- a client's RUNNING job, collected by link -------------------------- */
+console.log('\n  a running job collected by link');
+{
+  const filler = await b.newPage();
+  await filler.goto(`http://localhost:${PORT}/quoteforge/intake.html`, { waitUntil: 'networkidle' });
+  await filler.locator('#fState').selectOption('running');
+  await filler.locator('#fPct').fill('40');
+  await filler.locator('#fTitle').fill('Loft conversion — Mill Rd');
+  await filler.locator('#fQuoted').fill('42000');
+  await filler.locator('[data-budget="labor"]').fill('12000');
+  await filler.locator('[data-budget="material"]').fill('9000');
+  await filler.locator('[data-spent="labor"]').fill('7000');
+  await filler.locator('[data-spent="material"]').fill('8600');
+  await filler.locator('[data-ctitle]').first().fill('Rot under tub');
+  await filler.locator('[data-camount]').first().fill('2400');
+  await filler.locator('#btnFinish').click();
+  await filler.waitForTimeout(300);
+  const runLink = await filler.locator('#outLink').inputValue();
+  await filler.close();
+
+  await page.locator('#btnAudit').click();
+  await page.waitForTimeout(300);
+  await page.locator('#aPaste').fill(runLink);
+  await page.waitForTimeout(500);
+  check('the dialog switches itself to a running job',
+    (await page.locator('#aState').inputValue()) === 'running'
+    && (await page.locator('#aPct').inputValue()) === '40');
+  check('it stops calling itself an audit',
+    /running job/i.test(await page.locator('#aHeading').textContent())
+    && /review/i.test(await page.locator('#btnBuildAudit').textContent()));
+  check('the paste note says how far along it is',
+    /40% done/.test(await page.locator('#aPasteNote').textContent()));
+
+  await page.locator('#btnBuildAudit').click();
+  await page.waitForTimeout(700);
+  check('the job arrives with its progress already set',
+    (await page.locator('#progressPct').inputValue()) === '40');
+  // Spend 15,600 at 40% projects to 39,000 against a 21,000 budget.
+  const fc = await page.locator('#forecastPanel').textContent();
+  check('and is forecast, not merely stored', /\$39,000\.00/.test(fc), `(${fc.slice(0, 90)})`);
+  check('the toast reports what is recoverable, not a verdict on a finished job',
+    /still recoverable/.test(await page.locator('#toasts').textContent()));
+
+  await page.locator('.tab[data-tab="jobs"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('#btnReview').click();
+  await page.waitForTimeout(500);
+  const rvRun = await page.locator('#rvPrint').textContent();
+  check('a client job reconstructed from their numbers reaches the weekly review',
+    /Loft conversion — Mill Rd/.test(rvRun),
+    '(this is the entire point of collecting it)');
+  check('it carries both the signature and the change order to chase',
+    /Get the signature \+ Write it up now/.test(rvRun));
+}
+
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
 if (errs.length) console.log('  ERRORS: ' + [...new Set(errs)].join(' | '));
 await b.close(); srv.close();

@@ -1072,6 +1072,28 @@ t('the forecast never throws on a bare estimate', () => {
   eq(f.asOf, null);
 });
 
+t('the unfinished-job note is not shown to someone who already said it is unfinished', () => {
+  const base = { quotedTotal: 40000, budget: { labor: 10000, material: 10000 }, spent: { labor: 1000 } };
+  const finished = checkIntake(base).map((c) => c.message).join(' ');
+  ok(/far below the estimate/.test(finished), 'a finished job with almost no spend is worth a note');
+  const running = checkIntake({ ...base, progress: 0.2 }).map((c) => c.message).join(' ');
+  ok(!/far below the estimate/.test(running),
+    'telling someone their part-built job has not been fully paid for teaches them to ignore the panel');
+});
+
+t('spending the whole budget mid-job is called out at intake', () => {
+  const msgs = checkIntake({
+    quotedTotal: 40000, progress: 0.35,
+    budget: { labor: 10000, material: 10000 }, spent: { labor: 12000, material: 9000 },
+  }).map((c) => c.message).join(' ');
+  ok(/whole \$20,000\.00 budget is spent with the job 35% done/.test(msgs), msgs.slice(0, 160));
+});
+
+t('a finished job is unaffected by the new progress field', () => {
+  const base = { quotedTotal: 40000, budget: { labor: 10000 }, spent: { labor: 9000 } };
+  eq(JSON.stringify(checkIntake(base)), JSON.stringify(checkIntake({ ...base, progress: 1 })));
+});
+
 /* ------------------------------------------------------ weekly review ----- */
 
 // A running job: costedJob's $6,400 direct budget, half done, labor overspent.
@@ -1086,17 +1108,24 @@ const running = (over = {}) => ({
   ...over,
 });
 
-t('only started, unfinished, non-audit jobs are on the weekly review', () => {
+t('the review is every started, unfinished job — including a client\'s', () => {
   const r = summarizeRunning([
     running({ id: 'a', title: 'Running' }),
     { ...running(), id: 'b', title: 'Not started', actuals: [], progress: { pct: 0 } },
     { ...running(), id: 'c', title: 'Finished', progress: { pct: 1 } },
-    { ...running(), id: 'd', title: 'Audited', isAudit: true },
+    // Reconstructed from a contractor's weekly numbers. This is the whole
+    // point of the report, so it must NOT be filtered out as "somebody else's".
+    { ...running(), id: 'd', title: 'Client job', isAudit: true },
     { ...running(), id: 'e', title: 'Declined', status: 'declined' },
     { ...running(), id: 'f', title: 'Progress only', actuals: [] },
   ], S);
-  eq(r.jobs.map((j) => j.title).sort().join(','), 'Progress only,Running');
-  eq(r.count, 2);
+  eq(r.jobs.map((j) => j.title).sort().join(','), 'Client job,Progress only,Running');
+  eq(r.count, 3);
+});
+
+t('a finished audit reconstruction drops off by being finished', () => {
+  const r = summarizeRunning([{ ...running(), isAudit: true, progress: { pct: 1 } }], S);
+  eq(r.count, 0);
 });
 
 t('recoverable counts unsigned work and unspent overrun, never spent overrun', () => {

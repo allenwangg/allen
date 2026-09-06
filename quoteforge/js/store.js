@@ -965,11 +965,15 @@ Object.assign(Store.prototype, {
       createdAt: created,
       updatedAt: created,
       client: { name: input.client || '', email: '', phone: '', address: '' },
-      scopeSummary: 'Reconstructed from the contractor\'s own figures for a margin audit.',
+      scopeSummary: input.progress !== undefined && num(input.progress) < 1
+        ? 'Reconstructed from the contractor\'s own figures for the weekly review.'
+        : 'Reconstructed from the contractor\'s own figures for a margin audit.',
       // Marks this as an audited job rather than one of the operator's own
       // quotes, so the portfolio report includes exactly the right set.
       isAudit: true,
-      progress: { pct: 1, asOf: todayISO() },
+      // A finished job unless they said otherwise. A running job reconstructed
+      // this way is the subject of the weekly review rather than an audit.
+      progress: { pct: input.progress === undefined ? 1 : num(input.progress), asOf: todayISO() },
       // Overhead is pinned alongside contingency and tax. Without it, changing
       // the global overhead rate silently reprices every audit already
       // delivered — and the implied markup above was derived against THIS

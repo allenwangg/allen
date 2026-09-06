@@ -124,7 +124,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-239 unit assertions with no test framework and no install step, plus 292 browser
+249 unit assertions with no test framework and no install step, plus 306 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 `test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
 themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —
@@ -180,3 +180,7 @@ Worth recording, because both were invisible by inspection:
   nothing. Its headline is the opposite of the audit report's: money still in
   play rather than money already lost. Already-spent overrun is deliberately left
   out of that total, because nothing done this week gets it back.
+- **One form for both.** The link a contractor fills in says whether the job is
+  finished or still on site, and how far along it is. Finished, it becomes an
+  audit; running, it joins the weekly review with its forecast already built.
+  Links written before the field existed still read, as finished jobs.

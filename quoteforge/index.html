@@ -447,7 +447,7 @@
 <!-- ================================================= audit intake modal -->
 <dialog id="dlgAudit">
   <header>
-    <h2>Audit a finished job</h2>
+    <h2 id="aHeading">Audit a finished job</h2>
     <span class="spacer"></span>
     <span class="tiny faint">Their numbers, not yours — rough is fine</span>
     <button class="btn sm ghost" data-close>✕</button>
@@ -478,12 +478,24 @@
         <input id="aQuoted" class="num" type="number" step="0.01" min="0" placeholder="42000">
         <span class="hint">The contract total, before tax.</span>
       </div>
+      <div class="field">
+        <label for="aState">Where is it now?</label>
+        <select id="aState">
+          <option value="done">Finished</option>
+          <option value="running">Still on site</option>
+        </select>
+      </div>
+      <div class="field" id="aPctWrap" hidden>
+        <label for="aPct">How far along</label>
+        <input id="aPct" class="num" type="number" min="0" max="100" step="5" value="50">
+        <span class="hint">Per cent. What the forecast scales by.</span>
+      </div>
     </div>
 
     <h3 class="intake-head">What they thought it would cost — and what it did</h3>
     <table class="items intake-table">
       <thead>
-        <tr><th>Category</th><th class="right">Estimated cost</th><th class="right">Actually paid</th></tr>
+        <tr><th>Category</th><th class="right">Estimated cost</th><th class="right" id="aSpentHead">Actually paid</th></tr>
       </thead>
       <tbody id="aCostRows"></tbody>
     </table>

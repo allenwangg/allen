@@ -16,7 +16,16 @@
  * so an older link can never be silently misread by newer code.
  */
 
-export const INTAKE_VERSION = 2;
+export const INTAKE_VERSION = 3;
+
+/**
+ * Older shapes this decoder still accepts.
+ *
+ * Links live in people's inboxes. A contractor who filled the form out last
+ * month and sends it today must not be told their work is unreadable, so v2 is
+ * still read — as a finished job, which is the only thing v2 could describe.
+ */
+const READABLE_VERSIONS = new Set([2, 3]);
 export const INTAKE_CATEGORIES = ['labor', 'material', 'subcontractor', 'equipment', 'other'];
 
 /**
@@ -89,6 +98,20 @@ const round2 = (v) => {
   return Math.round(n * 100) / 100;
 };
 
+/**
+ * Percentage complete, as a fraction 0..1 on both sides of the wire.
+ *
+ * A finished job is 1, which is also what a v2 link means. The wire format
+ * carries whole percent because that is all the form can express and it keeps
+ * the payload short; the API is a fraction because that is what the engine
+ * takes.
+ */
+const clamp01 = (v) => {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return 0;
+  return Math.min(1, Math.max(0, n));
+};
+
 /** Pack a job summary into a compact, URL-safe string. */
 export function encodeIntake(input) {
   const payload = [
@@ -102,6 +125,9 @@ export function encodeIntake(input) {
       .filter((c) => Number(c.amount))
       .slice(0, MAX_CHANGES)
       .map((c) => [String(c.title || '').slice(0, MAX_TEXT), round2(c.amount), c.signed ? 1 : 0]),
+    // v3: how far along the job is, in whole percent. Absent means finished,
+    // because that is what every link written before this field meant.
+    Math.round(clamp01(input.progress === undefined ? 1 : input.progress) * 100),
   ];
   const body = toBase64Url(JSON.stringify(payload));
   return checksum(body) + body;
@@ -127,9 +153,9 @@ export function decodeIntake(encoded) {
   } catch {
     return null;
   }
-  if (!Array.isArray(parsed) || parsed[0] !== INTAKE_VERSION) return null;
+  if (!Array.isArray(parsed) || !READABLE_VERSIONS.has(parsed[0])) return null;
 
-  const [, title, client, quoted, budgetArr, spentArr, changesArr] = parsed;
+  const [version, title, client, quoted, budgetArr, spentArr, changesArr, progress] = parsed;
   if (!Array.isArray(budgetArr) || !Array.isArray(spentArr)) return null;
 
   // Every cap the encoder applies is re-applied here, because a hostile link
@@ -140,9 +166,13 @@ export function decodeIntake(encoded) {
   );
 
   return {
+    version,
     title: text(title),
     client: text(client),
     quotedTotal: round2(quoted),
+    // A v2 link has no progress field. Defaulting to 0 would silently turn
+    // every finished job in someone's inbox into a job that had not started.
+    progress: version < 3 ? 1 : clamp01(Number(progress) / 100),
     budget: unpack(budgetArr),
     spent: unpack(spentArr),
     changes: (Array.isArray(changesArr) ? changesArr : [])

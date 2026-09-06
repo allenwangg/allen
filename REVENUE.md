@@ -80,6 +80,11 @@ monthly check for an average of six months, that is another ~$16k — the same r
 again, from people who already said yes once, with no new distribution. That ratio is a
 hypothesis until three people have paid a second month; treat it as such.
 
+**The collection exists too.** The intake link now carries "still on site" and a
+percentage complete, so a weekly update costs the contractor the same ten minutes
+as the original audit form and costs you a paste. That is what keeps a $200/mo
+service from consuming $200/mo of your time.
+
 **The fulfilment exists.** *Jobs → Job review — this week* prints the deliverable:
 every running job, what is still recoverable, and one instruction each. Reading it
 and writing the covering note is the whole hour.

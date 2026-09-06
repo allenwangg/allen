@@ -189,5 +189,44 @@ t('a link longer than any real job is refused before parsing', () => {
   eq(decodeIntake('A'.repeat(20000)), null);
 });
 
+/* --- v3: how far along the job is --------------------------------------- */
+
+t('progress round-trips, and an omitted one means finished', () => {
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, progress: 0.45 })).progress, 0.45);
+  eq(decodeIntake(encodeIntake(SAMPLE)).progress, 1,
+    'a form that never asked can only have meant a finished job:');
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, progress: 0 })).progress, 0);
+});
+
+t('progress is clamped on the way in and on the way out', () => {
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, progress: 1.7 })).progress, 1);
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, progress: -3 })).progress, 0);
+  eq(decodeIntake(encodeIntake({ ...SAMPLE, progress: 'half' })).progress, 0);
+  const hostile = decodeIntake(forge([3, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], 99999]));
+  eq(hostile.progress, 1, 'a forged percentage must not escape the range:');
+  eq(decodeIntake(forge([3, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], 'x'])).progress, 0);
+});
+
+t('a link written before progress existed still reads, as a finished job', () => {
+  // Exactly what encodeIntake produced at v2: no eighth element at all.
+  const v2 = forge([2, 'Kitchen — Alder St', 'Dana', 42000,
+    [12000, 9000, 0, 0, 0], [15200, 9400, 0, 0, 0], [['Rot', 2400, 0]]]);
+  const got = decodeIntake(v2);
+  ok(got !== null, 'a v2 link in somebody\'s inbox must not become unreadable');
+  eq(got.version, 2);
+  eq(got.progress, 1);
+  eq(got.quotedTotal, 42000);
+  eq(got.changes[0].title, 'Rot');
+});
+
+t('a version this code has never seen is refused, not guessed at', () => {
+  eq(decodeIntake(forge([1, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], []])), null);
+  eq(decodeIntake(forge([4, 'j', '', 1000, [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [], 50])), null);
+});
+
+t('the extra field does not make the link unwieldy', () => {
+  ok(encodeIntake({ ...SAMPLE, progress: 0.45 }).length < 400);
+});
+
 console.log(`\n  intake link: ${passed} passed, ${failed} failed\n`);
 if (failed) { failures.forEach((f) => console.log(`  FAIL  ${f}\n`)); process.exit(1); }

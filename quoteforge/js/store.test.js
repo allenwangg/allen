@@ -7,7 +7,7 @@
  */
 import { Store, migrate, newEstimate, uid, STORAGE_KEY } from './store.js';
 import {
-  priceEstimate, defaultSettings, summarizeContract, compareActuals,
+  priceEstimate, defaultSettings, summarizeContract, compareActuals, summarizeRunning,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -911,6 +911,20 @@ t('a duplicate starts unbegun and an audited job is finished', () => {
   ok(dup, 'the duplicate must not inherit progress — it is a new job');
   s.createAuditJob({ title: 'Done job', quotedTotal: 1000, budget: { labor: 500 }, spent: { labor: 600 }, changes: [] });
   eq(s.active().progress.pct, 1, 'an audited job is by definition complete:');
+});
+
+t('a job reconstructed mid-flight keeps the progress it was given', () => {
+  const s = mkStore();
+  s.createAuditJob({
+    title: 'Running job', quotedTotal: 20000, progress: 0.4,
+    budget: { labor: 6000, material: 4000 }, spent: { labor: 3000 }, changes: [],
+  });
+  const est = s.active();
+  eq(est.progress.pct, 0.4);
+  ok(/weekly review/.test(est.scopeSummary), 'an unfinished reconstruction is not an audit:');
+  ok(est.isAudit, 'it is still built from their figures, not the operator\'s own quote');
+  // And it reaches the weekly review, which is the reason for collecting it.
+  eq(summarizeRunning(s.state.estimates, s.state.settings).count, 1);
 });
 
 
