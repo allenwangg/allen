@@ -131,26 +131,55 @@ free app. That order matters.
 The audit ends with a found-money figure for three finished jobs. The next sentence
 is the one that matters: *"Which jobs do you have running right now?"*
 
-Offer the monthly check (`retainer` in `AUDIT_CONFIG`; hidden until an email or link
-is set). What they do: once a week, they add what they have paid out on each live job
-in the Costs tab and drag the progress slider. What you do: read the forecast panel,
-and reply with one line per job — where it finishes, which trade is ahead of pace,
-and whether a change order needs writing this week. First month included with the
-audit, so the renewal decision happens after it has caught something.
-
-What they send: the same `intake.html` link, with *Still on site* chosen and a
-rough percentage complete. You paste it into **Audit a job** exactly as you do
-for a finished one; it arrives forecast and lands on the review. Nothing about
-the weekly cadence needs a backend either.
-
-What you send: **Jobs → Job review — this week**. One page, per running job,
-with the instruction already written. Read it before you send it — the app
-proposes the action, you decide whether it survives contact with what you know
-about the client.
+Offer the monthly check (`retainer` in `AUDIT_CONFIG`; hidden until an email or
+link is set). First month included with the audit, so the renewal decision
+happens after it has caught something.
 
 Do not sell it before the audit has landed. The audit is what makes the forecast
 credible: they have just watched the same arithmetic explain three jobs they
 remember.
+
+### The week, as an actual procedure
+
+The whole service is one hour, once a week, on a fixed day. Pick the day and do
+not move it — a check that arrives at random is a check they stop reading.
+
+**Friday, them (10 minutes).** One `intake.html` link per running job, with
+*Still on site* ticked and a rough percentage complete. Send the same link every
+week; they fill it in fresh each time. Two numbers change: paid so far, and how
+far along.
+
+**Monday, you (under an hour for five jobs).**
+
+1. Paste each link into **Audit a job**. It arrives forecast and lands on the
+   review. Delete last week's copy of that job first, or you will read a stale
+   one — they are separate jobs to the app, not versions of one.
+2. Open **Jobs → Job review — this week** and read it before you print it. The
+   app proposes an action; you decide whether it survives what you know about
+   the client. A change order you would not actually ask for is worse than
+   silence, because they will act on it and lose the room.
+3. Print to PDF, write three sentences at the top of the email — the single
+   biggest number, the one job to deal with, and what you need from them — and
+   send it.
+
+**What to do when the numbers do not arrive.** They will not, some weeks. Send
+the review anyway, built from last week's figures, and say plainly that it is
+last week's. A report that quietly ages is how a paid service stops being
+trusted. Two silent weeks in a row is a conversation, not a third report.
+
+**What ends the engagement well.** When a contractor's jobs stop showing
+anything recoverable for a month, say so and offer to stop. You will be right
+about the arithmetic and they will remember it; a service that tells you when
+you no longer need it is the one people come back to and recommend.
+
+### The first month, specifically
+
+Week 1 is the only one that is any real work: you are agreeing what counts as a
+job, what their overhead rate actually is (Settings → the rate the audit was
+built with), and how they want the email. Weeks 2 to 4 should take the hour.
+If week 3 still takes three hours, the offer is priced wrong or the contractor
+has more jobs than the service assumes — fix the price or the scope then,
+not at renewal.
 
 ## 6. First-week checklist
 
