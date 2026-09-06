@@ -13,6 +13,7 @@ import {
   marginToMarkup, markupToMargin, priceForTargetMargin, discountHeadroom,
   solveUniformMarkup, isPassThrough, summarizeContract, priceChangeOrder, compareActuals,
   solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, MIN_PROGRESS,
+  summarizeRunning,
   buildSchedule, toCents,
 } from './pricing.js';
 import { Store, safeStorage, DEFAULT_TERMS } from './store.js';
@@ -23,7 +24,7 @@ import {
 } from './pricebook.js';
 import {
   renderProposal, proposalAsText, renderChangeOrder, renderContractStatement,
-  renderAuditReport, renderPortfolioReport, esc,
+  renderAuditReport, renderPortfolioReport, renderProgressReport, esc,
 } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -1138,6 +1139,22 @@ function wireJobs() {
       portfolio, company: store.state.company, settings: store.state.settings,
     });
     document.body.dataset.print = 'pf';
+    requestAnimationFrame(() => {
+      window.print();
+      delete document.body.dataset.print;
+    });
+  };
+
+  $('#btnReview').onclick = () => {
+    const review = summarizeRunning(store.state.estimates, store.state.settings);
+    if (review.count === 0) {
+      toast('No job is running yet — log a cost or set how far along one is.', { bad: true });
+      return;
+    }
+    $('#rvPrint').innerHTML = renderProgressReport({
+      review, company: store.state.company, settings: store.state.settings,
+    });
+    document.body.dataset.print = 'rv';
     requestAnimationFrame(() => {
       window.print();
       delete document.body.dataset.print;

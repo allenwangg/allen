@@ -138,6 +138,11 @@ and reply with one line per job — where it finishes, which trade is ahead of p
 and whether a change order needs writing this week. First month included with the
 audit, so the renewal decision happens after it has caught something.
 
+What you send: **Jobs → Job review — this week**. One page, per running job,
+with the instruction already written. Read it before you send it — the app
+proposes the action, you decide whether it survives contact with what you know
+about the client.
+
 Do not sell it before the audit has landed. The audit is what makes the forecast
 credible: they have just watched the same arithmetic explain three jobs they
 remember.

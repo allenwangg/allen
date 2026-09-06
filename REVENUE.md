@@ -80,6 +80,10 @@ monthly check for an average of six months, that is another ~$16k — the same r
 again, from people who already said yes once, with no new distribution. That ratio is a
 hypothesis until three people have paid a second month; treat it as such.
 
+**The fulfilment exists.** *Jobs → Job review — this week* prints the deliverable:
+every running job, what is still recoverable, and one instruction each. Reading it
+and writing the covering note is the whole hour.
+
 **Why it is not just "a paid tier":** nothing here needs a server. The contractor keeps
 using the free app; what they pay for is someone reading the forecast every week and
 telling them which change order to write. The software is the fulfilment, not the product.

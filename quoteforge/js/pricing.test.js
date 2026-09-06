@@ -11,7 +11,7 @@ import {
   buildSchedule, defaultSettings, defaultMilestones, solveUniformMarkup, isPassThrough,
   priceChangeOrder, summarizeContract, newChangeOrder, compareActuals, allocateLinePrices,
   solveDiscountForTotal, summarizePortfolio, checkIntake, forecastJob, clampProgress,
-  MIN_PROGRESS,
+  MIN_PROGRESS, summarizeRunning,
 } from './pricing.js';
 
 let passed = 0, failed = 0;
@@ -1070,6 +1070,158 @@ t('the forecast never throws on a bare estimate', () => {
   eq(f.status, 'nothing-spent');
   eq(f.progress, 0);
   eq(f.asOf, null);
+});
+
+/* ------------------------------------------------------ weekly review ----- */
+
+// A running job: costedJob's $6,400 direct budget, half done, labor overspent.
+const running = (over = {}) => ({
+  ...costedJob([
+    { date: '2026-05-01', category: 'labor', amount: 1500 },
+    { date: '2026-05-08', category: 'material', amount: 2000 },
+  ]),
+  id: 'r1',
+  title: 'Kitchen',
+  progress: { pct: 0.5, asOf: '2026-05-10' },
+  ...over,
+});
+
+t('only started, unfinished, non-audit jobs are on the weekly review', () => {
+  const r = summarizeRunning([
+    running({ id: 'a', title: 'Running' }),
+    { ...running(), id: 'b', title: 'Not started', actuals: [], progress: { pct: 0 } },
+    { ...running(), id: 'c', title: 'Finished', progress: { pct: 1 } },
+    { ...running(), id: 'd', title: 'Audited', isAudit: true },
+    { ...running(), id: 'e', title: 'Declined', status: 'declined' },
+    { ...running(), id: 'f', title: 'Progress only', actuals: [] },
+  ], S);
+  eq(r.jobs.map((j) => j.title).sort().join(','), 'Progress only,Running');
+  eq(r.count, 2);
+});
+
+t('recoverable counts unsigned work and unspent overrun, never spent overrun', () => {
+  // Labor: $1500 of $2400 at 50% → finishes $3000, $600 over, none spent yet.
+  const r = summarizeRunning([running()], S);
+  const j = r.jobs[0];
+  eq(j.unspentOverrunCents, 60000);
+  eq(j.atRiskCents, 0);
+  eq(j.recoverableCents, 60000);
+  eq(r.recoverableCents, 60000);
+
+  // Now spend past budget: the part already gone stops being recoverable.
+  const blown = summarizeRunning([running({
+    actuals: [
+      { date: '2026-05-01', category: 'labor', amount: 2600 },   // $200 over already
+      { date: '2026-05-08', category: 'material', amount: 2000 },
+    ],
+  })], S);
+  const b = blown.jobs[0];
+  ok(b.unspentOverrunCents < b.projectedCostCents, 'sanity');
+  eq(b.unspentOverrunCents, 260000, 'labor finishes $5200 → $2800 over, $200 of it already spent:');
+  ok(b.unspentOverrunCents === b.recoverableCents);
+});
+
+t('unsigned change-order work is recoverable and sorts to the top', () => {
+  const withCo = {
+    ...running({ id: 'x', title: 'Bath' }),
+    changeOrders: [{
+      id: 'co1', number: 'CO-01', status: 'draft', title: 'Rot',
+      items: [{ id: 'i1', description: 'Repair', qty: 1, unitCost: 3000, category: 'labor', markup: null }],
+    }],
+  };
+  const r = summarizeRunning([running(), withCo], S);
+  eq(r.jobs[0].title, 'Bath', 'the job with unsigned work must be read first:');
+  ok(r.jobs[0].atRiskCents > 0);
+  eq(r.jobs[0].action, 'sign', 'a signature is the fastest money on the list:');
+  eq(r.atRiskCents, r.jobs[0].atRiskCents);
+  eq(r.recoverableCents, r.jobs[0].recoverableCents + r.jobs[1].recoverableCents);
+});
+
+t('a job needing two things reports both, so neither claims the whole figure', () => {
+  const j = summarizeRunning([{
+    ...running({
+      actuals: [{ date: '2026-05-01', category: 'labor', amount: 2400 }],  // heading under the floor
+    }),
+    changeOrders: [{
+      id: 'co1', number: 'CO-01', status: 'draft', title: 'Rot',
+      items: [{ id: 'i1', description: 'Repair', qty: 1, unitCost: 500, category: 'labor', markup: null }],
+    }],
+  }], S).jobs[0];
+  eq(j.actions.join(','), 'sign,change-order',
+    'a signature worth $500 must not be the label on $2,400 of projected overrun:');
+  eq(j.action, 'sign', 'the primary action is still the fastest money:');
+  ok(j.atRiskCents > 0 && j.unspentOverrunCents > 0);
+  eq(j.recoverableCents, j.atRiskCents + j.unspentOverrunCents);
+});
+
+t('a job on pace has no actions at all', () => {
+  const j = summarizeRunning([running({
+    actuals: [
+      { date: '2026-05-01', category: 'labor', amount: 1200 },
+      { date: '2026-05-08', category: 'material', amount: 2000 },
+    ],
+  })], S).jobs[0];
+  eq(j.actions.length, 0);
+  eq(j.action, 'ok');
+});
+
+t('a job with spend but no progress asks for the number instead of guessing', () => {
+  const r = summarizeRunning([running({ progress: { pct: 0 } })], S);
+  const j = r.jobs[0];
+  eq(j.needsProgress, true);
+  eq(j.action, 'set-progress');
+  eq(j.projectedCostCents, null);
+  eq(j.unspentOverrunCents, 0, 'unknown is not zero, but it cannot be totalled either:');
+  eq(r.needsProgress, 1);
+  eq(r.recoverableCents, 0);
+});
+
+t('a job heading under the floor is flagged and told to write the change order', () => {
+  const r = summarizeRunning([running({
+    actuals: [{ date: '2026-05-01', category: 'labor', amount: 2400 }],
+  })], S);
+  eq(r.jobs[0].status, 'bad');
+  eq(r.jobs[0].action, 'change-order');
+  eq(r.belowFloor, 1);
+  ok(r.jobs[0].projectedMargin < S.floorMargin);
+});
+
+t('a job on pace needs nothing done to it', () => {
+  const r = summarizeRunning([running({
+    actuals: [
+      { date: '2026-05-01', category: 'labor', amount: 1200 },
+      { date: '2026-05-08', category: 'material', amount: 2000 },
+    ],
+  })], S);
+  eq(r.jobs[0].action, 'ok');
+  eq(r.jobs[0].recoverableCents, 0);
+  eq(r.belowFloor, 0);
+});
+
+t('an early job is counted as low confidence rather than trusted', () => {
+  const r = summarizeRunning([running({
+    progress: { pct: 0.15 },
+    actuals: [{ date: '2026-05-01', category: 'material', amount: 1200 }],
+  })], S);
+  eq(r.lowConfidence, 1);
+  eq(r.jobs[0].confidence, 'low');
+});
+
+t('an empty week is a valid week, not a crash', () => {
+  const r = summarizeRunning([], S);
+  eq(r.count, 0);
+  eq(r.recoverableCents, 0);
+  eq(r.needsProgress, 0);
+  ok(Array.isArray(r.jobs));
+  const r2 = summarizeRunning(undefined, S);
+  eq(r2.count, 0);
+});
+
+t('the totals reconcile to the per-job figures', () => {
+  const r = summarizeRunning([running({ id: 'a' }), running({ id: 'b', progress: { pct: 0.25 } })], S);
+  eq(r.recoverableCents, r.jobs.reduce((a, j) => a + j.recoverableCents, 0));
+  eq(r.spentCents, r.jobs.reduce((a, j) => a + j.spentCents, 0));
+  eq(r.atRiskCents + r.unspentOverrunCents, r.recoverableCents);
 });
 
 /* -------------------------------------------------------------- report ---- */

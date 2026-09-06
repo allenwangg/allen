@@ -937,6 +937,123 @@ export function summarizePortfolio(estimates, settings) {
   };
 }
 
+/* ======================================================= weekly review ==== */
+
+/**
+ * The jobs that are running right now, read the way a weekly check reads them.
+ *
+ * summarizePortfolio looks backwards across finished jobs and totals what was
+ * lost. This looks at the jobs still on site and totals what has NOT been lost
+ * yet — the money a signature or a change order this week can still keep.
+ * Two things make up that figure, and they are recoverable for different
+ * reasons:
+ *
+ *   - unsigned change-order work, recoverable by getting the signature while
+ *     the client still needs the crew in the building; and
+ *   - projected overrun that has not been spent yet, recoverable by writing up
+ *     the extra work causing it before the money goes out the door.
+ *
+ * Already-spent overrun is deliberately excluded. It is real, it is on the
+ * Costs tab, and nothing done this week gets it back — putting it in a
+ * "recoverable" total would be the same lie the audit exists to expose.
+ *
+ * A job counts as running when it has been started (spend logged or progress
+ * set) and is not finished. Reconstructed audit jobs never count: they are
+ * somebody else's finished work.
+ */
+export function summarizeRunning(estimates, settings) {
+  const jobs = [];
+  for (const est of estimates || []) {
+    if (est.isAudit) continue;
+    if (est.status === 'declined') continue;
+    const started = (est.actuals || []).length > 0 || clampProgress(est.progress?.pct) > 0;
+    if (!started) continue;
+    if (clampProgress(est.progress?.pct) >= 1) continue;
+
+    const f = forecastJob(est, settings);
+    const contract = f.costed.contract;
+    const atRisk = contract.atRiskCents;
+    // fadeAhead is null when no projection could be made; unknown is not zero,
+    // but it cannot be added to a total either.
+    const unspentOverrun = f.fadeAheadCents === null ? 0 : Math.max(0, f.fadeAheadCents);
+
+    const actions = nextActions({ atRisk, unspentOverrun, f });
+
+    jobs.push({
+      id: est.id,
+      title: est.title || 'Untitled',
+      number: est.number || '',
+      client: est.client?.name || '',
+      progress: f.progress,
+      needsProgress: f.status === 'too-early',
+      confidence: f.confidence,
+      status: f.status,
+      spentCents: f.costed.spentCents,
+      budgetCents: f.costed.budgetCents,
+      projectedCostCents: f.projectedCostCents,
+      projectedMargin: f.projectedMargin,
+      estimatedMargin: f.costed.estimatedMargin,
+      worstCategory: f.worstCategory,
+      worstAheadCents: f.worstCategory ? f.byCategory[f.worstCategory].aheadCents : 0,
+      atRiskCents: atRisk,
+      unapprovedCount: contract.unapprovedCount,
+      unspentOverrunCents: unspentOverrun,
+      recoverableCents: atRisk + unspentOverrun,
+      actions,
+      // The single most urgent one, for a column with room for one thing.
+      action: actions[0] || 'ok',
+    });
+  }
+
+  // Most recoverable first: the reader has limited time this week and should
+  // meet the job where an hour is worth the most.
+  jobs.sort((a, b) => b.recoverableCents - a.recoverableCents
+    || b.atRiskCents - a.atRiskCents
+    || a.title.localeCompare(b.title));
+
+  const sum = (key) => jobs.reduce((a, j) => a + j[key], 0);
+  const floor = Number(settings?.floorMargin) || 0;
+
+  return {
+    jobs,
+    count: jobs.length,
+    recoverableCents: sum('recoverableCents'),
+    atRiskCents: sum('atRiskCents'),
+    unspentOverrunCents: sum('unspentOverrunCents'),
+    spentCents: sum('spentCents'),
+    budgetCents: sum('budgetCents'),
+    /** Jobs with spend logged but no progress set — nothing can be projected. */
+    needsProgress: jobs.filter((j) => j.needsProgress).length,
+    /** Jobs projected to finish under the floor margin. */
+    belowFloor: jobs.filter((j) => j.projectedMargin !== null && j.projectedMargin < floor).length,
+    lowConfidence: jobs.filter((j) => j.confidence === 'low').length,
+    floorMargin: floor,
+    targetMargin: Number(settings?.targetMargin) || 0,
+  };
+}
+
+/**
+ * Everything this job needs this week, most urgent first.
+ *
+ * A list rather than one verdict, because a job can need two unrelated things
+ * and reporting only the first misattributes the money: a job carrying $800 of
+ * unsigned work and $7,000 of unspent overrun is not "get the signature", and
+ * labelling it that way tells the reader the whole figure is one phone call.
+ *
+ * Ordered by how fast the money moves, not by size. A signature can be had
+ * today on work already done; a change order for work still coming needs a
+ * conversation first; and a job merely trending warm needs watching, not a
+ * phone call that spends credibility.
+ */
+function nextActions({ atRisk, unspentOverrun, f }) {
+  const out = [];
+  if (atRisk > 0) out.push('sign');
+  if (f.status === 'too-early') out.push('set-progress');
+  else if (f.status === 'bad') out.push('change-order');
+  else if (unspentOverrun > 0) out.push('watch');
+  return out;
+}
+
 /* ==================================================== intake plausibility == */
 
 /**

@@ -946,6 +946,185 @@ export function renderPortfolioReport({ portfolio: pf, company, settings }) {
 </div>`;
 }
 
+/* ================================================== weekly job review ===== */
+
+const ACTION_COPY = {
+  sign: {
+    label: 'Get the signature',
+    tone: 'urgent',
+    why: (j) => `${formatMoney(j.atRiskCents)} of work has been done or scheduled with nothing signed behind it.
+      This is the fastest money on the list: the client needs the crew in the building this week,
+      which is the only moment the conversation is easy.`,
+  },
+  'change-order': {
+    label: 'Write it up now',
+    tone: 'urgent',
+    why: (j) => `At the current rate this job finishes under the floor margin. ${formatMoney(j.unspentOverrunCents)}
+      of the overrun has not been spent yet — if a client request is behind it, that is a change
+      order to write this week, not a number to explain at the final invoice.`,
+  },
+  watch: {
+    label: 'Watch it',
+    tone: 'warn',
+    why: (j) => `Running ahead of pace but still above the floor. ${formatMoney(j.unspentOverrunCents)} of the
+      projected overrun is still unspent, so it stays recoverable while the work is live.`,
+  },
+  'set-progress': {
+    label: 'Tell me how far along',
+    tone: 'ask',
+    why: () => `Costs are logged but there is no percentage complete, so nothing can be projected.
+      A rough number — a quarter, half, nearly done — is enough.`,
+  },
+  ok: {
+    label: 'Nothing to do',
+    tone: 'ok',
+    why: () => 'Spending in line with the work getting built, and everything extra is signed.',
+  },
+};
+
+/**
+ * The weekly job review — the deliverable of the monthly check.
+ *
+ * The audit report is a post-mortem and its headline is money already lost.
+ * This document's headline is the opposite: money still in play. Every figure
+ * on it is recoverable this week, which is the only reason a contractor would
+ * read it on a Monday morning instead of filing it.
+ *
+ * It is deliberately one page and mostly instructions. A weekly report that
+ * takes ten minutes to interpret does not get read a third time.
+ */
+export function renderProgressReport({ review: rv, company, settings }) {
+  const accent = company.accent || '#c2410c';
+
+  if (rv.count === 0) {
+    return `
+<div style="--pr-accent:${esc(accent)}">
+  ${reviewHead(company, rv)}
+  <div class="pr-section pr-keep">
+    <h3>Nothing running</h3>
+    <p>No job has costs logged or a percentage complete against it, so there is nothing to project.
+      A job joins this review the moment its first cost is logged.</p>
+  </div>
+</div>`;
+  }
+
+  const rows = rv.jobs.map((j) => {
+    const label = j.actions.length
+      ? j.actions.map((a) => ACTION_COPY[a].label).join(' + ')
+      : ACTION_COPY.ok.label;
+    return `
+    <tr>
+      <td>
+        ${esc(j.title)}
+        ${j.client ? `<div style="font-size:9.5px;color:#a8a29e">${esc(j.client)}</div>` : ''}
+      </td>
+      <td class="r">${j.needsProgress ? '—' : formatPercent(j.progress, 0)}</td>
+      <td class="r">${j.projectedCostCents === null ? '—' : formatMoney(j.projectedCostCents)}</td>
+      <td class="r" style="${j.projectedMargin !== null && j.projectedMargin < rv.floorMargin
+        ? 'color:#b91c1c;font-weight:600' : ''}">${j.projectedMargin === null ? '—' : formatPercent(j.projectedMargin)}</td>
+      <td class="r" style="${j.recoverableCents > 0 ? 'font-weight:700' : 'color:#a8a29e'}">${formatMoney(j.recoverableCents)}</td>
+      <td>${label}</td>
+    </tr>`;
+  }).join('');
+
+  // Only jobs that need something done get a paragraph. A list where every
+  // entry says "nothing to do" trains the reader to skip the list.
+  const actionable = rv.jobs.filter((j) => j.actions.length > 0);
+  const actions = actionable.map((j) => {
+    const trade = j.worstCategory ? CATEGORY_LABELS[j.worstCategory] : null;
+    const worst = j.actions.map((a) => ACTION_COPY[a].tone).includes('urgent') ? 'urgent'
+      : j.actions.map((a) => ACTION_COPY[a].tone).includes('warn') ? 'warn' : 'ask';
+    // One paragraph per thing the job needs. A job that needs two things gets
+    // two, so neither instruction inherits the other's dollar figure.
+    const paras = j.actions.map((a) => {
+      const copy = ACTION_COPY[a];
+      const tradeNote = trade && j.worstAheadCents > 0 && (a === 'change-order' || a === 'watch')
+        ? ` ${trade} is the trade running ahead: ${formatMoney(j.worstAheadCents)} more spent than
+            ${formatPercent(j.progress, 0)} of its budget.` : '';
+      return `<p style="margin:3px 0 0"><strong>${copy.label}.</strong> ${copy.why(j)}${tradeNote}</p>`;
+    }).join('');
+    return `
+    <div class="pr-keep" style="margin-bottom:12px;padding-left:10px;border-left:3px solid ${
+      worst === 'urgent' ? '#b91c1c' : worst === 'warn' ? '#b45309' : '#d6d3d1'}">
+      <div style="font-weight:700">${esc(j.title)}</div>
+      ${paras}
+    </div>`;
+  }).join('');
+
+  return `
+<div style="--pr-accent:${esc(accent)}">
+  ${reviewHead(company, rv)}
+
+  <div class="pr-section pr-keep">
+    <h3>Still yours to keep</h3>
+    <div class="pr-totals" style="width:100%;margin-left:0">
+      <div class="row grand">
+        <span>Recoverable this week, across ${rv.count} running job${rv.count === 1 ? '' : 's'}</span>
+        <span class="v">${formatMoney(rv.recoverableCents)}</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#57534e;margin:8px 0 0">
+      ${formatMoney(rv.atRiskCents)} is work done with nothing signed behind it, and
+      ${formatMoney(rv.unspentOverrunCents)} is projected overrun that has not been spent yet.
+      Money already spent past budget is not counted here — it is real, but nothing done this
+      week gets it back.
+    </p>
+  </div>
+
+  <div class="pr-section">
+    <h3>Job by job</h3>
+    <table class="pr-table">
+      <thead><tr>
+        <th>Job</th><th class="r">Done</th><th class="r">Finishes at</th>
+        <th class="r">Margin</th><th class="r">Recoverable</th><th>This week</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+
+  ${actionable.length ? `
+  <div class="pr-section">
+    <h3>What to do this week</h3>
+    ${actions}
+  </div>` : `
+  <div class="pr-section pr-keep">
+    <h3>What to do this week</h3>
+    <p><strong>Nothing.</strong> Every running job is spending in line with the work getting built
+      and everything extra is signed. That is worth knowing too — it means the estimate that
+      produced these jobs is holding.</p>
+  </div>`}
+
+  <div class="pr-section pr-terms">
+    <p style="margin:0">
+      A projection is what has been spent, scaled by the percentage complete supplied for each job.
+      Early in a job it over-reads, because materials are bought before the labor that installs
+      them.${rv.lowConfidence ? ` ${rv.lowConfidence} job${rv.lowConfidence === 1 ? ' is' : 's are'}
+      under a quarter done and should be read as a warning rather than a figure.` : ''}${
+      rv.needsProgress ? ` ${rv.needsProgress} job${rv.needsProgress === 1 ? ' has' : 's have'} costs
+      logged but no percentage complete, so nothing could be projected there.` : ''}
+      Overhead is applied at the stated rate rather than measured.
+    </p>
+  </div>
+</div>`;
+}
+
+function reviewHead(company, rv) {
+  return `
+  <div class="pr-head">
+    <div>
+      ${company.logoDataUrl
+        ? `<img class="logo" src="${esc(company.logoDataUrl)}" alt="${esc(company.name)}">`
+        : `<div class="co-name">${esc(company.name || 'Job review')}</div>`}
+      <div class="co-meta">${[company.phone, company.email].filter(Boolean).map(esc).join(' · ')}</div>
+    </div>
+    <div class="pr-doc">
+      <div class="doc-kind">Job review</div>
+      <div class="doc-no">${rv.count} running</div>
+      <div class="co-meta" style="margin-top:6px">Week of ${fmtDate(todayISO())}</div>
+    </div>
+  </div>`;
+}
+
 /**
  * The recommendation. Derived from which leak dominates and whether it recurs,
  * because those two facts imply completely different advice — and getting them

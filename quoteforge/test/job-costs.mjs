@@ -503,6 +503,64 @@ await page.waitForTimeout(300);
 check('under the minimum progress it declines to project',
   /Set how far along/.test(await page.locator('#forecastPanel').textContent()));
 
+/* --- the weekly review: the deliverable of the monthly check ------------ */
+console.log('\n  weekly job review');
+// State here: audited jobs (finished, reconstructed) plus the job built above,
+// which has spend logged and progress at 5%.
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(350);
+await page.locator('#btnReview').click();
+await page.waitForTimeout(600);
+const rv = await page.locator('#rvPrint').textContent();
+// Count JOBS asked for progress, from the table's own rows. Counting string
+// occurrences double-counts: every verdict appears in the table and again as
+// an instruction paragraph.
+const asked = () => page.evaluate(() => [...document.querySelectorAll('#rvPrint tbody tr')]
+  .filter((tr) => /Tell me how far along/.test(tr.lastElementChild.textContent)).length);
+const askedBefore = await asked();
+check('the review renders', /Job review/.test(rv), `(${rv.slice(0, 80)})`);
+check('its headline is money still recoverable', /Recoverable this week/.test(rv));
+check('reconstructed audit jobs stay off it — that is somebody else\'s finished work',
+  !/Deck — 7 Oak/.test(rv) && !/Bathroom — Cedar Ave/.test(rv));
+check('a job with spend but no usable progress is asked for the number',
+  askedBefore >= 1, `(${askedBefore} such jobs)`);
+check('it states what is excluded from the recoverable total',
+  /already spent past budget is not counted/.test(rv));
+
+await page.evaluate(() => { document.body.dataset.print = 'rv'; });
+await page.emulateMedia({ media: 'print' });
+await page.waitForTimeout(200);
+check('the review is the only thing on the page when printing',
+  await page.evaluate(() => {
+    const vis = (el) => el && getComputedStyle(el).display !== 'none';
+    return vis(document.querySelector('#rvPrintShell'))
+      && !vis(document.querySelector('#pfPrintShell'))
+      && !vis(document.querySelector('#pane-costs'));
+  }), '(a stale print target would put two documents in one PDF)');
+const rvPdf = await page.pdf({ format: 'Letter', printBackground: true,
+  margin: { top: '0.5in', bottom: '0.5in', left: '0.5in', right: '0.5in' } });
+check('it prints to a PDF you can send', rvPdf.length > 15000, `(${rvPdf.length} bytes)`);
+await page.emulateMedia({ media: 'screen' });
+await page.evaluate(() => { delete document.body.dataset.print; });
+
+// Make the job projectable and it moves from a question to an instruction.
+await page.locator('.tab[data-tab="costs"]').click();
+await page.waitForTimeout(250);
+await page.locator('#progressPct').fill('50');
+await page.waitForTimeout(300);
+await page.locator('.tab[data-tab="jobs"]').click();
+await page.waitForTimeout(250);
+await page.locator('#btnReview').click();
+await page.waitForTimeout(500);
+const rv2 = await page.locator('#rvPrint').textContent();
+const askedAfter = await asked();
+check('setting progress turns that job from a question into an instruction',
+  askedAfter === askedBefore - 1, `(${askedBefore} asked before, ${askedAfter} after)`);
+check('and the review now carries a verdict for it',
+  /Write it up now|Watch it|Nothing to do/.test(rv2));
+check('the money it names is unspent, not already gone',
+  /has not been spent yet/.test(rv2) || /Nothing to do/.test(rv2));
+
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);
 if (errs.length) console.log('  ERRORS: ' + [...new Set(errs)].join(' | '));
 await b.close(); srv.close();
