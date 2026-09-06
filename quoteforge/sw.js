@@ -8,10 +8,15 @@
  *
  * Strategy is cache-first for the app shell with a background refresh: the app
  * opens instantly and offline, and a newer version is picked up on the next
- * load after one online visit. Bumping CACHE evicts everything older.
+ * load after one online visit. A new cache name evicts everything older.
+ *
+ * The cache name is a content hash of the shell, stamped by
+ * tools/stamp-shell.mjs and checked by sw.test.js, so a shell change can't
+ * ship without the bump that makes returning users actually receive it.
  */
 const CACHE_PREFIX = 'quoteforge-';
-const CACHE = `${CACHE_PREFIX}v2`;
+const SHELL_HASH = 'f0cac238991c';
+const CACHE = `${CACHE_PREFIX}${SHELL_HASH}`;
 
 const SHELL = [
   './',

@@ -22,6 +22,24 @@ suite serves the whole site under `/allen/` and asserts nothing 404s — see the
 "subpath deploy" section of `quoteforge/test/browser.mjs`. If you later move it to a
 user site or a custom domain at the root, it keeps working; the reverse is what breaks.
 
+## Shipping a change to people who already have the app
+
+The app is cache-first: a returning contractor gets the copy their browser saved, and
+the network copy only replaces it on the *next* load. That is what makes it open in a
+basement, and it is also how a fix you deployed can fail to reach anyone.
+
+The service worker's cache name is therefore a hash of the app shell, stamped into
+`quoteforge/sw.js`. After changing anything the app loads (`index.html`, `intake.html`,
+the CSS, or any module under `js/`), run:
+
+```
+node quoteforge/tools/stamp-shell.mjs
+```
+
+The unit suite (`./quoteforge/run-tests.sh`) fails until you do, so a stale stamp
+cannot reach a commit that passed its tests. The stamp is the deploy: a new cache name
+means every returning user is on the new code after one online visit.
+
 ## Custom domain
 
 Point a CNAME at `<user>.github.io`, then add a file called `CNAME` at the repo root
