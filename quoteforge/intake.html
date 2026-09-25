@@ -191,6 +191,12 @@ function syncState() {
   $('#fPctWrap').hidden = !running;
   $('#spentHead').textContent = running ? 'Paid so far' : 'You actually paid';
   $('#spentHint').textContent = running ? '"Paid so far"' : '"What you actually paid"';
+  // An aria-label overrides the column header it sits under, so a screen
+  // reader kept asking for a final figure on a job still on site.
+  for (const input of document.querySelectorAll('[data-spent]')) {
+    input.setAttribute('aria-label',
+      `${LABELS[input.dataset.spent]} — ${running ? 'paid so far' : 'what you actually paid'}`);
+  }
   $('#btnFinish').textContent = running ? 'Create my update' : 'Create my summary';
 }
 $('#fState').addEventListener('change', syncState);

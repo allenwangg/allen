@@ -500,13 +500,21 @@ check('an early projection is flagged as over-reading',
   /over-reads|warning, not a number/.test(await page.locator('#forecastCoach').textContent()));
 await page.locator('#progressPct').fill('5');
 await page.waitForTimeout(300);
-check('under the minimum progress it declines to project',
+check('under the minimum progress it declines to project, saying why',
+  /Too early to call at 5%/.test(await page.locator('#forecastPanel').textContent()));
+check('and does not ask again for a number it was already given',
+  !/Set how far along/.test(await page.locator('#forecastPanel').textContent()),
+  '(asking every week for an answer they gave is what makes a report ignorable)');
+// Clear it: the next block is about a job that genuinely has no percentage.
+await page.locator('#progressPct').fill('0');
+await page.waitForTimeout(300);
+check('with no percentage at all the panel does ask',
   /Set how far along/.test(await page.locator('#forecastPanel').textContent()));
 
 /* --- the weekly review: the deliverable of the monthly check ------------ */
 console.log('\n  weekly job review');
 // State here: audited jobs (finished, reconstructed) plus the job built above,
-// which has spend logged and progress at 5%.
+// which has spend logged and no percentage complete.
 await page.locator('.tab[data-tab="jobs"]').click();
 await page.waitForTimeout(350);
 await page.locator('#btnReview').click();
@@ -588,6 +596,9 @@ console.log('\n  a running job collected by link');
   check('the dialog switches itself to a running job',
     (await page.locator('#aState').inputValue()) === 'running'
     && (await page.locator('#aPct').inputValue()) === '40');
+  check('the dialog\'s spend inputs are announced as spend-to-date',
+    /paid so far/i.test(await page.locator('#aCostRows [data-spent="labor"]').getAttribute('aria-label')),
+    `(got "${await page.locator('#aCostRows [data-spent="labor"]').getAttribute('aria-label')}")`);
   check('it stops calling itself an audit',
     /running job/i.test(await page.locator('#aHeading').textContent())
     && /review/i.test(await page.locator('#btnBuildAudit').textContent()));
@@ -786,6 +797,144 @@ console.log('\n  burn chart geometry');
   check('a single dated cost draws one point and no NaN',
     one.dots === 1 && one.bad.length === 0, JSON.stringify(one));
   await p2.close();
+}
+
+/* --- the update target must never outlive what produced it -------------- */
+console.log('\n  which job an update lands on');
+{
+  const p3 = await b.newPage();
+  await p3.goto(`http://localhost:${PORT}/quoteforge/`, { waitUntil: 'networkidle' });
+  await p3.evaluate(() => localStorage.clear());
+  await p3.reload({ waitUntil: 'networkidle' });
+  const mk = (o) => p3.evaluate(async (x) => {
+    const m = await import('./js/intake-link.js');
+    return m.encodeIntake(x);
+  }, o);
+  const stored = () => p3.evaluate(() => JSON.parse(localStorage.getItem('quoteforge.v1'))
+    .estimates.map((e) => `${e.title}|${e.client?.name || ''}`));
+  const paste = async (code) => {
+    await p3.locator('#btnAudit').click();
+    await p3.waitForTimeout(250);
+    await p3.locator('#aPaste').fill(code);
+    await p3.waitForTimeout(450);
+  };
+  const base = { quotedTotal: 42000, progress: 0.3, budget: { labor: 12000 }, spent: { labor: 5000 }, changes: [] };
+  const ann = await mk({ ...base, title: 'Kitchen remodel', client: 'Ann Diaz' });
+  const bob = await mk({ ...base, title: 'Kitchen remodel', client: 'Bob Lee' });
+
+  await paste(ann);
+  await p3.locator('#btnBuildAudit').click();
+  await p3.waitForTimeout(700);
+  await paste(bob);
+  check('a different client\'s job of the same name is not offered as a copy',
+    !(await p3.locator('#aUpdateWrap').isVisible()),
+    '(matching on the job name alone had each week destroy the other client\'s job)');
+  await p3.locator('#btnBuildAudit').click();
+  await p3.waitForTimeout(700);
+  let names = await stored();
+  check('so both clients keep their own job',
+    names.filter((n) => /Kitchen remodel/.test(n)).length === 2, JSON.stringify(names));
+
+  await paste(ann);
+  check('the same client\'s job IS offered', await p3.locator('#aUpdateWrap').isVisible());
+  check('and the confirmation names whose job it is',
+    /Ann Diaz/.test(await p3.locator('#aUpdateNote').textContent()),
+    '(the operator cannot spot a wrong match from an estimate number alone)');
+
+  // An unreadable paste, then a different job typed by hand.
+  await p3.locator('#aPaste').fill('https://example.com/#j=BROKENLINK');
+  await p3.waitForTimeout(400);
+  check('an unreadable paste forgets the job the last one matched',
+    await p3.locator('#aUpdateWrap').isHidden());
+  await p3.locator('#aTitle').fill('Maple St deck');
+  await p3.locator('#aClient').fill('');
+  await p3.locator('#aQuoted').fill('30000');
+  await p3.locator('[data-budget="labor"]').fill('12000');
+  await p3.locator('#btnBuildAudit').click();
+  await p3.waitForTimeout(700);
+  names = await stored();
+  check('so typing a new job afterwards does not overwrite the matched one',
+    names.includes('Maple St deck|') && names.includes('Kitchen remodel|Ann Diaz'),
+    JSON.stringify(names));
+
+  // Editing the title after a good paste means a different job.
+  await paste(ann);
+  await p3.locator('#aTitle').fill('Kitchen remodel PHASE 2');
+  await p3.waitForTimeout(200);
+  await p3.locator('#btnBuildAudit').click();
+  await p3.waitForTimeout(700);
+  names = await stored();
+  check('renaming after the paste creates a job instead of renaming theirs',
+    names.includes('Kitchen remodel PHASE 2|Ann Diaz') && names.includes('Kitchen remodel|Ann Diaz'),
+    JSON.stringify(names));
+  await p3.close();
+}
+
+/* --- the panel's own figures, and the slider ---------------------------- */
+console.log('\n  forecast panel arithmetic');
+{
+  const p4 = await b.newPage();
+  await p4.goto(`http://localhost:${PORT}/quoteforge/`, { waitUntil: 'networkidle' });
+  await p4.evaluate(() => localStorage.clear());
+  await p4.reload({ waitUntil: 'networkidle' });
+  await p4.locator('#btnNew').click();
+  await p4.waitForTimeout(300);
+  const lines = [['Labour', 'labor', '20000'], ['Materials', 'material', '20000']];
+  for (let i = 0; i < lines.length; i++) {
+    await p4.locator('#btnAddLine').click();
+    await p4.waitForTimeout(150);
+    // By index: new lines append, so filling .first() every time writes the
+    // same row twice and leaves the budget at half what the test assumes.
+    const row = p4.locator('.items tbody tr').nth(i);
+    await row.locator('[data-f="description"]').fill(lines[i][0]);
+    await row.locator('[data-f="category"]').selectOption(lines[i][1]);
+    await row.locator('[data-f="qty"]').fill('1');
+    await row.locator('[data-f="unitCost"]').fill(lines[i][2]);
+    await p4.waitForTimeout(200);
+  }
+  const budget = await p4.evaluate(() => [...document.querySelectorAll('.items tbody tr')].length);
+  check('the fixture built the two lines it needs', budget === 2, `(${budget} rows)`);
+  await p4.locator('.tab[data-tab="costs"]').click();
+  await p4.waitForTimeout(250);
+  const log = async (date, cat, amt) => {
+    await p4.locator('#btnAddActual').click();
+    await p4.waitForTimeout(150);
+    const r = p4.locator('tr[data-ac]').first();
+    await r.locator('[data-acf="date"]').fill(date);
+    await r.locator('[data-acf="category"]').selectOption(cat);
+    await r.locator('[data-acf="amount"]').fill(amt);
+    await p4.waitForTimeout(200);
+  };
+  // Front-loaded, the normal shape: materials up front, labour trickling after.
+  await log('2026-09-01', 'material', '18000');
+  await log('2026-09-15', 'labor', '800');
+  await p4.locator('#progressPct').fill('50');
+  await p4.waitForTimeout(400);
+  const panel = await p4.locator('#forecastPanel').textContent();
+  // $18,800 across a 15-day window is $1,253/day, not the $57 that measuring
+  // only the spend AFTER the first entry produced.
+  check('the burn rate counts the deposit, not just what followed it',
+    /\$1,253\.33 a day/.test(panel), `(${(panel.match(/about [^ ]+ a day/) || [''])[0]})`);
+  check('so days-to-budget is plausible rather than months out',
+    /lasts about 17 more days/.test(panel), `(${(panel.match(/lasts about [^.]+/) || [''])[0]})`);
+  check('the panel shows the overrun that reconciles cost to profit',
+    /Overrun, summed per trade/.test(panel),
+    '(cost at completion equal to budget beside a four-figure loss invited a subtraction that does not work)');
+  check('and says why an underspent trade does not net off',
+    /not savings/.test(panel));
+
+  // Undo must not leave the thumb showing a value nothing else agrees with.
+  await p4.locator('#progressPct').focus();
+  for (let i = 0; i < 4; i++) await p4.keyboard.press('ArrowRight');
+  await p4.waitForTimeout(350);
+  const moved = await p4.locator('#progressPct').inputValue();
+  await p4.keyboard.press('Control+z');
+  await p4.waitForTimeout(400);
+  const thumb = await p4.locator('#progressPct').inputValue();
+  const out = await p4.locator('#progressOut').textContent();
+  check('undo moves the slider thumb with everything else',
+    `${thumb}%` === out, `(thumb ${thumb}, output ${out}, had moved to ${moved})`);
+  await p4.close();
 }
 
 console.log(`\n  job costs: ${pass} passed, ${fail} failed`);

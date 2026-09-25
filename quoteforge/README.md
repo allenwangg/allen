@@ -148,7 +148,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-261 unit assertions with no test framework and no install step, plus 327 browser
+263 unit assertions with no test framework and no install step, plus 345 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 `test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
 themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —

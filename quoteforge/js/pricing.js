@@ -706,13 +706,18 @@ export function forecastJob(estimate, settings) {
   let daysToBudget = null;
   if (burn.length >= 2) {
     const span = daysBetween(burn[0].date, burn[burn.length - 1].date);
-    // Spend logged over a span of days; the first day's spend is at t=0.
-    const burned = burn[burn.length - 1].cumulativeCents - burn[0].cumulativeCents;
-    if (span > 0 && burned > 0) {
+    if (span > 0 && cumulative > 0) {
+      // Everything spent in the window, over the days the window covers —
+      // inclusive of both ends, because money spent on the first day is money
+      // spent. Excluding it treated the deposit as free: $18,000 of material
+      // on day one and $800 of labour a fortnight later read as $57 a day and
+      // promised the budget would last 284 more days, in the same panel that
+      // said the job finishes $16,000 over.
+      //
       // Rounds to zero when less than half a cent a day is moving — a refund
       // netting off an old payment does it. Dividing by that gave Infinity,
       // which survives as null through a JSON backup.
-      paceCentsPerDay = Math.round(burned / span) || null;
+      paceCentsPerDay = Math.round(cumulative / (span + 1)) || null;
       const remaining = c.budgetCents - c.spentCents;
       if (paceCentsPerDay) daysToBudget = remaining > 0 ? Math.ceil(remaining / paceCentsPerDay) : 0;
     }
@@ -761,6 +766,11 @@ export function forecastJob(estimate, settings) {
   const floor = Number(settings?.floorMargin) || 0;
   let status;
   if (!c.spentCents) status = 'nothing-spent';
+  // Never asked and answered "barely started" are different states and need
+  // different words. Conflating them made the weekly deliverable tell a
+  // contractor there was no percentage complete for a job whose percentage
+  // they had supplied — every week, contradicting the app's own panel.
+  else if (progress === 0) status = 'no-progress';
   else if (!canProject) status = 'too-early';
   else if (projectedMargin < floor) status = 'bad';
   else if (projectedOverrunCents > 0) status = 'warm';
@@ -1013,7 +1023,8 @@ export function summarizeRunning(estimates, settings) {
       number: est.number || '',
       client: est.client?.name || '',
       progress: f.progress,
-      needsProgress: f.status === 'too-early',
+      needsProgress: f.status === 'no-progress',
+      tooEarly: f.status === 'too-early',
       confidence: f.confidence,
       status: f.status,
       spentCents: f.costed.spentCents,
@@ -1052,6 +1063,8 @@ export function summarizeRunning(estimates, settings) {
     budgetCents: sum('budgetCents'),
     /** Jobs with spend logged but no progress set — nothing can be projected. */
     needsProgress: jobs.filter((j) => j.needsProgress).length,
+    /** Jobs that answered, but are too early in the build to project from. */
+    tooEarly: jobs.filter((j) => j.tooEarly).length,
     /** Jobs projected to finish under the floor margin. */
     belowFloor: jobs.filter((j) => j.projectedMargin !== null && j.projectedMargin < floor).length,
     lowConfidence: jobs.filter((j) => j.confidence === 'low').length,
@@ -1076,7 +1089,8 @@ export function summarizeRunning(estimates, settings) {
 function nextActions({ atRisk, unspentOverrun, f }) {
   const out = [];
   if (atRisk > 0) out.push('sign');
-  if (f.status === 'too-early') out.push('set-progress');
+  if (f.status === 'no-progress') out.push('set-progress');
+  else if (f.status === 'too-early') out.push('too-early');
   // "Under the floor" and "overspending" are not the same job. A job sold too
   // cheap that is spending exactly on pace has no overrun to write up, and
   // telling its owner to raise a change order sends them to a client who has

@@ -1022,13 +1022,27 @@ t('burn is cumulative by date, oldest first, and undated entries stay out of the
   eq(f.costed.spentCents, 285000, 'the undated $100 still counts in the total:');
 });
 
-t('pace is spend per day across the log, and says how long the budget lasts', () => {
+t('pace counts everything spent over the days the log covers', () => {
+  // $2,000 across an eleven-day window, both ends included. Measuring only the
+  // spend AFTER the first entry treats the deposit as free, and on the normal
+  // front-loaded job that understates the rate several times over.
   const f = forecastJob(inProgress(0.5, [
     { date: '2026-05-01', category: 'labor', amount: 1000 },
-    { date: '2026-05-11', category: 'labor', amount: 1000 },  // $1000 over 10 days
+    { date: '2026-05-11', category: 'labor', amount: 1000 },
   ]), S);
-  eq(f.paceCentsPerDay, 10000);
-  eq(f.daysToBudget, 44, '$6400 − $2000 = $4400 left at $100/day:');
+  eq(f.paceCentsPerDay, 18182, '$2,000 over 11 days:');
+  eq(f.daysToBudget, 25, '$6,400 − $2,000 = $4,400 left at $181.82/day:');
+});
+
+t('a front-loaded job does not read as costing almost nothing a day', () => {
+  // The realistic shape: materials bought up front, labour trickling after.
+  const f = forecastJob(inProgress(0.5, [
+    { date: '2026-09-01', category: 'material', amount: 4000 },
+    { date: '2026-09-15', category: 'labor', amount: 200 },
+  ]), S);
+  eq(f.paceCentsPerDay, 28000, '$4,200 over 15 days is $280 a day, not $14:');
+  ok(f.daysToBudget < 20,
+    `at $280/day the $2,200 left lasts about 8 days, not months (got ${f.daysToBudget})`);
 });
 
 t('a single day of spend has no pace', () => {
@@ -1056,7 +1070,7 @@ t('progress is clamped and garbage reads as zero', () => {
   eq(clampProgress('0.35'), 0.35);
   const f = forecastJob({ ...costedJob([{ date: '2026-05-01', category: 'labor', amount: 100 }]), progress: { pct: 'x' } }, S);
   eq(f.progress, 0);
-  eq(f.status, 'too-early');
+  eq(f.status, 'no-progress', 'never asked is not the same as answered "barely started":');
 });
 
 t('early progress is projected but flagged low-confidence', () => {
@@ -1194,6 +1208,17 @@ t('a job on pace has no actions at all', () => {
   eq(j.action, 'ok');
 });
 
+t('a job answered as barely started is told that, not asked again', () => {
+  const r = summarizeRunning([running({ progress: { pct: 0.05 } })], S);
+  const j = r.jobs[0];
+  eq(j.needsProgress, false, "they answered — asking again every week is what makes a report ignorable:");
+  eq(j.tooEarly, true);
+  eq(j.progress, 0.05, 'and the answer they gave is carried through to the report:');
+  eq(j.actions.join(','), 'too-early');
+  eq(r.needsProgress, 0);
+  eq(r.tooEarly, 1);
+});
+
 t('a job with spend but no progress asks for the number instead of guessing', () => {
   const r = summarizeRunning([running({ progress: { pct: 0 } })], S);
   const j = r.jobs[0];
@@ -1329,7 +1354,7 @@ t('property: the forecast holds its invariants across 400 random running jobs', 
       if (j.atRiskCents > 0) withRisk++;
       // Every action named must have copy behind it, or the report renders
       // "undefined" at the client.
-      for (const a of j.actions) ok(['sign', 'change-order', 'watch', 'set-progress', 'under-priced'].includes(a),
+      for (const a of j.actions) ok(['sign', 'change-order', 'watch', 'set-progress', 'too-early', 'under-priced'].includes(a),
         `iter ${i}: unknown action ${a}`);
     }
     eq(rv.recoverableCents, rv.jobs.reduce((a, j) => a + j.recoverableCents, 0), `iter ${i} total reconciles:`);
@@ -1396,14 +1421,14 @@ t('a job sold too cheap is not told to raise a change order', () => {
 });
 
 t('a pace that rounds to nothing yields no days-to-budget rather than Infinity', () => {
-  // A deposit, then a tool rental almost cancelled by a return: 1c over 147 days.
+  // A cent charged in January and nothing since: a real rate of well under
+  // half a cent a day, which rounds to zero and must not be divided by.
   const f = forecastJob({
     items: [{ id: '1', qty: 1, unitCost: 40000, category: 'labor', markup: null }],
     changeOrders: [], progress: { pct: 0.5 },
     actuals: [
-      { date: '2026-01-05', category: 'labor', amount: 20000 },
-      { date: '2026-06-01', category: 'material', amount: 400 },
-      { date: '2026-06-01', category: 'material', amount: -399.99 },
+      { date: '2026-01-05', category: 'labor', amount: 0.01 },
+      { date: '2026-06-01', category: 'material', amount: 0 },
     ],
   }, S);
   eq(f.paceCentsPerDay, null);

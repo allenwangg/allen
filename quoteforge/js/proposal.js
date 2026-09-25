@@ -982,6 +982,13 @@ const ACTION_COPY = {
     why: () => `Costs are logged but there is no percentage complete, so nothing can be projected.
       A rough number — a quarter, half, nearly done — is enough.`,
   },
+  'too-early': {
+    label: 'Too early to call',
+    tone: 'ask',
+    why: (j) => `At ${formatPercent(j.progress, 0)} done a projection would mostly measure that
+      materials arrive before the labour that installs them, so none is made. This one starts
+      saying something useful around a tenth of the way in.`,
+  },
   ok: {
     label: 'Nothing to do',
     tone: 'ok',
@@ -1107,6 +1114,8 @@ export function renderProgressReport({ review: rv, company, settings }) {
       Early in a job it over-reads, because materials are bought before the labor that installs
       them.${rv.lowConfidence ? ` ${rv.lowConfidence} job${rv.lowConfidence === 1 ? ' is' : 's are'}
       under a quarter done and should be read as a warning rather than a figure.` : ''}${
+      rv.tooEarly ? ` ${rv.tooEarly} ${rv.tooEarly === 1 ? 'is' : 'are'} too early in the build to
+      project from at all.` : ''}${
       rv.needsProgress ? ` ${rv.needsProgress} job${rv.needsProgress === 1 ? ' has' : 's have'} costs
       logged but no percentage complete, so nothing could be projected there.` : ''}
       Overhead is applied at the stated rate rather than measured.

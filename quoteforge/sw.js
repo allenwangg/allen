@@ -15,7 +15,7 @@
  * ship without the bump that makes returning users actually receive it.
  */
 const CACHE_PREFIX = 'quoteforge-';
-const SHELL_HASH = '5eea97077512';
+const SHELL_HASH = '1c12bb1e4e9b';
 const CACHE = `${CACHE_PREFIX}${SHELL_HASH}`;
 
 const SHELL = [

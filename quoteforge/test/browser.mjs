@@ -486,6 +486,18 @@ console.log('\n  contractor intake page');
   await page.waitForTimeout(200);
   check('switching back hides the question again', !(await page.locator('#fPctWrap').isVisible()));
 
+  // The aria-label overrides the column header it sits under, so changing the
+  // header alone left a screen reader asking for a final figure on a live job.
+  await page.locator('#fState').selectOption('running');
+  await page.waitForTimeout(200);
+  check('the accessible name of the spend inputs follows the mode',
+    /paid so far/i.test(await page.locator('[data-spent="labor"]').getAttribute('aria-label')),
+    `(got "${await page.locator('[data-spent="labor"]').getAttribute('aria-label')}")`);
+  await page.locator('#fState').selectOption('done');
+  await page.waitForTimeout(200);
+  check('and goes back when the job is finished',
+    /actually paid/i.test(await page.locator('[data-spent="labor"]').getAttribute('aria-label')));
+
   // A warning must never block them — their numbers, their call.
   await page.locator('#fQuoted').fill('3150');
   await page.waitForTimeout(300);

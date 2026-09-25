@@ -2094,6 +2094,9 @@ ${c.overrunCents ? `
 
 /* ------------------------------------------------------------- forecast --- */
 
+/** True only while a pointer is held on the progress slider. */
+let sliderDragging = false;
+
 const shortDate = (iso) => {
   const d = new Date(`${iso}T00:00:00`);
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -2102,8 +2105,10 @@ const shortDate = (iso) => {
 function renderForecastPanel(est, f) {
   const slider = $('#progressPct');
   const pct = Math.round(f.progress * 100);
-  // Never yank the thumb out from under a dragging finger.
-  if (document.activeElement !== slider) slider.value = pct;
+  // Never yank the thumb out from under a dragging finger — but only while the
+  // finger is actually down. Skipping on focus alone left the thumb showing a
+  // value Ctrl+Z had already undone, and the next arrow key re-applied it.
+  if (!sliderDragging) slider.value = pct;
   $('#progressOut').textContent = `${pct}%`;
   $('#progressAsOf').textContent = f.asOf ? `as of ${shortDate(f.asOf)}` : '';
 
@@ -2120,8 +2125,13 @@ function renderForecastPanel(est, f) {
       Log what you have paid out and say how far along the job is, and this shows where the margin finishes — while there is still time to do something about it.</div>`;
     return;
   }
-  if (f.status === 'too-early') {
+  if (f.status === 'no-progress') {
     el.innerHTML = `<div class="coach" style="margin-top:12px"><strong>Set how far along the job is.</strong>
+      Without it there is nothing to scale the spend by, so no projection is made.</div>${pace}`;
+    return;
+  }
+  if (f.status === 'too-early') {
+    el.innerHTML = `<div class="coach" style="margin-top:12px"><strong>Too early to call at ${pct}%.</strong>
       Below ${Math.round(MIN_PROGRESS * 100)}% a projection would mostly measure that materials land before the labor that installs them, so none is made.</div>${pace}`;
     return;
   }
@@ -2161,6 +2171,10 @@ function renderForecastPanel(est, f) {
   el.innerHTML = `
 <div class="figure"><span class="label">Cost at completion</span><span class="value">${formatMoney(f.projectedCostCents)}</span></div>
 <div class="figure"><span class="label">Direct-cost budget</span><span class="value">${formatMoney(f.costed.budgetCents)}</span></div>
+<div class="figure"><span class="label">Overrun, summed per trade${
+  f.projectedCostCents <= f.costed.budgetCents && f.projectedOverrunCents > 0
+    ? ' — an underspent trade is not savings' : ''}</span>
+  <span class="value">${formatMoney(f.projectedOverrunCents)}</span></div>
 <div class="figure"><span class="label">Margin at completion</span>
   <span class="value" style="${f.status !== 'ok' ? 'color:var(--bad);font-weight:650' : ''}">${formatPercent(f.projectedMargin)}</span></div>
 <div class="figure total"><span class="label">Profit at completion</span><span class="value">${formatMoney(f.projectedProfitCents)}</span></div>
@@ -2260,6 +2274,10 @@ function wireCosts() {
     }, 120);
   });
   const slider = $('#progressPct');
+  slider.addEventListener('pointerdown', () => { sliderDragging = true; });
+  for (const ev of ['pointerup', 'pointercancel', 'blur']) {
+    slider.addEventListener(ev, () => { sliderDragging = false; });
+  }
   slider.addEventListener('input', () => {
     $('#progressOut').textContent = `${slider.value}%`;
     store.setProgress(Number(slider.value) / 100);
@@ -2317,9 +2335,8 @@ function wireAuditIntake() {
     for (const id of ['#aTitle', '#aClient', '#aQuoted', '#aPaste']) $(id).value = '';
     $('#aState').value = 'done';
     $('#aPct').value = '50';
-    $('#aUpdateWrap').hidden = true;
     $('#aUpdate').checked = true;
-    matchedJobId = null;
+    clearMatch();
     syncAuditState();
     $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
     $('#aChecks').innerHTML = '';
@@ -2339,10 +2356,19 @@ function wireAuditIntake() {
   // fragment, so their figures were never sent anywhere — this just unpacks it.
   $('#aPaste').addEventListener('input', (e) => {
     const raw = e.target.value.trim();
-    if (!raw) { $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.'; return; }
+    // Both early returns clear the target. Leaving it set meant an operator who
+    // cleared the box, or pasted a link that would not read, and then typed a
+    // different job by hand silently overwrote the job the last paste matched —
+    // with the dialog saying nothing was loaded.
+    if (!raw) {
+      $('#aPasteNote').textContent = 'Fills everything below in one step. Otherwise just type it in.';
+      clearMatch();
+      return;
+    }
     const data = readIntakeFrom(raw);
     if (!data) {
       $('#aPasteNote').textContent = 'That link is not readable — ask them to send it again, unbroken.';
+      clearMatch();
       return;
     }
     $('#aTitle').value = data.title;
@@ -2370,13 +2396,19 @@ function wireAuditIntake() {
       row.querySelector('[data-csigned]').checked = ch.signed;
     }
     if (!data.changes.length) addChangeRow();
-    const existing = findExistingReconstruction(data.title);
-    matchedJobId = existing ? existing.id : null;
-    $('#aUpdateWrap').hidden = !existing;
+    const existing = findExistingReconstruction(data.title, data.client);
     if (existing) {
+      // Remember WHAT was matched, not just which record: the form can be
+      // edited after the paste, and an update must only ever land on the job
+      // the operator is actually looking at.
+      matchedJob = { id: existing.id, title: data.title, client: data.client };
+      $('#aUpdateWrap').hidden = false;
       $('#aUpdate').checked = true;
-      $('#aUpdateNote').textContent =
-        `Update ${existing.number} — the copy of this job you already have, rather than adding a second one`;
+      $('#aUpdateNote').textContent = `Update ${existing.number}${
+        existing.client?.name ? ` — ${existing.client.name}'s` : ' —'} ${
+        existing.title || 'job'}, rather than adding a second copy of it`;
+    } else {
+      clearMatch();
     }
     $('#aPasteNote').textContent = `Loaded — ${data.title || 'their job'}${
       data.progress < 1 ? `, ${Math.round(data.progress * 100)}% done` : ''}, ${
@@ -2410,13 +2442,18 @@ function wireAuditIntake() {
       ...form,
       title: form.title || (running ? 'Running job' : 'Audited job'),
     };
-    // Updating in place is only offered for a job the paste actually matched;
-    // an operator who retyped the numbers by hand gets a new job as before.
-    const updating = matchedJobId
+    // Updating in place is only offered for a job the paste actually matched,
+    // it still exists, and the form still describes it. An operator who edited
+    // the name or the client after pasting is describing a different job and
+    // gets a new one, as they would have by typing it from scratch.
+    const stillTheSameJob = matchedJob
+      && normalizeTitle(payload.title) === normalizeTitle(matchedJob.title)
+      && normalizeTitle(form.client) === normalizeTitle(matchedJob.client);
+    const updating = stillTheSameJob
       && $('#aUpdate').checked
-      && store.state.estimates.some((e) => e.id === matchedJobId);
+      && store.state.estimates.some((e) => e.id === matchedJob.id);
     const { impliedMarkup } = updating
-      ? store.updateAuditJob(matchedJobId, payload)
+      ? store.updateAuditJob(matchedJob.id, payload)
       : store.createAuditJob(payload);
     const updatedNumber = updating ? store.active().number : '';
 
@@ -2467,15 +2504,31 @@ function wireAuditIntake() {
  * be unticked — while the consequence of no matching at all is five copies of
  * one kitchen on the review, each claiming the same recoverable money.
  */
-let matchedJobId = null;
+let matchedJob = null;
 
 const normalizeTitle = (t) => String(t || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
-function findExistingReconstruction(title) {
-  const want = normalizeTitle(title);
-  if (!want) return null;
-  return store.state.estimates.find(
-    (e) => e.isAudit && normalizeTitle(e.title) === want) || null;
+/**
+ * Two contractors both send you "Kitchen remodel". Matching on the job name
+ * alone offered one as "the copy you already have" of the other, and each
+ * week's update destroyed the other client's job in place — the review then
+ * under-reported by a whole job and nothing on screen said so. The client name
+ * is part of the identity, and a job with no client recorded only matches a
+ * link that names none either.
+ */
+function findExistingReconstruction(title, client) {
+  const wantTitle = normalizeTitle(title);
+  if (!wantTitle) return null;
+  const wantClient = normalizeTitle(client);
+  return store.state.estimates.find((e) => e.isAudit
+    && normalizeTitle(e.title) === wantTitle
+    && normalizeTitle(e.client?.name) === wantClient) || null;
+}
+
+/** Forget the update target. Any paste that does not produce a match clears it. */
+function clearMatch() {
+  matchedJob = null;
+  $('#aUpdateWrap').hidden = true;
 }
 
 function auditProgress() {
@@ -2489,6 +2542,12 @@ function syncAuditState() {
   $('#aHeading').textContent = running ? 'Read a running job' : 'Audit a finished job';
   $('#aSpentHead').textContent = running ? 'Paid so far' : 'Actually paid';
   $('#btnBuildAudit').textContent = running ? 'Add to the review' : 'Build the audit';
+  // An aria-label overrides the column header, so changing the header alone
+  // left a screen reader asking for a final figure on a job still on site.
+  for (const input of $$('#aCostRows [data-spent]')) {
+    const label = INTAKE_CATEGORIES.find(([k]) => k === input.dataset.spent)?.[1] || '';
+    input.setAttribute('aria-label', `${label} — ${running ? 'paid so far' : 'actually paid'}`);
+  }
 }
 
 function readIntakeForm() {
