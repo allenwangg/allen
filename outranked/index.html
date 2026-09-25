@@ -1838,32 +1838,30 @@ function decodeRef(ref){
    and its simulated traffic are cleared exactly once, and never come back. */
 /* If the ledger read had to stop early, say so rather than quietly showing
    totals that understate what people actually paid. */
-/* A Stripe outage is temporary and the board keeps its last good standings, so
-   this says what is actually happening rather than letting the page look empty
-   or stale for no stated reason. Restores the ribbon it borrowed. */
+/* Three messages share one ribbon: a Stripe outage, a truncated ledger, and the
+   demo notice. They used to write to it imperatively, so whichever fired last
+   won and neither could undo the other — a partial ledger in particular latched
+   on forever, because nothing ever cleared it even after the read recovered.
+   The ribbon is now derived from state, so every transition is reversible. */
 let ribbonOriginal = null;
-function ledgerTrouble(on){
+function ribbonNotice(){
   const r = $("#demoRibbon");
   if (!r) return;
   if (ribbonOriginal === null) ribbonOriginal = r.innerHTML;
-  if (on){
-    if (state.ledgerTrouble) return;
-    state.ledgerTrouble = true;
+  if (state.ledgerTrouble){
     r.innerHTML = "<b>Ledger unreachable</b> — Stripe isn't answering right now, so this is the last confirmed board rather than an empty one. It catches up on its own.";
     r.classList.add("show");
-  } else if (state.ledgerTrouble){
-    state.ledgerTrouble = false;
+  } else if (state.partialLedger){
+    r.innerHTML = "<b>Partial ledger</b> — this board is showing the most recent payments only. Totals may understate lifetime spend until the operator enables a cached aggregate.";
+    r.classList.add("show");
+  } else {
     r.innerHTML = ribbonOriginal;
+    /* Back to baseline: the demo notice, and only while it is still true. */
     if (state.live || CONFIG.STRIPE_PAYMENT_LINK) r.classList.remove("show");
+    else r.classList.add("show");
   }
 }
 
-function partialNotice(){
-  const r = $("#demoRibbon");
-  if (!r) return;
-  r.innerHTML = "<b>Partial ledger</b> — this board is showing the most recent payments only. Totals may understate lifetime spend until the operator enables a cached aggregate.";
-  r.classList.add("show");
-}
 
 function goLive(){
   if (state.live) return;
@@ -1878,8 +1876,7 @@ function goLive(){
   delete state.decree; delete state.todayDecree;
   state.crownId = null; state.crownedAt = Date.now();
   state.longestReign = { name: "—", ms: 0 };
-  const ribbon = $("#demoRibbon");
-  if (ribbon) ribbon.classList.remove("show");
+  ribbonNotice();          /* no longer a demo, so the baseline notice retires */
   /* The ribbon was not the only place the page called itself a demo. */
   const fm = $("#footMode");
   if (fm) fm.textContent = "OUTRANKED — vibe-built in one page. Live: every row is a real, completed Stripe payment.";
@@ -1938,9 +1935,10 @@ async function mergeBoardFeed(){
      Going live on that would hand goLive() an empty ledger and wipe a board of
      real payments to $0 for the length of the outage — so an errored payload is
      treated as "no news", never as "the ledger is empty". */
-  if (!Array.isArray(payload) && payload.error){ ledgerTrouble(true); return; }
-  ledgerTrouble(false);
-  if (payload && payload.partial) partialNotice();
+  if (!Array.isArray(payload) && payload.error){ state.ledgerTrouble = true; ribbonNotice(); return; }
+  state.ledgerTrouble = false;
+  state.partialLedger = !!(payload && payload.partial);
+  ribbonNotice();
   const wasDemo = !state.live;
   if (!Array.isArray(payload) && payload.configured) goLive();
   const wentLive = wasDemo && state.live;   /* an empty ledger still must repaint */

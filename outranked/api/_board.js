@@ -153,4 +153,28 @@ function rank(bids) {
   return [...byName.values()].sort((a, b) => b.total - a.total || a.last - b.last);
 }
 
-module.exports = { fetchBids, decodeRef, rank, refId };
+/* Every name-parameterised endpoint reads the WHOLE ledger — the name only
+   selects a row afterwards — and the edge caches per query string, so walking
+   ?name=a1,a2,a3… forced one full Stripe pagination per distinct name: real
+   money per request, and rate-limit exhaustion that takes /api/board down for
+   everyone. The read does not depend on the name, so it is memoised per key for
+   a short window and concurrent callers share one in-flight request, which also
+   collapses the thundering herd a cold cache would otherwise send at Stripe. */
+const LEDGER_TTL_MS = 15000;
+let ledgerCache = null;               // { key, at, promise }
+function fetchBidsCached(key) {
+  const now = Date.now();
+  if (ledgerCache && ledgerCache.key === key && now - ledgerCache.at < LEDGER_TTL_MS) {
+    return ledgerCache.promise;
+  }
+  const entry = { key, at: now, promise: null };
+  // A failed read must not be served for the rest of the window.
+  entry.promise = fetchBids(key).catch(err => {
+    if (ledgerCache === entry) ledgerCache = null;
+    throw err;
+  });
+  ledgerCache = entry;
+  return entry.promise;
+}
+
+module.exports = { fetchBids, fetchBidsCached, decodeRef, rank, refId };

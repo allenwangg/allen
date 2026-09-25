@@ -217,6 +217,10 @@
       "pass": true
     },
     {
+      "name": "ledger notices clear when the ledger recovers",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -261,18 +265,22 @@
       "pass": true
     },
     {
+      "name": "walking ?name= cannot amplify one laptop into unlimited Stripe reads",
+      "pass": true
+    },
+    {
       "name": "public ledger page renders a listing's payments without leaking full session IDs",
       "pass": true
     }
   ],
   "perf": {
-    "medianFCPms": 96,
-    "medianDOMContentLoadedms": 71.5,
-    "medianLoadms": 12433.7,
+    "medianFCPms": 112,
+    "medianDOMContentLoadedms": 80.2,
+    "medianLoadms": 299.4,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 112558,
-    "gzipBytes": 34070
+    "htmlBytes": 112744,
+    "gzipBytes": 34169
   }
 }

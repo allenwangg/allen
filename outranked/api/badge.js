@@ -4,7 +4,7 @@
 //   <a href="https://outranked.vercel.app/"><img src="https://outranked.vercel.app/api/badge?name=Acme" height="36"></a>
 // It updates itself as their rank changes, and every embed is a backlink.
 
-const { fetchBids, rank } = require("./_board.js");
+const { fetchBidsCached, rank } = require("./_board.js");
 
 const escXml = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
 
   if (key && name) {
     try {
-      const board = rank(await fetchBids(key));
+      const board = rank(await fetchBidsCached(key));
       const idx = board.findIndex((e) => e.name.toLowerCase() === name.toLowerCase());
       if (idx !== -1) {
         rankLabel = `#${idx + 1}`;
