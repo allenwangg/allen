@@ -2473,6 +2473,117 @@ t('the standalone verifier agrees with the certificate it checks', async () => {
   ok(/n-of-1 trial certificate/i.test(html));
 });
 
+t('the engine package exports exactly the surface it promises', async () => {
+  // SURFACE is the contract an embedder codes against. Documentation drifts
+  // from reality; a locked list fails the build instead.
+  const pkg = await import('../packages/nof1/index.js');
+  const actual = Object.keys(pkg).sort();
+  const declared = [...pkg.SURFACE].sort();
+  const missing = declared.filter((x) => !actual.includes(x));
+  const extra = actual.filter((x) => !declared.includes(x));
+  eq(missing.length, 0, `declared in SURFACE but not exported: ${missing.join(', ')}`);
+  eq(extra.length, 0, `exported but not declared in SURFACE — add it deliberately or stop exporting it: ${extra.join(', ')}`);
+  ok(Object.isFrozen(pkg.SURFACE), 'the contract must not be mutable at runtime');
+  ok(/^\d+\.\d+\.\d+$/.test(pkg.ENGINE_VERSION));
+  for (const name of declared) ok(pkg[name] !== undefined, `${name} is exported as undefined`);
+});
+
+t('the engine runs anywhere: no DOM, no storage, no network', async () => {
+  // The whole embeddability claim. Asserted against the source, because a
+  // single document.querySelector in a dependency makes the engine unusable in
+  // a server, a worker, or somebody else's React Native app — and it would not
+  // show up in any other test here, since these all run in Node.
+  const pkg = readFileSync(new URL('../packages/nof1/index.js', import.meta.url), 'utf8');
+  const files = [...new Set([...pkg.matchAll(/from '(\.\.\/\.\.\/app\/js\/[\w.]+)'/g)].map((m) => m[1]))];
+  ok(files.length >= 5, `expected to find the engine modules, found ${files.length}`);
+
+  // crypto.subtle is deliberately allowed: Web Crypto is standard in browsers,
+  // Node 18+, Deno and workers alike. It is not a browser dependency.
+  const forbidden = [
+    [/\bdocument\s*\./, 'DOM access'],
+    [/\bwindow\s*\./, 'browser globals'],
+    [/\blocalStorage\b/, 'browser storage'],
+    [/\bsessionStorage\b/, 'browser storage'],
+    [/\bindexedDB\b/, 'browser storage'],
+    [/\bnavigator\s*\./, 'browser globals'],
+    [/\bfetch\s*\(/, 'network access'],
+    [/\bXMLHttpRequest\b/, 'network access'],
+    [/\brequire\s*\(/, 'CommonJS, which breaks ESM embedders'],
+  ];
+  const problems = [];
+  for (const rel of files) {
+    const src = readFileSync(new URL(`../packages/nof1/${rel}`, import.meta.url), 'utf8');
+    src.split('\n').forEach((line, i) => {
+      if (/^\s*(?:\/\/|\/\*|\*)/.test(line)) return;      // commentary, not code
+      for (const [re, why] of forbidden) {
+        if (re.test(line)) problems.push(`${rel}:${i + 1} ${why} — ${line.trim().slice(0, 70)}`);
+      }
+    });
+  }
+  eq(problems.length, 0, `the engine is not portable:\n    ${problems.join('\n    ')}`);
+});
+
+t('an embedder can run the whole loop through the package alone', async () => {
+  // The claim "drop this into your product" demonstrated rather than asserted:
+  // log -> findings -> registered trial -> result -> certificate a stranger can
+  // check -> a cohort, touching nothing but the public surface.
+  const E = await import('../packages/nof1/index.js');
+
+  const symptoms = E.validateSymptoms([{ label: 'Migraine', primary: true }]);
+  const sid = symptoms[0].id;
+  const r = mulberry32(31337);
+  const entries = [];
+  for (let i = 0; i < 160; i++) {
+    const e = E.emptyEntry(E.addDays('2026-01-01', i), symptoms);
+    e.alcoholUnits = Math.round(r() * 3);
+    e.sleepHours = 6.5 + r() * 2;
+    e.steps = Math.round(5000 + r() * 5000);
+    e.stress = 1 + Math.floor(r() * 5);
+    const prev = i > 0 ? entries[i - 1].alcoholUnits : 0;
+    e.symptoms[sid] = Math.max(0, Math.min(4, Math.round(0.6 + prev * 0.7 + (r() - 0.5) * 1.2)));
+    entries.push(e);
+  }
+
+  // 1. Discovery finds the planted driver and can say it in a sentence.
+  const found = E.discover(entries, { symptoms, factors: [] });
+  const hit = found.findings.find((f) => f.driver === 'alcoholUnits' && f.outcome === sid);
+  ok(hit, `expected the planted driver; got ${found.findings.map((f) => f.driver).join(', ')}`);
+  ok(E.phrase(hit, symptoms, []).length > 20);
+
+  // 2. A registered trial.
+  const { trial, error } = E.createTrial({ leverId: 'no-alcohol', outcome: sid,
+    outcomeLabel: 'Migraine', pairs: 8, startDate: '2026-07-01', seed: 4242 });
+  eq(error, undefined);
+  trial.prereg = await E.registerTrial(trial);
+  eq((await E.checkRegistration(trial)).status, 'intact');
+
+  // 3. Run it and analyse.
+  const tEntries = [];
+  for (let i = 0; i < E.trialDays(trial); i++) {
+    const date = E.addDays(trial.startDate, i);
+    const e = E.emptyEntry(date, symptoms);
+    const on = E.armForDate(trial, date) === 'on';
+    e.alcoholUnits = on ? 0 : 2;
+    e.symptoms[sid] = Math.max(0, Math.min(4, Math.round(1 + (on ? 0 : 1.4) + (r() - 0.5) * 1.3)));
+    tEntries.push(e);
+  }
+  const analysis = E.analyze(trial, tEntries);
+  eq(analysis.status, 'analysed');
+
+  // 4. A certificate a stranger can check, and does.
+  const cert = await E.issueCertificate(trial, analysis, { verdictKind: 'helped', leverLabel: 'No alcohol' });
+  const checked = await E.checkCertificate(cert, trial.prereg.short);
+  ok(checked.ok, `the certificate must verify: ${checked.problems.join('; ')}`);
+  near(E.exactP(cert.pairDiffs), analysis.p, 0.0002);
+
+  // 5. Aggregated, with the registration counted in the denominator.
+  const many = Array.from({ length: 30 }, (_, i) => ({ ...cert, digest: `c${i}`,
+    p: i < 9 ? 0.008 : 0.4, verdict: i < 9 ? 'helped' : 'no-effect' }));
+  const cohort = E.cohorts(many, { registrations: { [E.cohortKey(undefined, 'Migraine')]: 32 } }).cohorts[0];
+  eq(cohort.reported, 30);
+  ok(cohort.rate > 0.25 && cohort.rate < 0.35, `expected ~30% responders, got ${cohort.rate}`);
+});
+
 // Every t(...) in this file must run exactly once. A test accidentally nested
 // inside another test's loop still passes — it just runs 140 times and is not
 // where anyone thinks it is. That happened, and the only reason it surfaced

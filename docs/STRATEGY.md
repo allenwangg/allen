@@ -141,16 +141,14 @@ Guard the claims and the compounding asset survives. That is the whole strategy.
 
 ## What to build next, in order
 
-1. **Certificate ingestion and cohort statistics** — the registry primitive.
-   Aggregate verified certificates into "n people have tested this lever against
-   this outcome; k found an effect", with the same multiplicity discipline the
-   single-user engine already has. Local first; a server is an implementation
-   detail that can come later.
-2. **Extract the engine** into a versioned, embeddable package with a stable
-   documented surface, so it can be dropped into somebody else's product.
-3. **A standalone verifier** — a single HTML file, no dependencies, that anyone
-   can open to check a certificate. It costs almost nothing and it is how a
-   format becomes a standard.
+1. ~~**Certificate ingestion and cohort statistics**~~ Done: `app/js/registry.js`,
+   with registrations as the denominator so selective contribution is visible.
+2. ~~**Extract the engine** into a versioned, embeddable package.~~ Done:
+   `packages/nof1/` defines and locks the surface. The engine turned out to be
+   portable already — no DOM, no storage, no network — which a test now asserts
+   against the source rather than leaving as a claim in a README.
+3. ~~**A standalone verifier**~~ Done: `verify.html`, one file, runs from an
+   email attachment with the network off.
 4. **Identity, only when a counterparty needs it.** Certificates are checkable,
    not self-authenticating, and that limit is stated honestly in the module. The
    signature layer belongs above this one, when there is a clinician or a
