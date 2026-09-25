@@ -1,0 +1,24 @@
+name: Check live site
+
+# One-click health check of the deployed site, run from GitHub's runners
+# (which can always reach it). Reports which build is live, whether the
+# Stripe ledger is connected, and whether every endpoint serves.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Site URL to check"
+        default: "https://outranked-xyz.vercel.app"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node outranked/scripts/check-live.mjs "${{ inputs.url }}"
