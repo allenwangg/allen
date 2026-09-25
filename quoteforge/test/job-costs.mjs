@@ -670,6 +670,30 @@ console.log('\n  a running job collected by link');
     .filter((tr) => /Loft conversion/i.test(tr.textContent)).length);
   check('the review shows that job once, at this week\'s figures', rows === 1, `(${rows} rows)`);
 
+  // The covering note: the last part of the weekly hour that was still by hand.
+  await page.locator('#btnNote').click();
+  await page.waitForTimeout(400);
+  const noteText = await page.locator('#noteText').inputValue();
+  check('the covering note drafts itself from the same review',
+    /Job review — week of/.test(noteText) && noteText.length > 80, `(${noteText.slice(0, 60)})`);
+  check('it leads with the recoverable figure', /recoverable/.test(noteText));
+  check('it names a job by name', /loft conversion/i.test(noteText));
+  check('it is editable, because the operator decides what to send',
+    !(await page.locator('#noteText').getAttribute('readonly')));
+  await page.locator('#noteText').fill('edited by hand');
+  await page.locator('#btnCopyNote').click();
+  await page.waitForTimeout(300);
+  check('copying reports what happened either way',
+    /copied|copy with your keyboard/i.test(await page.locator('#toasts').textContent()));
+  await page.locator('#dlgNote button[data-close]').first().click();
+  await page.waitForTimeout(250);
+  await page.locator('#btnNote').click();
+  await page.waitForTimeout(400);
+  check('reopening redrafts rather than keeping last week\'s edit',
+    (await page.locator('#noteText').inputValue()) !== 'edited by hand');
+  await page.locator('#dlgNote button[data-close]').first().click();
+  await page.waitForTimeout(200);
+
   // Opting out is the escape hatch for a wrong match.
   await page.locator('#btnAudit').click();
   await page.waitForTimeout(300);

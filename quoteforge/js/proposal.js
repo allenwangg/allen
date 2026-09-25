@@ -1124,6 +1124,69 @@ export function renderProgressReport({ review: rv, company, settings }) {
 </div>`;
 }
 
+/**
+ * The covering note that goes with the weekly review.
+ *
+ * The review is a page of figures; what makes someone act on it is three
+ * sentences at the top of an email — the one number, the one job, and the one
+ * thing you need back from them. Writing those three sentences was the last
+ * part of the weekly hour still done by hand, and it is the part most likely
+ * to be skipped on a busy Monday, which is how a paid service quietly stops
+ * being delivered.
+ *
+ * Plain text, not HTML: it is pasted into a mail client. It is a draft — the
+ * app proposes the instruction, the operator decides whether it survives what
+ * they know about the client.
+ */
+export function renderReviewNote({ review: rv, company }) {
+  const who = company?.name ? `— ${company.name}` : '';
+  const week = `Job review — week of ${fmtDate(todayISO())}`;
+
+  if (rv.count === 0) {
+    return [week, '', 'No job has costs logged against it this week, so there is nothing to project.',
+      'Send me what you have paid out on anything still on site and I will pick it up next week.',
+      '', who].filter((l) => l !== null).join('\n');
+  }
+
+  const lines = [week, ''];
+
+  // 1. The number.
+  lines.push(rv.recoverableCents > 0
+    ? `Across the ${rv.count} job${rv.count === 1 ? '' : 's'} you have running, ${formatMoney(rv.recoverableCents)} is still recoverable — money that has not gone anywhere yet.`
+    : `Across the ${rv.count} job${rv.count === 1 ? '' : 's'} you have running, nothing is sitting there to be recovered this week. That is worth knowing too.`);
+
+  // 2. The job to deal with — the one where an hour is worth the most.
+  const worst = rv.jobs.find((j) => j.recoverableCents > 0);
+  if (worst) {
+    const parts = [];
+    if (worst.atRiskCents > 0) {
+      parts.push(`${formatMoney(worst.atRiskCents)} of work has been done with nothing signed behind it`);
+    }
+    if (worst.unspentOverrunCents > 0) {
+      parts.push(`at the current rate it finishes ${formatMoney(worst.unspentOverrunCents)} over budget on money you have not spent yet`);
+    }
+    lines.push('', `The one to deal with is ${worst.title}: ${parts.join(', and ')}.`);
+  } else {
+    const bad = rv.jobs.find((j) => j.actions.includes('under-priced'));
+    if (bad) {
+      lines.push('', `Nothing needs chasing on site. ${bad.title} is heading under your floor, but that was set at the bid — it belongs in the next quote, not in a conversation with this client.`);
+    }
+  }
+
+  // 3. What you need back from them, if anything.
+  const asks = rv.jobs.filter((j) => j.needsProgress).map((j) => j.title);
+  if (asks.length) {
+    lines.push('', `What I need from you: roughly how far along ${asks.length === 1 ? 'is' : 'are'} ${
+      asks.length === 1 ? asks[0] : `${asks.slice(0, -1).join(', ')} and ${asks.at(-1)}`}? Costs are logged against ${
+      asks.length === 1 ? 'it' : 'them'} but there is nothing to scale them by.`);
+  } else {
+    lines.push('', 'Nothing needed from you this week.');
+  }
+
+  lines.push('', 'The full review is attached.', '', who);
+  return lines.join('\n').trimEnd();
+}
+
 function reviewHead(company, rv) {
   return `
   <div class="pr-head">

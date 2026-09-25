@@ -161,9 +161,11 @@ far along.
    app proposes an action; you decide whether it survives what you know about
    the client. A change order you would not actually ask for is worse than
    silence, because they will act on it and lose the room.
-3. Print to PDF, write three sentences at the top of the email — the single
-   biggest number, the one job to deal with, and what you need from them — and
-   send it.
+3. Print to PDF, then open **Covering note**. It drafts those three sentences
+   from the same review — the single biggest number, the one job to deal with,
+   and what you need back — and you edit them in place. Read it before you copy
+   it: the app proposes the instruction, you decide whether it survives what you
+   know about the client. Copy, paste, attach, send.
 
 **What to do when the numbers do not arrive.** They will not, some weeks. Send
 the review anyway, built from last week's figures, and say plainly that it is

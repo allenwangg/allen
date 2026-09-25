@@ -261,6 +261,7 @@
         <span class="spacer"></span>
         <button class="btn sm primary" id="btnPortfolio">Audit report — all jobs</button>
         <button class="btn sm" id="btnReview" title="The weekly read on jobs still running">Job review — this week</button>
+        <button class="btn sm" id="btnNote" title="The three sentences that go with it">Covering note</button>
         <button class="btn sm" id="btnExportAll">Export backup</button>
         <button class="btn sm" id="btnImport">Import…</button>
         <input type="file" id="fileImport" accept="application/json,.json" class="hidden">
@@ -441,6 +442,31 @@
     <button class="btn" id="btnSigClear">Clear</button>
     <button class="btn" data-close>Cancel</button>
     <button class="btn primary" id="btnSigSave">Accept &amp; save</button>
+  </footer>
+</dialog>
+
+<!-- =================================================== covering note -->
+<dialog id="dlgNote">
+  <header>
+    <h2>Covering note</h2>
+    <span class="spacer"></span>
+    <span class="tiny faint">A draft — read it before you send it</span>
+    <button class="btn sm ghost" data-close>✕</button>
+  </header>
+  <div class="body">
+    <p class="muted tiny" style="margin-top:0">
+      The three sentences that go above the attached review: the one number, the one job to deal
+      with, and what you need back. Edit it here — the app proposes the instruction, you decide
+      whether it survives what you know about the client.
+    </p>
+    <textarea id="noteText" rows="16" spellcheck="true" aria-label="Covering note"
+      style="width:100%;font-family:var(--mono);font-size:12.5px;line-height:1.55;padding:12px;
+             border:1px solid var(--border-strong);border-radius:var(--radius-s);
+             background:var(--surface-2);color:var(--text);resize:vertical"></textarea>
+  </div>
+  <footer>
+    <button class="btn" data-close>Close</button>
+    <button class="btn primary" id="btnCopyNote">Copy</button>
   </footer>
 </dialog>
 

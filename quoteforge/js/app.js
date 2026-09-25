@@ -24,7 +24,7 @@ import {
 } from './pricebook.js';
 import {
   renderProposal, proposalAsText, renderChangeOrder, renderContractStatement,
-  renderAuditReport, renderPortfolioReport, renderProgressReport, esc,
+  renderAuditReport, renderPortfolioReport, renderProgressReport, renderReviewNote, esc,
 } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -1164,6 +1164,26 @@ function wireJobs() {
       window.print();
       delete document.body.dataset.print;
     });
+  };
+
+  $('#btnNote').onclick = () => {
+    const review = summarizeRunning(store.state.estimates, store.state.settings);
+    $('#noteText').value = renderReviewNote({ review, company: store.state.company });
+    $('#dlgNote').showModal();
+    requestAnimationFrame(() => $('#noteText').focus());
+  };
+
+  $('#btnCopyNote').onclick = async () => {
+    const el = $('#noteText');
+    try {
+      await navigator.clipboard.writeText(el.value);
+      toast('Covering note copied.');
+    } catch {
+      // Clipboard access is blocked in some contexts; selecting it is enough
+      // for the keyboard shortcut they already know.
+      el.select();
+      toast('Select-all done — copy with your keyboard.', { bad: true });
+    }
   };
 
   $('#btnExportAll').onclick = $('#btnExportAll2').onclick = () => {

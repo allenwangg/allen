@@ -6,7 +6,8 @@
  * total being signed, a staffing category leaking as a trade heading, a draft
  * the client was never sent, and an unsigned contract presented as authorized.
  */
-import { renderProposal, renderContractStatement, renderChangeOrder, renderProgressReport } from './proposal.js';
+import { renderProposal, renderContractStatement, renderChangeOrder, renderProgressReport,
+  renderReviewNote } from './proposal.js';
 import { priceEstimate, summarizeContract, priceChangeOrder, defaultSettings, formatMoney,
   summarizeRunning } from './pricing.js';
 const S = defaultSettings();
@@ -124,6 +125,47 @@ const rvHtml = (ests) => renderProgressReport({
   const sign = h.slice(h.indexOf('<strong>Get the signature.</strong>'), h.indexOf('<strong>Write it up now.</strong>'));
   check('the signature paragraph quotes only the unsigned amount',
     money(sign).length === 1, `(found ${money(sign).length} figures)`);
+}
+
+/* --- the covering note that goes with the review ------------------------ */
+
+const note = (ests) => renderReviewNote({ review: summarizeRunning(ests, S), company: CO });
+
+{
+  const h = note([runningJob({
+    changeOrders: [{ id: 'c', number: 'CO-01', status: 'draft', title: 'Rot',
+      items: [{ id: 'i', qty: 1, unitCost: 900, category: 'labor', markup: null }] }],
+  })]);
+  check('the note leads with the one number', /is still recoverable/.test(h));
+  check('it names the one job to deal with', /The one to deal with is Kitchen/.test(h));
+  check('it is plain text, for pasting into an email', !/[<>]/.test(h.replace(/Kitchen <script>/g, '')));
+  check('it signs off as the company', /Whitmore Building/.test(h));
+  check('it says nothing is needed when nothing is', /Nothing needed from you this week/.test(h));
+}
+
+{
+  // A job with costs and no percentage: the one thing to ask for.
+  const h = note([runningJob({ progress: { pct: 0 } })]);
+  check('an unanswered job becomes the ask', /What I need from you: roughly how far along is Kitchen/.test(h));
+  check('and the ask says why it matters', /nothing to scale them by/.test(h));
+}
+
+{
+  const h = note([]);
+  check('a quiet week still produces a sendable note', /nothing to project/.test(h));
+  check('and asks for what would end the silence', /still on site/.test(h));
+}
+
+{
+  // On pace and nothing unsigned: the note must not invent an instruction.
+  const h = note([runningJob({
+    actuals: [
+      { date: '2026-05-01', category: 'labor', amount: 1200 },
+      { date: '2026-05-02', category: 'material', amount: 2000 },
+    ],
+  })]);
+  check('a clean week says so rather than manufacturing urgency',
+    /nothing is sitting there to be recovered/.test(h) && !/The one to deal with/.test(h));
 }
 
 console.log(`\n  documents: ${pass} passed, ${fail} failed\n`);
