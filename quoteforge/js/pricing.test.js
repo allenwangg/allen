@@ -1253,6 +1253,93 @@ t('the totals reconcile to the per-job figures', () => {
   eq(r.atRiskCents + r.unspentOverrunCents, r.recoverableCents);
 });
 
+t('property: the forecast holds its invariants across 400 random running jobs', () => {
+  // An agent broke this engine by generating jobs at random; the properties it
+  // established are worth keeping rather than re-deriving. Every one of these
+  // failed at some point during this session's work.
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const cats = ['labor', 'material', 'subcontractor', 'equipment', 'other'];
+  const money = (max) => Math.round(rnd() * max * 100) / 100;
+  const finite = (v, label, i) => {
+    if (v === null) return;
+    if (!Number.isFinite(v)) throw new Error(`iter ${i}: ${label} is ${v}`);
+  };
+
+  let projected = 0, withRisk = 0;
+  for (let i = 0; i < 400; i++) {
+    const items = Array.from({ length: 1 + Math.floor(rnd() * 5) }, (_, j) => ({
+      id: `i${j}`, qty: money(40) || 1, unitCost: money(3000),
+      category: cats[Math.floor(rnd() * cats.length)],
+      markup: rnd() < 0.3 ? Math.round(rnd() * 200) / 100 : null,
+    }));
+    // Change orders including credits (a dropped scope) and unapproved work.
+    const changeOrders = Array.from({ length: Math.floor(rnd() * 3) }, (_, j) => ({
+      id: `c${j}`, number: `CO-0${j + 1}`, title: 'x',
+      status: ['draft', 'sent', 'approved', 'rejected'][Math.floor(rnd() * 4)],
+      items: [{ id: `ci${j}`, qty: 1, category: cats[Math.floor(rnd() * cats.length)],
+        unitCost: rnd() < 0.2 ? -money(2000) : money(2000), markup: null }],
+    }));
+    // Spend including refunds, undated entries, duplicate and unsorted dates.
+    const actuals = Array.from({ length: Math.floor(rnd() * 7) }, (_, j) => ({
+      id: `a${j}`,
+      date: rnd() < 0.12 ? '' : `2026-0${1 + Math.floor(rnd() * 8)}-0${1 + Math.floor(rnd() * 8)}`,
+      category: cats[Math.floor(rnd() * cats.length)],
+      amount: rnd() < 0.1 ? -money(900) : money(3000),
+    }));
+    const est = {
+      id: `e${i}`, title: `J${i}`, items, changeOrders, actuals,
+      progress: { pct: rnd() < 0.1 ? 0 : Math.round(rnd() * 100) / 100 },
+      discount: rnd() < 0.2 ? { type: rnd() < 0.5 ? 'percent' : 'fixed', value: rnd() * 0.2 } : null,
+    };
+    const settings = {
+      ...S,
+      overhead: rnd() * 0.3, contingency: rnd() * 0.15, taxRate: rnd() * 0.12,
+      taxMode: ['none', 'all', 'materials', 'materials_equipment'][Math.floor(rnd() * 4)],
+      floorMargin: rnd() * 0.2, targetMargin: 0.2 + rnd() * 0.2,
+    };
+
+    const f = forecastJob(est, settings);
+    for (const k of ['projectedCostCents', 'projectedOverrunCents', 'projectedProfitCents',
+      'projectedMargin', 'fadeAheadCents', 'paceCentsPerDay', 'daysToBudget']) finite(f[k], k, i);
+
+    if (f.projectedOverrunCents !== null) {
+      projected++;
+      // The forecast may never read better than the snapshot it is built on:
+      // a trade already over budget cannot un-overrun by finishing.
+      ok(f.projectedOverrunCents >= f.costed.overrunCents,
+        `iter ${i}: projected overrun ${f.projectedOverrunCents} < current ${f.costed.overrunCents}`);
+      ok(f.projectedProfitCents <= f.costed.adjustedProfitCents, `iter ${i}: projected profit rose`);
+      ok(f.fadeAheadCents >= 0, `iter ${i}: negative fade-ahead ${f.fadeAheadCents}`);
+    }
+    ok(f.progress >= 0 && f.progress <= 1, `iter ${i}: progress out of range`);
+    // Burn is cumulative, oldest first, one point per distinct date.
+    let prevDate = '';
+    for (const b of f.burn) {
+      ok(b.date > prevDate, `iter ${i}: burn not strictly ascending at ${b.date}`);
+      prevDate = b.date;
+      finite(b.cumulativeCents, 'cumulative', i);
+    }
+
+    const rv = summarizeRunning([est], settings);
+    for (const j of rv.jobs) {
+      ok(j.recoverableCents >= 0, `iter ${i}: negative recoverable ${j.recoverableCents}`);
+      ok(j.atRiskCents >= 0, `iter ${i}: negative at-risk ${j.atRiskCents}`);
+      eq(j.recoverableCents, j.atRiskCents + j.unspentOverrunCents, `iter ${i} row reconciles:`);
+      if (j.atRiskCents > 0) withRisk++;
+      // Every action named must have copy behind it, or the report renders
+      // "undefined" at the client.
+      for (const a of j.actions) ok(['sign', 'change-order', 'watch', 'set-progress', 'under-priced'].includes(a),
+        `iter ${i}: unknown action ${a}`);
+    }
+    eq(rv.recoverableCents, rv.jobs.reduce((a, j) => a + j.recoverableCents, 0), `iter ${i} total reconciles:`);
+    eq(rv.atRiskCents + rv.unspentOverrunCents, rv.recoverableCents, `iter ${i} halves reconcile:`);
+  }
+  // A property check that never exercised the interesting branch is decoration.
+  ok(projected > 150, `only ${projected} of 400 produced a projection`);
+  ok(withRisk > 20, `only ${withRisk} carried unsigned work`);
+});
+
 /* -------------------------------------------- audit findings, pinned ----- */
 
 t('a job that spends exactly on pace never projects a worse margin than it has', () => {
