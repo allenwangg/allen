@@ -18,6 +18,7 @@ Prism is a visual micro-learning app in the spirit of [Imprint](https://imprinta
 - **Adaptive practice** — quick-fire quiz remixes drawn from lessons you've completed, weighted toward the lessons your review history marks as shakiest, per course or across the library; a **match-the-pairs bonus round** after every lesson; **mid-lesson resume** so leaving never loses your place; a 30-day XP history and a first-visit tour.
 - **62 hand-drawn SVG illustrations** set in soft pastel scenes and tinted per course; four themes (system / light / **pastel** / dark), every one of them audited so no text falls below WCAG AA; full keyboard controls (1–4 to answer, Enter to continue, Esc to exit).
 - **Swipe to advance** — cards follow your finger, tilt, and fly out past the threshold or spring back; **a mastery map** on every course page shows what you have actually retained (Solid / Growing / Shaky) from how your review cards are holding up, not merely what you have visited.
+- **Ready to share** — Open Graph and Twitter card tags with a generated preview image, so a pasted link shows the product, not a blank box.
 - **Installs like an app, works with no signal** — a web app manifest and a service worker put Prism on your home screen, full-screen and offline: the whole library, your progress and every review are available on a plane. The home-screen icon carries a badge with the number of reviews you owe. The worker precaches the app shell as one atomic set and is stamped with a content hash at ship time, so new content never serves stale code.
 - **Mobile-first ergonomics** — safe-area insets, touch-action tuning, and layouts audited at phone widths; **backup & restore** moves progress between devices via the clipboard.
 - **Loads like a small app, not a 3 MB one** — browse, paths and course pages render from a 181 KB metadata index while the card text streams in behind first paint. On a throttled Fast 3G connection that took the library from 11.3s to 2.1s, and Slow 4G from 5.4s to 1.1s, with more content than before.
@@ -37,19 +38,31 @@ past lesson one of the other 102 courses, and every one of those lessons sells
 itself on its own locked page — the lesson's title and summary, the price, and
 a button — with none of the card text in the page.
 
-### Setup — about ten minutes
+### Going live — the whole checklist
 
-1. **Stripe:** create a Payment Link for the price you want. Under *After
-   payment*, choose *Don't show confirmation page* and redirect to your app URL
-   with the session id appended, exactly like this:
-   `https://your-app.example/?session_id={CHECKOUT_SESSION_ID}`
-2. **Vercel:** deploy this `prism/` directory as a project and set one
-   environment variable, `STRIPE_SECRET_KEY`. `api/verify.js` is the entire
-   backend. Optionally set `LICENSE_SECRET` so you can rotate the Stripe key
-   later without retiring every license.
-3. **This repo:** in `js/pricing.js` set `provider: 'stripe'` and paste the
-   Payment Link into `checkoutUrl`. Adjust `price`, `freeCourses` and
-   `freeLessonsPerCourse` to taste — `validate.mjs` checks the ids.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fallenwangg%2Fallen&root-directory=prism&project-name=prism&repository-name=prism&env=STRIPE_SECRET_KEY&envDescription=Your%20Stripe%20secret%20key%20%28sk_live_...%29%20%E2%80%94%20the%20only%20setting%20the%20backend%20needs&envLink=https%3A%2F%2Fdashboard.stripe.com%2Fapikeys)
+
+1. **Deploy.** Click the button (or in Vercel: *Add New → Project*, import
+   this repo, set the root directory to `prism`). Set one environment
+   variable, `STRIPE_SECRET_KEY`. That is the entire backend. Note the URL
+   Vercel gives you.
+2. **Stripe: a Payment Link.** Products → add *Prism Pro*, one-time, at the
+   price you want → *Create payment link*. Under *After payment*, choose
+   *Don't show confirmation page* and redirect to:
+   `https://<your-vercel-url>/?session_id={CHECKOUT_SESSION_ID}`
+   (Optional: a second link for a monthly *subscription* price — a monthly
+   number next to a lifetime one makes lifetime the obvious choice.)
+3. **Two lines in `js/pricing.js`.** `provider: 'stripe'`, the Payment Link
+   in the lifetime plan's `checkoutUrl`, and `siteUrl` set to your Vercel URL
+   so shared links carry a preview card. Add the monthly plan if you made
+   one. Run `node validate.mjs` — it checks the URLs and the free-course ids.
+4. **Push.** Vercel redeploys on every push. Open the site, hit a Pro lesson,
+   buy it with Stripe's test card (`4242 4242 4242 4242`) while the key is
+   `sk_test_…`, confirm the welcome toast, then switch the key to `sk_live_…`.
+
+Optional but worth it: `LICENSE_SECRET` in Vercel lets you rotate the Stripe
+key later without retiring every license; and in the Vercel project, turn on
+*Web Analytics* to see traffic and which pages people leave from.
 
 ### How entitlement works — no database
 

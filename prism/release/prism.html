@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Prism</title>
 <meta name="description" content="Prism: visual, bite-sized lessons in psychology, philosophy, money and more — with built-in spaced repetition so it actually sticks.">
+<!-- social preview; ship.mjs makes these absolute when pricing.siteUrl is set -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Prism">
+<meta property="og:title" content="Prism — learn something that sticks">
+<meta property="og:description" content="Visual, bite-sized lessons across 114 courses, with spaced repetition built in so what you learn actually stays.">
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prism — learn something that sticks">
+<meta name="twitter:description" content="Visual, bite-sized lessons across 114 courses, with spaced repetition built in so what you learn actually stays.">
+<meta name="twitter:image" content="og.png">
 <meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e0d17" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
@@ -650,6 +662,22 @@ cite { display: block; margin-top: 16px; color: var(--mut); font-style: normal; 
 .pro-price b { font-family: var(--font-display); font-size: 32px; font-weight: 600; }
 .pro-price span { color: var(--mut); font-size: 14px; }
 .pro-note { color: var(--mut); font-size: 13.5px; margin: 0 0 10px; }
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 12px; }
+@media (max-width: 420px) { .plans { grid-template-columns: 1fr; } }
+.plan {
+  display: flex; flex-direction: column; gap: 4px; padding: 14px 14px 12px; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2);
+}
+.plan.featured { border-color: var(--accent-line); background: var(--accent-soft); }
+.plan-label { font-size: 13px; font-weight: 700; color: var(--mut); display: flex; align-items: center; gap: 8px; }
+.plan-label em {
+  font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent-strong); background: var(--surface); border-radius: 6px; padding: 2px 6px;
+}
+.plan b { font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.1; }
+.plan-term { color: var(--mut); font-size: 12.5px; min-height: 2.6em; }
+.plan .btn { margin-top: 6px; text-align: center; }
+
 .key-form { display: flex; gap: 8px; margin-top: 12px; }
 .key-form[hidden] { display: none; }   /* display:flex would otherwise defeat the hidden attribute */
 .key-in {
@@ -1835,15 +1863,24 @@ button, .btn, .choice, .grade { user-select: none; -webkit-user-select: none; }
    2. Deploy prism/ on Vercel with STRIPE_SECRET_KEY set. api/verify.js is the
       entire backend: it confirms the session was paid and issues a signed
       license token the app keeps. Nothing else to run.
-   3. Set provider to 'stripe' and checkoutUrl to the Payment Link below.
+   3. Set provider to 'stripe' and put the Payment Link in the lifetime plan
+      below. To offer a second option — a monthly plan makes a lifetime price
+      look like the obvious choice — add another plan with its own Payment
+      Link; the checkout must be a subscription for the app to treat it as one.
+   4. Set siteUrl to where the app lives, so shared links carry a preview card.
 
    Until then provider is 'none': the app runs as a free preview, and the key
    PRISM-DEMO unlocks Pro locally so the whole flow can be tried. */
 window.PRICING = {
   provider: 'none',            // 'stripe' | 'none'
-  checkoutUrl: '',             // your Stripe Payment Link
+  siteUrl: '',                 // e.g. 'https://prism.example' — used for social preview cards
   verifyUrl: 'api/verify',     // relative, so it works under any deploy path
-  price: { amount: '$29', term: 'once — yours forever, on every device' },
+  plans: [
+    // The first plan is the headline. featured: true marks the one to steer to.
+    { id: 'lifetime', label: 'Lifetime', amount: '$29', term: 'once — yours forever, on every device',
+      checkoutUrl: '', featured: true }
+    // , { id: 'month', label: 'Monthly', amount: '$5', term: 'a month, cancel any time', checkoutUrl: '' }
+  ],
   freeLessonsPerCourse: 1,
   freeCourses: [
     'cognitive-biases', 'learning-how-to-learn', 'stoicism', 'psychology-of-money',
@@ -1978,7 +2015,23 @@ window.PRICING = {
 
   function deactivate() { Store.clearPro(); }
 
-  function checkoutUrl() { return cfg().checkoutUrl || ''; }
+  /* Plans as configured, or the legacy single price as a one-plan list. */
+  function plans() {
+    var c = cfg(), list = c.plans && c.plans.length ? c.plans : [
+      { id: 'lifetime', label: 'Lifetime', amount: (c.price || {}).amount || '', term: (c.price || {}).term || '', checkoutUrl: c.checkoutUrl || '', featured: true }
+    ];
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var p = list[i];
+      out.push({ id: p.id || ('plan' + i), label: p.label || '', amount: p.amount || '', term: p.term || '',
+        checkoutUrl: p.checkoutUrl || '', featured: !!p.featured || (i === 0 && !hasFeatured(list)) });
+    }
+    return out;
+  }
+  function hasFeatured(list) { for (var i = 0; i < list.length; i++) if (list[i].featured) return true; return false; }
+  function featuredPlan() { var ps = plans(); for (var i = 0; i < ps.length; i++) if (ps[i].featured) return ps[i]; return ps[0]; }
+
+  function checkoutUrl() { return featuredPlan().checkoutUrl || cfg().checkoutUrl || ''; }
 
   /* Called once at boot. A checkout return claims its session; otherwise the
      daily re-check runs. Either way the promise resolves to a result or null. */
@@ -1996,8 +2049,8 @@ window.PRICING = {
     isPro: isPro, plan: plan, configured: configured, provider: provider,
     lessonLocked: lessonLocked, lessonCounts: lessonCounts, freeCourseCount: freeCourseCount, freeCourse: freeCourse,
     activateKey: activateKey, claimSession: claimSession, refresh: refresh, deactivate: deactivate,
-    checkoutUrl: checkoutUrl, boot: boot,
-    price: function () { return cfg().price || { amount: '', term: '' }; }
+    checkoutUrl: checkoutUrl, boot: boot, plans: plans,
+    price: function () { var f = featuredPlan(); return { amount: f.amount, term: f.term }; }
   };
 })();
 
@@ -63061,11 +63114,25 @@ window.COURSES_FULL = [
         '<li>Certificates for every course you finish</li>' +
         '<li>Works offline on every device \u2014 one key restores it</li>' +
       '</ul>' +
-      '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
-    if (Pro.configured() && Pro.checkoutUrl()) {
-      h += '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
+      '';
+    var plans = Pro.plans(), live = Pro.configured() && Pro.checkoutUrl();
+    if (live && plans.length > 1) {
+      // several plans: a table, each with its own checkout; the featured one leads
+      h += '<div class="plans">';
+      for (var pi = 0; pi < plans.length; pi++) {
+        var pl = plans[pi];
+        h += '<a class="plan' + (pl.featured ? ' featured' : '') + '" href="' + esc(pl.checkoutUrl) + '" target="_blank" rel="noopener"' + (pl.featured ? ' id="pro-buy"' : '') + '>' +
+          '<span class="plan-label">' + esc(pl.label) + (pl.featured ? '<em>Best value</em>' : '') + '</span>' +
+          '<b>' + esc(pl.amount) + '</b><span class="plan-term">' + esc(pl.term) + '</span>' +
+          '<span class="btn ' + (pl.featured ? 'primary' : 'ghost') + '">Choose ' + esc(pl.label) + '</span></a>';
+      }
+      h += '</div><div class="modal-row"><button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
+    } else if (live) {
+      h += '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>' +
+        '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
         '<button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
     } else {
+      h += '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
       h += '<p class="pro-note">Purchases aren\u2019t switched on for this copy yet.</p>' +
         '<div class="modal-row"><button class="btn primary" id="pro-key-toggle">I have a license key</button></div>';
     }

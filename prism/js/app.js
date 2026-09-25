@@ -2045,11 +2045,25 @@
         '<li>Certificates for every course you finish</li>' +
         '<li>Works offline on every device \u2014 one key restores it</li>' +
       '</ul>' +
-      '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
-    if (Pro.configured() && Pro.checkoutUrl()) {
-      h += '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
+      '';
+    var plans = Pro.plans(), live = Pro.configured() && Pro.checkoutUrl();
+    if (live && plans.length > 1) {
+      // several plans: a table, each with its own checkout; the featured one leads
+      h += '<div class="plans">';
+      for (var pi = 0; pi < plans.length; pi++) {
+        var pl = plans[pi];
+        h += '<a class="plan' + (pl.featured ? ' featured' : '') + '" href="' + esc(pl.checkoutUrl) + '" target="_blank" rel="noopener"' + (pl.featured ? ' id="pro-buy"' : '') + '>' +
+          '<span class="plan-label">' + esc(pl.label) + (pl.featured ? '<em>Best value</em>' : '') + '</span>' +
+          '<b>' + esc(pl.amount) + '</b><span class="plan-term">' + esc(pl.term) + '</span>' +
+          '<span class="btn ' + (pl.featured ? 'primary' : 'ghost') + '">Choose ' + esc(pl.label) + '</span></a>';
+      }
+      h += '</div><div class="modal-row"><button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
+    } else if (live) {
+      h += '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>' +
+        '<div class="modal-row"><a class="btn primary" id="pro-buy" href="' + esc(Pro.checkoutUrl()) + '" target="_blank" rel="noopener">Get Prism Pro</a>' +
         '<button class="btn ghost" id="pro-key-toggle">I have a license key</button></div>';
     } else {
+      h += '<p class="pro-price"><b>' + esc(price.amount) + '</b><span>' + esc(price.term) + '</span></p>';
       h += '<p class="pro-note">Purchases aren\u2019t switched on for this copy yet.</p>' +
         '<div class="modal-row"><button class="btn primary" id="pro-key-toggle">I have a license key</button></div>';
     }

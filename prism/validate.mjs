@@ -108,7 +108,13 @@ const pricing = pricingSandbox.window.PRICING;
 if (!pricing) e('js/pricing.js did not define window.PRICING');
 else {
   if (['stripe', 'none'].indexOf(pricing.provider) < 0) e(`pricing.provider "${pricing.provider}" is not stripe or none`);
-  if (pricing.provider === 'stripe' && !/^https:\/\//.test(pricing.checkoutUrl || '')) e('pricing.provider is stripe but checkoutUrl is not an https URL');
+  const plans = (pricing.plans && pricing.plans.length) ? pricing.plans : [{ id: 'lifetime', checkoutUrl: pricing.checkoutUrl }];
+  if (pricing.provider === 'stripe') {
+    for (const pl of plans) if (!/^https:\/\//.test(pl.checkoutUrl || '')) e(`pricing.provider is stripe but plan "${pl.id}" has no https checkoutUrl`);
+  }
+  const planIds = plans.map(p => p.id);
+  if (new Set(planIds).size !== planIds.length) e('pricing.plans has duplicate ids');
+  if (pricing.siteUrl && !/^https:\/\/[^/]+$/.test(pricing.siteUrl)) e('pricing.siteUrl must be an https origin with no trailing path, e.g. https://prism.example');
   if (!Number.isInteger(pricing.freeLessonsPerCourse) || pricing.freeLessonsPerCourse < 0) e('pricing.freeLessonsPerCourse must be a non-negative integer');
   const ids = new Set((courses || []).map(c => c.id));
   for (const id of pricing.freeCourses || []) if (!ids.has(id)) e(`pricing.freeCourses names "${id}", which is not a course`);

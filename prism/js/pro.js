@@ -122,7 +122,23 @@
 
   function deactivate() { Store.clearPro(); }
 
-  function checkoutUrl() { return cfg().checkoutUrl || ''; }
+  /* Plans as configured, or the legacy single price as a one-plan list. */
+  function plans() {
+    var c = cfg(), list = c.plans && c.plans.length ? c.plans : [
+      { id: 'lifetime', label: 'Lifetime', amount: (c.price || {}).amount || '', term: (c.price || {}).term || '', checkoutUrl: c.checkoutUrl || '', featured: true }
+    ];
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var p = list[i];
+      out.push({ id: p.id || ('plan' + i), label: p.label || '', amount: p.amount || '', term: p.term || '',
+        checkoutUrl: p.checkoutUrl || '', featured: !!p.featured || (i === 0 && !hasFeatured(list)) });
+    }
+    return out;
+  }
+  function hasFeatured(list) { for (var i = 0; i < list.length; i++) if (list[i].featured) return true; return false; }
+  function featuredPlan() { var ps = plans(); for (var i = 0; i < ps.length; i++) if (ps[i].featured) return ps[i]; return ps[0]; }
+
+  function checkoutUrl() { return featuredPlan().checkoutUrl || cfg().checkoutUrl || ''; }
 
   /* Called once at boot. A checkout return claims its session; otherwise the
      daily re-check runs. Either way the promise resolves to a result or null. */
@@ -140,7 +156,7 @@
     isPro: isPro, plan: plan, configured: configured, provider: provider,
     lessonLocked: lessonLocked, lessonCounts: lessonCounts, freeCourseCount: freeCourseCount, freeCourse: freeCourse,
     activateKey: activateKey, claimSession: claimSession, refresh: refresh, deactivate: deactivate,
-    checkoutUrl: checkoutUrl, boot: boot,
-    price: function () { return cfg().price || { amount: '', term: '' }; }
+    checkoutUrl: checkoutUrl, boot: boot, plans: plans,
+    price: function () { var f = featuredPlan(); return { amount: f.amount, term: f.term }; }
   };
 })();

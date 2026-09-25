@@ -172,6 +172,30 @@ const go = (page, h) => page.evaluate(h => { location.hash = h; }, h).then(() =>
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- two plans: a pricing table
+{
+  const ctx = await b.newContext({ viewport: { width: 900, height: 900 }, serviceWorkers: 'block' });
+  const page = await ctx.newPage();
+  const errs = []; page.on('pageerror', e => errs.push(String(e)));
+  await page.route('**/js/pricing.js', route => route.fulfill({ status: 200, contentType: 'text/javascript',
+    body: readFileSync(join(root, 'js/pricing.js'), 'utf8')
+      .replace("provider: 'none'", "provider: 'stripe'")
+      .replace("checkoutUrl: '', featured: true }",
+        "checkoutUrl: 'https://buy.stripe.com/test_life', featured: true }, { id: 'month', label: 'Monthly', amount: '$5', term: 'a month, cancel any time', checkoutUrl: 'https://buy.stripe.com/test_month' }") }));
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => Store.markToured());
+  await page.evaluate(() => { location.hash = '#/pro'; }); await page.waitForSelector('.plans', { timeout: 5000 }).catch(() => {});
+  ok(await page.locator('.plan').count() === 2, 'two configured plans render as a pricing table');
+  ok(await page.locator('.plan.featured').count() === 1, 'exactly one plan is featured');
+  ok((await page.getAttribute('#pro-buy', 'href')) === 'https://buy.stripe.com/test_life', 'the featured plan is the headline checkout');
+  ok((await page.locator('.plan').nth(1).getAttribute('href')) === 'https://buy.stripe.com/test_month', 'the second plan links to its own checkout');
+  ok((await page.locator('.plan').nth(1).getAttribute('target')) === '_blank', 'plan links open Stripe in a new tab');
+  const homePrice = await (async () => { await page.evaluate(() => { location.hash = '#/'; }); await page.waitForSelector('.pro-card'); return page.locator('.pro-card p').textContent(); })();
+  ok(/\$29/.test(homePrice || ''), 'the home card quotes the featured plan\u2019s price');
+  ok(errs.length === 0, 'no page errors (two plans)' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
 await b.close(); server.close();
 console.log(fail ? `${fail} FAILED` : 'ALL PASS');
 process.exit(fail ? 1 : 0);

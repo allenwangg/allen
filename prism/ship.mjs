@@ -2,6 +2,7 @@
 // Usage: node ship.mjs [stagedDir]   (default: the session scratchpad staging dir)
 import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync, mkdirSync, renameSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -115,6 +116,22 @@ writeFileSync(join(root, 'js/data/index.js'),
   '   Carries everything the browse views need so the card text can load behind them. */\n' +
   'window.COURSES = ' + JSON.stringify(index, null, 1).replace(/<\//g, '<\\/') + ';\n');
 console.log(`js/data/index.js written (${(readFileSync(join(root, 'js/data/index.js')).length / 1024).toFixed(0)} KB vs ${(readFileSync(COURSES).length / 1024).toFixed(0)} KB full)`);
+
+// Social preview: keep the course count in the description honest, and make the
+// image and canonical URL absolute once pricing.siteUrl says where the app lives.
+{
+  const P = join(root, 'index.html');
+  let html = readFileSync(P, 'utf8');
+  html = html.replace(/across \d+ courses/g, `across ${courses.length} courses`);
+  const pcfg = { window: {} }; vm.createContext(pcfg);
+  vm.runInContext(readFileSync(join(root, 'js/pricing.js'), 'utf8'), pcfg);
+  const site = (pcfg.window.PRICING || {}).siteUrl || '';
+  html = html.replace(/(property="og:image" content=")[^"]*"/, `$1${site ? site + '/' : ''}og.png"`);
+  html = html.replace(/(name="twitter:image" content=")[^"]*"/, `$1${site ? site + '/' : ''}og.png"`);
+  html = html.replace(/<meta property="og:url" content="[^"]*">\n/, '');
+  if (site) html = html.replace('<meta property="og:type" content="website">', `<meta property="og:url" content="${site}/">\n<meta property="og:type" content="website">`);
+  writeFileSync(P, html);
+}
 
 // stamp the service worker with a hash of everything it precaches, so shipping
 // new content retires every previously cached copy instead of serving it forever
