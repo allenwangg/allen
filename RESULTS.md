@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 66 tests, run on CI |
+| Automated test suite | none public | ✅ 68 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -51,7 +51,7 @@ product titles, public click counts):
 | Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
 | Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 66/66 passing
+## 2. Functional correctness — 68/68 passing
 
 `node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
 the Stripe ledger reader exercised against a mock Stripe. This suite also runs
@@ -112,6 +112,7 @@ PASS  Watch Mode keeps keyboard focus inside the overlay
 PASS  a live board reconstructs its Hall of Fame from the ledger
 PASS  a dare link finds its target on a live board, not just the demo one
 PASS  the empire strip sells the next tier and a dying flame with one tap
+PASS  ledger notices clear when the ledger recovers
 PASS  API decodes both the encoded and legacy reference formats
 PASS  API ranks by cumulative payment, breaking ties by who paid first
 PASS  a cheap bid cannot hijack an established listing's link or decree
@@ -123,9 +124,10 @@ PASS  a refunded or disputed payment loses its rank
 PASS  a hostile listing name cannot hijack the marketing robot's posts
 PASS  a ref survives non-Latin names, and both decoders agree
 PASS  the ledger window pages completed sessions, not abandoned carts
+PASS  walking ?name= cannot amplify one laptop into unlimited Stripe reads
 PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-66/66 tests passed
+68/68 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -134,10 +136,10 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **96 ms** |
-| DOMContentLoaded | **72 ms** |
+| First Contentful Paint | **112 ms** |
+| DOMContentLoaded | **80 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
-| Page weight | **109.9 KB raw / 33.3 KB gzipped** |
+| Page weight | **110.1 KB raw / 33.4 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
 | Backend | **none** — the board is computed from the Stripe ledger |
 

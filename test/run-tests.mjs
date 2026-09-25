@@ -997,6 +997,38 @@ await test("the empire strip sells the next tier and a dying flame with one tap"
     `tapping the tier button should open the form prefilled to $${shape.expectedGap} for ShipFast, got ${shape.name} $${shape.amt}`);
 });
 
+await test("ledger notices clear when the ledger recovers", async () => {
+  // Both notices wrote to the same ribbon imperatively, so a partial ledger
+  // latched on permanently — the board kept apologising long after the read
+  // came back clean, and it stranded the outage notice's restore path too.
+  const rctx = await browser.newContext();
+  const rp = await rctx.newPage();
+  await rp.goto(url + "?nosim", { waitUntil: "domcontentloaded" });
+  await rp.waitForTimeout(400);
+  const seen = await rp.evaluate(async () => {
+    const now = Math.floor(Date.now() / 1000);
+    const bid = { id: "r1", ref: encodeRef("Steady Co", "s.io", ""), amount: 200, at: now };
+    let payload = { configured: true, partial: true, bids: [bid] };
+    CONFIG.BOARD_FEED_URL = "stub://ribbon";
+    window.fetch = async () => ({ json: async () => payload });
+    const text = () => (document.querySelector("#demoRibbon").textContent || "").trim().slice(0, 20);
+    await mergeBoardFeed();
+    const whilePartial = text();
+    payload = { configured: true, error: "stripe_unavailable", bids: [] };
+    await mergeBoardFeed();
+    const whileDown = text();
+    payload = { configured: true, bids: [bid] };          // everything recovers
+    await mergeBoardFeed();
+    const after = { text: text(), shown: document.querySelector("#demoRibbon").classList.contains("show") };
+    return { whilePartial, whileDown, after };
+  });
+  await rctx.close();
+  assert(/Partial ledger/.test(seen.whilePartial), `a truncated ledger should say so, got "${seen.whilePartial}"`);
+  assert(/Ledger unreachable/.test(seen.whileDown), `an outage should say so, got "${seen.whileDown}"`);
+  assert(!seen.after.shown,
+    `the ribbon still shows "${seen.after.text}" after the ledger recovered — the board keeps apologising`);
+});
+
 console.log("\nLedger API");
 const { decodeRef, rank } = require(join(root, "api", "_board.js"));
 const b64 = s => Buffer.from(s, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -1250,6 +1282,50 @@ await test("the ledger window pages completed sessions, not abandoned carts", as
   delete process.env.STRIPE_API_BASE;
   assert(sawStatus === "complete",
     `the session list must filter to completed sessions, sent status=${sawStatus}`);
+});
+
+await test("walking ?name= cannot amplify one laptop into unlimited Stripe reads", async () => {
+  // /api/badge and /api/ledger each read the WHOLE ledger and only then pick a
+  // row, and the edge caches per query string — so one distinct name per request
+  // meant one full Stripe pagination per request: real cost, and rate-limit
+  // exhaustion that takes /api/board down for actual visitors.
+  let stripeHits = 0;
+  const mock = createServer((req, res) => {
+    stripeHits++;
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ has_more: false, data: [
+      { id: "cs_amp", payment_status: "paid", amount_total: 50000, currency: "usd", created: 10,
+        client_reference_id: "b64." + b64("Target Co|target.io|"),
+        payment_intent: { latest_charge: { amount_refunded: 0, disputed: false } } },
+    ] }));
+  });
+  await new Promise(r => mock.listen(0, "127.0.0.1", r));
+  process.env.STRIPE_API_BASE = `http://127.0.0.1:${mock.address().port}`;
+  process.env.STRIPE_SECRET_KEY = "sk_test_x";
+  for (const m of ["_board.js", "badge.js", "ledger.js"]) delete require.cache[require.resolve(join(root, "api", m))];
+  const badge = require(join(root, "api", "badge.js"));
+  const ledger = require(join(root, "api", "ledger.js"));
+  const sink = () => { const r = { setHeader(){}, status(){ return r; }, send(){ return r; }, json(){ return r; } }; return r; };
+
+  // 12 distinct names, alternating endpoints — an attacker's walk.
+  const walk = [];
+  for (let i = 0; i < 12; i++) {
+    const handler = i % 2 ? badge : ledger;
+    walk.push(handler({ query: { name: `ghost-${i}` } }, sink()));
+  }
+  await Promise.all(walk);
+  const afterWalk = stripeHits;
+  // A real listing must still resolve correctly off the shared read.
+  let body = "";
+  const res2 = { setHeader(){}, status(){ return res2; }, send(h){ body = h; return res2; } };
+  await ledger({ query: { name: "Target Co" } }, res2);
+  mock.close();
+  delete process.env.STRIPE_API_BASE; delete process.env.STRIPE_SECRET_KEY;
+
+  assert(afterWalk <= 2,
+    `12 distinct names triggered ${afterWalk} full Stripe reads — each one is billable and rate-limited`);
+  assert(/\$500/.test(body),
+    "the shared ledger read must still resolve a real listing correctly");
 });
 
 await test("public ledger page renders a listing's payments without leaking full session IDs", async () => {

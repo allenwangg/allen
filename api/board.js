@@ -7,7 +7,7 @@
 // Cached at Vercel's edge for 15s so a viral spike hits Stripe a few times a
 // minute rather than a few thousand.
 
-const { fetchBids } = require("./_board.js");
+const { fetchBidsCached } = require("./_board.js");
 
 module.exports = async (req, res) => {
   res.setHeader("access-control-allow-origin", "*");
@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const bids = await fetchBids(key);
+    const bids = await fetchBidsCached(key);
     res.setHeader("cache-control", "public, s-maxage=15, stale-while-revalidate=120");
     return res.status(200).json({ configured: true, partial: bids.partial === true, bids });
   } catch (err) {

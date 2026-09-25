@@ -5,7 +5,7 @@
 // can hand this URL to anyone who asks "is that rank real?", and the operator
 // answers chargeback disputes with it. Renders on-brand HTML.
 
-const { fetchBids, decodeRef, rank } = require("./_board.js");
+const { fetchBidsCached, decodeRef, rank } = require("./_board.js");
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const usd = (n) => "$" + Math.round(n).toLocaleString("en-US");
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const bids = await fetchBids(key);
+    const bids = await fetchBidsCached(key);
     const mine = bids.filter((b) => decodeRef(b.ref).name.toLowerCase() === name.toLowerCase());
     if (!mine.length) {
       return res.status(200).send(page(`${name} · OUTRANKED ledger`, `<div class="card">
