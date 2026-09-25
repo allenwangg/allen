@@ -193,9 +193,13 @@ not at renewal.
 - [ ] Post A published in one community
 - [ ] After each audit: did question 2 land? Note the answer verbatim.
 - [ ] After each audit: asked "which jobs are running right now?" and offered the monthly check
+- [ ] `retainer` set in `AUDIT_CONFIG`, or deliberately left empty until the first audits land
+- [ ] One weekly review rehearsed on your own running job, start to sent email
 
 ## When to stop
 
 If after five audits nobody was stung by question 2 and nobody asked what you would
-charge — stop selling audits. Keep the app free, keep using it yourself, and revisit
+charge — stop selling audits. The monthly check has its own version of this test: if
+three months of reviews have not caused a single change order to be written, the
+forecast is not changing anyone's behaviour and you should stop charging for it. Keep the app free, keep using it yourself, and revisit
 `REVENUE.md` for the other paths. Evidence over sunk cost, in both directions.

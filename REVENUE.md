@@ -76,9 +76,15 @@ keep paying is made after it has caught something.
 
 **Realistic pricing:** $150–250/mo per contractor; the page defaults to $200. **What it
 does to the arithmetic:** 40 audits a year at $400 is $16k. If a third of them keep the
-monthly check for an average of six months, that is another ~$16k — the same revenue
-again, from people who already said yes once, with no new distribution. That ratio is a
-hypothesis until three people have paid a second month; treat it as such.
+monthly check for six *paid* months — the first is included with the audit, so that is a
+seven-month relationship — that is another ~$16k from people who already said yes once,
+with no new distribution.
+
+Say the combined number plainly, because it is the point of the exercise and it is not a
+large one: roughly **$32k a year** on those assumptions. That is a part-time income, not a
+business, and every figure in it is a hypothesis until three people have paid a second
+month. What it is good for is that it doubles the return on distribution you have already
+paid for, which is the scarce thing here — not effort, and not software.
 
 **The collection exists too.** The intake link now carries "still on site" and a
 percentage complete, so a weekly update costs the contractor the same ten minutes

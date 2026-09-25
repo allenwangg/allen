@@ -44,12 +44,12 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   not templated.
 - **A shareable intake link.** `intake.html` is the same questions as a page the
   contractor fills in on their own time; it packs their answers into a URL fragment they
-  send back, which the app unpacks into a finished audit. No server, and — because
-  fragments are never transmitted — their figures are not sent anywhere at all.
+  send back, which the app unpacks into a job. No server, and — because fragments are
+  never transmitted — their figures are not sent anywhere at all.
 - **A one-screen audit intake.** Twelve fields — what they charged, cost by trade
-  estimated and actual, and what changed — reconstruct a finished job exactly and produce
-  the audit report. It exists because the margin audit is the one offer worth selling and
-  its cost was an hour of rebuilding someone else's job by hand.
+  estimated and actual, what changed, and how far along it is — reconstruct someone else's
+  job exactly, as a finished audit or a running one. It exists because the margin audit is
+  the one offer worth selling and its cost was an hour of rebuilding a job by hand.
 - **A contract statement** — the one-page document that settles the last argument on a
   job. The client remembers a number from months ago and the final bill is larger; this
   lays the original contract beside every approved change, each with the date they
@@ -61,7 +61,6 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   as *money at risk* — including your own cost already sunk into it — so the exposure
   is visible from any tab rather than surfacing when the final invoice is disputed.
 - **Print to PDF** through the browser's own print dialog. No PDF library, no server.
-
 - **Works with no signal.** A service worker precaches the app shell, so it cold-loads
   in a basement with no bars — which is where a change order actually gets written.
 - **Job costing**, because the third leak is margin fade: the job was priced at 25%,
@@ -70,6 +69,25 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   under; overruns erode the profit figure dollar for dollar, on screen, while the job
   is still running. Erosion is the sum of per-category overruns — deliberately not
   netted against underspent categories, because unbought tile is not savings.
+- **A forecast, not just a post-mortem.** Say how far along the job is and the Costs
+  tab projects where it finishes: cost at completion, margin at completion, which trade
+  is ahead of pace and how much of the projected overrun is still unspent — the part a
+  change order written this week can still recover. Spend draws as a cumulative line
+  against the budget, with the projection dotted on. It refuses to project under 10%
+  done and flags anything under 25%, because materials land before the labor that
+  installs them.
+- **A weekly job review you can send.** One printable page across every running
+  job: what is still recoverable this week, where each job is heading, and one
+  instruction per job — get the signature, write it up, tell me how far along, or
+  nothing. Its headline is the opposite of the audit report's: money still in
+  play rather than money already lost. Already-spent overrun is deliberately left
+  out of that total, because nothing done this week gets it back.
+- **One form for both.** The link a contractor fills in says whether the job is
+  finished or still on site, and how far along it is. Finished, it becomes an
+  audit; running, it joins the weekly review with its forecast already built.
+  Links written before the field existed still read, as finished jobs. Next
+  week's link for a job it already has updates that job in place, keeping its
+  number and created date, so the review never shows one kitchen five times.
 
 ## What it deliberately does not do
 
@@ -89,7 +107,7 @@ Six modules, no framework, no build:
 | `js/pricebook.js` | The starter catalog, the user-override layer, and assembly expansion. |
 | `js/store.js` | State, persistence, undo/redo, import/export, migration. |
 | `js/app.js` | UI wiring. Renders from state; owns no truth of its own. |
-| `js/proposal.js` | The client-facing document, as a pure function of state. |
+| `js/proposal.js` | Every document — client-facing and operator-facing — as a pure function of state. |
 | `js/intake-link.js` | Packs a job summary into a URL fragment and back. |
 
 Three decisions worth knowing about:
@@ -108,6 +126,12 @@ is correct only when there is no contingency and no pass-through line. With eith
 present it undershoots. Rather than maintain fragile algebra that would silently go
 wrong the next time the pipeline changes, the solver searches against the real
 `priceEstimate`. Margin is monotonic in markup and the search space is tiny.
+
+**The service worker's cache name is a hash of the shell.** It is cache-first, so a
+deploy that changed a module but not the cache name would leave every returning
+contractor on the old code. `tools/stamp-shell.mjs` writes the hash and `js/sw.test.js`
+fails while it is stale, so a shell change cannot reach a green commit without the bump
+that delivers it. After touching anything the app loads, run the stamper.
 
 **No server, on purpose.** Zero hosting cost, no signup friction, works with no signal
 on a job site, and no custody of anyone's client list. The honest cost is that data is
@@ -167,22 +191,3 @@ Worth recording, because both were invisible by inspection:
    signature but not the signatures on its change orders, so a new job could ship
    carrying a client's mark authorizing work they had never seen. The test that was
    supposed to cover this was named "drops signatures" and never asserted it.
-- **A forecast, not just a post-mortem.** Say how far along the job is and the Costs
-  tab projects where it finishes: cost at completion, margin at completion, which trade
-  is ahead of pace and how much of the projected overrun is still unspent — the part a
-  change order written this week can still recover. Spend draws as a cumulative line
-  against the budget, with the projection dotted on. It refuses to project under 10%
-  done and flags anything under 25%, because materials land before the labor that
-  installs them.
-- **A weekly job review you can send.** One printable page across every running
-  job: what is still recoverable this week, where each job is heading, and one
-  instruction per job — get the signature, write it up, tell me how far along, or
-  nothing. Its headline is the opposite of the audit report's: money still in
-  play rather than money already lost. Already-spent overrun is deliberately left
-  out of that total, because nothing done this week gets it back.
-- **One form for both.** The link a contractor fills in says whether the job is
-  finished or still on site, and how far along it is. Finished, it becomes an
-  audit; running, it joins the weekly review with its forecast already built.
-  Links written before the field existed still read, as finished jobs. Next
-  week's link for a job it already has updates that job in place, keeping its
-  number and created date, so the review never shows one kitchen five times.
