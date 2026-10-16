@@ -21,6 +21,11 @@ const FILES = [
   // outside this guard entirely — which is how a retracted statistical claim
   // survived in it after being chased out of four other files.
   'README.md',
+  // These produce sentences a user reads — the registry's cohort headlines, a
+  // certificate's rendered text, the log screen's explanation of what it
+  // stopped asking for. They were outside this guard purely because they were
+  // written after the list was, which is exactly how a claim gets in.
+  'app/js/registry.js', 'app/js/certificate.js', 'app/js/prereg.js', 'app/js/attention.js',
 ];
 
 export const RULES = [

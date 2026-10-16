@@ -754,7 +754,7 @@ export function attainableR(xs, ys) {
   return m == null || !Number.isFinite(m) || m <= 0 ? 1 : m;
 }
 
-function hasUsableVariance(values) {
+export function hasUsableVariance(values) {
   const uniq = new Set(values);
   // Two distinct values is enough, PROVIDED the minority is well represented —
   // which is what the count below enforces. Requiring three used to be the

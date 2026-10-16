@@ -12,6 +12,7 @@ import { discover, weekdayEffects, loggingBiasChecks, symptomTrend, alignedPairs
 import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } from './experiments.js';
 import { commit as commitPrereg, verify as verifyPrereg } from './prereg.js';
 import { issue as issueCertificate } from './certificate.js';
+import { fieldAttention } from './attention.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
@@ -130,6 +131,9 @@ function recompute() {
     // Whether the log itself is trustworthy is upstream of every finding drawn
     // from it, so it is computed with them and shown above them.
     state.logBias = loggingBiasChecks(state.entries, state.symptoms);
+    // Which habit questions are still worth a person's time. Same memo as the
+    // rest: it reads the whole log and recompute() fires on every slider drag.
+    state.attention = fieldAttention(state.entries);
     // The direction badge on the Today screen. Memoised with the rest because
     // it runs a permutation test per symptom, and recompute() fires on every
     // slider drag.
@@ -389,6 +393,9 @@ const actions = {
     go('trials');
     toast('Pre-filled — check the length and start when you are ready');
   },
+
+  'show-all-fields': async () => { state.showAllFields = true; render(); },
+  'hide-inert-fields': async () => { state.showAllFields = false; render(); },
 
   'start-trial': async () => {
     const d = state.trialDraft;

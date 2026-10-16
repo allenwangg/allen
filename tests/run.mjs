@@ -3,13 +3,14 @@ import { violations as guardViolations } from './copy-guard.mjs';
 import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from '../app/js/prereg.js';
 import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert, canonicalCertificate } from '../app/js/certificate.js';
 import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/registry.js';
+import { fieldAttention, attentionSummary, MIN_DAYS_TO_JUDGE } from '../app/js/attention.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
  * Covers the two things that must not break: scoring monotonicity and the
  * statistical honesty of the insight engine.
  */
-import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX, validateFactors, validateFactorAmounts, AMOUNT_MAX } from '../app/js/model.js';
+import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX, validateFactors, validateFactorAmounts, AMOUNT_MAX, DRIVER_FIELDS } from '../app/js/model.js';
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
@@ -2582,6 +2583,91 @@ t('an embedder can run the whole loop through the package alone', async () => {
   const cohort = E.cohorts(many, { registrations: { [E.cohortKey(undefined, 'Migraine')]: 32 } }).cohorts[0];
   eq(cohort.reported, 30);
   ok(cohort.rate > 0.25 && cohort.rate < 0.35, `expected ~30% responders, got ${cohort.rate}`);
+});
+
+/** A faithful but routine logger: varies four things, leaves the rest alone. */
+function routineLogger(days = 120, seed = 7) {
+  const r = mulberry32(seed);
+  const symptoms = [{ id: 's_a', label: 'Fatigue', primary: true }];
+  const es = [];
+  for (let i = 0; i < days; i++) {
+    const e = emptyEntry(addDays('2026-01-01', i), symptoms);
+    e.sleepHours = 6.5 + r() * 2;
+    e.stress = 1 + Math.floor(r() * 5);
+    e.steps = Math.round(4000 + r() * 4000);
+    e.alcoholUnits = r() < 0.25 ? 1 + Math.round(r()) : 0;
+    e.symptoms = { s_a: Math.max(0, Math.min(4, Math.round(2 + (r() - 0.5) * 2))) };
+    es.push(e);
+  }
+  return es;
+}
+
+t('the app stops asking for questions that cannot answer anything', () => {
+  // Measured on this exact generator: twelve of the sixteen habit fields are
+  // mathematically incapable of ever producing a finding, because the person's
+  // answers never vary. The engine skips them in silence; the log screen used
+  // to ask for all sixteen every day, forever. Daily cost is what kills
+  // symptom trackers, so this is the largest avoidable one here.
+  const att = fieldAttention(routineLogger());
+  ok(att.judged);
+  eq(att.live.length + att.inert.length, DRIVER_FIELDS.length);
+  ok(att.inert.length >= 10, `expected most fields inert for a routine logger, got ${att.inert.length}`);
+  for (const f of ['sleepHours', 'stress', 'steps', 'alcoholUnits']) {
+    ok(att.live.includes(f), `${f} varies and must still be asked for`);
+  }
+  // Every hidden field explains itself in terms of what the person did.
+  for (const f of att.inert) {
+    const n = att.notes[f];
+    ok(n && n.label && /same on/.test(n.reason), `no usable explanation for ${f}: ${JSON.stringify(n)}`);
+    ok(n.sameCount <= n.days);
+  }
+  ok(/line up with how you feel/.test(attentionSummary(att)), attentionSummary(att));
+});
+
+t('nothing is hidden before there is enough history to judge it', () => {
+  // Below three weeks everything looks constant. Demoting a field on day four
+  // would be a guess wearing the clothes of a measurement.
+  for (const days of [0, 1, 7, MIN_DAYS_TO_JUDGE - 1]) {
+    const att = fieldAttention(routineLogger(days));
+    eq(att.inert.length, 0, `judged too early at ${days} days`);
+    eq(att.live.length, DRIVER_FIELDS.length, `must still ask for everything at ${days} days`);
+    eq(attentionSummary(att), null);
+  }
+  eq(fieldAttention([]).inert.length, 0);
+  eq(fieldAttention(null).inert.length, 0);
+});
+
+t('a field that starts varying comes back on its own', () => {
+  // The self-fulfilling-prophecy guard. Hide "strength session" from someone
+  // about to start lifting and it must not stay hidden once they do.
+  const base = routineLogger(120);
+  const att1 = fieldAttention(base);
+  ok(att1.inert.includes('strengthSession'), 'should start inert');
+
+  const r = mulberry32(99);
+  const after = base.map((e, i) => (i < 90 ? e : { ...e, strengthSession: r() < 0.5 ? 1 : 0 }));
+  const att2 = fieldAttention(after);
+  ok(att2.live.includes('strengthSession'),
+    'once the answers vary the question must return without the user asking');
+});
+
+t('the app asks about exactly what the engine can test', () => {
+  // The set of things asked for daily and the set the engine can analyse have
+  // to be the same set, or the app is spending someone's time on a
+  // technicality. Both come from hasUsableVariance; this pins them together.
+  const es = routineLogger(120);
+  const att = fieldAttention(es);
+  const res = discover(es, { symptoms: [{ id: 's_a', label: 'Fatigue', primary: true }], factors: [] });
+  const everTested = new Set((res.findings || []).map((f) => f.driver.replace(/^w7_/, '')));
+  for (const f of everTested) {
+    ok(!att.inert.includes(f), `${f} produced a finding but the app stopped asking for it`);
+  }
+  // And a symptom or user factor is never hidden, whatever its variance —
+  // it is the person's own question, not a field the app chose for them.
+  const flat = es.map((e) => ({ ...e, symptoms: { s_a: 2 }, factors: { f_x: 1 } }));
+  const att3 = fieldAttention(flat);
+  ok(!att3.inert.some((f) => f.startsWith('s_') || f.startsWith('f_')),
+    'symptoms and user factors must never be demoted');
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

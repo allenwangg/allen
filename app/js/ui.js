@@ -8,6 +8,7 @@
  */
 
 import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX } from './model.js';
+import { attentionSummary } from './attention.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, MAX_PAIRS as TRIAL_MAX_PAIRS, DEFAULT_PAIRS, trialOutlook } from './experiments.js';
 import { sensitivityNote, labelFor, isLowerBetter, TREND_WINDOW, compareWindows } from './insights.js';
@@ -270,15 +271,41 @@ function leverageCard(state) {
 
 export function logView(state) {
   const entry = state.draft;
+  // Fields the person answers identically every day cannot explain anything —
+  // the engine already skips them. Asking for them daily anyway is the largest
+  // avoidable cost this app imposes, and daily cost is what kills trackers.
+  // See app/js/attention.js.
+  const att = state.attention || { live: Object.keys(FIELDS), inert: [], notes: {}, judged: false };
+  const isInert = (name) => att.inert.includes(name) && !state.showAllFields;
+
   const groups = Object.entries(GROUPS).map(([gid, g]) => {
     const fields = Object.entries(FIELDS).filter(([, f]) => f.group === gid);
     if (!fields.length) return '';
-    const inner = fields.map(([name, f]) => fieldControl(name, f, entry[name])).join('');
+    const shown = fields.filter(([name]) => !isInert(name));
+    const hidden = fields.filter(([name]) => isInert(name));
+    if (!shown.length) return '';
+    const inner = shown.map(([name, f]) => fieldControl(name, f, entry[name])).join('');
     return `<div class="card">
-      <div class="card-head"><h2>${esc(g.label)}</h2></div>
+      <div class="card-head"><h2>${esc(g.label)}</h2>${hidden.length
+        ? `<div class="spacer"></div><span class="subtle">${hidden.length} hidden</span>` : ''}</div>
       ${inner}
     </div>`;
   }).join('');
+
+  const attentionCard = att.inert.length && !state.showAllFields ? `<div class="card">
+    <p class="muted" style="margin:0 0 10px">${esc(attentionSummary(att))}</p>
+    <div class="table-wrap"><table class="table">
+      <tbody>${att.inert.slice(0, 20).map((f) => {
+        const n = att.notes[f];
+        return `<tr><td>${esc(n.label)}</td><td class="subtle">${esc(n.reason)}</td></tr>`;
+      }).join('')}</tbody>
+    </table></div>
+    <button class="btn btn-sm" data-action="show-all-fields" style="margin-top:12px">Show them anyway</button>
+  </div>` : (state.showAllFields && att.inert.length ? `<div class="card">
+    <p class="muted" style="margin:0 0 10px">Showing everything, including ${att.inert.length} questions your
+    answers never vary on. Nothing in those can line up with how you feel until they start changing.</p>
+    <button class="btn btn-sm" data-action="hide-inert-fields">Hide them again</button>
+  </div>` : '');
 
   const symptomCard = symptomLogCard(state);
   const factorCard = factorLogCard(state);
@@ -307,6 +334,7 @@ export function logView(state) {
   ${symptomCard}
   ${factorCard}
   ${groups}
+  ${attentionCard}
   <div class="card">
     <div class="field"><div class="field-head"><label for="notes">Notes</label></div>
       <textarea id="notes" data-field="notes" placeholder="Anything worth remembering about today…">${esc(entry.notes || '')}</textarea></div>
