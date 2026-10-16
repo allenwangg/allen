@@ -5,6 +5,8 @@ import { issue as issueCert, check as checkCert, exactP as certExactP, render as
 import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/registry.js';
 import { fieldAttention, attentionSummary, MIN_DAYS_TO_JUDGE } from '../app/js/attention.js';
 import { buildReminder, reminderFilename } from '../app/js/reminder.js';
+import { onCalendar, coverageNote, MAX_SPAN_DAYS } from '../app/js/timeline.js';
+import { lineChart, sparkline } from '../app/js/charts.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2808,6 +2810,161 @@ t('the report offers no measurement the person never took', () => {
   }
   // And the symptom they did record is untouched.
   eq(es.filter((e) => e.symptoms.s_mig > 0).length, 12);
+});
+
+
+/* ------------------------------------------------------------------ *
+ * The calendar axis — an absence must not render as data
+ * ------------------------------------------------------------------ */
+
+/** 10 days at 1, a 14-day silence, 7 days at 4. The case that exposed this. */
+function gappyMonth() {
+  const mk = (d) => `2026-03-${String(d).padStart(2, '0')}`;
+  const out = [];
+  for (let d = 1; d <= 10; d++) out.push({ date: mk(d), value: 1 });
+  for (let d = 25; d <= 31; d++) out.push({ date: mk(d), value: 4 });
+  return out;
+}
+
+t('calendar axis gives every day in the span a slot', () => {
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  eq(tl.span, 31, 'span');
+  eq(tl.points.length, 31, 'slots');
+  eq(tl.logged, 17, 'logged');
+  eq(tl.missing, 14, 'missing');
+  eq(tl.coverage, 55, 'coverage');
+  eq(tl.points[0].date, '2026-03-01');
+  eq(tl.points[30].date, '2026-03-31');
+  // The 11th through the 24th are the unlogged ones, and must be null.
+  for (let i = 10; i <= 23; i++) {
+    eq(tl.points[i].value, null, `day ${tl.points[i].date} value`);
+    eq(tl.points[i].logged, false, `day ${tl.points[i].date} logged`);
+  }
+});
+
+t('calendar axis reports the gap as one run with real dates', () => {
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  eq(tl.gaps.length, 1, 'one gap');
+  eq(tl.gaps[0].from, '2026-03-11');
+  eq(tl.gaps[0].to, '2026-03-24');
+  eq(tl.gaps[0].days, 14);
+  eq(tl.longestGap, 14);
+});
+
+t('a logged day with this field blank is not counted as a missed day', () => {
+  // The distinction the old code could not make: you logged, you just did not
+  // weigh yourself. Calling that a gap in the diary would be a false
+  // accusation, and the coverage number is what the report leans on.
+  const rows = [
+    { date: '2026-03-01', w: 70 }, { date: '2026-03-02', w: null },
+    { date: '2026-03-03', w: null }, { date: '2026-03-04', w: 71 },
+  ];
+  const tl = onCalendar(rows, (e) => e.w);
+  eq(tl.span, 4); eq(tl.logged, 4); eq(tl.missing, 0); eq(tl.gaps.length, 0);
+  eq(tl.points[1].value, null, 'blank field is still null for the line');
+  eq(tl.points[1].logged, true, 'but the day was logged');
+});
+
+t('the line breaks across an unlogged stretch instead of drawing through it', () => {
+  // THE REGRESSION TEST. Before the calendar axis, this exact series produced a
+  // single unbroken 17-point path and described itself as spanning the month —
+  // a symptom that climbed smoothly from mild to very bad, which is not what
+  // happened.
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  const svg = lineChart(tl.points, { min: 0, max: 4, gaps: tl.gaps, coverage: tl.coverage });
+  const path = svg.match(/<path d="([^"]*)" class="line"/)[1];
+  const moves = (path.match(/M/g) || []).length;
+  eq(moves, 2, 'the path must be two separate runs, not one');
+  // And the surviving points must land on their true dates: ten days of the
+  // month is ten slots of thirty-one, not ten of seventeen.
+  const firstRun = path.split(/M/)[1];
+  eq((firstRun.match(/L/g) || []).length, 9, 'nine segments in the first ten days');
+});
+
+t('an unlogged stretch is drawn as a marked absence, not left blank', () => {
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  const svg = lineChart(tl.points, { min: 0, max: 4, gaps: tl.gaps });
+  ok(/class="gap-band"/.test(svg), 'the gap is shaded');
+  ok(/<pattern id="va-gap-/.test(svg), 'shaded with hatching, not a flat tint');
+  ok(/No entry for 14 days, 2026-03-11 to 2026-03-24/.test(svg), 'and says what it is on hover');
+});
+
+t('two charts on one page get different hatch ids', () => {
+  // Inline SVGs share the document id namespace. Two charts both defining
+  // #gap-hatch and the second silently fills with the first one's pattern.
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  const a = lineChart(tl.points, { gaps: tl.gaps, label: 'Migraine over time' });
+  const b = lineChart(tl.points, { gaps: tl.gaps, label: 'Fatigue over time' });
+  const idOf = (svg) => svg.match(/<pattern id="(va-gap-[^"]+)"/)[1];
+  ok(idOf(a) !== idOf(b), 'ids must differ between charts');
+  // And be stable between renders, or every repaint rewrites the markup.
+  eq(idOf(lineChart(tl.points, { gaps: tl.gaps, label: 'Migraine over time' })), idOf(a));
+});
+
+t('the chart labels its axis ends, not its first and last datum', () => {
+  // A window whose last fortnight is empty used to claim it ended on the last
+  // day somebody happened to log.
+  const tl = onCalendar(gappyMonth(), (e) => e.value, { to: '2026-04-10' });
+  const svg = lineChart(tl.points, { min: 0, max: 4, gaps: tl.gaps });
+  ok(/10 Apr/.test(svg), 'right-hand label is the end of the window');
+  ok(!/>31 Mar</.test(svg), 'not the last logged day');
+});
+
+t('the accessible description admits the missing days', () => {
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  const svg = lineChart(tl.points, { min: 0, max: 4, gaps: tl.gaps, coverage: tl.coverage });
+  const desc = svg.match(/<desc>([^<]*)<\/desc>/)[1];
+  ok(/17 of 31 days plotted/.test(desc), `desc should state the ratio: ${desc}`);
+  ok(/14 days have no entry/.test(desc), `desc should state the absence: ${desc}`);
+  ok(/Coverage 55%/.test(desc), `desc should state coverage: ${desc}`);
+});
+
+t('a window given in days is a window of time, not of entries', () => {
+  // Someone who logs twice a week: `.slice(-60)` reached back seven months
+  // under a caption that said sixty days.
+  const rows = [];
+  for (let i = 0; i < 60; i++) rows.push({ date: addDays('2026-01-01', i * 7), value: 1 });
+  const tl = onCalendar(rows, (e) => e.value, { days: 60 });
+  eq(tl.span, 60, 'exactly sixty calendar days');
+  ok(tl.logged <= 9, `sixty days holds at most nine weekly entries, got ${tl.logged}`);
+});
+
+t('an absurd span is truncated at the recent end and says so', () => {
+  const rows = [{ date: '2019-01-01', value: 1 }, { date: '2026-03-31', value: 4 }];
+  const tl = onCalendar(rows, (e) => e.value);
+  eq(tl.span, MAX_SPAN_DAYS);
+  eq(tl.points[tl.points.length - 1].date, '2026-03-31', 'anchored on the recent end');
+  eq(tl.truncated, true);
+});
+
+t('the coverage note states the number the shape depends on', () => {
+  const tl = onCalendar(gappyMonth(), (e) => e.value);
+  const note = coverageNote(tl, { what: 'the symptom' });
+  ok(/17 of these 31 days/.test(note), note);
+  ok(/55%/.test(note), note);
+  ok(/not days without the symptom/.test(note), 'must not let absence read as a zero');
+  ok(/longest unlogged stretch is 14 days/.test(note), note);
+  // A complete log says so rather than nothing.
+  eq(coverageNote(onCalendar([{ date: '2026-03-01', value: 1 }], (e) => e.value)).includes('Every one'), true);
+});
+
+t('a sparkline does not join across a gap either', () => {
+  // Same fabrication as the main chart, at 96px wide. It used to map every
+  // value to a point and filter the nulls away before joining them.
+  const svg = sparkline([1, 2, 3, null, null, null, 9, 8]);
+  eq((svg.match(/<polyline/g) || []).length, 2, 'two runs, two polylines');
+  ok(/with 1 break where there is no entry/.test(svg), 'and it says so in the label');
+  // A run of one day has no segment, so it gets a dot or it disappears.
+  eq((sparkline([1, null, 5, null, 9]).match(/<circle/g) || []).length, 3);
+});
+
+t('onCalendar survives empty and junk input', () => {
+  for (const bad of [null, undefined, [], [null], [{}], [{ date: 7 }]]) {
+    const tl = onCalendar(bad, (e) => e.value);
+    eq(tl.points.length, 0, `${JSON.stringify(bad)} points`);
+    eq(tl.gaps.length, 0, `${JSON.stringify(bad)} gaps`);
+    eq(coverageNote(tl), null, `${JSON.stringify(bad)} note`);
+  }
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

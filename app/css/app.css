@@ -364,6 +364,14 @@ textarea { min-height: 76px; resize: vertical; }
 .chart .scatter-trend { stroke: var(--bad); stroke-width: 1.8; stroke-dasharray: 5 4; }
 .spark { width: 96px; height: 26px; }
 .spark-line { stroke: var(--accent); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.spark-dot  { fill: var(--accent); }
+
+/* Stretches with no entry. Hatched rather than tinted so they cannot be read
+ * as a reference band, and so they survive a greyscale print — this chart gets
+ * handed to a doctor on paper. */
+.chart .gap-bg    { fill: var(--surface-2); }
+.chart .gap-hatch { stroke: var(--grid); stroke-width: 2.2; }
+.chart .gap-band  { opacity: .9; }
 
 /* ---------------- insights ---------------- */
 

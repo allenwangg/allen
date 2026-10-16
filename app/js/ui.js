@@ -14,6 +14,7 @@ import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemai
 import { sensitivityNote, labelFor, isLowerBetter, TREND_WINDOW, compareWindows } from './insights.js';
 import { render as renderCertificate } from './certificate.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
+import { onCalendar, coverageNote } from './timeline.js';
 
 /* ---------------- shared bits ---------------- */
 
@@ -73,11 +74,20 @@ export function todayView(state) {
     <div class="card">
       <div class="card-head"><h2>How your habits have been</h2><div class="spacer"></div>
         <span class="subtle">${t.score ?? '--'} on ${t.date === dateKey() ? 'today' : esc(t.date)}</span></div>
-      ${lineChart(report.scored.map((x) => ({ date: x.date, value: x.score })), {
-        smooth: state.smoothed, bands: [{ from: 70, to: 100 }],
-        label: 'Habit score over time',
-        width: state.narrow ? 380 : 720, height: state.narrow ? 220 : 240,
-      })}
+      ${(() => {
+        // On the calendar, not on the list of days you happened to log. The
+        // smoothed overlay is indexed off `report.scored`, which is the sparse
+        // list, so it has to be laid on the same axis or the two lines drift
+        // apart by however many days are missing.
+        const tl = onCalendar(report.scored, (x) => x.score, { days: 90 });
+        const smoothByDate = new Map(report.scored.map((x, i) => [x.date, state.smoothed?.[i] ?? null]));
+        return lineChart(tl.points, {
+          smooth: tl.points.map((pt) => smoothByDate.get(pt.date) ?? null),
+          bands: [{ from: 70, to: 100 }], gaps: tl.gaps, coverage: tl.coverage,
+          label: 'Habit score over time',
+          width: state.narrow ? 380 : 720, height: state.narrow ? 220 : 240,
+        }) + (tl.missing ? `<p class="subtle" style="margin-top:6px">${esc(coverageNote(tl, { what: 'habits' }))}</p>` : '');
+      })()}
       <p class="subtle" style="margin-top:8px">
         ${trend == null ? 'Not enough days yet to call a direction.'
           : `${fmtDelta(trend)} points per week over ${trendWindow} days.`}
@@ -115,7 +125,10 @@ function symptomCard(state, symptoms) {
   const recent = entries.slice(-28);
   const cards = symptoms.map((sym) => {
     const vals = recent.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);
-    const all = entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null }));
+    // 60 CALENDAR days, not the last 60 entries. For anyone who logs a few
+    // times a week the old `.slice(-60)` reached back five months under a
+    // caption that said nothing about it.
+    const tl = onCalendar(entries, (e) => e.symptoms?.[sym.id] ?? null, { days: 60 });
     const anyDays = vals.filter((v) => v > 0).length;
     // Tested, not eyeballed. A fixed 0.3-point threshold on two 14-day halves
     // claimed a direction on 23-59% of symptoms whose rate never changed at
@@ -134,8 +147,10 @@ function symptomCard(state, symptoms) {
       <p class="muted" style="margin-bottom:8px">
         ${vals.length ? `Some of it on <strong>${anyDays}</strong> of your last ${vals.length} logged days.`
                       : 'Not logged yet.'}</p>
-      ${lineChart(all.slice(-60), { min: 0, max: 4, yTicks: [0, 2, 4], label: `${sym.label} over time`,
+      ${lineChart(tl.points, { min: 0, max: 4, yTicks: [0, 2, 4], label: `${sym.label} over time`,
+        gaps: tl.gaps, coverage: tl.coverage,
         width: state.narrow ? 360 : 460, height: 130, showDots: 0 })}
+      ${tl.missing ? `<p class="subtle" style="margin-top:4px">${esc(coverageNote(tl, { what: 'the symptom' }))}</p>` : ''}
     </div>`;
   }).join('');
   return `<div class="grid ${symptoms.length > 1 ? 'grid-2' : ''}" style="margin-bottom:16px">${cards}</div>`;
@@ -795,7 +810,7 @@ export function reportView(state) {
         : tested.direction === 'steady' ? 'no change at all'
         : tested.direction,
       shift: Math.round(shift * 10) / 10,
-      series: entries.map((e) => ({ date: e.date, value: e.symptoms?.[sym.id] ?? null })),
+      timeline: onCalendar(entries, (e) => e.symptoms?.[sym.id] ?? null),
     };
   };
 
@@ -850,10 +865,12 @@ export function reportView(state) {
             main.shift ? ` (${main.shift > 0 ? '+' : ''}${main.shift} on a 0–4 scale${
               main.tested ? `, p = ${main.tested.p < 0.0001 ? '&lt;0.0001' : main.tested.p}` : ''})` : ''}.`
         : `That is too few days to say anything about a direction yet.`}</p>
-      ${lineChart(main.series, {
+      ${lineChart(main.timeline.points, {
         min: 0, max: 4, yTicks: [0, 1, 2, 3, 4], label: `${main.sym.label} severity over time`,
+        gaps: main.timeline.gaps, coverage: main.timeline.coverage,
         width: state.narrow ? 380 : 720, height: state.narrow ? 200 : 220,
       })}
+      ${main.timeline.missing ? `<p class="subtle">${esc(coverageNote(main.timeline, { what: 'the symptom' }))}</p>` : ''}
     </div>` : ''}
 
     ${others.length ? `<div class="card">

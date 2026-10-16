@@ -23,6 +23,34 @@ const n = (x) => (Number.isFinite(x) ? Math.round(x * 100) / 100 : 0);
 /** Rough advance width for the tabular label font, good enough for collision tests. */
 const approxTextWidth = (text) => String(text).length * 6.6;
 
+/**
+ * A stable per-chart id suffix.
+ *
+ * Inline SVGs share the host document's id namespace, so two charts both
+ * defining `#gap-hatch` collide and the second one's fill silently resolves to
+ * the first one's pattern. Deriving the suffix from the chart's own label keeps
+ * it unique between charts and identical between renders — a counter would
+ * change the markup on every repaint for no reason.
+ */
+function domId(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+
+/**
+ * Diagonal hatching for stretches with no entry.
+ *
+ * Deliberately not a flat tint: reference bands in this chart are flat rects,
+ * and "no data" must not be mistakable for "the good zone". Hatching is the
+ * long-standing convention for absent data and survives greyscale printing,
+ * which matters because this chart gets handed to a doctor on paper.
+ */
+const hatchDef = (id) =>
+  `<defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">`
+  + `<rect width="7" height="7" class="gap-bg"/>`
+  + `<line x1="0" y1="0" x2="0" y2="7" class="gap-hatch"/></pattern></defs>`;
+
 /* ------------------------------------------------------------------ *
  * Line / area chart with a smoothed overlay
  * ------------------------------------------------------------------ */
@@ -36,6 +64,7 @@ export function lineChart(points, opts = {}) {
     width = 720, height = 240, pad = { t: 16, r: 14, b: 28, l: 34 },
     min = 0, max = 100, smooth = null, label = 'Score over time',
     bands = [], showDots = null, yTicks = [0, 25, 50, 75, 100],
+    gaps = [], coverage = null,
   } = opts;
 
   const iw = width - pad.l - pad.r;
@@ -52,6 +81,23 @@ export function lineChart(points, opts = {}) {
   // Reference bands (e.g. "good" zone) drawn behind everything.
   const bandRects = bands.map((b) => `<rect x="${pad.l}" y="${n(y(b.to))}" width="${n(iw)}" `
     + `height="${n(Math.abs(y(b.from) - y(b.to)))}" fill="${esc(b.color || 'var(--band)')}" opacity="${b.opacity ?? 0.5}"/>`).join('');
+
+  // Unlogged stretches, drawn before the grid so the gridlines stay readable
+  // through them. A gap is marked in place rather than left blank: blank space
+  // on a chart reads as a measured zero, and the whole point of putting the
+  // series back on a calendar axis is that an absence should look like one.
+  const hatchId = `va-gap-${domId(label)}`;
+  const step = points.length > 1 ? iw / (points.length - 1) : iw;
+  const shaded = gaps.filter((g) => g.days >= 2);
+  const gapRects = shaded.length
+    ? hatchDef(hatchId) + shaded.map((g) => {
+        const x0 = Math.max(pad.l, x(g.start) - step / 2);
+        const x1 = Math.min(pad.l + iw, x(g.end) + step / 2);
+        return `<rect x="${n(x0)}" y="${pad.t}" width="${n(Math.max(x1 - x0, 1))}" height="${n(ih)}" `
+          + `fill="url(#${hatchId})" class="gap-band">`
+          + `<title>No entry for ${esc(g.days)} days, ${esc(g.from)} to ${esc(g.to)}</title></rect>`;
+      }).join('')
+    : '';
 
   const gridLines = yTicks.map((t) =>
     `<line x1="${pad.l}" y1="${n(y(t))}" x2="${n(pad.l + iw)}" y2="${n(y(t))}" class="grid"/>`
@@ -90,21 +136,30 @@ export function lineChart(points, opts = {}) {
     `<circle cx="${n(x(i))}" cy="${n(y(p.value))}" r="2.6" class="dot"><title>${esc(p.date)}: ${n(p.value)}</title></circle>`
   )).join('');
 
-  const first = points.find((p) => p.value != null);
+  // The axis ends, not the first and last point with a value. On a calendar
+  // axis those differ, and labelling the axis with the data's range made a
+  // chart whose right-hand third was empty claim to end on the last day
+  // somebody happened to log.
   const last = [...points].reverse().find((p) => p.value != null);
   const xLabels = points.length > 1
-    ? `<text x="${pad.l}" y="${height - 8}" class="axis-label" text-anchor="start">${esc(shortDate(first.date))}</text>`
-      + `<text x="${n(pad.l + iw)}" y="${height - 8}" class="axis-label" text-anchor="end">${esc(shortDate(last.date))}</text>`
+    ? `<text x="${pad.l}" y="${height - 8}" class="axis-label" text-anchor="start">${esc(shortDate(points[0].date))}</text>`
+      + `<text x="${n(pad.l + iw)}" y="${height - 8}" class="axis-label" text-anchor="end">${esc(shortDate(points[points.length - 1].date))}</text>`
     : '';
 
   const vals = valid.map((p) => p.value);
-  const desc = `${label}. ${valid.length} points from ${first.date} to ${last.date}. `
-    + `Low ${n(Math.min(...vals))}, high ${n(Math.max(...vals))}, latest ${n(last.value)}.`;
+  const missing = points.length - valid.length;
+  const desc = `${label}. ${valid.length} of ${points.length} days plotted, `
+    + `${points[0].date} to ${points[points.length - 1].date}. `
+    + `Low ${n(Math.min(...vals))}, high ${n(Math.max(...vals))}, latest ${n(last.value)}.`
+    + (missing ? ` ${missing} ${missing === 1 ? 'day has' : 'days have'} no entry`
+        + (shaded.length ? `, shown as hatched stretches` : '')
+        + `; the line breaks across them.` : '')
+    + (coverage != null ? ` Coverage ${coverage}%.` : '');
 
   return `<svg viewBox="0 0 ${width} ${height}" class="chart chart-line" role="img" `
     + `aria-label="${esc(desc)}" preserveAspectRatio="xMidYMid meet">`
     + `<title>${esc(label)}</title><desc>${esc(desc)}</desc>`
-    + bandRects + gridLines
+    + bandRects + gapRects + gridLines
     + (areaPath ? `<path d="${areaPath}" class="area"/>` : '')
     + `<path d="${linePath}" class="line" fill="none"/>`
     + (smoothPath ? `<path d="${smoothPath}" class="line-smooth" fill="none"/>` : '')
@@ -332,13 +387,30 @@ export function sparkline(values, opts = {}) {
   const valid = values.filter((v) => v != null);
   if (valid.length < 2) return `<svg viewBox="0 0 ${width} ${height}" class="spark" aria-hidden="true"></svg>`;
   const min = Math.min(...valid), max = Math.max(...valid);
-  const d = values.map((v, i) => {
-    if (v == null) return null;
+  const xy = (v, i) => {
     const x = (i / (values.length - 1)) * width;
     const y = height - 2 - ((v - min) / (max - min || 1)) * (height - 4);
     return `${n(x)},${n(y)}`;
-  }).filter(Boolean);
+  };
+  // One polyline per unbroken run. This used to map every value to a point and
+  // then `.filter(Boolean)` the nulls away before joining them into a single
+  // polyline — which drew a straight segment from the last day before a gap to
+  // the first day after it. Same fabrication as the main chart had, at 96px
+  // wide, in a place nobody would think to check.
+  const runs = [];
+  let cur = [];
+  values.forEach((v, i) => {
+    if (v == null) { if (cur.length) runs.push(cur); cur = []; return; }
+    cur.push(xy(v, i));
+  });
+  if (cur.length) runs.push(cur);
+
+  const gapped = runs.length > 1 ? `, with ${runs.length - 1} ${runs.length === 2 ? 'break' : 'breaks'} where there is no entry` : '';
   return `<svg viewBox="0 0 ${width} ${height}" class="spark" role="img" `
-    + `aria-label="Trend from ${n(valid[0])} to ${n(valid[valid.length - 1])}">`
-    + `<polyline points="${d.join(' ')}" fill="none" class="spark-line"/></svg>`;
+    + `aria-label="Trend from ${n(valid[0])} to ${n(valid[valid.length - 1])}${gapped}">`
+    // A run of one has no segment to draw, so it gets a dot or it vanishes.
+    + runs.map((r) => (r.length === 1
+        ? `<circle cx="${r[0].split(',')[0]}" cy="${r[0].split(',')[1]}" r="1.4" class="spark-dot"/>`
+        : `<polyline points="${r.join(' ')}" fill="none" class="spark-line"/>`)).join('')
+    + '</svg>';
 }

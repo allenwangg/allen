@@ -32,7 +32,7 @@ const VERSION = 'vitalarc-abd02e996f5c1301';   // stamped by scripts/stamp-sw.mj
 const SHELL = [
   './', './index.html', './css/app.css',
   './js/app.js', './js/ui.js', './js/engine.js', './js/insights.js',
-  './js/model.js', './js/store.js', './js/prereg.js', './js/certificate.js', './js/registry.js', './js/attention.js', './js/reminder.js', './js/charts.js', './js/sample.js', './js/experiments.js', './js/safety.js',
+  './js/model.js', './js/store.js', './js/prereg.js', './js/certificate.js', './js/registry.js', './js/attention.js', './js/reminder.js', './js/timeline.js', './js/charts.js', './js/sample.js', './js/experiments.js', './js/safety.js',
   './manifest.webmanifest',
 ];
 
