@@ -483,6 +483,29 @@ const actions = {
     render();
   },
 
+  /**
+   * Put a field back to "not measured".
+   *
+   * Before this there was no way back. A stray touch on the bodyweight slider
+   * — parked at its 25kg minimum, because the field has no default — recorded
+   * an adult as weighing 25kg, fed that into the protein target, and nothing in
+   * the interface could retract it. An absence has to stay absent, which means
+   * there has to be a way to return to one.
+   *
+   * Cleared into `touched`, not out of it: "I deliberately have no figure for
+   * this" and "I never opened this field" both store null, and the distinction
+   * only matters to the save path, which treats them the same. Adding it to
+   * touched keeps the clear from being undone by a later save.
+   */
+  'clear-field': async (el) => {
+    const name = el.dataset.field;
+    if (!name || !(name in FIELDS)) return;
+    state.draft[name] = null;
+    (state.touched ||= new Set()).add(name);
+    state.dirty = true;
+    recompute(); render();
+  },
+
   'show-all-fields': async () => { state.showAllFields = true; render(); },
   'hide-inert-fields': async () => { state.showAllFields = false; render(); },
 
@@ -880,8 +903,33 @@ function wire() {
   document.addEventListener('input', (ev) => {
     const t = ev.target;
 
+    // A clock, entered as a clock. 288 slider positions to say "half eleven"
+    // was absurd when the platform has a control for it.
+    if (t.dataset.fieldTime) {
+      const m = /^(\d{1,2}):(\d{2})/.exec(t.value || '');
+      state.draft[t.dataset.fieldTime] = m ? Number(m[1]) * 60 + Number(m[2]) : null;
+      (state.touched ||= new Set()).add(t.dataset.fieldTime);
+      state.dirty = true;
+      t.classList.toggle('is-unset', !m);
+      state.draftScore = scoreDay(state.draft, profileCtx());
+      updateLiveScore(t);
+      return;
+    }
+
     if (t.dataset.field) {
-      const v = t.type === 'range' || t.type === 'number' ? Number(t.value) : t.value;
+      let v;
+      if (t.type === 'number') {
+        // An emptied number field means "I did not measure this", NOT zero.
+        // Number('') is 0, so without this branch clearing the bodyweight box
+        // would record the person as weighing nothing — the exact failure the
+        // save path was fixed to prevent, re-entering through the keyboard.
+        v = t.value.trim() === '' ? null : Number(t.value);
+        if (v != null && !Number.isFinite(v)) return;
+      } else if (t.type === 'range') {
+        v = Number(t.value);
+      } else {
+        v = t.value;
+      }
       state.draft[t.dataset.field] = v;
       (state.touched ||= new Set()).add(t.dataset.field);
       state.dirty = true;
@@ -1069,11 +1117,30 @@ function updateSimReadout(input) {
  */
 function updateLiveScore(input) {
   const wrap = input.closest('.field');
+  const name = input.dataset.field || input.dataset.fieldTime;
+  const f = FIELDS[name];
+  const v = state.draft[name];
+
+  // The slider and the typed box are two views of one number, and neither may
+  // re-render during use: a full render replaces a slider mid-drag (which
+  // releases the pointer capture and kills the drag after one step) and throws
+  // the caret to the end of a number field mid-word. So they are synced in
+  // place, each updating the other.
+  if (wrap) {
+    const range = wrap.querySelector('input[type=range]');
+    const num = wrap.querySelector('input.field-num');
+    if (range && range !== input && v != null) range.value = String(v);
+    if (num && num !== input) num.value = v == null ? '' : String(Math.round(v * 100) / 100);
+    if (range) range.classList.toggle('is-unset', v == null);
+    const clear = wrap.querySelector('.field-clear');
+    if (clear) clear.hidden = v == null;
+  }
+
   const out = wrap?.querySelector('.field-value');
   if (out) {
-    const f = FIELDS[input.dataset.field];
-    const v = Number(input.value);
-    if (f?.unit === 'clock') {
+    if (v == null) {
+      out.textContent = 'not said';
+    } else if (f?.unit === 'clock') {
       out.textContent = `${String(Math.floor(v / 60) % 24).padStart(2, '0')}:${String(v % 60).padStart(2, '0')}`;
     } else {
       out.textContent = `${Math.round(v * 100) / 100}${f?.unit && f.unit !== 'bool' ? ' ' + f.unit : ''}`;

@@ -7,7 +7,7 @@
  * delegation in app.js, so re-rendering never orphans a listener.
  */
 
-import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX } from './model.js';
+import { FIELDS, GROUPS, dateKey, parseDateKey, daysBetween, SEVERITY, AMOUNT, SEVERITY_MAX, needsTypedEntry } from './model.js';
 import { attentionSummary } from './attention.js';
 import { PILLAR_LABELS, PILLAR_WEIGHTS } from './engine.js';
 import { leversFor, getLever, leverForDriver, trialDays, trialEndDate, daysRemaining, isComplete, schedule, floorP, MIN_PAIRS as TRIAL_MIN_PAIRS, MAX_PAIRS as TRIAL_MAX_PAIRS, DEFAULT_PAIRS, trialOutlook } from './experiments.js';
@@ -439,41 +439,100 @@ function factorLogCard(state) {
   </div>`;
 }
 
+/**
+ * One field on the log screen.
+ *
+ * THE MEASUREMENT THAT FORCED THIS. Every numeric field was a drag-only
+ * slider. At phone width (326px) bodyweight declares 2,750 positions, which is
+ * 0.119px per step: one finger-pixel moves it 0.84kg, so a specific weight
+ * cannot be entered. Steps gives 0.54px per step — a pixel is 184 steps. Those
+ * fields were not fiddly, they were impossible, and the app was recording
+ * whatever the finger happened to land on as a measurement.
+ *
+ * Worse, the four nullable biomarkers had no way back. A stray touch on the
+ * bodyweight slider — parked at its minimum of 25kg, because the field has no
+ * default — recorded an adult as weighing 25kg, which then fed the protein
+ * target, and nothing in the UI could un-say it. That is a hole straight
+ * through the fix that stopped this app inventing measurements: an absence has
+ * to stay absent, which means there must be a way back to absent.
+ *
+ * So: a typed entry wherever the slider cannot resolve its own step or the
+ * value is something you read off a device (see needsTypedEntry, which derives
+ * both from the field rather than from a hand-kept list), and a clear button on
+ * anything that currently holds a value.
+ */
 function fieldControl(name, f, value) {
   const id = `f-${name}`;
+  const has = value != null;
+  // The retraction path. Every field can be legitimately absent — that is what
+  // the save path now records for anything untouched — so every field that
+  // holds a value needs a way to put it back.
+  // Always in the markup, hidden when there is nothing to clear.
+  //
+  // Typing in the number box deliberately does not re-render — a render would
+  // replace the input and throw the caret to the end mid-word — so a button
+  // that only appeared on the next full render meant you could type a weight
+  // and then have no way to retract it until you navigated away and back.
+  // updateLiveScore toggles `hidden` in place, the same way it keeps the slider
+  // and the box in step.
+  const clear = `<button type="button" class="field-clear" data-action="clear-field" data-field="${name}"
+      ${has ? '' : 'hidden'} title="I did not measure this" aria-label="Clear ${esc(f.label)}">&times;</button>`;
+
   if (f.unit === 'bool') {
     return `<div class="field"><div class="field-head">
-      <label id="${id}">${esc(f.label)}</label><div class="spacer"></div></div>
+      <label id="${id}">${esc(f.label)}</label><div class="spacer"></div>${clear}</div>
       <div class="seg" role="group" aria-labelledby="${id}">
-        <button type="button" id="${id}-0" data-field="${name}" data-value="0" aria-pressed="${!value}">No</button>
-        <button type="button" id="${id}-1" data-field="${name}" data-value="1" aria-pressed="${!!value}">Yes</button>
+        <button type="button" id="${id}-0" data-field="${name}" data-value="0" aria-pressed="${value === 0}">No</button>
+        <button type="button" id="${id}-1" data-field="${name}" data-value="1" aria-pressed="${value === 1}">Yes</button>
       </div></div>`;
   }
+
   if (f.unit === '/5' || f.unit === '/3') {
     const opts = [];
     for (let v = f.min; v <= f.max; v += f.step) opts.push(v);
     return `<div class="field"><div class="field-head">
       <label id="${id}">${esc(f.label)}</label><div class="spacer"></div>
-      <span class="field-value">${value ?? '--'}${esc(f.unit)}</span></div>
+      <span class="field-value">${has ? value : 'not said'}${has ? esc(f.unit) : ''}</span>${clear}</div>
       <div class="seg" role="group" aria-labelledby="${id}">
         ${opts.map((v) => `<button type="button" id="${id}-${v}" data-field="${name}" data-value="${v}" aria-pressed="${Number(value) === v}">${v}</button>`).join('')}
       </div></div>`;
   }
+
+  // A clock is a clock. 288 slider positions to say "half eleven" was absurd
+  // when the platform has a time control that takes two taps and reads back in
+  // the user's own locale.
   if (f.unit === 'clock') {
-    const v = value ?? f.default;
+    const v = has ? value : f.default;
     const hh = String(Math.floor(v / 60) % 24).padStart(2, '0');
     const mm = String(v % 60).padStart(2, '0');
     return `<div class="field"><div class="field-head">
       <label for="${id}">${esc(f.label)}</label><div class="spacer"></div>
-      <span class="field-value">${hh}:${mm}</span></div>
-      <input type="range" id="${id}" data-field="${name}" min="${f.min}" max="${f.max}" step="${f.step}" value="${v}"
-        aria-valuetext="${hh}:${mm}"></div>`;
+      <span class="field-entry field-entry-wide"><input type="time" id="${id}" data-field-time="${name}" step="300"
+        value="${has ? `${hh}:${mm}` : ''}" class="field-time${has ? '' : ' is-unset'}"></span>${clear}</div></div>`;
   }
-  const shown = value == null ? '--' : (Math.round(value * 100) / 100);
-  return `<div class="field"><div class="field-head">
-    <label for="${id}">${esc(f.label)}</label><div class="spacer"></div>
-    <span class="field-value">${shown}${f.unit ? ' ' + esc(f.unit) : ''}</span></div>
-    <input type="range" id="${id}" data-field="${name}" min="${f.min}" max="${f.max}" step="${f.step}" value="${value ?? f.default ?? f.min}"></div>`;
+
+  const typed = needsTypedEntry(f);
+  const shown = has ? Math.round(value * 100) / 100 : '';
+  // When there is no value the slider still has to put its thumb somewhere, so
+  // it is marked inactive rather than left to imply a reading. Parked on the
+  // field's own default where it has one, and at the middle of the range where
+  // it does not — never at the minimum, which is how an untouched bodyweight
+  // slider came to sit on 25kg.
+  const parked = has ? value : (f.default ?? Math.round(((f.min + f.max) / 2) / f.step) * f.step);
+  const head = typed
+    ? `<label for="${id}-num">${esc(f.label)}</label><div class="spacer"></div>
+       <span class="field-entry"><input type="number" class="field-num" id="${id}-num" data-field="${name}"
+         min="${f.min}" max="${f.max}" step="${f.step}" value="${shown}"
+         placeholder="—" inputmode="decimal" enterkeyhint="done"
+         aria-label="${esc(f.label)}${f.unit ? ' in ' + esc(f.unit) : ''}"></span>
+       ${f.unit ? `<span class="field-unit">${esc(f.unit)}</span>` : ''}${clear}`
+    : `<label for="${id}">${esc(f.label)}</label><div class="spacer"></div>
+       <span class="field-value">${has ? shown : 'not said'}${has && f.unit ? ' ' + esc(f.unit) : ''}</span>${clear}`;
+
+  return `<div class="field"><div class="field-head">${head}</div>
+    <input type="range" id="${id}" data-field="${name}" min="${f.min}" max="${f.max}" step="${f.step}"
+      value="${parked}" class="${has ? '' : 'is-unset'}"
+      ${typed ? `aria-label="${esc(f.label)} slider"` : ''}></div>`;
 }
 
 /* ================================================================== *

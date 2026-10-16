@@ -240,10 +240,54 @@ a  { color: var(--accent); }
 /* ---------------- forms ---------------- */
 
 .field { margin-bottom: 15px; }
-.field-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+.field-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
 .field-head label { font-weight: 550; font-size: .92rem; }
 .field-head .spacer { flex: 1; }
 .field-value { font-family: var(--mono); font-size: .92rem; font-weight: 650; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* The typed entry, for fields whose slider cannot resolve its own step.
+ * Sized to the widest value the field accepts and aligned right, so it reads
+ * like the readout it replaces rather than like a form to fill in.
+ *
+ * The width lives on this wrapper rather than on the input. Every input in
+ * this app is width:100% by a rule carrying three :not() attribute selectors,
+ * which outweighs any single class — so a `.field-num { width: 6.2em }` loses
+ * silently, the box stretches the whole row, and the unit and the clear button
+ * wrap onto lines of their own. Sizing the flex item and letting the input
+ * fill it works with that rule instead of against it. */
+.field-entry { flex: 0 0 6.4em; display: block; }
+.field-entry-wide { flex: 0 0 10em; }
+.field-num {
+  min-height: 34px; padding: 4px 8px; text-align: right;
+  font-family: var(--mono); font-size: .92rem; font-weight: 650;
+  font-variant-numeric: tabular-nums; color: var(--accent);
+}
+.field-num::placeholder { color: var(--text-3); font-weight: 400; }
+/* Chrome's spinners are 13px of unhittable target on a phone and they shift
+ * the number off-centre; the slider underneath is the nudge control. */
+.field-num::-webkit-outer-spin-button,
+.field-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field-num { -moz-appearance: textfield; appearance: textfield; }
+.field-unit { font-size: .82rem; color: var(--text-3); min-width: 2.2em; }
+
+.field-time { min-height: 34px; padding: 4px 8px; }
+
+/* "I did not measure this." Every field can legitimately be absent, so every
+ * field holding a value needs a way back to absent. */
+.field-clear {
+  min-width: 34px; min-height: 34px; padding: 0; border: 1px solid transparent;
+  background: none; color: var(--text-3); font-size: 1.15rem; line-height: 1;
+  border-radius: var(--radius-s); cursor: pointer; flex: 0 0 auto;
+}
+.field-clear:hover { color: var(--bad); border-color: var(--border); background: var(--surface-2); }
+.field-clear:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* A slider with nothing behind it. Its thumb has to be somewhere, so it says
+ * plainly that the position is a parking spot and not a reading. */
+input[type="range"].is-unset { opacity: .45; }
+input[type="range"].is-unset::-webkit-slider-thumb { background: var(--text-3); box-shadow: none; }
+input[type="range"].is-unset::-moz-range-thumb { background: var(--text-3); box-shadow: none; }
+.field-time.is-unset { color: var(--text-3); }
 
 input[type="range"] {
   -webkit-appearance: none; appearance: none; width: 100%; height: 22px;

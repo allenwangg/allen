@@ -275,6 +275,51 @@ export function daysBetween(a, b) {
 }
 
 /** A blank day, pre-filled with sensible defaults so logging is fast. */
+/**
+ * How many discrete positions a field's slider has.
+ *
+ * Used to decide whether a slider can actually resolve the step it declares.
+ */
+export const stepCount = (f) => Math.round((f.max - f.min) / f.step);
+
+/**
+ * The most steps a slider can hold before a finger cannot aim it.
+ *
+ * A fingertip covers roughly 9mm, which is about 34 CSS pixels, and the log
+ * screen's sliders render ~326px wide on a phone. Sixty steps is therefore
+ * about 5px each — the point at which a deliberate one-pixel adjustment moves
+ * the value by less than one step, so every value in the range is reachable.
+ *
+ * Measured, not guessed. Bodyweight declares 25–300kg in 0.1kg steps: 2,750
+ * positions across 326px, which is 0.119px per step. One finger-pixel moves it
+ * 8.4 steps, or 0.84kg, so a specific weight cannot be entered at all. Steps
+ * (0–60,000 by 100) is 0.54px per step: a pixel is 184 steps. Those fields were
+ * not hard to use, they were impossible, and the app has been silently
+ * recording whatever the finger happened to land on.
+ */
+export const MAX_FINGER_STEPS = 60;
+
+/**
+ * Does this field need a place to type the number?
+ *
+ * Two independent reasons, and both are properties of the field rather than a
+ * list somebody maintains by hand — the recurring bug in this codebase is a
+ * rule written against the case that prompted it:
+ *
+ *  1. The slider cannot resolve its own step (above).
+ *  2. The value is something you read off a device rather than judge. A
+ *     bathroom scale says 82.4; a watch says 38ms. Dragging towards a figure
+ *     you already know is strictly worse than typing it, however wide the
+ *     slider is.
+ *
+ * The segmented controls (/5, /3, yes-no) are exempt: every option is already
+ * one tap away, which is the thing a typed entry would be buying.
+ */
+export function needsTypedEntry(f) {
+  if (!f || f.unit === 'bool' || f.unit === '/5' || f.unit === '/3') return false;
+  return stepCount(f) > MAX_FINGER_STEPS || f.default == null;
+}
+
 export function emptyEntry(key = dateKey(), symptoms = [], factors = []) {
   const e = { date: key, v: SCHEMA_VERSION, createdAt: Date.now(), updatedAt: Date.now(), notes: '', symptoms: {}, factors: {} };
   for (const [name, f] of Object.entries(FIELDS)) e[name] = f.default;

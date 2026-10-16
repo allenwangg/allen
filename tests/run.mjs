@@ -16,7 +16,7 @@ import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS, SAMPLE_CLINICAL } 
  * Covers the two things that must not break: scoring monotonicity and the
  * statistical honesty of the insight engine.
  */
-import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX, validateFactors, validateFactorAmounts, AMOUNT_MAX, DRIVER_FIELDS } from '../app/js/model.js';
+import { emptyEntry, addDays, validateEntry, dateKey, daysBetween, completeness, validateSymptoms, validateSymptomRatings, symptomId, SEVERITY_MAX, validateFactors, validateFactorAmounts, AMOUNT_MAX, DRIVER_FIELDS, stepCount, needsTypedEntry, MAX_FINGER_STEPS } from '../app/js/model.js';
 import { FIELDS } from '../app/js/model.js';
 const FIELDS_KEYS = new Set(Object.keys(FIELDS));
 import { curve, scoreDay, buildReport, simulate, topLeverage, weightedMean, ewma, currentStreak, sleepRegularity } from '../app/js/engine.js';
@@ -3208,6 +3208,79 @@ t('records end with CRLF, including the last one', () => {
   const out = toCSV(['a', 'b'], [[1, 2], [3, 4]]);
   eq(out, 'a,b\r\n1,2\r\n3,4\r\n');
   eq(csvRow(['x', 'y,z']), 'x,"y,z"');
+});
+
+
+/* ------------------------------------------------------------------ *
+ * Fields a finger can actually set
+ * ------------------------------------------------------------------ */
+
+/**
+ * Slider width on a phone, measured: 326px inside a 390px viewport.
+ * A fingertip is roughly 9mm, which is about 34 CSS pixels.
+ */
+const PHONE_SLIDER_PX = 326;
+
+t('no field is left with a slider its own step cannot resolve', () => {
+  // THE MEASUREMENT. Bodyweight declared 25-300kg in 0.1kg steps: 2,750
+  // positions across 326px, or 0.119px per step. One finger-pixel moved it
+  // 0.84kg, so a specific weight could not be entered at all — and the app
+  // recorded whatever the finger landed on as a measurement.
+  const unusable = [];
+  for (const [name, f] of Object.entries(FIELDS)) {
+    if (['bool', '/5', '/3', 'clock'].includes(f.unit)) continue;
+    const pxPerStep = PHONE_SLIDER_PX / stepCount(f);
+    // Under 1px per step a single pixel of movement skips values entirely, so
+    // some values in the range are unreachable by hand.
+    if (pxPerStep < 1 && !needsTypedEntry(f)) {
+      unusable.push(`${name}: ${pxPerStep.toFixed(3)}px/step and no typed entry`);
+    }
+  }
+  eq(unusable.length, 0, unusable.join('; '));
+});
+
+t('the typed-entry rule is derived from the field, not from a hand-kept list', () => {
+  // The recurring bug in this codebase is a rule written against the case that
+  // prompted it. This one has to hold for a field nobody has thought of yet.
+  eq(needsTypedEntry({ unit: 'kg', min: 0, max: 1000, step: 0.1, default: 0 }), true, 'too many steps');
+  eq(needsTypedEntry({ unit: 'srv', min: 0, max: 10, step: 1, default: 3 }), false, 'a coarse scale is fine');
+  // A value you read off a device is typed even when the slider could manage
+  // it: dragging towards a figure you already know is strictly worse.
+  eq(needsTypedEntry({ unit: 'ms', min: 0, max: 10, step: 1, default: null }), true, 'nullable means device-read');
+  eq(stepCount({ min: 25, max: 300, step: 0.1 }), 2750);
+  eq(stepCount({ min: 0, max: 5, step: 1 }), 5);
+  // Segmented controls are exempt — every option is already one tap away.
+  for (const unit of ['bool', '/5', '/3']) {
+    eq(needsTypedEntry({ unit, min: 0, max: 5, step: 0.01, default: null }), false, unit);
+  }
+  eq(needsTypedEntry(null), false);
+});
+
+t('every field that can hold a value can be put back to not-measured', () => {
+  // An absence has to stay absent. The save path stopped inventing values for
+  // untouched fields; this is the other half — once a value is in, there must
+  // be a way to take it out, or a stray touch is permanent.
+  const e = emptyEntry('2026-03-01');
+  for (const name of Object.keys(FIELDS)) {
+    e[name] = FIELDS[name].default ?? FIELDS[name].min;
+  }
+  // Clearing is modelled as setting null and marking the field touched; the
+  // save path must keep that null rather than restoring the default.
+  const cleared = { ...e, bodyweightKg: null, sleepHours: null };
+  const { entry } = validateEntry(cleared, [], [], { keepUnknown: true });
+  eq(entry.bodyweightKg, null, 'a cleared nullable field stays cleared');
+  eq(entry.sleepHours, null, 'a cleared field WITH a default stays cleared too');
+});
+
+t('a nullable field parks its slider somewhere defensible, never at the minimum', () => {
+  // An untouched bodyweight slider sat at 25kg, so a stray touch recorded an
+  // adult as weighing 25kg — and that figure fed the protein target.
+  for (const [name, f] of Object.entries(FIELDS)) {
+    if (f.default != null || ['bool', '/5', '/3', 'clock'].includes(f.unit)) continue;
+    const parked = f.default ?? Math.round(((f.min + f.max) / 2) / f.step) * f.step;
+    ok(parked > f.min, `${name} parks at its minimum (${parked})`);
+    ok(parked < f.max, `${name} parks at its maximum (${parked})`);
+  }
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

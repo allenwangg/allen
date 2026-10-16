@@ -1212,6 +1212,100 @@ console.log('\n--- the doctor gets the drug list, the gaps and the notes ---');
   await cctx.close();
 }
 
+console.log('\n--- a number you know, typed, on a phone ---');
+{
+  const nctx = await browser.newContext({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  const np = await nctx.newPage();
+  np.on('pageerror', e => errors.push('FIELD PAGEERROR: ' + e.message));
+  await np.goto(`${BASE}/app/index.html#log`, { waitUntil: 'networkidle' });
+  await np.waitForTimeout(900);
+
+  // The measurement that forced this: at 390px the bodyweight slider is 326px
+  // for 2,750 positions — 0.119px per step, so one finger-pixel is 0.84kg and
+  // a specific weight cannot be entered by hand.
+  const worst = await np.evaluate(async () => {
+    const { FIELDS, needsTypedEntry } = await import('./js/model.js');
+    const out = [];
+    for (const el of document.querySelectorAll('input[type=range][data-field]')) {
+      const f = FIELDS[el.dataset.field];
+      if (!f) continue;
+      const pxPerStep = el.getBoundingClientRect().width / ((f.max - f.min) / f.step);
+      const num = document.querySelector(`#f-${el.dataset.field}-num`);
+      if (pxPerStep < 1 && !num) out.push(`${el.dataset.field} ${pxPerStep.toFixed(3)}px/step, no typed entry`);
+      if (needsTypedEntry(f) && !num) out.push(`${el.dataset.field} needs a typed entry and has none`);
+    }
+    return out;
+  });
+  if (worst.length) throw new Error('unsettable fields on a phone: ' + worst.join('; '));
+  console.log('  every field whose slider cannot resolve its step has a box to type in');
+
+  // Typing drives the slider, and does not disturb the caret.
+  await np.fill('#f-bodyweightKg-num', '82.4');
+  await np.waitForTimeout(250);
+  const typed = await np.evaluate(() => ({
+    draft: window.__vitalarc.state.draft.bodyweightKg,
+    range: Number(document.querySelector('#f-bodyweightKg').value),
+    unset: document.querySelector('#f-bodyweightKg').classList.contains('is-unset'),
+    clearShown: !document.querySelector('[data-action="clear-field"][data-field="bodyweightKg"]').hidden,
+  }));
+  if (typed.draft !== 82.4 || typed.range !== 82.4) throw new Error('typed value did not reach the draft or the slider: ' + JSON.stringify(typed));
+  if (typed.unset) throw new Error('the slider is still marked as holding no value');
+  if (!typed.clearShown) throw new Error('nothing to retract a typed value with until the next full render');
+  console.log('  a typed weight drives the slider, and the retraction appears with it');
+
+  // The dangerous case: an emptied box means "not measured", not zero.
+  await np.fill('#f-bodyweightKg-num', '');
+  await np.waitForTimeout(200);
+  const emptied = await np.evaluate(() => window.__vitalarc.state.draft.bodyweightKg);
+  if (emptied !== null) throw new Error(`an emptied box recorded ${emptied} instead of nothing`);
+  console.log('  an emptied box records nothing, not zero');
+
+  // A clock is a clock.
+  await np.fill('#f-bedtimeMinutes', '23:15');
+  await np.waitForTimeout(250);
+  const bedtime = await np.evaluate(() => window.__vitalarc.state.draft.bedtimeMinutes);
+  if (bedtime !== 1395) throw new Error(`bedtime 23:15 stored as ${bedtime}, expected 1395`);
+  console.log('  bedtime is entered on a clock, not on 288 slider positions');
+
+  // End to end: type two numbers, save, and record exactly those two.
+  await np.fill('#f-bodyweightKg-num', '82.4');
+  await np.fill('#f-hrv-num', '38');
+  await np.waitForTimeout(200);
+  await np.click('[data-action="save-entry"]');
+  await np.waitForTimeout(800);
+  const stored = await np.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { FIELDS } = await import('./js/model.js');
+    const e = await store.getEntry(window.__vitalarc.state.draft.date);
+    return e ? Object.fromEntries(Object.keys(FIELDS).filter(k => e[k] != null).map(k => [k, e[k]])) : null;
+  });
+  if (!stored) throw new Error('the day did not save');
+  const keys = Object.keys(stored).sort().join(',');
+  if (keys !== 'bedtimeMinutes,bodyweightKg,hrv') {
+    throw new Error(`typing three numbers recorded ${Object.keys(stored).length} fields: ${JSON.stringify(stored)}`);
+  }
+  console.log(`  typing three numbers records three numbers: ${JSON.stringify(stored)}`);
+
+  // And clearing one really un-records it.
+  await np.evaluate(() => { location.hash = '#log'; });
+  await np.waitForTimeout(900);
+  if (await np.inputValue('#f-bodyweightKg-num') !== '82.4') throw new Error('the re-opened day lost its typed value');
+  await np.click('[data-action="clear-field"][data-field="bodyweightKg"]');
+  await np.waitForTimeout(400);
+  await np.click('[data-action="save-entry"]');
+  await np.waitForTimeout(800);
+  const afterClear = await np.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const e = await store.getEntry(window.__vitalarc.state.draft.date);
+    return { bodyweightKg: e?.bodyweightKg ?? null, hrv: e?.hrv ?? null };
+  });
+  if (afterClear.bodyweightKg !== null) throw new Error('a cleared field came back: ' + JSON.stringify(afterClear));
+  if (afterClear.hrv !== 38) throw new Error('clearing one field disturbed another: ' + JSON.stringify(afterClear));
+  console.log('  clearing one field un-records it and leaves the rest alone');
+
+  await nctx.close();
+}
+
 console.log('\n--- the summary really is one page ---');
 {
   // The report used to claim "Prints to about one page" while printing three,
