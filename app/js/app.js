@@ -153,7 +153,7 @@ function recompute() {
 
   state.leverage = topLeverage(state.entries, ctx);
   state.simulation = simulate(state.entries, state.simChanges, ctx);
-  state.draftScore = scoreDay(state.draft, ctx);
+  state.draftScore = scoreDay(knownDraft(), ctx);
 
   // A running trial only yields a verdict once its last day has passed. Not
   // computing it earlier is the point: a half-run experiment you can peek at
@@ -833,17 +833,7 @@ async function saveDraft() {
     toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
-  // Record only what was actually entered. A habit field nobody touched on a
-  // day nobody had touched it before is unknown, and unknown is not a number:
-  // a user who logged only their migraine for sixty days was handing their
-  // doctor "Sleep 7.5 h, 60 days — self-measured at home", which they had
-  // never said. Symptoms and factors are deliberately different and keep their
-  // zeros: an untouched symptom on a logged day means "I did not have it",
-  // which is real information and is documented as such in emptyEntry.
-  const known = new Set([...(state.draftKnown || []), ...(state.touched || [])]);
-  const candidate = { ...state.draft };
-  for (const k of Object.keys(FIELDS)) if (!known.has(k)) candidate[k] = null;
-
+  const candidate = knownDraft();
   const { entry } = validateEntry(candidate, state.symptoms, state.factors, { keepUnknown: true });
   if (!entry) { toast('Could not save — invalid date.'); return false; }
   if ((state.draft.notes || '').length > 2000 && entry.notes.length === 2000) {
@@ -873,6 +863,35 @@ async function saveDraft() {
   store.clearStash();
   recompute();
   return true;
+}
+
+/**
+ * The draft with everything nobody said stripped back out.
+ *
+ * `emptyEntry` pre-fills every field with a population default so the form is
+ * fast to use, and the save path has always had to undo that — a habit field
+ * nobody touched on a day nobody had touched before is unknown, and unknown is
+ * not a number. A user who logged only their migraine for sixty days was
+ * handing their doctor "Sleep 7.5 h, 60 days — self-measured at home", which
+ * they had never said.
+ *
+ * It lives here rather than inside saveDraft because the LIVE SCORE needed it
+ * too and did not have it. A brand-new user opening the app for the first time
+ * was met with "LIVE SCORE 67.9 — SLEEP 83.2, MOVEMENT 31.6, NUTRITION 78.1"
+ * computed entirely from those defaults, on the first screen of the app,
+ * before they had entered a single thing. Scoring the same candidate the save
+ * path would write makes the number mean what it says, and turns it into an
+ * honest signal of how much you have actually told it.
+ *
+ * Symptoms and factors are deliberately left alone: an untouched symptom on a
+ * logged day means "I did not have it", which is real information and is
+ * documented as such in emptyEntry.
+ */
+function knownDraft() {
+  const known = new Set([...(state.draftKnown || []), ...(state.touched || [])]);
+  const candidate = { ...state.draft };
+  for (const k of Object.keys(FIELDS)) if (!known.has(k)) candidate[k] = null;
+  return candidate;
 }
 
 async function persistDraftIfDirty() { if (state.dirty) await saveDraft(); }
@@ -989,7 +1008,7 @@ function wire() {
       (state.touched ||= new Set()).add(t.dataset.fieldTime);
       state.dirty = true;
       t.classList.toggle('is-unset', !m);
-      state.draftScore = scoreDay(state.draft, profileCtx());
+      state.draftScore = scoreDay(knownDraft(), profileCtx());
       updateLiveScore(t);
       return;
     }
@@ -1022,7 +1041,7 @@ function wire() {
       // keystroke belongs in recompute(), not in a drag handler — an earlier
       // edit anchored on a line that appears twice and pasted that whole block
       // in here, so every slider movement was re-running the safety rules.
-      state.draftScore = scoreDay(state.draft, profileCtx());
+      state.draftScore = scoreDay(knownDraft(), profileCtx());
       updateLiveScore(t);
       return;
     }
@@ -1292,7 +1311,15 @@ async function boot() {
   await recoverStash();
   recompute();
   wire();
-  go(location.hash.slice(1) || (state.entries.length ? 'today' : 'log'));
+  // A first-time user goes to Today, not to Log.
+  //
+  // Routing a zero-day user straight at the log screen put 86 controls in
+  // front of somebody who had not been told what the app was for, and skipped
+  // the welcome entirely — including the only entry point to the example-data
+  // tour, which is the one thing that lets them judge the app before spending
+  // three weeks on it. The Today view's empty state IS the first-run screen;
+  // it was simply unreachable on a first launch.
+  go(location.hash.slice(1) || 'today');
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')

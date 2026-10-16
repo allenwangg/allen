@@ -1212,6 +1212,57 @@ console.log('\n--- the doctor gets the drug list, the gaps and the notes ---');
   await cctx.close();
 }
 
+console.log('\n--- the first screen does not score a day nobody described ---');
+{
+  const fctx = await browser.newContext({ viewport: { width: 390, height: 780 }, isMobile: true, hasTouch: true });
+  const fp = await fctx.newPage();
+  fp.on('pageerror', e => errors.push('FIRSTRUN PAGEERROR: ' + e.message));
+  await fp.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  await fp.waitForTimeout(1000);
+
+  // A brand-new user used to be routed straight at the log screen: 86 controls
+  // in front of somebody who had not been told what the app was for, with the
+  // only entry point to the example-data tour skipped entirely.
+  const first = await fp.evaluate(() => ({
+    view: window.__vitalarc.state.view,
+    entries: window.__vitalarc.state.entries.length,
+    controls: document.querySelectorAll('#main input, #main button').length,
+    tour: !!document.querySelector('[data-action="load-sample"]'),
+  }));
+  if (first.entries !== 0) throw new Error('this check needs a clean profile');
+  if (first.view !== 'today') throw new Error(`a first-time user landed on "${first.view}"`);
+  if (!first.tour) throw new Error('the example-data tour is unreachable on a first launch');
+  if (first.controls > 12) throw new Error(`the welcome screen presents ${first.controls} controls`);
+  console.log(`  a first launch lands on the welcome: ${first.controls} controls, tour reachable`);
+
+  // And the worst of it: the log screen greeted that same user with
+  // "LIVE SCORE 67.9 — SLEEP 83.2, MOVEMENT 31.6, NUTRITION 78.1", computed
+  // entirely from the form's pre-filled defaults, before they had entered one
+  // thing. Same fabrication as the saved-entry bug, on the first screen.
+  await show(fp, 'log');
+  const stats = () => fp.$$eval('.stat-value', els => els.slice(0, 4).map(e => e.textContent.trim()));
+  const fresh = await stats();
+  if (fresh.some((v) => v !== '--')) {
+    throw new Error(`a day nobody has described scored ${fresh.join(' / ')}`);
+  }
+  console.log('  a day nobody has described scores --, not 67.9');
+
+  // It has to come alive as you answer, or it is just broken rather than honest.
+  await fp.evaluate(() => {
+    const el = document.querySelector('[data-field="sleepHours"]');
+    el.value = '8'; el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await fp.waitForTimeout(300);
+  const afterSleep = await stats();
+  if (afterSleep[1] === '--') throw new Error('answering a sleep question did not score sleep');
+  if (afterSleep[2] !== '--' || afterSleep[3] !== '--') {
+    throw new Error(`answering a sleep question scored movement and nutrition too: ${afterSleep.join(' / ')}`);
+  }
+  console.log(`  answering one question scores that one thing: ${afterSleep.join(' / ')}`);
+
+  await fctx.close();
+}
+
 console.log('\n--- every destination is reachable on a phone ---');
 {
   // Measured before this existed: the top strip was 239px wide holding 616px

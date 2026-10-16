@@ -346,7 +346,10 @@ export function logView(state) {
       ${stat('Movement', state.draftScore?.pillars.movement.score ?? '--')}
       ${stat('Nutrition', state.draftScore?.pillars.nutrition.score ?? '--')}
     </div>
-    <p class="subtle" style="margin-top:10px">The score updates as you type. Everything saves locally on this device — nothing is uploaded.</p>
+    <p class="subtle" style="margin-top:10px">${state.draftScore?.score == null
+      ? 'A dash means you have not said yet — these fill in as you answer, and only count what you actually answered.'
+      : 'Scored on what you have answered, not on what the form is pre-filled with.'}
+      Everything saves locally on this device &mdash; nothing is uploaded.</p>
   </div>
   ${symptomCard}
   ${factorCard}
