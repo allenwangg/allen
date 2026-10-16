@@ -139,6 +139,35 @@ therefore negative expected value, however good the conversion numbers look.
 
 Guard the claims and the compounding asset survives. That is the whole strategy.
 
+### The claims that are not sentences
+
+An eight-lens audit of the shipped app found the overclaiming happening in a
+place the copy guard structurally cannot reach: not in the prose, in the data.
+Four separate instances, all of which read to a user — or to a clinician — as a
+measurement:
+
+- **Twenty invented numbers a day.** `emptyEntry` pre-fills every field with a
+  population default so the form is quick, and the save path wrote those
+  defaults as observations. Somebody who logged only their migraine for sixty
+  days handed their doctor "Sleep 7.5 h — 60 days — self-measured at home",
+  having never entered a sleep figure.
+- **A score for a day nobody described.** The same defaults fed the live score,
+  so the first screen of the app greeted a brand-new user with 67.9 out of 100.
+- **A line drawn through a fortnight of silence.** Charts mapped over logged
+  entries, so unlogged days were deleted rather than shown. Ten mild days, two
+  weeks of nothing and a week of very bad ones rendered as one unbroken climb
+  across a month.
+- **A drug list whose absence read as "no drugs".** The report omitted the
+  medication section when empty, and a clinician cannot tell an omission from a
+  negative.
+
+None of these is a sentence, so none could ever have been caught by a guard
+that reads sentences. The lesson for the strategy document is narrow and
+important: *the copy guard protects the claims the app makes in words, and the
+app makes far more claims than that.* A number on a chart is a claim. A blank
+space is a claim. A default is a claim. Each of the four now has a test that
+fails if it returns, which is the only form of guarantee this project accepts.
+
 ## What to build next, in order
 
 1. ~~**Certificate ingestion and cohort statistics**~~ Done: `app/js/registry.js`,
