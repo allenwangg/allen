@@ -20,6 +20,12 @@
   </header>
   <main id="main" role="main"><div class="card empty-state"><p class="muted">Loading…</p></div></main>
 </div>
+<!-- Phone navigation. The top strip measured 239px wide holding 616px of tabs,
+     so five of eight destinations — Report among them — were off-screen on
+     every phone width tested, in a scroll container with a hidden scrollbar
+     and no affordance saying there was more. -->
+<nav id="dock" class="dock" aria-label="Sections" hidden></nav>
+<div id="dock-sheet" class="dock-sheet" role="dialog" aria-modal="true" aria-label="More sections" hidden></div>
 <div id="update-banner" class="update-banner" role="status" hidden>
   <span>A new version of VitalArc is ready.</span>
   <button class="btn btn-sm btn-primary" data-action="apply-update">Reload</button>

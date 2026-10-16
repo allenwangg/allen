@@ -1212,6 +1212,113 @@ console.log('\n--- the doctor gets the drug list, the gaps and the notes ---');
   await cctx.close();
 }
 
+console.log('\n--- every destination is reachable on a phone ---');
+{
+  // Measured before this existed: the top strip was 239px wide holding 616px
+  // of tabs, so five of eight destinations — Simulator, Trials, History,
+  // Report and Settings — sat off-screen at 360, 390 and 430px, inside a
+  // scroller with a hidden scrollbar and nothing to say there was more. The
+  // report, which is the whole point of the app, was unreachable on a phone.
+  for (const width of [360, 390, 430]) {
+    const dctx = await browser.newContext({ viewport: { width, height: 780 }, isMobile: true, hasTouch: true });
+    const dp = await dctx.newPage();
+    dp.on('pageerror', e => errors.push(`DOCK PAGEERROR @${width}: ` + e.message));
+    await dp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+    await dp.waitForTimeout(800);
+
+    // Derived from VIEWS, not from a list kept by hand: a ninth destination
+    // added later must fail this rather than quietly going missing.
+    const views = await dp.evaluate(() => Object.keys(window.__vitalarc.state.report === undefined ? {} : {}).length
+      ? [] : [...document.querySelectorAll('#tabs .tab')].map((t) => t.dataset.view));
+    if (views.length < 8) throw new Error(`expected the full view list, got ${views.length}`);
+
+    const unreachable = [];
+    for (const view of views) {
+      await dp.evaluate(() => { location.hash = '#today'; });
+      await dp.waitForTimeout(250);
+      // One tap on the dock, or two via More. Anything else is not navigation.
+      const direct = await dp.$(`#dock-${view}:not([hidden])`);
+      if (direct) {
+        await direct.click();
+      } else {
+        const more = await dp.$('#dock-more');
+        if (!more) { unreachable.push(`${view}: no dock entry and no More`); continue; }
+        await more.click();
+        await dp.waitForTimeout(250);
+        const item = await dp.$(`.dock-sheet-btn[data-view="${view}"]`);
+        if (!item) { unreachable.push(`${view}: not in the dock and not behind More`); await dp.keyboard.press('Escape'); continue; }
+        // It has to be on screen inside the sheet, not merely present.
+        const seen = await item.evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          return r.width > 0 && r.height >= 44 && r.top >= 0 && r.bottom <= innerHeight + 1;
+        });
+        if (!seen) unreachable.push(`${view}: in the sheet but not on screen`);
+        await item.click();
+      }
+      await dp.waitForTimeout(400);
+      const landed = await dp.evaluate(() => window.__vitalarc.state.view);
+      if (landed !== view) unreachable.push(`${view}: tapping it landed on ${landed}`);
+    }
+    if (unreachable.length) throw new Error(`@${width}px — ${unreachable.join('; ')}`);
+
+    const geom = await dp.evaluate(() => {
+      const dock = document.querySelector('#dock');
+      const btns = [...dock.querySelectorAll('.dock-btn')];
+      return {
+        offscreen: btns.filter((b) => { const r = b.getBoundingClientRect(); return r.left < -1 || r.right > innerWidth + 1; }).length,
+        small: btns.filter((b) => b.getBoundingClientRect().height < 44).length,
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        topStripHidden: getComputedStyle(document.querySelector('#tabs')).display === 'none',
+      };
+    });
+    if (geom.offscreen) throw new Error(`@${width}px ${geom.offscreen} dock buttons are off-screen`);
+    if (geom.small) throw new Error(`@${width}px ${geom.small} dock buttons are under 44px`);
+    if (geom.overflow) throw new Error(`@${width}px the page scrolls sideways by ${geom.overflow}px`);
+    if (!geom.topStripHidden) throw new Error(`@${width}px both navigations are showing at once`);
+    console.log(`  ${width}px: all ${views.length} destinations reachable, dock buttons >= 44px, no sideways scroll`);
+
+    await dctx.close();
+  }
+
+  // The page declares viewport-fit=cover, which only means anything if the
+  // stylesheet reads the insets. It had none, so installed on a notched phone
+  // the header sat under the status bar and the bottom row under the home
+  // indicator.
+  const sctx2 = await browser.newContext({ viewport: { width: 390, height: 780 } });
+  const sp2 = await sctx2.newPage();
+  await sp2.goto(`${BASE}/app/index.html`, { waitUntil: 'networkidle' });
+  const insets = await sp2.evaluate(async () => {
+    const css = await (await fetch('./css/app.css')).text();
+    return ['top', 'bottom', 'left', 'right'].filter((side) =>
+      css.includes(`env(safe-area-inset-${side}`));
+  });
+  for (const side of ['top', 'bottom', 'left', 'right']) {
+    if (!insets.includes(side)) throw new Error(`viewport-fit=cover is declared but safe-area-inset-${side} is never read`);
+  }
+  console.log('  viewport-fit=cover is backed by all four safe-area insets');
+
+  // `hidden` has to actually hide. Any author `display` rule beats the UA's
+  // [hidden] { display: none } outright, so the update banner — a fixed pill
+  // across the bottom of the screen — stayed laid out and on top while
+  // "hidden", swallowing every tap aimed at what was under it. The navigation
+  // test above is what finally caught it, by having its taps eaten.
+  const ghosts = await sp2.evaluate(() => {
+    const out = [];
+    for (const el of document.querySelectorAll('[hidden]')) {
+      const cs = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      if (cs.display !== 'none' || r.width > 0 || r.height > 0) {
+        out.push(`${el.id || el.className || el.tagName}: display=${cs.display} ${Math.round(r.width)}x${Math.round(r.height)}`);
+      }
+    }
+    return out;
+  });
+  if (ghosts.length) throw new Error('elements marked hidden are still laid out: ' + ghosts.join('; '));
+  console.log('  nothing marked hidden is still taking up space or taking taps');
+
+  await sctx2.close();
+}
+
 console.log('\n--- a number you know, typed, on a phone ---');
 {
   const nctx = await browser.newContext({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });

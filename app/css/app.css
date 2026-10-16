@@ -147,7 +147,13 @@ a  { color: var(--accent); }
 
 /* ---------------- layout ---------------- */
 
-.app { max-width: var(--maxw); margin: 0 auto; padding: 0 16px 96px; }
+.app {
+  max-width: var(--maxw); margin: 0 auto; padding: 0 16px 96px;
+  /* In landscape on a notched phone the cutout eats the left or right gutter,
+   * so cards run under it. */
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
+}
 
 .topbar {
   position: sticky; top: 0; z-index: 40;
@@ -155,6 +161,10 @@ a  { color: var(--accent); }
   backdrop-filter: saturate(1.6) blur(12px);
   border-bottom: 1px solid var(--border);
   margin: 0 -16px 18px; padding: 10px 16px;
+  /* AFTER the shorthand, which would otherwise reset it to 10px. The page
+   * declares viewport-fit=cover and had no env() anywhere, so installed on a
+   * notched phone this header rendered underneath the status bar. */
+  padding-top: calc(10px + env(safe-area-inset-top, 0px));
   display: flex; align-items: center; gap: 12px;
 }
 .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; letter-spacing: -.02em; font-size: 1.05rem; }
@@ -176,6 +186,67 @@ a  { color: var(--accent); }
 /* The nav emits aria-current="page", not aria-selected — the old selector
    matched nothing, so no section was ever marked as the current one. */
 .tab[aria-current="page"] { background: var(--accent); color: var(--accent-text); }
+
+/* ---------------- phone navigation ----------------
+ *
+ * The top strip measured 239px wide holding 616px of tabs, so five of eight
+ * destinations were off-screen on every phone width — inside a scroller with a
+ * hidden scrollbar and nothing to say there was more. The dock replaces it
+ * below 620px: four destinations always visible, the rest one tap away.
+ *
+ * Bottom, not top: that is where a thumb reaches, and it is the convention on
+ * both mobile platforms. It is also where the home indicator lives, which is
+ * why the safe-area inset below is load-bearing rather than decorative. */
+.dock {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  display: flex; gap: 2px; padding: 6px 8px;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: saturate(1.6) blur(12px);
+  border-top: 1px solid var(--border);
+}
+.dock-btn {
+  flex: 1 1 0; min-width: 0; min-height: 44px;
+  appearance: none; border: 0; background: transparent; color: var(--text-2);
+  font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer;
+  padding: 6px 2px; border-radius: var(--radius-s);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dock-btn[aria-current="page"] { background: var(--accent); color: var(--accent-text); }
+.dock-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* The sheet for everything the dock does not hold. */
+.dock-sheet {
+  position: fixed; inset: 0; z-index: 70;
+  background: color-mix(in srgb, #000 42%, transparent);
+  display: flex; align-items: flex-end;
+}
+.dock-sheet-inner {
+  width: 100%; background: var(--surface); border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius); padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  max-height: 72vh; overflow-y: auto;
+}
+.dock-sheet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dock-sheet-head h2 { margin: 0; font-size: 1rem; }
+.dock-sheet-btn {
+  display: block; width: 100%; text-align: left; min-height: 48px;
+  appearance: none; border: 1px solid var(--border); background: var(--surface-2);
+  color: var(--text); font: inherit; font-weight: 550; cursor: pointer;
+  padding: 12px 14px; border-radius: var(--radius-s); margin-bottom: 8px;
+}
+.dock-sheet-btn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }
+.dock-sheet-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Content must clear the dock, or the last card sits under it permanently. */
+body.has-dock main { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+body.sheet-open { overflow: hidden; }
+
+/* Anything that floats at the bottom of the screen has to clear the dock, or
+ * it lands on top of the navigation — and the update banner in particular is
+ * dismissed by pressing a button that was sitting over the Log tab. */
+body.has-dock .toast,
+body.has-dock .update-banner { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
 .tab .lock { font-size: .72em; opacity: .8; margin-left: 4px; }
 
 /* ---------------- cards ---------------- */
@@ -212,6 +283,9 @@ a  { color: var(--accent); }
   .col-optional { display: none; }
   .card { padding: 15px; }
   .stat-value { font-size: 1.3rem; }
+  /* The dock takes over here. Keeping both would put the same eight
+   * destinations on screen twice, one copy of them still unreachable. */
+  .tabs { display: none; }
 }
 
 .stat { background: var(--surface-2); border-radius: var(--radius-s); padding: 12px 14px; }
@@ -377,6 +451,28 @@ textarea { min-height: 76px; resize: vertical; }
 .btn-block   { width: 100%; }
 .btn-sm      { padding: 6px 12px; font-size: .86rem; }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* ---------------- the hidden attribute means hidden ----------------
+ *
+ * `[hidden] { display: none }` is a user-agent rule, and ANY author
+ * declaration of `display` beats it regardless of specificity, because author
+ * styles outrank UA styles outright. So every element in this app that is laid
+ * out with `display: flex` and toggled with `hidden` was never actually
+ * hidden.
+ *
+ * That is not theoretical. The update banner is a fixed-position pill across
+ * the bottom of the screen, and with `hidden` set it was still laid out and
+ * still on top: an invisible 56px strip swallowing every tap aimed at whatever
+ * was underneath it. Found by a navigation test whose taps on the dock it was
+ * silently eating. The toast had the same class of bug fixed earlier, which is
+ * how this one survived — the fix was written for the toast rather than for
+ * the shape of the problem.
+ *
+ * !important is correct here. This restores the attribute's defined meaning
+ * against author rules that have no business overriding it, and the
+ * alternative is remembering to write a `[hidden]` variant beside every
+ * `display` rule forever. */
+[hidden] { display: none !important; }
 
 /* ---------------- charts ---------------- */
 
@@ -581,7 +677,7 @@ textarea { min-height: 76px; resize: vertical; }
    * example-data banner render above every view, so without this they print
    * on top of the report and duplicate its own "things I wanted to mention"
    * section. */
-  .topbar, .no-print, .toast, .lock-overlay,
+  .topbar, .no-print, .toast, .lock-overlay, .dock, .dock-sheet,
   .banner, [data-flag], #update-banner, .tabs,
   /* The crisis support card is for the person, on their device. It is not
      part of a summary they hand to anyone. */

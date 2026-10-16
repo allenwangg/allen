@@ -203,6 +203,7 @@ function render() {
     : '';
   main.innerHTML = sampleBanner + safetyBanner(state) + VIEWS[state.view].render(state);
   renderTabs();
+  renderDock();
   document.documentElement.setAttribute('data-theme', state.theme === 'system' ? '' : state.theme);
   if (state.theme === 'system') document.documentElement.removeAttribute('data-theme');
 
@@ -257,6 +258,61 @@ const esc = (v) => String(v ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+/**
+ * What a phone shows without asking.
+ *
+ * Measured at 360, 390 and 430px: the top strip is 239px wide holding 616px of
+ * tabs, so FIVE OF EIGHT destinations sat off-screen — Simulator, Trials,
+ * History, Report and Settings — inside a horizontal scroller with a hidden
+ * scrollbar and nothing to say there was more. The report, which is the whole
+ * point of the app and the thing a clinician is handed, was unreachable on a
+ * phone unless you happened to swipe a strip that gave no sign of being
+ * swipeable.
+ *
+ * Four, chosen by what the app is for rather than by what exists: the daily
+ * action, where you land, the findings, and the handoff. The rest are real
+ * destinations and keep a real home — one tap, in a sheet, not buried.
+ */
+const DOCK_PRIMARY = ['today', 'log', 'insights', 'report'];
+
+/** Where the layout stops being a desktop one. Matches the CSS breakpoint. */
+const NARROW_PX = 620;
+
+/** Render the phone dock, or take it away when the top strip fits. */
+function renderDock() {
+  const dock = $('#dock');
+  const sheet = $('#dock-sheet');
+  if (!dock) return;
+  if (!state.narrow) {
+    dock.hidden = true;
+    sheet.hidden = true;
+    document.body.classList.remove('has-dock', 'sheet-open');
+    return;
+  }
+  dock.hidden = false;
+  document.body.classList.add('has-dock');
+
+  const rest = Object.keys(VIEWS).filter((id) => !DOCK_PRIMARY.includes(id));
+  const inRest = rest.includes(state.view);
+  dock.innerHTML = DOCK_PRIMARY.map((id) => {
+    const current = state.view === id;
+    return `<button class="dock-btn" id="dock-${id}" data-action="goto" data-view="${id}"`
+      + `${current ? ' aria-current="page"' : ''}>${esc(VIEWS[id].label)}</button>`;
+  }).join('')
+    // "More" shows which section you are in when you are in one of its own, so
+    // the dock never looks like nothing is selected.
+    + `<button class="dock-btn dock-more" id="dock-more" data-action="toggle-dock-sheet"`
+    + ` aria-expanded="${!sheet.hidden}" aria-controls="dock-sheet"`
+    + `${inRest ? ' aria-current="page"' : ''}>${inRest ? esc(VIEWS[state.view].label) : 'More'}</button>`;
+
+  sheet.innerHTML = `<div class="dock-sheet-inner">
+    <div class="dock-sheet-head"><h2>Everything else</h2><div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" data-action="toggle-dock-sheet">Close</button></div>
+    ${rest.map((id) => `<button class="dock-sheet-btn" data-action="goto" data-view="${id}"`
+      + `${state.view === id ? ' aria-current="page"' : ''}>${esc(VIEWS[id].label)}</button>`).join('')}
+  </div>`;
+}
+
 function renderTabs() {
   const tabs = $('#tabs');
   // Plain navigation semantics, not role="tab".
@@ -280,12 +336,21 @@ function go(view) {
   state.view = view;
   history.replaceState(null, '', '#' + view);
   document.title = `${VIEWS[view].label} — VitalArc`;
+  closeDockSheet();
   render();
   window.scrollTo({ top: 0, behavior: 'instant' });
   // renderTabs() replaces every nav button, so a keyboard user who activated
   // one used to be dumped on <body> and had to tab from the top of the
   // document again. Put them back on the button they pressed.
   if (cameFromNav) document.getElementById(`tab-${view}`)?.focus({ preventScroll: true });
+}
+
+function closeDockSheet() {
+  const sheet = $('#dock-sheet');
+  if (!sheet || sheet.hidden) return;
+  sheet.hidden = true;
+  document.body.classList.remove('sheet-open');
+  $('#dock-more')?.setAttribute('aria-expanded', 'false');
 }
 
 let toastTimer;
@@ -504,6 +569,19 @@ const actions = {
     (state.touched ||= new Set()).add(name);
     state.dirty = true;
     recompute(); render();
+  },
+
+  'toggle-dock-sheet': () => {
+    const sheet = $('#dock-sheet');
+    if (sheet.hidden) {
+      sheet.hidden = false;
+      document.body.classList.add('sheet-open');
+      renderDock();
+      sheet.querySelector('.dock-sheet-btn')?.focus();
+    } else {
+      closeDockSheet();
+      $('#dock-more')?.focus();
+    }
   },
 
   'show-all-fields': async () => { state.showAllFields = true; render(); },
@@ -1047,6 +1125,18 @@ function wire() {
     }
   });
 
+  // A sheet that cannot be dismissed without choosing something is a trap.
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape' && !$('#dock-sheet').hidden) {
+      closeDockSheet();
+      $('#dock-more')?.focus();
+    }
+  });
+  $('#dock-sheet').addEventListener('click', (ev) => {
+    // The backdrop is the element itself; the panel inside it is not.
+    if (ev.target === ev.currentTarget) closeDockSheet();
+  });
+
   window.addEventListener('hashchange', () => go(location.hash.slice(1) || 'today'));
 
   // Re-render on a width change that crosses the narrow breakpoint, so chart
@@ -1055,7 +1145,7 @@ function wire() {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      const narrow = window.innerWidth < 620;
+      const narrow = window.innerWidth < NARROW_PX;
       if (narrow !== state.narrow) { state.narrow = narrow; render(); }
     }, 150);
   });
@@ -1160,6 +1250,10 @@ function updateLiveScore(input) {
  * ------------------------------------------------------------------ */
 
 async function boot() {
+  // Set before the first paint. This was only ever assigned by the resize
+  // handler, so until the window changed size `state.narrow` was undefined and
+  // every chart on a phone rendered at its desktop geometry on first load.
+  state.narrow = typeof window !== 'undefined' && window.innerWidth < NARROW_PX;
   state.storageMode = await store._backend();
   const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags, remindAt, clinical] = await Promise.all([
     store.allEntries(),
