@@ -8,6 +8,8 @@
  * costs almost nothing to run per free user.
  */
 
+import { validateClinical as validateClinicalRecord } from './clinical.js';
+
 const DB_NAME = 'vitalarc';
 const DB_VERSION = 1;
 const STORE_ENTRIES = 'entries';
@@ -187,9 +189,9 @@ export const store = {
 
   /** Full export — the user's data is theirs, and saying so converts. */
   async exportAll() {
-    const [entries, profile, symptoms, factors, trials] = await Promise.all([
+    const [entries, profile, symptoms, factors, trials, clinical] = await Promise.all([
       this.allEntries(), this.getMeta('profile'), this.getMeta('symptoms'),
-      this.getMeta('factors'), this.getMeta('trials'),
+      this.getMeta('factors'), this.getMeta('trials'), this.getMeta('clinical'),
     ]);
     return {
       app: 'VitalArc',
@@ -203,6 +205,10 @@ export const store = {
       symptoms,
       factors,
       trials,
+      // The medication list and the illness history. An export that restored
+      // the diary but not these would hand the person back their numbers and
+      // lose the half of the record a clinician actually needs.
+      clinical,
       entries,
     };
   },
@@ -255,6 +261,12 @@ export const store = {
       if (Number.isFinite(heightCm) && heightCm >= 120 && heightCm <= 230) profile.heightCm = heightCm;
       if (Object.keys(profile).length) await this.setMeta('profile', profile);
     }
+    // Validated like everything else from a file: the clinical record is free
+    // text that goes onto a printed page, so its own validator caps every
+    // field and drops anything that is not a string.
+    if (payload.clinical && typeof payload.clinical === 'object') {
+      await this.setMeta('clinical', validateClinicalRecord(payload.clinical));
+    }
     // Backups export the entitlement, so restoring one must not silently drop
     // it: a paying user who restored a backup used to land on Free with no
     // recovery path, and a free user could export/wipe/import to re-arm the
@@ -276,7 +288,105 @@ export const store = {
     return { imported: good.length, problems };
   },
 
+  /* ---------------- durability ---------------- */
+
+  /**
+   * Ask the browser not to throw the diary away.
+   *
+   * By default IndexedDB is "best-effort": under storage pressure the browser
+   * evicts it, without asking and without telling the user. For an app whose
+   * entire product position is that nothing leaves the device, that means the
+   * only copy of two years of someone's health record sits in a bucket the
+   * browser is free to empty. This was never requested. It is one call.
+   *
+   * The grant rules differ per engine and are not ours to predict: Firefox
+   * prompts, Chromium grants silently on a site with engagement or an
+   * installed PWA and otherwise declines, Safari grants on add-to-home-screen.
+   * So the result is reported rather than assumed, and a "no" is surfaced as a
+   * reason to export rather than swallowed.
+   *
+   * @returns {Promise<{supported:boolean, persisted:boolean}>}
+   */
+  async requestPersistence() {
+    try {
+      if (typeof navigator === 'undefined' || !navigator.storage) {
+        return { supported: false, persisted: false };
+      }
+      // Already granted? Asking again is harmless but pointless, and on some
+      // engines a repeat request is what triggers a second prompt.
+      if (typeof navigator.storage.persisted === 'function' && await navigator.storage.persisted()) {
+        return { supported: true, persisted: true };
+      }
+      if (typeof navigator.storage.persist !== 'function') {
+        return { supported: false, persisted: false };
+      }
+      return { supported: true, persisted: !!(await navigator.storage.persist()) };
+    } catch {
+      return { supported: false, persisted: false };
+    }
+  },
+
+  /** How much room there is, when the browser will say. */
+  async storageEstimate() {
+    try {
+      if (typeof navigator === 'undefined' || !navigator.storage?.estimate) return null;
+      const { usage, quota } = await navigator.storage.estimate();
+      if (!Number.isFinite(quota) || quota <= 0) return null;
+      return { usage: usage || 0, quota, pct: Math.round(((usage || 0) / quota) * 1000) / 10 };
+    } catch { return null; }
+  },
+
+  /* ---------------- crash stash ---------------- */
+
+  /**
+   * A synchronous copy of the day being edited.
+   *
+   * A half-filled day lived only in RAM, and the sole safety net was
+   * `beforeunload` — which does not fire when a phone discards a backgrounded
+   * tab, which is the single most common way a mobile session ends. Someone
+   * who filled in twenty fields, took a call, and came back to a reaped tab
+   * lost all of it.
+   *
+   * IndexedDB cannot help here: its writes are asynchronous and a frozen page
+   * may never get the callback. localStorage is synchronous, so a write issued
+   * during `pagehide` has actually happened by the time the function returns.
+   * That is the whole reason this uses the fallback store's medium even when
+   * IndexedDB is the primary one.
+   *
+   * It is a crash stash, not a second source of truth: it is cleared the
+   * moment the real save succeeds, and on boot it is only offered for a day
+   * whose stored entry is older than the stash.
+   */
+  stashDraft(draft, touched) {
+    try {
+      if (!draft || !draft.date) return false;
+      localStorage.setItem(LS_PREFIX + 'stash', JSON.stringify({
+        at: Date.now(), draft, touched: Array.isArray(touched) ? touched : [...(touched || [])],
+      }));
+      return true;
+    } catch { return false; }
+  },
+
+  readStash() {
+    try {
+      const v = localStorage.getItem(LS_PREFIX + 'stash');
+      if (!v) return null;
+      const o = JSON.parse(v);
+      if (!o || !o.draft || typeof o.draft.date !== 'string') return null;
+      return { at: Number(o.at) || 0, draft: o.draft, touched: Array.isArray(o.touched) ? o.touched : [] };
+    } catch { return null; }
+  },
+
+  clearStash() {
+    try { localStorage.removeItem(LS_PREFIX + 'stash'); } catch { /**/ }
+  },
+
   async clearAll() {
+    // The stash lives in localStorage regardless of which backend is primary,
+    // so "delete all my data" has to reach it explicitly — otherwise a wipe
+    // leaves a copy of the last edited day behind and the next boot offers to
+    // restore it.
+    this.clearStash();
     if (await this._backend() === 'ls') {
       try {
         const keys = [];

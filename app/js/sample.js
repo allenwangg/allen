@@ -158,3 +158,37 @@ const clamp04 = (x) => Math.max(0, Math.min(4, x));
 const clampMin = (x, lo) => Math.max(lo, x);
 
 export const SAMPLE_PROFILE = { age: 42, weightKg: 81 };
+
+/**
+ * A clinical record for the tour.
+ *
+ * The report's medication section prints whether or not it has been filled in
+ * — an absent section would be read by a clinician as "no medications", and
+ * omission must not read as zero. That rule is worth demonstrating once, but a
+ * tour whose entire clinical page says "I have not listed these" shows nothing
+ * about what the finished page is for. So the sample has a realistic one:
+ * something taken for the symptom, something taken for an unrelated reason,
+ * a supplement, something stopped, and two things already looked at.
+ */
+export const SAMPLE_CLINICAL = {
+  onset: 'spring 2023',
+  onsetNote: 'Started a few weeks after a bad chest infection. Nothing like it before that.',
+  allergies: 'Penicillin — rash as a child.',
+  medications: [
+    { id: 'm_sumatrip', name: 'Sumatriptan', kind: 'prescription', dose: '50mg, up to 2 a day',
+      forWhat: 'headaches, when one starts', started: 'summer 2023' },
+    { id: 'm_lansopra', name: 'Lansoprazole', kind: 'prescription', dose: '15mg each morning',
+      forWhat: 'reflux', started: '2019' },
+    { id: 'm_magnesiu', name: 'Magnesium', kind: 'supplement', dose: '375mg at night',
+      forWhat: 'a friend suggested it for the headaches', started: 'January' },
+    { id: 'm_propran', name: 'Propranolol', kind: 'prescription', dose: '40mg twice a day',
+      forWhat: 'headache prevention', started: 'autumn 2023', stopped: 'February — made me very tired' },
+  ],
+  history: [
+    { id: 'h_bloods', kind: 'test', what: 'Full blood count, thyroid, coeliac screen',
+      when: 'May 2024', outcome: 'All normal, I was told' },
+    { id: 'h_mri', kind: 'test', what: 'MRI head', when: 'August 2024', outcome: 'Nothing found' },
+    { id: 'h_elim', kind: 'treatment', what: 'Six weeks off dairy', when: 'early 2025',
+      outcome: 'Felt better at first, then no different' },
+  ],
+};

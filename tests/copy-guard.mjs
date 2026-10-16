@@ -26,6 +26,10 @@ const FILES = [
   // stopped asking for. They were outside this guard purely because they were
   // written after the list was, which is exactly how a claim gets in.
   'app/js/registry.js', 'app/js/certificate.js', 'app/js/prereg.js', 'app/js/attention.js',
+  // clinical.js writes the medication and history lines that print on a page
+  // handed to a doctor, and timeline.js writes the coverage sentence under
+  // every chart. Those are the highest-stakes sentences in the app.
+  'app/js/clinical.js', 'app/js/timeline.js',
 ];
 
 export const RULES = [

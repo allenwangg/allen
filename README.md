@@ -16,7 +16,7 @@ better information in front of them.
 ```bash
 npm install       # only for the browser test
 npm run serve     # http://localhost:8080/app/
-npm test          # 196 unit tests + the copy guard, no dependencies
+npm test          # 229 unit tests + the copy guard, no dependencies
 npm run e2e       # browser walkthrough (needs the server running)
 npm run contrast  # WCAG AA check, both themes (needs the server running)
 # verify.html      open it in any browser to check a trial certificate
@@ -106,14 +106,22 @@ app/
     engine.js           habit scoring from dose-response curves
     insights.js         correlation discovery and the statistics
     experiments.js      n-of-1 trial design, analysis and verdicts
+    clinical.js         medications, allergies, onset, what's been tried
     safety.js           when to stop logging and see someone
-    store.js            IndexedDB with a localStorage fallback
+    store.js            IndexedDB with a localStorage fallback, persist(), crash stash
+    prereg.js           tamper-evident trial pre-registration
+    certificate.js      a trial result somebody else can check
+    registry.js         cohort aggregation across verified trials
+    attention.js        which questions can still answer anything
+    reminder.js         a daily nudge as a calendar file, not a push server
+    timeline.js         sparse days laid back out on the calendar
+    csv.js              the export, per RFC 4180
     sample.js           example data so the app is judgeable on day one
     charts.js           dependency-free SVG charts
     ui.js               views (pure state -> HTML)
     app.js              state, routing, event delegation
 docs/                   scoring and insights methodology
-tests/                  196 unit tests, a copy guard, a browser walkthrough
+tests/                  229 unit tests, a copy guard, a browser walkthrough
 ```
 
 No frameworks, no runtime dependencies. Playwright is the only dev dependency.

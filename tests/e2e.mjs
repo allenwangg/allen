@@ -1091,6 +1091,259 @@ console.log('\n--- an episodic symptom gets a real answer ---');
   await ectx.close();
 }
 
+console.log('\n--- the doctor gets the drug list, the gaps and the notes ---');
+{
+  const cctx = await browser.newContext({ viewport: { width: 1280, height: 1400 }, deviceScaleFactor: 2 });
+  const cp = await cctx.newPage();
+  cp.on('pageerror', e => errors.push('CLINICAL PAGEERROR: ' + e.message));
+  await cp.goto(`${BASE}/app/index.html#log`, { waitUntil: 'networkidle' });
+  await cp.waitForTimeout(700);
+
+  // A diary with a real gap in it, notes on the bad days, and no clinical
+  // record — the state the app shipped in.
+  await cp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { emptyEntry, addDays, validateSymptoms } = await import('./js/model.js');
+    const syms = validateSymptoms([{ id: 's_mig', label: 'Migraine', primary: true }]);
+    await store.setMeta('symptoms', syms);
+    const rows = [];
+    // 20 days logged, a 15-day silence, then 15 days logged and worse.
+    let d = '2026-01-01';
+    for (let i = 0; i < 20; i++, d = addDays(d, 1)) {
+      const e = emptyEntry(d, syms);
+      e.symptoms.s_mig = i % 4 === 0 ? 2 : 1;
+      e.notes = i === 8 ? 'woke at 4am, sick, took two tablets and went back to bed' : '';
+      rows.push(e);
+    }
+    d = addDays(d, 15);
+    for (let i = 0; i < 15; i++, d = addDays(d, 1)) {
+      const e = emptyEntry(d, syms);
+      e.symptoms.s_mig = 4;
+      e.notes = i === 3 ? 'worst one yet, could not open my eyes, missed my daughter s recital' : '';
+      rows.push(e);
+    }
+    await store.putMany(rows);
+    location.reload();
+  });
+  await cp.waitForTimeout(1200);
+  await show(cp, 'report', { minLength: 1500 });
+
+  const report = await cp.$eval('#print-report', e => e.innerText);
+
+  // 1. The medication section prints EVEN THOUGH it is empty. A reader who
+  //    sees no drug list will otherwise read it as "no drugs".
+  if (!/What I take/.test(report)) throw new Error('the report has no medication section');
+  if (!/do not read this as "no medication"/.test(report)) {
+    throw new Error('an unfilled medication list must say so, not be omitted');
+  }
+  if (!/Allergies:/.test(report)) throw new Error('allergies missing from the report');
+  if (!/What has already been looked at/.test(report)) throw new Error('no clinical history section');
+  console.log('  an empty drug list prints "ask me" rather than vanishing');
+
+  // 2. The notes reach the page, worst days first, with their severity.
+  if (!/could not open my eyes/.test(report)) throw new Error('the worst day\'s note never reached the report');
+  // Case-insensitive: .pill uppercases via CSS, and innerText honours that.
+  if (!/migraine 4\/4/i.test(report)) throw new Error('a printed note must carry its severity');
+  console.log('  the free-text notes reach the page, with the severity beside them');
+
+  // 3. The chart marks the fortnight nobody logged.
+  const chart = await cp.evaluate(() => {
+    const svg = document.querySelector('#print-report .chart-line');
+    const path = svg.querySelector('path.line').getAttribute('d');
+    return {
+      runs: (path.match(/M/g) || []).length,
+      hatched: svg.querySelectorAll('.gap-band').length,
+      desc: svg.querySelector('desc').textContent,
+    };
+  });
+  if (chart.runs !== 2) throw new Error(`the line must break across the gap, got ${chart.runs} run(s)`);
+  if (chart.hatched < 1) throw new Error('the unlogged fortnight is not marked');
+  if (!/no entry/.test(chart.desc)) throw new Error(`the description hides the gap: ${chart.desc}`);
+  console.log(`  the 15-day silence is a break and a hatched band, not a line: "${chart.desc.slice(-64).trim()}"`);
+
+  // 4. Now fill the record in through the real UI and check it lands.
+  await show(cp, 'settings');
+  await cp.fill('#med-name', 'Propranolol');
+  await cp.fill('#med-dose', '40mg twice a day');
+  await cp.fill('#med-for', 'migraine prevention');
+  await cp.fill('#med-started', 'autumn 2023');
+  await cp.click('[data-action="add-medication"]');
+  await cp.waitForTimeout(300);
+  await cp.fill('#c-allergies', 'Penicillin - rash as a child');
+  await cp.fill('#c-onset', 'spring 2023');
+  await cp.fill('#hist-what', 'MRI head');
+  await cp.fill('#hist-when', 'August 2024');
+  await cp.fill('#hist-outcome', 'nothing found');
+  await cp.click('[data-action="add-history"]');
+  await cp.waitForTimeout(400);
+
+  await show(cp, 'report', { minLength: 1500 });
+  const filled = await cp.$eval('#print-report', e => e.innerText);
+  for (const want of ['Propranolol 40mg twice a day', 'for migraine prevention',
+                      'Penicillin', 'Unwell since', 'spring 2023', 'MRI head', 'nothing found']) {
+    if (!filled.includes(want)) throw new Error(`the report lost "${want}" after it was entered`);
+  }
+  if (/do not read this as "no medication"/.test(filled)) {
+    throw new Error('the "ask me" fallback is still showing with a drug listed');
+  }
+  console.log('  entered in Settings, printed on page one of the report');
+
+  // 5. It survives a reload and a round trip through export/import.
+  await cp.reload({ waitUntil: 'networkidle' });
+  await cp.waitForTimeout(900);
+  await show(cp, 'report', { minLength: 1500 });
+  if (!(await cp.$eval('#print-report', e => e.innerText)).includes('Propranolol')) {
+    throw new Error('the clinical record did not survive a reload');
+  }
+  const roundTrip = await cp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const { validateEntry } = await import('./js/model.js');
+    const dump = await store.exportAll();
+    await store.clearAll();
+    await store.importAll(dump, validateEntry);
+    const back = await store.getMeta('clinical');
+    return { meds: back?.medications?.length ?? 0, onset: back?.onset ?? '' };
+  });
+  if (roundTrip.meds !== 1 || roundTrip.onset !== 'spring 2023') {
+    throw new Error('export/import lost the clinical record: ' + JSON.stringify(roundTrip));
+  }
+  console.log('  survives a reload and an export/import round trip');
+
+  await cctx.close();
+}
+
+console.log('\n--- the summary really is one page ---');
+{
+  // The report used to claim "Prints to about one page" while printing three,
+  // with the section the code itself calls the most valuable on sheet two. The
+  // claim is now "the first page is the summary", which is only true if the
+  // block above the page break actually fits on A4 — and that is the kind of
+  // thing that silently stops being true the next time a section is added.
+  const pctx = await browser.newContext();
+  const pp = await pctx.newPage();
+  pp.on('pageerror', e => errors.push('PRINT PAGEERROR: ' + e.message));
+  await pp.goto(`${BASE}/app/index.html#today`, { waitUntil: 'networkidle' });
+  await pp.waitForTimeout(700);
+  await pp.click('[data-action="load-sample"]');
+  await pp.waitForTimeout(4500);
+  await show(pp, 'report', { minLength: 1500 });
+
+  await pp.emulateMedia({ media: 'print' });
+  // A4 content box at 96dpi, inside the 12mm margins a browser prints by default.
+  const CONTENT_W = Math.round((210 - 24) / 25.4 * 96);
+  const PAGE_H = Math.round((297 - 24) / 25.4 * 96);
+  await pp.setViewportSize({ width: CONTENT_W, height: 1200 });
+  await pp.waitForTimeout(600);
+
+  const g = await pp.evaluate(() => {
+    const rep = document.querySelector('#print-report');
+    const top = rep.getBoundingClientRect().top + window.scrollY;
+    const brk = document.querySelector('.page-break');
+    if (!brk) return null;
+    const before = [...rep.querySelectorAll('h1, h2')]
+      .filter((h) => h.getBoundingClientRect().top + window.scrollY < brk.getBoundingClientRect().top + window.scrollY)
+      .map((h) => h.textContent.trim());
+    return {
+      summaryH: Math.round(brk.getBoundingClientRect().top + window.scrollY - top),
+      totalH: Math.round(rep.getBoundingClientRect().height),
+      before,
+    };
+  });
+  if (!g) throw new Error('the report has no page break, so nothing marks where the summary ends');
+  if (g.summaryH > PAGE_H) {
+    throw new Error(`the "first page" summary overflows A4 by ${g.summaryH - PAGE_H}px `
+      + `(${g.summaryH} of ${PAGE_H}) — either trim it or stop calling it one page`);
+  }
+  // And it has to actually contain the things the footer promises are on it.
+  for (const want of ['What I take', 'Main problem']) {
+    if (!g.before.some((h) => h.includes(want))) {
+      throw new Error(`"${want}" is not on the summary page: ${JSON.stringify(g.before)}`);
+    }
+  }
+  console.log(`  the summary is ${g.summaryH}px of ${PAGE_H}px of A4, and carries: ${g.before.join(' / ')}`);
+  console.log(`  the whole report runs to about ${(g.totalH / PAGE_H).toFixed(1)} pages, which the footer no longer denies`);
+
+  await pctx.close();
+}
+
+console.log('\n--- a half-filled day survives a tab the phone throws away ---');
+{
+  // beforeunload was the only safety net, and a backgrounded tab reaped by iOS
+  // or Android never fires it. This is that exact sequence.
+  const sctx = await browser.newContext({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 2 });
+  const sp = await sctx.newPage();
+  sp.on('pageerror', e => errors.push('STASH PAGEERROR: ' + e.message));
+  await sp.goto(`${BASE}/app/index.html#log`, { waitUntil: 'networkidle' });
+  await sp.waitForTimeout(800);
+
+  const persistence = await sp.evaluate(() => {
+    const st = window.__vitalarc?.state?.persistence;
+    return st ? { supported: st.supported, asked: true } : { asked: false };
+  });
+  if (!persistence.asked) throw new Error('the app never asked the browser to keep the data');
+  console.log('  persistent storage is requested at boot (supported here: ' + persistence.supported + ')');
+
+  // Move a slider: a real edit, not a programmatic state poke.
+  await sp.evaluate(() => {
+    const el = document.querySelector('[data-field="sleepHours"]');
+    el.value = '6';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await sp.waitForTimeout(250);
+  const dirty = await sp.evaluate(() => window.__vitalarc.state.dirty);
+  if (!dirty) throw new Error('the edit did not mark the draft dirty, so this proves nothing');
+
+  // The phone backgrounds the tab. No unload, no beforeunload — just hidden.
+  //
+  // Read in the SAME evaluate as the dispatch, synchronously. The stash is
+  // deliberately cleared the instant the real save behind it succeeds, and an
+  // IndexedDB put can finish inside one round trip to the page — so a separate
+  // read races the thing it is trying to observe. Being synchronously
+  // observable here is the whole property under test: by the time this
+  // function returns, the half-filled day is on disk.
+  const stashed = await sp.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    const raw = localStorage.getItem('vitalarc:stash');
+    return raw ? JSON.parse(raw).draft.sleepHours : null;
+  });
+  if (stashed !== 6) throw new Error(`nothing was stashed synchronously on hide (got ${stashed})`);
+  console.log('  hiding the tab writes a synchronous copy of the half-filled day');
+
+  // And the async save behind it completes, so the stash clears itself.
+  await sp.waitForTimeout(600);
+  const after = await sp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const d = window.__vitalarc.state.draft.date;
+    return { saved: (await store.getEntry(d))?.sleepHours ?? null, stash: localStorage.getItem('vitalarc:stash') };
+  });
+  if (after.saved !== 6) throw new Error('the real save never happened: ' + JSON.stringify(after));
+  if (after.stash !== null) throw new Error('the stash was left behind after a successful save');
+  console.log('  the real save lands behind it and the stash clears itself');
+
+  // Now the case the stash exists for: a stash with no save behind it.
+  await sp.evaluate(async () => {
+    const { store } = await import('./js/store.js');
+    const d = window.__vitalarc.state.draft.date;
+    await store.deleteEntry(d);
+    store.stashDraft({ ...window.__vitalarc.state.draft, sleepHours: 4.5, date: d }, ['sleepHours']);
+  });
+  await sp.reload({ waitUntil: 'networkidle' });
+  await sp.waitForTimeout(1000);
+  const recovered = await sp.evaluate(() => ({
+    sleep: window.__vitalarc.state.draft.sleepHours,
+    dirty: window.__vitalarc.state.dirty,
+    view: window.__vitalarc.state.view,
+  }));
+  if (recovered.sleep !== 4.5) throw new Error('the lost day was not recovered: ' + JSON.stringify(recovered));
+  if (!recovered.dirty) throw new Error('a recovered day must be offered, not silently committed');
+  if (recovered.view !== 'log') throw new Error('a recovery should land on the log screen');
+  console.log('  a reaped tab is recovered on the next launch, dirty, for the person to confirm');
+
+  await sctx.close();
+}
+
 console.log('\n--- heading outlines are navigable ---');
 {
   // Screen-reader users navigate by heading. A view whose outline jumps from

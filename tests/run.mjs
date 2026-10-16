@@ -6,8 +6,11 @@ import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/regis
 import { fieldAttention, attentionSummary, MIN_DAYS_TO_JUDGE } from '../app/js/attention.js';
 import { buildReminder, reminderFilename } from '../app/js/reminder.js';
 import { onCalendar, coverageNote, MAX_SPAN_DAYS } from '../app/js/timeline.js';
+import { validateClinical, addMedication, addHistory, removeFrom, splitMedications, describeMedication,
+         clinicalGaps, notableNotes, EMPTY_CLINICAL, MAX_MEDICATIONS, MAX_HISTORY } from '../app/js/clinical.js';
 import { lineChart, sparkline } from '../app/js/charts.js';
-import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
+import { cell as csvCell, row as csvRow, toCSV } from '../app/js/csv.js';
+import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS, SAMPLE_CLINICAL } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
  * Covers the two things that must not break: scoring monotonicity and the
@@ -2965,6 +2968,246 @@ t('onCalendar survives empty and junk input', () => {
     eq(tl.gaps.length, 0, `${JSON.stringify(bad)} gaps`);
     eq(coverageNote(tl), null, `${JSON.stringify(bad)} note`);
   }
+});
+
+
+/* ------------------------------------------------------------------ *
+ * The clinical record — the half of the page a doctor cannot work without
+ * ------------------------------------------------------------------ */
+
+t('a medication without a name is not a medication', () => {
+  const c = validateClinical({ medications: [{ dose: '50mg' }, { name: '   ' }, { name: 'Sertraline' }] });
+  eq(c.medications.length, 1);
+  eq(c.medications[0].name, 'Sertraline');
+});
+
+t('every clinical field is clamped, because it prints on paper', () => {
+  const c = validateClinical({
+    onset: 'x'.repeat(500), onsetNote: 'y'.repeat(900), allergies: 'z'.repeat(900),
+    medications: [{ name: 'a'.repeat(400), dose: 'b'.repeat(400), forWhat: 'c'.repeat(400),
+                    started: 'd'.repeat(400), stopped: 'e'.repeat(400) }],
+    history: [{ what: 'f'.repeat(400), when: 'g'.repeat(400), outcome: 'h'.repeat(900) }],
+  });
+  eq(c.onset.length, 60); eq(c.onsetNote.length, 300); eq(c.allergies.length, 300);
+  eq(c.medications[0].name.length, 120); eq(c.medications[0].dose.length, 80);
+  eq(c.medications[0].forWhat.length, 120); eq(c.medications[0].started.length, 40);
+  eq(c.history[0].what.length, 160); eq(c.history[0].outcome.length, 300);
+});
+
+t('clinical validation survives junk, including junk from an import file', () => {
+  for (const bad of [null, undefined, 'a string', 7, [], { medications: 'nope' }, { history: {} },
+                     { medications: [null, 7, 'x'] }]) {
+    const c = validateClinical(bad);
+    eq(Array.isArray(c.medications), true, `${JSON.stringify(bad)} medications`);
+    eq(Array.isArray(c.history), true, `${JSON.stringify(bad)} history`);
+    eq(typeof c.onset, 'string');
+  }
+});
+
+t('a medication kind outside the list falls back rather than printing', () => {
+  // The kind reaches a printed page via describeMedication, so an arbitrary
+  // string from an import file must not get there.
+  const c = validateClinical({ medications: [{ name: 'X', kind: '<script>' }] });
+  eq(c.medications[0].kind, 'prescription');
+  const h = validateClinical({ history: [{ what: 'Y', kind: 'whatever' }] });
+  eq(h.history[0].kind, 'test');
+});
+
+t('ids are unique even when an import supplies duplicates', () => {
+  const c = validateClinical({ medications: [
+    { id: 'm_same', name: 'A' }, { id: 'm_same', name: 'B' }, { id: 'nonsense', name: 'C' },
+  ] });
+  eq(c.medications.length, 3);
+  eq(new Set(c.medications.map((m) => m.id)).size, 3, 'three distinct ids');
+  for (const m of c.medications) ok(/^m_[a-z0-9]{1,32}$/.test(m.id), `bad id ${m.id}`);
+});
+
+t('the lists are capped', () => {
+  const many = Array.from({ length: 60 }, (_, i) => ({ name: `Drug ${i}` }));
+  eq(validateClinical({ medications: many }).medications.length, MAX_MEDICATIONS);
+  eq(validateClinical({ history: many.map((m) => ({ what: m.name })) }).history.length, MAX_HISTORY);
+  // And adding past the cap says so instead of silently dropping it.
+  let c = validateClinical({ medications: many });
+  const { error } = addMedication(c, { name: 'One more' });
+  ok(error && /limit/.test(error), `expected a limit message, got ${error}`);
+});
+
+t('add, stop and remove behave as the settings screen uses them', () => {
+  let c = EMPTY_CLINICAL;
+  ({ clinical: c } = addMedication(c, { name: 'Sumatriptan', dose: '50mg', forWhat: 'migraine' }));
+  ({ clinical: c } = addMedication(c, { name: 'Magnesium', kind: 'supplement' }));
+  eq(c.medications.length, 2);
+  eq(addMedication(c, { name: '  ' }).error, 'Give it a name first.');
+
+  // Stopping is a date, not a delete: the report needs the past ones.
+  c = validateClinical({ ...c, medications: c.medications.map((m) =>
+    (m.name === 'Magnesium' ? { ...m, stopped: '2026-01-04' } : m)) });
+  const split = splitMedications(c);
+  eq(split.current.length, 1); eq(split.past.length, 1);
+  eq(split.past[0].name, 'Magnesium');
+
+  c = removeFrom(c, 'medications', c.medications[0].id);
+  eq(c.medications.length, 1);
+  // A bad list name must not wipe the record.
+  eq(removeFrom(c, 'profile', 'anything').medications.length, 1);
+});
+
+t('a medication reads as a person would say it', () => {
+  eq(describeMedication({ name: 'Sumatriptan', dose: '50mg as needed', forWhat: 'migraine',
+                          started: '2023', kind: 'prescription' }),
+     'Sumatriptan 50mg as needed — for migraine, since 2023');
+  eq(describeMedication({ name: 'Magnesium', dose: '400mg', kind: 'supplement' }),
+     'Magnesium 400mg (supplement)');
+  // The bare minimum still reads as a sentence rather than a stub with dangling
+  // punctuation.
+  eq(describeMedication({ name: 'Ibuprofen', kind: 'prescription' }), 'Ibuprofen');
+});
+
+t('the gaps a clinician misses most are named first', () => {
+  const gaps = clinicalGaps(EMPTY_CLINICAL).map((g) => g.key);
+  eq(gaps[0], 'medications', 'the drug list comes before everything else');
+  eq(gaps.length, 4);
+  let c = EMPTY_CLINICAL;
+  ({ clinical: c } = addMedication(c, { name: 'X' }));
+  ok(!clinicalGaps(c).some((g) => g.key === 'medications'));
+});
+
+t('history kinds are kept, because a test and a treatment are not the same thing', () => {
+  let c = EMPTY_CLINICAL;
+  ({ clinical: c } = addHistory(c, { what: 'MRI head', kind: 'test', when: '2024', outcome: 'normal' }));
+  ({ clinical: c } = addHistory(c, { what: 'Six weeks off dairy', kind: 'treatment' }));
+  eq(c.history.map((h) => h.kind).join(','), 'test,treatment');
+  eq(addHistory(c, { what: '' }).error, 'Say what it was first.');
+});
+
+/* -------- the notes that never reached the page -------- */
+
+function diaryWithNotes() {
+  return [
+    { date: '2026-03-01', notes: 'ordinary day', symptoms: { s1: 0 } },
+    { date: '2026-03-02', notes: '', symptoms: { s1: 4 } },
+    { date: '2026-03-03', notes: 'woke at 4am, vomited, took two tablets', symptoms: { s1: 4 } },
+    { date: '2026-03-04', notes: 'still rough, left work early', symptoms: { s1: 3 } },
+    { date: '2026-03-05', notes: 'slight ache', symptoms: { s1: 1 } },
+  ];
+}
+
+t('the report prints the notes from the worst days, in date order', () => {
+  const out = notableNotes(diaryWithNotes(), 's1', { limit: 2 });
+  eq(out.total, 4, 'four days carry a note');
+  eq(out.shown.length, 2);
+  eq(out.omitted, 2);
+  eq(out.ranked, true);
+  // Chosen by severity...
+  eq(out.shown.map((x) => x.severity).join(','), '4,3');
+  // ...but shown forwards, because a history is read forwards.
+  eq(out.shown.map((x) => x.date).join(','), '2026-03-03,2026-03-04');
+  // And each carries its severity, so a note from a 4/4 day is distinguishable.
+  eq(out.shown[0].severity, 4);
+});
+
+t('a blank note is not a day with a note', () => {
+  const out = notableNotes(diaryWithNotes(), 's1');
+  ok(!out.shown.some((x) => x.date === '2026-03-02'), 'the 4/4 day with no note is not printed');
+  ok(!out.shown.some((x) => !x.note.trim()), 'nothing blank is shown');
+});
+
+t('notes still work with no symptom to rank by, falling back to recency', () => {
+  const out = notableNotes(diaryWithNotes(), null, { limit: 2 });
+  eq(out.ranked, false);
+  eq(out.shown.map((x) => x.date).join(','), '2026-03-04,2026-03-05');
+});
+
+t('no notes means no section, not an empty one', () => {
+  const out = notableNotes([{ date: '2026-03-01', notes: '   ' }, { date: '2026-03-02' }], 's1');
+  eq(out.total, 0); eq(out.shown.length, 0);
+  eq(notableNotes(null, 's1').total, 0);
+  eq(notableNotes(undefined, null).shown.length, 0);
+});
+
+t('the sample tour carries a clinical record that exercises every branch', () => {
+  // A tour whose clinical page reads "I have not listed these" demonstrates the
+  // honesty rule and nothing about what the page is for.
+  const c = validateClinical(SAMPLE_CLINICAL);
+  const split = splitMedications(c);
+  ok(split.current.length >= 2, 'something current');
+  ok(split.past.length >= 1, 'something stopped');
+  ok(c.medications.some((m) => m.kind === 'supplement'), 'a supplement, which doctors must hear about');
+  ok(c.history.length >= 2, 'something already looked at');
+  ok(c.onset && c.allergies, 'onset and allergies');
+  eq(clinicalGaps(c).length, 0, 'the sample has no gaps to nag about');
+});
+
+
+/* ------------------------------------------------------------------ *
+ * The CSV export — a column that lines up with its own header
+ * ------------------------------------------------------------------ */
+
+t('a label with a comma in it does not shift every column after it', () => {
+  // THE REGRESSION TEST. Only the notes column was escaped, so a symptom the
+  // person had named "Joint pain (knee, left)" split into two header cells and
+  // every reading to the right of it lined up under the wrong name.
+  const header = ['date', 'symptom: Joint pain (knee, left)', 'symptom: Migraine', 'notes'];
+  const rows = [['2026-03-01', 3, 1, 'ok']];
+  const out = toCSV(header, rows);
+  const [h, r] = out.trim().split('\r\n');
+  // A naive split is exactly what a spreadsheet does not do, so count fields
+  // the way a parser does: quoted commas are inside a field.
+  const fields = (line) => {
+    const got = []; let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) {
+        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') q = false;
+        else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ',') { got.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    got.push(cur); return got;
+  };
+  eq(fields(h).length, 4, 'four header fields');
+  eq(fields(r).length, 4, 'four data fields');
+  eq(fields(h)[1], 'symptom: Joint pain (knee, left)', 'the label survives whole');
+  eq(fields(h)[2], 'symptom: Migraine', 'and the next column is still where it belongs');
+});
+
+t('a number exports as a number, not as text', () => {
+  // Quoting a measurement, or apostrophe-prefixing a negative one to defuse the
+  // formula guard, turns it into something no spreadsheet will average.
+  eq(csvCell(7), '7');
+  eq(csvCell(-2.5), '-2.5');
+  eq(csvCell(0), '0');
+  eq(csvCell(NaN), '');
+  eq(csvCell(Infinity), '');
+  eq(csvCell(null), '');
+  eq(csvCell(undefined), '');
+});
+
+t('a formula in a note is still defused, and still survives a round trip', () => {
+  // The apostrophe guard has to be inside quotes, or a parser reading the file
+  // back sees a bare leading apostrophe and the note has silently changed.
+  for (const payload of ['=HYPERLINK("http://x","click")', '+1+1', '-2+3', '@SUM(A1)', '\tx']) {
+    const out = csvCell(payload);
+    ok(out.startsWith('"\''), `${JSON.stringify(payload)} -> ${out}`);
+    ok(out.endsWith('"'), `${JSON.stringify(payload)} -> ${out}`);
+  }
+  // An ordinary note is not mangled.
+  eq(csvCell('woke at 4am'), 'woke at 4am');
+});
+
+t('quotes and newlines inside a note stay inside their field', () => {
+  eq(csvCell('she said "no"'), '"she said ""no"""');
+  eq(csvCell('line one\nline two'), '"line one\nline two"');
+  eq(csvCell('carriage\rreturn'), '"carriage\rreturn"');
+});
+
+t('records end with CRLF, including the last one', () => {
+  // Excel on Windows reads a bare-LF file as one row.
+  const out = toCSV(['a', 'b'], [[1, 2], [3, 4]]);
+  eq(out, 'a,b\r\n1,2\r\n3,4\r\n');
+  eq(csvRow(['x', 'y,z']), 'x,"y,z"');
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

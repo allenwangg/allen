@@ -555,11 +555,41 @@ textarea { min-height: 76px; resize: vertical; }
   a { color: inherit; text-decoration: none; }
   /* Charts are the evidence; keep them from being split across a page break. */
   .chart { break-inside: avoid; page-break-inside: avoid; }
+
+  /* The summary ends here. Everything before this fits one sheet and stands on
+   * its own; a clinician who reads nothing else has the whole useful part. */
+  .page-break { break-after: page; page-break-after: always; height: 0; }
+
+  /* A note must not be orphaned from its date across a page break. */
+  .notes-list dt { break-after: avoid; page-break-after: avoid; }
+  .notes-list dd { break-before: avoid; page-break-before: avoid; }
+
+  /* The hatching that marks unlogged stretches has to survive greyscale, which
+   * is how this document is usually printed. */
+  .chart .gap-bg { fill: #ffffff; }
+  .chart .gap-hatch { stroke: #b4b4b4; stroke-width: 2.4; }
 }
 }
 
 /* Divider between stacked results inside one card. */
 .sep { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
+
+/* A list that is a list of facts, not a set of bullets to skim. */
+ul.plain { margin: 0; padding-left: 1.1em; }
+ul.plain li { margin: .22em 0; line-height: 1.45; }
+
+/* Verbatim diary notes in the report. A description list, because each note
+ * genuinely is a value belonging to a date, and it keeps the date with its
+ * note when the page breaks. */
+.notes-list { margin: 0; }
+.notes-list dt { font-family: var(--mono); font-size: .82rem; color: var(--text-2);
+  font-weight: 650; margin-top: .85em; }
+.notes-list dt:first-child { margin-top: 0; }
+.notes-list dd { margin: .2em 0 0; padding-left: .9em; border-left: 2px solid var(--border);
+  white-space: pre-wrap; line-height: 1.5; }
+
+/* On screen the report is one scroll; the break only means anything on paper. */
+.page-break { height: 0; }
 
 /* A card that qualifies what follows it, rather than reporting a result. */
 .card-warn { border-color: var(--warn-border, var(--border-strong)); background: var(--warn-bg, var(--surface-2)); }

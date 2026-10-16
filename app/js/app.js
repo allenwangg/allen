@@ -14,9 +14,11 @@ import { commit as commitPrereg, verify as verifyPrereg } from './prereg.js';
 import { issue as issueCertificate } from './certificate.js';
 import { fieldAttention } from './attention.js';
 import { buildReminder, reminderFilename } from './reminder.js';
+import { validateClinical, addMedication, addHistory, removeFrom } from './clinical.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
+import { toCSV } from './csv.js';
 import { store } from './store.js';
-import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
+import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS, SAMPLE_CLINICAL } from './sample.js';
 import * as views from './ui.js';
 
 const VIEWS = {
@@ -51,6 +53,8 @@ const state = {
   sampleMode: false,
   symptoms: [],
   factors: [],
+  clinical: null,
+  persistence: null,
   trials: [],
   trialDraft: { leverId: null, outcome: null, pairs: DEFAULT_PAIRS },
   trialVerdict: null,
@@ -362,11 +366,17 @@ const actions = {
     // Object.keys(FIELDS) silently omitted every column the person actually
     // came here to track — the export looked complete and was not.
     const fields = Object.keys(FIELDS);
-    const syms = (state.symptoms || []).filter((x) => !x.archivedAt);
-    const facs = (state.factors || []).filter((x) => !x.archivedAt);
+    // Archived ones too. A symptom tracked for three months and then retired
+    // was dropped from the export entirely: its column vanished and the months
+    // of ratings behind it went with it. The entries still hold those ratings,
+    // so leaving them out is losing data on the way out of the app, which is
+    // the one direction where losing it is unrecoverable.
+    const label = (x) => (x.archivedAt ? `${x.label} (no longer tracked)` : x.label);
+    const syms = [...(state.symptoms || [])].sort((a, b) => (a.archivedAt ? 1 : 0) - (b.archivedAt ? 1 : 0));
+    const facs = [...(state.factors || [])].sort((a, b) => (a.archivedAt ? 1 : 0) - (b.archivedAt ? 1 : 0));
     const header = ['date', 'score', ...fields,
-      ...syms.map((x) => `symptom: ${x.label}`),
-      ...facs.map((x) => `suspected: ${x.label}`),
+      ...syms.map((x) => `symptom: ${label(x)}`),
+      ...facs.map((x) => `suspected: ${label(x)}`),
       'notes'];
     const ctx = profileCtx();
     const rows = state.entries.map((e) => {
@@ -374,9 +384,15 @@ const actions = {
       return [e.date, s, ...fields.map((f) => (e[f] ?? '')),
         ...syms.map((x) => e.symptoms?.[x.id] ?? ''),
         ...facs.map((x) => e.factors?.[x.id] ?? ''),
-        csvEscape(e.notes || '')].join(',');
+        e.notes || ''];
     });
-    download(`vitalarc-${dateKey()}.csv`, [header.join(','), ...rows].join('\n'), 'text/csv');
+    // EVERY cell through the escaper, header included. Only the notes column
+    // was escaped before, so a symptom the user had called "Joint pain (knee,
+    // left)" shifted the header one column right of its data and every reading
+    // in the file lined up under the wrong name. The labels are free text the
+    // person typed; treating one column as dangerous and the rest as safe was
+    // the bug.
+    download(`vitalarc-${dateKey()}.csv`, toCSV(header, rows), 'text/csv');
     toast('Exported CSV');
   },
 
@@ -403,6 +419,68 @@ const actions = {
     await store.setMeta('remindAt', at);
     download(reminderFilename(h, m), buildReminder({ hour: h, minute: m, startDate: dateKey() }), 'text/calendar');
     toast('Calendar file saved — open it to add the reminder');
+  },
+
+  /* -------- the clinical record -------- */
+
+  'add-medication': async () => {
+    const name = ($('#med-name')?.value || '').trim();
+    const { clinical, error } = addMedication(state.clinical, {
+      name,
+      kind: $('#med-kind')?.value || 'prescription',
+      dose: ($('#med-dose')?.value || '').trim(),
+      forWhat: ($('#med-for')?.value || '').trim(),
+      started: ($('#med-started')?.value || '').trim(),
+    });
+    if (error) { toast(error); return; }
+    state.clinical = clinical;
+    await store.setMeta('clinical', clinical);
+    for (const id of ['med-name', 'med-dose', 'med-for', 'med-started']) {
+      const el = $('#' + id); if (el) el.value = '';
+    }
+    render();
+    $('#med-name')?.focus();
+  },
+
+  'remove-medication': async (el) => {
+    state.clinical = removeFrom(state.clinical, 'medications', el.dataset.id);
+    await store.setMeta('clinical', state.clinical);
+    render();
+  },
+
+  'stop-medication': async (el) => {
+    // "Stopped" is a date, and the person rarely knows it to the day. Today is
+    // the honest default for a change made today, and the field stays editable.
+    const c = validateClinical(state.clinical);
+    state.clinical = validateClinical({
+      ...c,
+      medications: c.medications.map((m) => (m.id === el.dataset.id ? { ...m, stopped: dateKey() } : m)),
+    });
+    await store.setMeta('clinical', state.clinical);
+    render();
+  },
+
+  'add-history': async () => {
+    const { clinical, error } = addHistory(state.clinical, {
+      what: ($('#hist-what')?.value || '').trim(),
+      kind: $('#hist-kind')?.value || 'test',
+      when: ($('#hist-when')?.value || '').trim(),
+      outcome: ($('#hist-outcome')?.value || '').trim(),
+    });
+    if (error) { toast(error); return; }
+    state.clinical = clinical;
+    await store.setMeta('clinical', clinical);
+    for (const id of ['hist-what', 'hist-when', 'hist-outcome']) {
+      const el = $('#' + id); if (el) el.value = '';
+    }
+    render();
+    $('#hist-what')?.focus();
+  },
+
+  'remove-history': async (el) => {
+    state.clinical = removeFrom(state.clinical, 'history', el.dataset.id);
+    await store.setMeta('clinical', state.clinical);
+    render();
   },
 
   'show-all-fields': async () => { state.showAllFields = true; render(); },
@@ -556,6 +634,12 @@ const actions = {
     // tour would demonstrate the app without its main feature.
     await store.setMeta('symptoms', SAMPLE_SYMPTOMS);
     await store.setMeta('factors', SAMPLE_FACTORS);
+    // The tour exists to show what the finished thing looks like. Without a
+    // clinical record the sample report shows its medication section reading
+    // "I have not listed these", which demonstrates the honesty rule and
+    // nothing else.
+    await store.setMeta('clinical', SAMPLE_CLINICAL);
+    state.clinical = validateClinical(SAMPLE_CLINICAL);
     state.symptoms = SAMPLE_SYMPTOMS;
     state.factors = SAMPLE_FACTORS;
     state.sampleMode = true;
@@ -575,6 +659,7 @@ const actions = {
     state.sampleMode = false;
     state.symptoms = [];
     state.factors = [];
+    state.clinical = validateClinical(null);
     // A trial started during the tour measures a symptom that no longer
     // exists; carrying it into the real log leaves an un-completable trial
     // pointing at nothing.
@@ -593,6 +678,7 @@ const actions = {
     if (!confirm('Really delete everything? There is no recovery.')) return;
     await store.clearAll();
     state.entries = []; state.entriesRev++; state.profile = { age: 35, weightKg: 75, heightCm: null };
+    state.clinical = validateClinical(null);
     state.draft = emptyEntry(dateKey(), state.symptoms, state.factors);
     // The draft this flag referred to has just been destroyed; leaving it set
     // meant the next tap on Save quietly re-populated the wiped store, and
@@ -602,16 +688,6 @@ const actions = {
     toast('All data deleted');
   },
 };
-
-function csvEscape(s) {
-  let v = String(s).replace(/"/g, '""');
-  // Spreadsheet formula injection (CWE-1236): a note like `=HYPERLINK(...)`
-  // or `+cmd|...` executes when the exported CSV is opened in Excel or
-  // Sheets. A leading apostrophe forces text interpretation; spreadsheets
-  // hide it, so the note still reads as written.
-  if (/^[=+\-@\t\r]/.test(v)) v = "'" + v;
-  return /[",\n']/.test(v) ? `"${v}"` : v;
-}
 
 function download(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
@@ -689,11 +765,63 @@ async function saveDraft() {
   state.entries.sort((a, b) => (a.date < b.date ? -1 : 1));
   state.entriesRev++;
   state.dirty = false;
+  state.recovered = false;
+  // The stash exists only to cover the window between an edit and its save.
+  // Leaving it behind means the next boot offers to restore a day that is
+  // already safely stored.
+  store.clearStash();
   recompute();
   return true;
 }
 
 async function persistDraftIfDirty() { if (state.dirty) await saveDraft(); }
+
+/**
+ * Put back a day that a discarded tab took with it.
+ *
+ * Only for the day the stash is actually about, and only when the stash is
+ * newer than what is stored — otherwise re-opening the app a week later would
+ * resurrect a stale half-day over a complete saved one. The restored draft is
+ * marked dirty rather than written straight to the database: the person gets to
+ * see it and press Save, because silently committing numbers somebody did not
+ * knowingly submit is the same error the fillDefaults fix removed.
+ */
+async function recoverStash() {
+  const stash = store.readStash();
+  if (!stash) return;
+  if (stash.draft.date !== state.draft.date) { store.clearStash(); return; }
+  const stored = state.entries.find((e) => e.date === stash.draft.date);
+  if (stored && Number(stored.updatedAt || 0) >= stash.at) { store.clearStash(); return; }
+
+  const { entry } = validateEntry(stash.draft, state.symptoms, state.factors, { keepUnknown: true });
+  if (!entry) { store.clearStash(); return; }
+  state.draft = { ...state.draft, ...stash.draft };
+  state.touched = new Set(stash.touched);
+  state.dirty = true;
+  state.recovered = true;
+  go('log');
+  toast('Picked up where you left off — press Save to keep it');
+}
+
+/**
+ * Save on the events that actually fire when a mobile session ends.
+ *
+ * `beforeunload` was the only safety net, and on iOS and Android a
+ * backgrounded tab is reaped without firing it at all. `pagehide` and the
+ * hidden transition of `visibilitychange` are the pair the platform actually
+ * guarantees, so both do the work and `beforeunload` is left only as the
+ * desktop "are you sure" prompt.
+ *
+ * The synchronous stash goes first and the asynchronous real save second. That
+ * order is the point: once the page is frozen the IndexedDB callback may never
+ * arrive, but a localStorage write issued here has already happened by the
+ * time this function returns.
+ */
+function handoff() {
+  if (!state.dirty) return;
+  store.stashDraft(state.draft, state.touched);
+  saveDraft().then((saved) => { if (saved) store.clearStash(); }, () => { /* the stash holds it */ });
+}
 
 /* ------------------------------------------------------------------ *
  * Event wiring — all delegated, so re-rendering never breaks handlers.
@@ -803,6 +931,15 @@ function wire() {
       return;
     }
 
+    // Clinical free text. Written through on every keystroke and NOT
+    // re-rendered: a render would replace the input mid-sentence and throw the
+    // caret to the end, which is how the symptom name field used to behave.
+    if (t.dataset.clinical) {
+      state.clinical = validateClinical({ ...state.clinical, [t.dataset.clinical]: t.value });
+      store.setMeta('clinical', state.clinical);
+      return;
+    }
+
     if (t.id === 'log-date') {
       const d = t.value;
       if (!d) return;
@@ -848,6 +985,7 @@ function wire() {
       state.factors = validateFactors((await store.getMeta('factors')) || []);
       const importedTrials = await store.getMeta('trials');
       state.trials = Array.isArray(importedTrials) ? importedTrials : state.trials;
+      state.clinical = validateClinical(await store.getMeta('clinical'));
       // Rebuild the draft from the store: the import may have replaced the
       // very day the draft mirrors, and saving the stale pre-import draft
       // afterwards would clobber the imported entry.
@@ -874,9 +1012,15 @@ function wire() {
     }, 150);
   });
 
-  // Don't silently lose a half-filled day.
+  // Don't silently lose a half-filled day. See handoff(): visibilitychange and
+  // pagehide are the events a phone actually fires; beforeunload is the
+  // desktop confirmation dialog and nothing more.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') handoff();
+  });
+  window.addEventListener('pagehide', handoff);
   window.addEventListener('beforeunload', (ev) => {
-    if (state.dirty) { ev.preventDefault(); ev.returnValue = ''; }
+    if (state.dirty) { handoff(); ev.preventDefault(); ev.returnValue = ''; }
   });
 }
 
@@ -950,7 +1094,7 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags, remindAt] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags, remindAt, clinical] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
@@ -960,6 +1104,7 @@ async function boot() {
     store.getMeta('trials'),
     store.getMeta('dismissedFlags'),
     store.getMeta('remindAt'),
+    store.getMeta('clinical'),
   ]);
 
   state.sampleMode = !!sampleMode;
@@ -971,8 +1116,19 @@ async function boot() {
   if (profile) state.profile = { ...state.profile, ...profile };
   if (theme) state.theme = theme;
   if (typeof remindAt === 'string') state.remindAt = remindAt;
+  state.clinical = validateClinical(clinical);
+
+  // Ask the browser not to evict the only copy of the diary. Not awaited
+  // before first paint — on Firefox this can show a permission prompt, and
+  // holding the whole app behind a dialog on launch is worse than learning the
+  // answer a moment later.
+  store.requestPersistence().then(async (p) => {
+    state.persistence = { ...p, estimate: await store.storageEstimate() };
+    if (state.view === 'settings') render();
+  });
 
   await loadDraft(dateKey());
+  await recoverStash();
   recompute();
   wire();
   go(location.hash.slice(1) || (state.entries.length ? 'today' : 'log'));

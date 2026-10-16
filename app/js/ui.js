@@ -15,6 +15,8 @@ import { sensitivityNote, labelFor, isLowerBetter, TREND_WINDOW, compareWindows 
 import { render as renderCertificate } from './certificate.js';
 import { lineChart, radarChart, barChart, scatterChart, esc } from './charts.js';
 import { onCalendar, coverageNote } from './timeline.js';
+import { validateClinical, splitMedications, describeMedication, clinicalGaps,
+         notableNotes, MED_KINDS, HISTORY_KINDS, MAX_MEDICATIONS, MAX_HISTORY } from './clinical.js';
 
 /* ---------------- shared bits ---------------- */
 
@@ -780,6 +782,12 @@ export function reportView(state) {
   const trials = (state.trials || []).filter((t) => t.status === 'complete' && t.result);
   // The unfiltered rule output, not the throttled banner list.
   const flags = state.reportFlags || [];
+  const clinical = validateClinical(state.clinical);
+  const meds = splitMedications(clinical);
+  const notes = notableNotes(entries, primary?.id);
+  // The three strongest patterns, for the summary page. Findings arrive sorted
+  // by adjusted p; the full table further down carries all of them.
+  const headline = findings.slice(0, 3);
 
   const symptomSummary = (sym) => {
     const vals = entries.map((e) => e.symptoms?.[sym.id]).filter((v) => v != null);
@@ -846,9 +854,14 @@ export function reportView(state) {
       <h1 style="margin:0 0 .3em">Summary for an appointment</h1>
       <p class="muted" style="margin:0">
         ${esc(String(p.age ?? '—'))}-year-old${p.heightCm ? `, ${esc(String(p.heightCm))} cm` : ''}.
-        Self-tracked ${entries.length} days out of ${span} between ${esc(first)} and ${esc(last)}.
+        ${clinical.onset
+          ? `Unwell since <strong>${esc(clinical.onset)}</strong>. `
+          : ''}Self-tracked ${entries.length} days out of ${span} between ${esc(first)} and ${esc(last)}.
         Printed ${esc(today)}.
       </p>
+      ${clinical.onsetNote ? `<p class="muted" style="margin:.5em 0 0">${esc(clinical.onsetNote)}</p>` : ''}
+      ${!clinical.onset ? `<p class="subtle" style="margin:.5em 0 0">The dates above are when I
+      started tracking, not when this started.</p>` : ''}
     </div>
 
     ${flags.length ? `<div class="card">
@@ -872,6 +885,41 @@ export function reportView(state) {
       })}
       ${main.timeline.missing ? `<p class="subtle">${esc(coverageNote(main.timeline, { what: 'the symptom' }))}</p>` : ''}
     </div>` : ''}
+
+    <div class="card">
+      <h2>What I take</h2>
+      ${meds.current.length ? `<ul class="plain">${meds.current.map((m) =>
+        `<li>${esc(describeMedication(m))}</li>`).join('')}</ul>`
+        /* This section prints even when it is empty. Every other section on
+         * this page hides itself when it has nothing; this one must not,
+         * because a reader who sees no medication list will take it to mean no
+         * medications. Omission reads as zero. */
+        : `<p class="muted">I have not listed these in the app. <strong>Ask me</strong> &mdash;
+           do not read this as "no medication".</p>`}
+      ${meds.past.length ? `<h3 style="margin:.9em 0 .3em">Stopped</h3>
+        <ul class="plain">${meds.past.map((m) => `<li>${esc(describeMedication(m))}</li>`).join('')}</ul>` : ''}
+      <p style="margin:.7em 0 0"><strong>Allergies:</strong> ${clinical.allergies
+        ? esc(clinical.allergies)
+        : '<span class="muted">not listed &mdash; ask me</span>'}</p>
+      <p class="subtle">My own list, as I understand it. Not reconciled against a prescription
+      record, and the doses are what I actually take rather than what is on the label.</p>
+    </div>
+
+    ${headline.length ? `<div class="card">
+      <h2>The strongest things I found</h2>
+      <p class="muted">Out of ${state.insights?.tested || 0} relationships tested across my log,
+      corrected for having tested all of them. These are associations in my own diary, not
+      causes &mdash; the full table and the method are further down.</p>
+      <ul class="plain">${headline.map((f) => `<li><strong>${esc(fieldLabel(f.driver, state))}</strong>
+        &rarr; ${esc(fieldLabel(f.outcome, state))}${f.lag ? ` after ${f.lag} day${f.lag === 1 ? '' : 's'}` : ''}:
+        r = ${f.r}, p = ${f.pAdjusted < 0.0001 ? '&lt;0.0001' : f.pAdjusted} (corrected), n = ${f.n}</li>`).join('')}</ul>
+    </div>` : ''}
+
+    <!-- Everything above is the summary. A clinician who reads only the first
+         page should have the whole of the useful part, and the footer says so.
+         Before this, the page the code itself called the most valuable was on
+         sheet two of three and the app claimed the whole thing was one page. -->
+    <div class="page-break"></div>
 
     ${others.length ? `<div class="card">
       <h2>Everything else I track</h2>
@@ -973,6 +1021,40 @@ export function reportView(state) {
         `<pre class="cert">${esc(renderCertificate(t.certificate))}</pre>`).join('')}</details>` : ''}
     </div>` : ''}
 
+    <div class="card">
+      <h2>What has already been looked at</h2>
+      ${clinical.history.length ? `<div class="table-wrap"><table class="table">
+        <thead><tr><th>What</th><th>When</th><th>What came of it</th></tr></thead>
+        <tbody>${HISTORY_KINDS.map((k) => clinical.history.filter((h) => h.kind === k.value)).flat()
+          .map((h) => `<tr>
+            <td>${esc(h.what)}<br><span class="subtle">${esc(HISTORY_KINDS.find((k) => k.value === h.kind)?.label || '')}</span></td>
+            <td>${h.when ? esc(h.when) : '<span class="muted">—</span>'}</td>
+            <td>${h.outcome ? esc(h.outcome) : '<span class="muted">—</span>'}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="subtle">As I remember it being explained to me. Worth checking against the notes
+      rather than taking from this page.</p>`
+      /* Same rule as the medication list: printed empty rather than hidden, so
+       * that nobody infers "never investigated" from a missing section. */
+      : `<p class="muted">I have not filled this in. It does not mean nothing has been looked
+         at &mdash; ask me what has already been done.</p>`}
+    </div>
+
+    ${notes.total ? `<div class="card">
+      <h2>What I wrote on the ${notes.ranked ? 'worst' : 'days I wrote anything'} days</h2>
+      <p class="muted">${notes.ranked
+        ? `The ${notes.shown.length} days with the highest ${esc(primary.label)} rating that I also
+           wrote something on${notes.omitted ? `, out of ${notes.total} days with a note` : ''}.`
+        : `${notes.shown.length} of ${notes.total} days with a note.`}
+        Verbatim, in date order.</p>
+      <dl class="notes-list">${notes.shown.map((x) => `
+        <dt>${esc(x.date)}${x.severity != null
+          ? ` <span class="pill ${x.severity >= 3 ? 'pill-bad' : 'pill-info'}">${esc(primary.label)} ${x.severity}/4</span>`
+          : ''}</dt>
+        <dd>${esc(x.note)}</dd>`).join('')}</dl>
+      ${notes.omitted ? `<p class="subtle">${notes.omitted} further ${notes.omitted === 1 ? 'day has' : 'days have'}
+      a note that is not printed here.</p>` : ''}
+    </div>` : ''}
+
     ${(state.logBias || []).length ? `<div class="card">
       <h2>A caveat on all of the above</h2>
       ${state.logBias.map((b) => `<p>I logged ${b.logged} of ${b.span} days (${b.coverage}%), and the
@@ -1023,9 +1105,11 @@ export function reportView(state) {
       <button class="btn btn-primary" data-action="print-report">Print / save as PDF</button>
       <button class="btn" data-action="export">Export raw data</button>
     </div>
-    <p class="subtle" style="margin-top:8px">Prints to about one page. Take it with you — walking
-    in with dates and numbers is worth a great deal more than trying to remember how the last
-    three months went.</p>
+    <p class="subtle" style="margin-top:8px"><strong>The first page is the summary</strong> —
+    what I am dealing with, what I take, and the strongest things I found. If your doctor reads
+    only that, it is the right page. What follows is the detail behind it, and it runs to a few
+    more sheets. Take it with you: walking in with dates and numbers is worth a great deal more
+    than trying to remember how the last three months went.</p>
   </div>`;
 }
 
@@ -1037,6 +1121,8 @@ const fieldLabel = (id, state) => labelFor(id, state.symptoms, state.factors);
 
 export function settingsView(state) {
   const p = state.profile;
+  const clinical = validateClinical(state.clinical);
+  const meds = splitMedications(clinical);
   const active = (state.symptoms || []).filter((s) => !s.archivedAt);
   const symptomRows = active.length
     ? active.map((sym) => `<div class="sym-row">
@@ -1053,6 +1139,103 @@ export function settingsView(state) {
   return `
   <div class="card">
     <h1>Settings</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>What you take</h2></div>
+    <p class="muted">This is the part a doctor cannot work without. A page of symptom charts with
+    no drug list beside it is close to unreadable &mdash; a fair share of what is on those charts
+    could be a side effect of something you take every morning, and nobody reading it can tell.
+    It prints on the first page of your report.</p>
+    <p class="muted">Include the things people usually leave out: the pharmacy-shelf painkiller,
+    the supplement a friend recommended, the thing you stopped because it made you feel worse.
+    All three change what a reader makes of the rest.</p>
+
+    ${meds.current.length || meds.past.length ? `<div style="margin-top:6px">
+      ${[...meds.current, ...meds.past].map((m) => `<div class="sym-row">
+        <div class="sym-label">${esc(describeMedication(m))}</div>
+        <div style="display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap">
+          ${m.stopped ? '<span class="pill pill-info">stopped</span>'
+            : `<button class="btn btn-ghost btn-sm" data-action="stop-medication" data-id="${esc(m.id)}">I've stopped this</button>`}
+          <button class="btn btn-ghost btn-sm" data-action="remove-medication" data-id="${esc(m.id)}">Remove</button>
+        </div>
+      </div>`).join('')}
+    </div>` : '<p class="muted">Nothing listed yet.</p>'}
+
+    <div class="card-inset">
+      <div class="grid grid-2" style="gap:10px">
+        <div class="field"><div class="field-head"><label for="med-name">Name</label></div>
+          <input type="text" id="med-name" maxlength="120" placeholder="e.g. Sertraline, ibuprofen, vitamin D"></div>
+        <div class="field"><div class="field-head"><label for="med-dose">How much, how often</label></div>
+          <input type="text" id="med-dose" maxlength="80" placeholder="e.g. 50mg each morning"></div>
+        <div class="field"><div class="field-head"><label for="med-for">What it's for</label></div>
+          <input type="text" id="med-for" maxlength="120" placeholder="e.g. migraine prevention"></div>
+        <div class="field"><div class="field-head"><label for="med-started">Since when</label></div>
+          <input type="text" id="med-started" maxlength="40" placeholder="e.g. 2022, or last spring"></div>
+        <div class="field"><div class="field-head"><label for="med-kind">Kind</label></div>
+          <select id="med-kind">${MED_KINDS.map((k) =>
+            `<option value="${esc(k.value)}">${esc(k.label)}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn btn-primary btn-sm" data-action="add-medication" style="margin-top:10px">Add</button>
+      <p class="subtle" style="margin-top:8px">Dates are free text on purpose &mdash; "about 2019"
+      and "after the flu" are real answers, and a date picker would make you invent a day you do
+      not know. Up to ${MAX_MEDICATIONS}.</p>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <div class="field-head"><label for="c-allergies">Allergies and bad reactions</label></div>
+      <textarea id="c-allergies" data-clinical="allergies" rows="2" maxlength="300"
+        placeholder="e.g. penicillin — rash as a child">${esc(clinical.allergies)}</textarea>
+    </div>
+
+    <div class="card-inset">
+      <p class="muted" style="margin-top:0"><strong>None of this goes into the analysis, and that
+      is deliberate.</strong> "On the days I take my tablets the symptom is worse" is a sentence
+      that gets people to stop taking their tablets, and the arrow usually points the other way
+      &mdash; you reach for the rescue medication <em>because</em> it is a bad day. Changing or
+      stopping anything here is a conversation with whoever prescribed it, not something this app
+      can tell you.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>When it started, and what's been done</h2></div>
+    <p class="muted">Your report's dates currently start at your first logged day. If you have
+    been unwell for three years, that reads as six weeks &mdash; and a reader who does not know
+    what has already been tested will suggest the test you had in 2024.</p>
+    <div class="grid grid-2" style="gap:10px">
+      <div class="field"><div class="field-head"><label for="c-onset">It started around</label></div>
+        <input type="text" id="c-onset" data-clinical="onset" maxlength="60"
+          value="${esc(clinical.onset)}" placeholder="e.g. spring 2023"></div>
+      <div class="field"><div class="field-head"><label for="c-onset-note">Anything around the time it began</label></div>
+        <input type="text" id="c-onset-note" data-clinical="onsetNote" maxlength="300"
+          value="${esc(clinical.onsetNote)}" placeholder="e.g. a few weeks after a chest infection"></div>
+    </div>
+
+    ${clinical.history.length ? clinical.history.map((h) => `<div class="sym-row">
+      <div class="sym-label">${esc(h.what)}${h.when ? ` <span class="subtle">${esc(h.when)}</span>` : ''}
+        ${h.outcome ? `<br><span class="subtle">${esc(h.outcome)}</span>` : ''}</div>
+      <div style="text-align:right">
+        <button class="btn btn-ghost btn-sm" data-action="remove-history" data-id="${esc(h.id)}">Remove</button>
+      </div>
+    </div>`).join('') : '<p class="muted" style="margin-top:14px">Nothing listed yet.</p>'}
+
+    <div class="card-inset">
+      <div class="grid grid-2" style="gap:10px">
+        <div class="field"><div class="field-head"><label for="hist-what">What was it</label></div>
+          <input type="text" id="hist-what" maxlength="160" placeholder="e.g. MRI head, blood tests, six weeks off dairy"></div>
+        <div class="field"><div class="field-head"><label for="hist-kind">Kind</label></div>
+          <select id="hist-kind">${HISTORY_KINDS.map((k) =>
+            `<option value="${esc(k.value)}">${esc(k.label)}</option>`).join('')}</select></div>
+        <div class="field"><div class="field-head"><label for="hist-when">When</label></div>
+          <input type="text" id="hist-when" maxlength="40" placeholder="e.g. August 2024"></div>
+        <div class="field"><div class="field-head"><label for="hist-outcome">What came of it</label></div>
+          <input type="text" id="hist-outcome" maxlength="300" placeholder="e.g. all normal, I was told"></div>
+      </div>
+      <button class="btn btn-primary btn-sm" data-action="add-history" style="margin-top:10px">Add</button>
+      <p class="subtle" style="margin-top:8px">Up to ${MAX_HISTORY}. As you remember it being
+      explained &mdash; the report says so rather than presenting it as a record.</p>
+    </div>
   </div>
 
   <div class="card">
@@ -1133,6 +1316,26 @@ export function settingsView(state) {
     <h2>Your data</h2>
     <p class="muted">Everything you log is stored on this device only. There is no account, no server copy, and
     no analytics on your health data. That's why export matters — it's your only backup.</p>
+    ${(() => {
+      // Said plainly, because the honest version of "local-first" includes the
+      // part where the browser is allowed to throw it away. The app asks for
+      // persistent storage on every launch; a refusal is a reason to export,
+      // not something to keep quiet about.
+      const st = state.persistence;
+      if (!st) return '';
+      const size = st.estimate && st.estimate.usage
+        ? ` Your log is using about ${Math.max(1, Math.round(st.estimate.usage / 1024))} kB.`
+        : '';
+      return st.persisted
+        ? `<p class="subtle"><strong>This browser has agreed to keep your data.</strong> It will
+           not be cleared to make room for other sites. Clearing site data by hand, or deleting
+           the app, still removes it &mdash; so keep an export somewhere.${esc(size)}</p>`
+        : `<p class="subtle"><strong>This browser has not promised to keep your data.</strong>
+           By default a browser may clear a site's storage when the device runs short of room,
+           without asking. The app has requested permanent storage${st.supported
+             ? ' and was declined — on most browsers that changes once you install the app to your home screen'
+             : ", and this browser doesn't offer it"}. Until then, an export is not optional.${esc(size)}</p>`;
+    })()}
     <div style="display:flex;gap:9px;flex-wrap:wrap">
       <button class="btn" data-action="export">Export JSON</button>
       <button class="btn" data-action="export-csv">Export CSV</button>
