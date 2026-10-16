@@ -264,7 +264,10 @@ input[type="range"]::-moz-range-thumb {
 }
 input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
 
-input[type="number"], input[type="text"], input[type="date"], select, textarea {
+/* Styled by exclusion rather than by an enumerated list of types: the list
+   form missed input[type=time] entirely when the daily reminder was added, so
+   it rendered unstyled and 24px tall. */
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea {
   width: 100%; font: inherit; color: var(--text);
   background: var(--surface-2); border: 1px solid var(--border);
   border-radius: var(--radius-s); padding: 9px 11px;
@@ -471,7 +474,11 @@ textarea { min-height: 76px; resize: vertical; }
   .sym-seg button { min-height: 44px; min-width: 44px; }
   .btn { min-height: 44px; }
   .btn-sm { min-height: 40px; padding: 8px 14px; }
-  input[type="number"], input[type="text"], input[type="date"], select { min-height: 44px; }
+  /* Every text-like control, not an enumerated list of types. The list form
+     silently missed input[type=time] when the reminder was added, and the
+     touch-target check in tests/e2e.mjs caught it at 24px. :not() keeps range
+     and checkbox out, which have their own sizing. */
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea { min-height: 44px; }
   /* The day arrows sit beside a date input; keep the row from wrapping. */
   .card-head .btn-sm { min-width: 44px; }
 }

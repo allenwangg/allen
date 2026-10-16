@@ -1089,6 +1089,23 @@ export function settingsView(state) {
   </div>
 
   <div class="card">
+    <h2>A daily reminder</h2>
+    <p class="muted">This only works if you log most days &mdash; and the app measures whether the
+    days you skip are systematically your worse ones, which makes every pattern it finds less
+    trustworthy. So it is worth setting a time.</p>
+    <p class="muted">Rather than asking for notification permission and sending your device to a
+    push server, this hands your own calendar a repeating event. Nothing leaves this device, there
+    is no permission prompt, and it works on a phone that has never installed the app.</p>
+    <div class="field" style="max-width:220px">
+      <div class="field-head"><label for="remind-at">Remind me at</label></div>
+      <input type="time" id="remind-at" value="${esc(state.remindAt || '20:00')}">
+    </div>
+    <button class="btn btn-primary btn-sm" data-action="download-reminder" style="margin-top:12px">Add to my calendar</button>
+    <p class="subtle" style="margin-top:8px">Downloads a small calendar file. Open it and your
+    phone adds a daily reminder you can edit or delete like any other event.</p>
+  </div>
+
+  <div class="card">
     <h2>Appearance</h2>
     <div class="seg" style="max-width:340px">
       ${['system', 'light', 'dark'].map((t) => `<button type="button" data-theme-set="${t}" aria-pressed="${state.theme === t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}

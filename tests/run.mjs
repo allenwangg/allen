@@ -4,6 +4,7 @@ import { commit as commitPrereg, verify as verifyPrereg, COMMITTED_FIELDS } from
 import { issue as issueCert, check as checkCert, exactP as certExactP, render as renderCert, canonicalCertificate } from '../app/js/certificate.js';
 import { cohorts, wilson, RESPONDER_ALPHA, MIN_REPORTING } from '../app/js/registry.js';
 import { fieldAttention, attentionSummary, MIN_DAYS_TO_JUDGE } from '../app/js/attention.js';
+import { buildReminder, reminderFilename } from '../app/js/reminder.js';
 import { generateSampleData, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from '../app/js/sample.js';
 /**
  * Dependency-free test runner. `node tests/run.mjs`
@@ -2668,6 +2669,145 @@ t('the app asks about exactly what the engine can test', () => {
   const att3 = fieldAttention(flat);
   ok(!att3.inert.some((f) => f.startsWith('s_') || f.startsWith('f_')),
     'symptoms and user factors must never be demoted');
+});
+
+t('the reminder is a calendar file a calendar will actually accept', () => {
+  // A malformed .ics fails silently: some calendars reject it, others import a
+  // mangled event, and the user concludes the reminder does not work. RFC 5545
+  // is strict about exactly the things that are easy to get wrong.
+  const ics = buildReminder({ hour: 20, minute: 30, startDate: '2026-10-17',
+    now: new Date('2026-10-16T09:00:00Z') });
+
+  ok(!/[^\r]\n/.test(ics), 'every break must be CRLF, not a bare newline');
+  ok(ics.endsWith('\r\n'), 'the file must end with a line break');
+  const lines = ics.split('\r\n');
+  for (const line of lines) {
+    ok(new TextEncoder().encode(line).length <= 75, `line over 75 octets: ${line.slice(0, 40)}...`);
+  }
+  for (const required of ['BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT', 'END:VEVENT',
+                          'END:VCALENDAR', 'RRULE:FREQ=DAILY', 'BEGIN:VALARM', 'END:VALARM']) {
+    ok(ics.includes(required), `missing ${required}`);
+  }
+  // Floating local time: an 8pm habit must stay 8pm after a flight, not become
+  // 3am. No trailing Z and no TZID is what RFC 5545 means by floating.
+  const dt = lines.find((l) => l.startsWith('DTSTART'));
+  eq(dt, 'DTSTART:20261017T203000');
+  ok(!/TZID/.test(ics) && !/DTSTART[^:]*:.*Z/.test(ics), 'DTSTART must be floating local time');
+  // DTSTAMP, by contrast, is required to be UTC.
+  ok(lines.some((l) => /^DTSTAMP:\d{8}T\d{6}Z$/.test(l)), 'DTSTAMP must be UTC');
+  // No UNTIL or COUNT: a chronic condition has no end date, and an event that
+  // quietly expires stops reminding exactly when the log gets long enough to
+  // be worth something.
+  ok(!/UNTIL|COUNT=/.test(ics), 'the repeat must not expire');
+});
+
+t('reminder text is escaped and folded without corrupting it', () => {
+  // Folding counts octets, not characters. Splitting inside a multi-byte
+  // sequence produces a file that imports as mojibake, and a symptom label
+  // with an accent or an emoji in it is not an exotic case.
+  const long = 'Migraine, severe; with aura — ' + 'é'.repeat(60) + ' 🤕 done';
+  const ics = buildReminder({ hour: 9, minute: 5, startDate: '2026-01-02', label: long,
+    now: new Date('2026-01-01T00:00:00Z') });
+  for (const line of ics.split('\r\n')) {
+    ok(new TextEncoder().encode(line).length <= 75, 'folding must respect the octet limit');
+  }
+  // Unfold and check the text survived intact, with the separators escaped.
+  const unfolded = ics.replace(/\r\n /g, '');
+  const summary = unfolded.split('\r\n').find((l) => l.startsWith('SUMMARY:'));
+  // Asserted component-wise: writing the expected string by hand needs two
+  // levels of escaping and gets the semicolon wrong, which is how this test
+  // first failed against correct code.
+  ok(summary.startsWith('SUMMARY:Migraine\\, severe\\; with aura'),
+    'comma and semicolon are separators in RFC 5545 and must both be escaped: ' + summary.slice(0, 50));
+  ok(summary.includes('🤕'), 'a multi-byte character must survive folding');
+  ok(!/[^\\];/.test(summary.slice(8)) && !/[^\\],/.test(summary.slice(8)),
+    'no unescaped separator may remain in the text');
+});
+
+t('the reminder time is clamped and named', () => {
+  ok(buildReminder({ hour: 99, minute: 99, startDate: '2026-01-01', now: new Date('2026-01-01T00:00:00Z') })
+    .includes('DTSTART:20260101T235900'), 'an out-of-range time must clamp, not produce nonsense');
+  ok(buildReminder({ hour: -5, minute: -5, startDate: '2026-01-01', now: new Date('2026-01-01T00:00:00Z') })
+    .includes('DTSTART:20260101T000000'));
+  eq(reminderFilename(20, 30), 'vitalarc-daily-reminder-2030.ics');
+  eq(reminderFilename(9, 5), 'vitalarc-daily-reminder-0905.ics');
+  // Same settings, same file: re-adding must update the existing event rather
+  // than stacking a second daily alarm on top of the first.
+  const a = buildReminder({ hour: 8, minute: 0, startDate: '2026-03-04', now: new Date('2026-03-04T00:00:00Z') });
+  const b = buildReminder({ hour: 8, minute: 0, startDate: '2026-03-04', now: new Date('2026-03-04T00:00:00Z') });
+  eq(a, b);
+  const uidOf = (x) => x.split('\r\n').find((l) => l.startsWith('UID:'));
+  ok(uidOf(a) !== uidOf(buildReminder({ hour: 9, minute: 0, startDate: '2026-03-04', now: new Date('2026-03-04T00:00:00Z') })),
+    'a different time is a different event');
+});
+
+t('a field nobody entered is recorded as unknown, not as a default', () => {
+  // THE WORST BUG FOUND IN THIS CODEBASE. validateEntry substituted each
+  // field's default for anything absent, so a person who logged only their
+  // migraine for sixty days handed their doctor a page reading
+  // "Sleep 7.5 h — 60 days — self-measured at home". They had never entered a
+  // sleep figure in their life. Twenty of the twenty-four fields were invented
+  // this way on every save.
+  const blank = emptyEntry('2026-10-16', [], []);
+  for (const k of Object.keys(FIELDS)) blank[k] = null;
+  const { entry } = validateEntry(blank, [], [], { keepUnknown: true });
+  const invented = Object.keys(FIELDS).filter((k) => entry[k] != null);
+  eq(invented.length, 0, `still inventing: ${invented.map((k) => `${k}=${entry[k]}`).join(', ')}`);
+
+  // A value that WAS entered survives untouched, including a legitimate zero —
+  // "no alcohol today" is a measurement, and must not be confused with silence.
+  const partial = { ...blank, sleepHours: 8, alcoholUnits: 0 };
+  const { entry: e2 } = validateEntry(partial, [], [], { keepUnknown: true });
+  eq(e2.sleepHours, 8);
+  eq(e2.alcoholUnits, 0, 'an explicit zero is data, not an absence');
+  eq(e2.steps, null);
+
+  // The opt-in remains for callers that genuinely want a complete row.
+  const { entry: e3 } = validateEntry(blank, [], [], { fillDefaults: true });
+  ok(Object.keys(FIELDS).filter((k) => e3[k] != null).length > 10,
+    'fillDefaults must still produce a populated row where one is wanted');
+});
+
+t('a day nobody described scores nothing, rather than scoring well', () => {
+  // The mirror of the same mistake, on the way out instead of the way in.
+  // Four scoring parts coalesced a missing value to zero and then scored it:
+  // not telling the app whether you smoke earned a perfect substances score,
+  // and not entering protein scored zero. Absence is not a value in either
+  // direction.
+  const ctx = { age: 40, heightCm: 175 };
+  const unknown = emptyEntry('2026-01-01', []);
+  for (const k of Object.keys(FIELDS)) unknown[k] = null;
+  const s = scoreDay(unknown, ctx);
+  eq(s.score, null, 'a day with nothing recorded has no score');
+  const invented = [];
+  for (const [pk, p] of Object.entries(s.pillars)) {
+    for (const part of p.parts) if (part.score !== null) invented.push(`${pk}.${part.key}=${part.score}`);
+  }
+  eq(invented.length, 0, `parts scoring from no data: ${invented.join(', ')}`);
+
+  // A day that IS described still scores exactly as before.
+  const described = emptyEntry('2026-01-01', []);
+  ok(scoreDay(described, ctx).score > 0, 'a fully entered day must still score');
+});
+
+t('the report offers no measurement the person never took', () => {
+  // The clinical consequence, tested where it lands rather than at the unit
+  // that caused it: the printed page must not carry a row the user never
+  // entered, under a heading that says "self-measured at home".
+  const symptoms = [{ id: 's_mig', label: 'Migraine', primary: true }];
+  const es = [];
+  for (let i = 0; i < 60; i++) {
+    const blank = emptyEntry(addDays('2026-01-01', i), symptoms);
+    for (const k of Object.keys(FIELDS)) blank[k] = null;
+    blank.symptoms.s_mig = i % 5 === 0 ? 3 : 0;
+    es.push(validateEntry(blank, symptoms, [], { keepUnknown: true }).entry);
+  }
+  for (const field of ['bodyweightKg', 'restingHR', 'hrv', 'sleepHours', 'alcoholUnits']) {
+    const vals = es.map((e) => e[field]).filter((v) => v != null);
+    eq(vals.length, 0, `${field} would still be printed for a symptom-only logger`);
+  }
+  // And the symptom they did record is untouched.
+  eq(es.filter((e) => e.symptoms.s_mig > 0).length, 12);
 });
 
 // Every t(...) in this file must run exactly once. A test accidentally nested

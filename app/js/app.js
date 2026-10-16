@@ -13,6 +13,7 @@ import { createTrial, verdict, isComplete, getLever, floorP, DEFAULT_PAIRS } fro
 import { commit as commitPrereg, verify as verifyPrereg } from './prereg.js';
 import { issue as issueCertificate } from './certificate.js';
 import { fieldAttention } from './attention.js';
+import { buildReminder, reminderFilename } from './reminder.js';
 import { checkFlags, checkNotesForCrisis, SUPPORT } from './safety.js';
 import { store } from './store.js';
 import { generateSampleData, SAMPLE_PROFILE, SAMPLE_SYMPTOMS, SAMPLE_FACTORS } from './sample.js';
@@ -394,6 +395,16 @@ const actions = {
     toast('Pre-filled — check the length and start when you are ready');
   },
 
+  'download-reminder': async () => {
+    const at = document.getElementById('remind-at')?.value || '20:00';
+    const [h, m] = at.split(':').map(Number);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) { toast('Pick a time first'); return; }
+    state.remindAt = at;
+    await store.setMeta('remindAt', at);
+    download(reminderFilename(h, m), buildReminder({ hour: h, minute: m, startDate: dateKey() }), 'text/calendar');
+    toast('Calendar file saved — open it to add the reminder');
+  },
+
   'show-all-fields': async () => { state.showAllFields = true; render(); },
   'hide-inert-fields': async () => { state.showAllFields = false; render(); },
 
@@ -627,6 +638,15 @@ async function loadDraft(date) {
         symptoms: { ...blank.symptoms, ...(existing.symptoms || {}) },
         factors: { ...blank.factors, ...(existing.factors || {}) } }
     : blank;
+  // Which habit fields this day genuinely holds a recorded value for. A blank
+  // draft carries FIELDS defaults so the sliders have somewhere to sit — that
+  // is a starting position, not something the person told us, and saving it as
+  // though it were put twenty numbers a day into the record they hand a
+  // doctor. See `known` in saveDraft.
+  state.draftKnown = new Set(
+    existing ? Object.keys(FIELDS).filter((k) => existing[k] != null) : []
+  );
+  state.touched = new Set();
   state.dirty = false;
   recompute();
 }
@@ -636,7 +656,18 @@ async function saveDraft() {
     toast('This is example data — clear it from the banner to start your own log.');
     return false;
   }
-  const { entry } = validateEntry(state.draft, state.symptoms, state.factors, { keepUnknown: true });
+  // Record only what was actually entered. A habit field nobody touched on a
+  // day nobody had touched it before is unknown, and unknown is not a number:
+  // a user who logged only their migraine for sixty days was handing their
+  // doctor "Sleep 7.5 h, 60 days — self-measured at home", which they had
+  // never said. Symptoms and factors are deliberately different and keep their
+  // zeros: an untouched symptom on a logged day means "I did not have it",
+  // which is real information and is documented as such in emptyEntry.
+  const known = new Set([...(state.draftKnown || []), ...(state.touched || [])]);
+  const candidate = { ...state.draft };
+  for (const k of Object.keys(FIELDS)) if (!known.has(k)) candidate[k] = null;
+
+  const { entry } = validateEntry(candidate, state.symptoms, state.factors, { keepUnknown: true });
   if (!entry) { toast('Could not save — invalid date.'); return false; }
   if ((state.draft.notes || '').length > 2000 && entry.notes.length === 2000) {
     // validateEntry caps notes at 2000 characters. Saying "Day saved" over a
@@ -703,6 +734,7 @@ function wire() {
     if (seg) {
       ev.preventDefault();
       state.draft[seg.dataset.field] = Number(seg.dataset.value);
+      (state.touched ||= new Set()).add(seg.dataset.field);
       state.dirty = true;
       recompute(); render();
       return;
@@ -723,6 +755,7 @@ function wire() {
     if (t.dataset.field) {
       const v = t.type === 'range' || t.type === 'number' ? Number(t.value) : t.value;
       state.draft[t.dataset.field] = v;
+      (state.touched ||= new Set()).add(t.dataset.field);
       state.dirty = true;
       // Notes are checked in memory only — nothing about this is stored,
       // counted, or sent anywhere. See safety.js for why the check is narrow.
@@ -917,7 +950,7 @@ function updateLiveScore(input) {
 
 async function boot() {
   state.storageMode = await store._backend();
-  const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags] = await Promise.all([
+  const [entries, profile, theme, sampleMode, symptoms, factors, trials, dismissedFlags, remindAt] = await Promise.all([
     store.allEntries(),
     store.getMeta('profile'),
     store.getMeta('theme'),
@@ -926,6 +959,7 @@ async function boot() {
     store.getMeta('factors'),
     store.getMeta('trials'),
     store.getMeta('dismissedFlags'),
+    store.getMeta('remindAt'),
   ]);
 
   state.sampleMode = !!sampleMode;
@@ -936,6 +970,7 @@ async function boot() {
   state.entries = entries || [];
   if (profile) state.profile = { ...state.profile, ...profile };
   if (theme) state.theme = theme;
+  if (typeof remindAt === 'string') state.remindAt = remindAt;
 
   await loadDraft(dateKey());
   recompute();

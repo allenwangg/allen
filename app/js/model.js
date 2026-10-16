@@ -320,8 +320,18 @@ export function validateEntry(raw, symptoms = null, factors = null, opts = {}) {
   for (const [name, f] of Object.entries(FIELDS)) {
     const val = raw[name];
     if (val === null || val === undefined || val === '') {
-      if (f.optional) { entry[name] = null; continue; }
-      entry[name] = f.default;
+      // Absent means absent. This used to substitute the field's default for
+      // every non-optional field, which turned "I did not say" into a recorded
+      // measurement: a person who logged only their migraine for sixty days
+      // handed their doctor "Sleep 7.5 h, 60 days — self-measured at home",
+      // having never entered a sleep figure in their life.
+      //
+      // `optional` already meant exactly this for the four fields that carried
+      // it. The flag's real job is how prominently the UI asks, not whether
+      // the record is allowed to admit it does not know. Every field may be
+      // unknown; only `fillDefaults` (used where a complete synthetic row is
+      // genuinely wanted) puts a number in.
+      entry[name] = opts.fillDefaults && !f.optional ? f.default : null;
       continue;
     }
     const num = Number(val);

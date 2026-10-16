@@ -137,7 +137,14 @@ export function scoreDay(entry, ctx = {}) {
   ];
 
   /* --- Movement ------------------------------------------------ */
-  const trainingLoad = (entry.exerciseMinutes || 0) * (1 + 0.28 * (entry.exerciseIntensity || 0));
+  // Null means "not recorded", which is not the same as zero. Coalescing it to
+  // 0 and scoring that earns a user marks (or penalties) for a day they never
+  // described: untouched nicotine scored a perfect 100, and untouched protein
+  // scored 0. Intensity keeps its zero floor because an unrecorded intensity
+  // alongside a recorded duration really is "nothing special".
+  const trainingLoad = entry.exerciseMinutes == null
+    ? null
+    : entry.exerciseMinutes * (1 + 0.28 * (entry.exerciseIntensity || 0));
   const movementParts = [
     { key: 'steps',    weight: 0.42, score: curve(CURVES.steps, entry.steps) },
     { key: 'training', weight: 0.42, score: curve(CURVES.exerciseMinutes, trainingLoad) },
@@ -146,11 +153,11 @@ export function scoreDay(entry, ctx = {}) {
     // 28-day FREQUENCY (one session in 28 days = 0.036), and a truthiness test
     // scored that user as if they trained daily, which both mis-stated their
     // baseline and hid 'add a strength session' from the leverage ranking.
-    { key: 'strength', weight: 0.16, score: 35 + 65 * clamp(entry.strengthSession ?? 0, 0, 1) },
+    { key: 'strength', weight: 0.16, score: entry.strengthSession == null ? null : 35 + 65 * clamp(entry.strengthSession, 0, 1) },
   ];
 
   /* --- Nutrition ----------------------------------------------- */
-  const proteinPerKg = weightKg > 0 ? (entry.proteinGrams || 0) / weightKg : 0;
+  const proteinPerKg = (entry.proteinGrams == null || !(weightKg > 0)) ? null : entry.proteinGrams / weightKg;
   const nutritionParts = [
     { key: 'protein',   weight: 0.30, score: curve(CURVES.proteinPerKg, proteinPerKg) },
     { key: 'produce',   weight: 0.26, score: curve(CURVES.produceServings, entry.produceServings) },
@@ -174,7 +181,7 @@ export function scoreDay(entry, ctx = {}) {
     // Same frequency-linear treatment as strengthSession above: one smoking
     // day in 28 used to zero this part, baselining an occasional smoker as a
     // daily one.
-    { key: 'nicotine', weight: 0.30, score: 100 * (1 - clamp(entry.nicotine ?? 0, 0, 1)) },
+    { key: 'nicotine', weight: 0.30, score: entry.nicotine == null ? null : 100 * (1 - clamp(entry.nicotine, 0, 1)) },
     { key: 'caffeine', weight: 0.18, score: curve(CURVES.caffeineAfter2pm, entry.caffeineAfter2pm) },
   ];
 
