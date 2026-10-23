@@ -79,8 +79,12 @@ session list and do nothing else.
 
 - **Refunds:** the page says "No refunds. Obviously." Put the same line in the Payment
   Link's description so it is part of the checkout record.
-- **Disputes:** answer with a screenshot of the board showing the placement was
-  delivered, plus the listing's public click count. Placement is a delivered service.
+- **Disputes:** answer with `/api/ledger?name=<listing>` — the public, dated record
+  of every payment behind that listing — plus a screenshot of the board showing the
+  placement. Placement is a delivered service, and the ledger page is the evidence.
+  (This used to tell you to cite "the listing's public click count". There is no such
+  number: outbound clicks are counted in the visitor's own browser and never leave it.
+  Citing it in a dispute would have meant producing evidence that does not exist.)
 - **Taxes:** ordinary business income; Stripe issues a 1099-K past the threshold.
 - **Have a backup processor in mind** (Lemon Squeezy, Paddle). outbid.lol was thrown
   off its first payment provider mid-viral. Correct product wording is your best

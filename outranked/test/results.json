@@ -113,7 +113,7 @@
       "pass": true
     },
     {
-      "name": "clicking a row opens the dossier with cost-per-click math",
+      "name": "clicking a row opens a dossier that only claims what it can prove",
       "pass": true
     },
     {
@@ -221,6 +221,14 @@
       "pass": true
     },
     {
+      "name": "the board never invents an audience",
+      "pass": true
+    },
+    {
+      "name": "a listing says what it is, on the board and in search",
+      "pass": true
+    },
+    {
       "name": "API decodes both the encoded and legacy reference formats",
       "pass": true
     },
@@ -274,13 +282,13 @@
     }
   ],
   "perf": {
-    "medianFCPms": 112,
-    "medianDOMContentLoadedms": 80.2,
-    "medianLoadms": 299.4,
+    "medianFCPms": 132,
+    "medianDOMContentLoadedms": 95,
+    "medianLoadms": 319.6,
     "totalRequests": 3
   },
   "weight": {
-    "htmlBytes": 112744,
-    "gzipBytes": 34169
+    "htmlBytes": 116492,
+    "gzipBytes": 35545
   }
 }

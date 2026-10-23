@@ -31,9 +31,9 @@ exists, it wipes the demo data and shows only real listings. See [MONEY.md](MONE
 | **Hall of Fame** | Midnight engraves each day's king forever, with win streaks. |
 | **Auto-defend** | Set a budget; the board re-bids for you the moment you're outbid. |
 | **📺 Watch Mode** | A full-screen broadcast view built for streams and screen-recorded video. |
-| **Listing dossiers** | Per-listing stats with cost-per-click computed against search-ad benchmarks. |
+| **Listing dossiers** | Per-listing stats, each listing's own description, and a link to its dated public payment ledger. |
 | **Rank badges** | Embeddable live badges — every bidder becomes a backlink. |
-| **Rivalries, Final Hour, brag cards, price-to-take buttons, click counts** | See [RESULTS.md](RESULTS.md). |
+| **Rivalries, Final Hour, brag cards, price-to-take buttons** | See [RESULTS.md](RESULTS.md). |
 
 ## Trust mechanics
 

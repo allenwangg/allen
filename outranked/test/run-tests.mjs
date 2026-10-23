@@ -336,16 +336,22 @@ await test("Watch Mode opens as a live broadcast view and closes on Escape", asy
   assert(!(await page.locator("#watch.on").count()), "Escape did not exit watch mode");
 });
 
-await test("clicking a row opens the dossier with cost-per-click math", async () => {
+await test("clicking a row opens a dossier that only claims what it can prove", async () => {
   await page.click("#tabAll");
   await page.waitForTimeout(100);
-  await page.click('.row[data-id="e1"] .who');    // ShipFast
+  await page.click('.row[data-id="e1"] .nm');     // ShipFast (.nm, not .who: a click
+  // landing on a.url counts a click and deliberately does not open the dossier)
   await page.waitForTimeout(150);
   const body = await page.locator("#detailBody").textContent();
   assert(body.includes("ShipFast"), "dossier missing name");
-  assert(body.includes("Cost / click"), "dossier missing CPC cell");
-  const cpc = 9750 / 7500;                        // seeded: total / clicks
-  assert(body.includes("$" + cpc.toFixed(2)), `dossier CPC should be $${cpc.toFixed(2)}`);
+  // The dossier used to divide the bidder's total by a localStorage-only click
+  // counter and sell the result against search-ad CPCs, with the demo seed
+  // manufacturing a flattering $1.30. This test asserted that number, which is
+  // how the fabrication survived. Now it asserts the opposite.
+  assert(!/Cost \/ click/.test(body), "the dossier is claiming a cost-per-click it cannot measure");
+  assert(body.includes("Your clicks"), "the click counter must be labelled as this browser's only");
+  assert(/not click-tracked/.test(body), "the dossier should say placement is not click-tracked");
+  assert(body.includes("Top bid"), "dossier missing the top-bid cell");
   await page.click("[data-boost]");               // boost → prefilled bid modal
   await page.waitForTimeout(150);
   const val = await page.inputValue("#fAmt");
@@ -369,7 +375,7 @@ await test("crowning bid with a decree shows the taunt on the crown card", async
 });
 
 await test("dossier offers an embeddable rank badge with copyable HTML", async () => {
-  await page.click('.row[data-id="e2"] .who');  // Lovable
+  await page.click('.row[data-id="e2"] .nm');   // Lovable
   await page.waitForTimeout(150);
   const body = await page.locator("#detailBody").innerHTML();
   assert(body.includes("OUT") && body.includes("Copy embed"), "badge block missing");
@@ -382,7 +388,7 @@ await test("dossier offers an embeddable rank badge with copyable HTML", async (
 await test("trophy case shows every title, locked ones with how to earn them", async () => {
   await page.click("#tabAll");
   await page.waitForTimeout(120);
-  await page.click('.row[data-id="e1"] .who');        // ShipFast: has Kingslayer + Defender
+  await page.click('.row[data-id="e1"] .nm');         // ShipFast: has Kingslayer + Defender
   await page.waitForTimeout(200);
   const body = await page.locator("#detailBody").textContent();
   const total = await page.evaluate(() => TITLES.length);
@@ -1027,6 +1033,80 @@ await test("ledger notices clear when the ledger recovers", async () => {
   assert(/Ledger unreachable/.test(seen.whileDown), `an outage should say so, got "${seen.whileDown}"`);
   assert(!seen.after.shown,
     `the ribbon still shows "${seen.after.text}" after the ledger recovered — the board keeps apologising`);
+});
+
+await test("the board never invents an audience", async () => {
+  // A pulsing "Watching now" tile rendered 1200 + 400*sin(now) + random()*90 on a
+  // 5s interval with no live guard, so a board taking real money permanently
+  // advertised 1,200-1,600 concurrent viewers who did not exist — to the people
+  // deciding whether to spend on it. simulate() already refused to run on a live
+  // board with the comment "never fake traffic on a live board"; this one surface
+  // broke that rule. The tile now shows the freshest fact the ledger can prove.
+  const actx = await browser.newContext();
+  const ap = await actx.newPage();
+  await ap.goto(url + "?nosim", { waitUntil: "domcontentloaded" });
+  await ap.waitForTimeout(400);
+  const shape = await ap.evaluate(async () => {
+    const statsText = document.querySelector(".stats").textContent;
+    const gone = typeof window.watching === "undefined";
+    // Go live with a payment at a known age; the tile must report that age.
+    const now = Math.floor(Date.now() / 1000);
+    CONFIG.BOARD_FEED_URL = "stub://audience";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      { id: "aud1", ref: encodeRef("Fresh Co", "fresh.io", ""), amount: 90, at: now - 7200 },
+    ] }) });
+    await mergeBoardFeed();
+    return { statsText, gone, tile: (document.querySelector("#statLast").textContent || "").trim(),
+             lastBidAt: state.lastBidAt, expected: now - 7200 };
+  });
+  await actx.close();
+  assert(shape.gone, "the fabricated viewer-count function is still present");
+  assert(!/watching now/i.test(shape.statsText), "the board still advertises an audience it cannot measure");
+  assert(shape.lastBidAt === shape.expected, "the last-bid clock should come from the ledger timestamp");
+  assert(shape.tile === "2h ago", `the tile should report the real age of the last payment, got "${shape.tile}"`);
+});
+
+await test("a listing says what it is, on the board and in search", async () => {
+  // Every paid bid carries a line of text, and it was kept only while that bidder
+  // happened to be #1, then deleted on the next crown change — so every other row
+  // decoded it and threw it away, leaving visitors to browse "name · hostname"
+  // with nothing to tell them what anything was.
+  const sctx = await browser.newContext();
+  const sp = await sctx.newPage();
+  await sp.goto(url + "?nosim", { waitUntil: "domcontentloaded" });
+  await sp.waitForTimeout(400);
+  // Today is the default view and the seeded board has no bids today, so the
+  // all-time board is where the seeded rows actually render.
+  await sp.click("#tabAll");
+  await sp.waitForTimeout(120);
+  const shape = await sp.evaluate(async () => {
+    const demoRow = document.querySelector('.row[data-id="e1"] .says');
+    // A paid bid's line must survive the ledger, under the largest-bid rule.
+    const now = Math.floor(Date.now() / 1000);
+    CONFIG.BOARD_FEED_URL = "stub://says";
+    window.fetch = async () => ({ json: async () => ({ configured: true, bids: [
+      { id: "s1", ref: encodeRef("Describe Co", "d.io", "Turns receipts into a tax return"), amount: 300, at: now },
+      { id: "s2", ref: encodeRef("Describe Co", "d.io", "CHEAP BID HIJACK"), amount: 1, at: now + 1 },
+      { id: "s3", ref: encodeRef("Other Co", "o.io", "Sells artisanal widgets"), amount: 50, at: now },
+    ] }) });
+    await mergeBoardFeed();
+    const mine = state.entries.find(e => e.name === "Describe Co");
+    // Search must find a listing by what it does, not just by its name.
+    document.querySelector("#search").value = "artisanal";
+    document.querySelector("#search").dispatchEvent(new Event("input"));
+    const hits = [...document.querySelectorAll("#board .row[data-id]")].map(r => r.dataset.id);
+    const boardHtml = document.querySelector("#board").innerHTML.length;
+    return { demoHadOne: !!demoRow && demoRow.textContent.length > 5,
+             decree: mine && mine.decree, hits: hits.length, boardHtml,
+             shown: !!document.querySelector(".says") };
+  });
+  await sctx.close();
+  assert(shape.demoHadOne, "the demo board should show each listing's own line");
+  assert(shape.decree === "Turns receipts into a tax return",
+    `a $1 bid rewrote the description: "${shape.decree}"`);
+  assert(shape.boardHtml > 0, "searching blanked the board — a guarded read of the new field is missing");
+  assert(shape.hits === 1, `search should match on the description, got ${shape.hits} rows`);
+  assert(shape.shown, "the description is not rendered on the board");
 });
 
 console.log("\nLedger API");

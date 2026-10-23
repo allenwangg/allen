@@ -235,6 +235,7 @@ header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper
 .badge.title{background:var(--status-soft);color:var(--status)}
 .tiername{font-size:10.5px;font-weight:800;letter-spacing:.07em;color:var(--dim);text-transform:uppercase;display:block;margin-top:2px}
 .url{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-weight:500}
+.says{font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-weight:500;margin-top:2px}
 .spark{width:88px;height:30px;flex-shrink:0}
 .spark polyline{fill:none;stroke:var(--money);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .spark .fill{fill:color-mix(in srgb,var(--money) 14%,transparent);stroke:none}
@@ -468,7 +469,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
     <div class="stat"><b class="num" id="statRaised">$0</b><span>Total raised</span></div>
     <div class="stat"><b class="num" id="statBids">0</b><span>Bids placed</span></div>
     <div class="stat"><b class="num" id="statBiggest">$0</b><span>Biggest single bid</span></div>
-    <div class="stat"><b class="num" id="statWatching"><span class="live-dot"></span>0</b><span>Watching now</span></div>
+    <div class="stat"><b class="num" id="statLast"><span class="live-dot"></span>—</b><span>Last bid</span></div>
   </section>
 
   <section class="ticker" aria-label="Live activity">
@@ -541,7 +542,7 @@ dialog::backdrop{background:rgba(23,26,31,.45);backdrop-filter:blur(4px)}
       <p class="hint" id="amtHint"></p>
     </div>
     <div class="field">
-      <label for="fDecree">Victory decree <span style="font-weight:400;color:var(--dim)">— shown on the crown if this bid crowns you</span></label>
+      <label for="fDecree">One line about you <span style="font-weight:400;color:var(--dim)">— shown on your row, and on the crown if this bid crowns you</span></label>
       <input id="fDecree" maxlength="80" placeholder="e.g. Come and take it." autocomplete="off">
     </div>
     <div class="defend">
@@ -615,12 +616,27 @@ const fmt = n => "$" + n.toLocaleString("en-US");
 const MIN_NEW = 5;
 
 const SEED = [
-  ["JONI","joni.app",14013],["ShipFast","shipfa.st",9750],["Lovable","lovable.dev",8214],
-  ["CalAI","cal.ai",6120],["DataDuck","dataduck.io",5480],["PixelPit","pixelpit.gg",4322],
-  ["Brew&Byte","brewbyte.cafe",3610],["Nomad OS","nomados.app",2895],["Quill","quill.ink",2240],
-  ["Fathom","fathom.tools",1780],["Zest","zest.email",1315],["Moonlit","moonlit.studio",980],
-  ["Craftly","craftly.shop","740"],["Herdwise","herdwise.farm",512],["TinyBets","tinybets.fun",305],
-  ["Plantr","plantr.garden",180],["Soba","soba.chat",95],["Duckhorn","duckhorn.dev",40],
+  /* name, domain, total, and the one line the listing says about itself — the
+     demo has to show what a real board shows, or the description is invisible
+     until the first paid bid arrives. */
+  ["JONI","joni.app",14013,"Journal that writes your weekly review for you"],
+  ["ShipFast","shipfa.st",9750,"Boilerplate that gets a SaaS live in a weekend"],
+  ["Lovable","lovable.dev",8214,"Describe an app, get a deployed one"],
+  ["CalAI","cal.ai",6120,"Calendar that defends your focus blocks"],
+  ["DataDuck","dataduck.io",5480,"Warehouse analytics without the warehouse bill"],
+  ["PixelPit","pixelpit.gg",4322,"Tournament brackets for indie fighting games"],
+  ["Brew&Byte","brewbyte.cafe",3610,"Find cafes scored on wifi, power and noise"],
+  ["Nomad OS","nomados.app",2895,"Visas, taxes and flights in one timeline"],
+  ["Quill","quill.ink",2240,"Newsletters that read like letters, not funnels"],
+  ["Fathom","fathom.tools",1780,"Reads a repo and explains it to a new hire"],
+  ["Zest","zest.email",1315,"Inbox that answers the easy half for you"],
+  ["Moonlit","moonlit.studio",980,"Album art and show posters, made overnight"],
+  ["Craftly","craftly.shop",740,"Storefronts for people who hate storefronts"],
+  ["Herdwise","herdwise.farm",512,"Livestock records that work with no signal"],
+  ["TinyBets","tinybets.fun",305,"Wager a coffee on anything with friends"],
+  ["Plantr","plantr.garden",180,"Tells you why the plant is actually dying"],
+  ["Soba","soba.chat",95,"Group chat that forgets on purpose"],
+  ["Duckhorn","duckhorn.dev",40,"Rubber-duck debugging that talks back"],
 ];
 const NAMES = ["VoltRun","Papercut","Glimmer","OtterPay","Fjord","Bramble","Neonize","Cactus Labs","Drift","Pebble"];
 
@@ -628,9 +644,11 @@ let state = null;
 try { state = JSON.parse(localStorage.getItem("outranked_v1")); } catch(e) {}
 if (!state || !Array.isArray(state.entries)) {
   state = {
-    entries: SEED.map(([name,url,total],i)=>({
+    entries: SEED.map(([name,url,total,says],i)=>({
       id:"e"+i, name, url, total:+total, bids:Math.max(1,Math.round(+total/90)),
-      history:[+total], defend:0, mine:false, clicks:Math.round(+total/1.3)
+      /* clicks:0, not total/1.3 — the seed used to manufacture a uniform $1.30
+         cost-per-click that undercut the $2 benchmark the dossier cited at it. */
+      history:[+total], defend:0, mine:false, clicks:0, decree:says||""
     })),
     feed: [], stats:{bids:214, biggest:2500}, crownedAt: Date.now()-1000*60*137, crownId:"e0",
     longestReign:{name:"JONI", ms:1000*60*60*9+1000*60*12}
@@ -833,7 +851,9 @@ function render(){
           <div class="crown-name">${esc(king.name)}</div>
           <div class="crown-sub"><span class="final-tag">FINAL HOUR — </span>King of Today · resets in <b class="num">${dur(msToMidnightUTC())}</b></div>
           <div class="crown-sub">Win the day and enter the Hall of Fame forever</div>
-          ${state.todayDecree ? `<div class="decree">${esc(state.todayDecree.text)}</div>` : ""}
+          ${state.todayDecree
+            ? `<div class="decree">${esc(state.todayDecree.text)}</div>`
+            : (king.decree ? `<div class="says" style="margin-top:6px">${esc(king.decree)}</div>` : "")}
         </div>
         <div class="crown-right">
           <div class="crown-amt num">${fmt(king.todayTotal)}</div>
@@ -909,7 +929,11 @@ function render(){
   // board
   const q = query.trim().toLowerCase();
   $("#board").innerHTML = list.map((e,i)=>{
-    if (q && !(e.name.toLowerCase().includes(q)||e.url.toLowerCase().includes(q))) return "";
+    /* Entries rehydrated from localStorage predate the decree field, so every
+       read of it is guarded — an unguarded .toLowerCase() here would throw
+       inside the map and leave the whole board blank the moment someone typed. */
+    if (q && !(e.name.toLowerCase().includes(q)||e.url.toLowerCase().includes(q)
+               ||(e.decree||"").toLowerCase().includes(q))) return "";
     const rank = i+1;
     let mv = `<span class="mv same">–</span>`;
     if (!isToday && !isSeason){
@@ -922,8 +946,8 @@ function render(){
     const sub = isToday
       ? `all-time ${fmt(e.total)}`
       : isSeason
-      ? `all-time ${fmt(e.total)} · ${(e.clicks||0).toLocaleString()} clicks`
-      : `${e.bids} bid${e.bids===1?"":"s"} · ${(e.clicks||0).toLocaleString()} clicks`;
+      ? `all-time ${fmt(e.total)} · ${e.bids} bid${e.bids===1?"":"s"}`
+      : `${e.bids} bid${e.bids===1?"":"s"}`;
     const takeLabel = rank===1 ? (isToday?"Take today's #1":isSeason?"Take the season lead":"Dethrone") : `Take #${rank}`;
     const titles = (e.titles||[]).slice(0,2).map(t=>`<span class="badge title">${t}</span>`).join("");
     const more = (e.titles||[]).length>2 ? `<span class="badge title">+${e.titles.length-2}</span>` : "";
@@ -944,6 +968,7 @@ function render(){
           </span>
           <span class="tiername">${tier(e).name}</span>
           <a class="url" href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>
+          ${e.decree ? `<span class="says">${esc(e.decree)}</span>` : ""}
         </div>
       </div>
       ${spark(e.history)}
@@ -1002,6 +1027,7 @@ function render(){
 
   // ticker (duplicate content for seamless loop); hidden until there's news
   const items = state.feed.slice(0,12).map(f=>`<span class="tick">${f}</span>`).join("");
+  lastBid();
   $("#tickerInner").innerHTML = items + items;
   $("#tickerInner").closest(".ticker").style.display = state.feed.length ? "" : "none";
 
@@ -1085,7 +1111,10 @@ function openBid(targetId){
   $("#fName").focus();
 }
 
-function placeBid({name,url,amount,defendBudget}){
+function placeBid({name,url,amount,defendBudget,decree}){
+  /* Same rule as the live ledger path: the listing's description belongs to its
+     largest single bid, so a cheap bid cannot rewrite what a listing says. */
+  stampBid();
   name = name.trim(); url = url.trim().replace(/^https?:\/\//,"");
   const existing = state.entries.find(e=>e.name.toLowerCase()===name.toLowerCase());
   let entry = existing;
@@ -1093,7 +1122,7 @@ function placeBid({name,url,amount,defendBudget}){
     entry.total += amount; entry.bids++; entry.history.push(entry.total);
   } else {
     if (amount < MIN_NEW) return {ok:false, msg:`New listings start at ${fmt(MIN_NEW)}.`};
-    entry = {id:"u"+Date.now(), name, url:url||"—", total:amount, bids:1, history:[amount], defend:0, mine:true, clicks:0};
+    entry = {id:"u"+Date.now(), name, url:url||"—", total:amount, bids:1, history:[amount], defend:0, mine:true, clicks:0, decree:""};
     state.entries.push(entry);
   }
   touchToday(entry, amount);
@@ -1198,7 +1227,7 @@ function simulate(){
     touchToday(target, amount);
     if (amount >= 500) award(target, "🐋 Whale");
     trackRivalry(target);
-    state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
+    state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount); stampBid();
     milestone();
     feed(`<b>${esc(target.name)}</b> bid <span class="amt">${fmt(amount)}</span> → passed <b>${esc(above.name)}</b>`);
     flash(target.id);
@@ -1206,10 +1235,10 @@ function simulate(){
   } else if (roll < 0.45){
     name = NAMES[Math.floor(Math.random()*NAMES.length)] + " " + Math.floor(Math.random()*90+10);
     amount = MIN_NEW + Math.floor(Math.random()*120) + (Math.random()<0.08 ? 500+Math.floor(Math.random()*700) : 0);
-    const fresh = {id:"s"+Date.now(), name, url:name.toLowerCase().replace(/\s+/g,"")+".io", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0};
+    const fresh = {id:"s"+Date.now(), name, url:name.toLowerCase().replace(/\s+/g,"")+".io", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, decree:""};
     touchToday(fresh, amount);
     state.entries.push(fresh);
-    state.stats.bids++;
+    state.stats.bids++; stampBid();
     feed(`🆕 <b>${esc(name)}</b> entered at <span class="amt">${fmt(amount)}</span>`);
   } else if (roll < 0.5 && list.length>1){
     target = list[1];
@@ -1217,7 +1246,7 @@ function simulate(){
     if (amount>0 && amount<3000){
       target.total += amount; target.bids++; target.history.push(target.total);
       touchToday(target, amount);
-      state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount);
+      state.stats.bids++; state.stats.biggest=Math.max(state.stats.biggest,amount); stampBid();
       feed(`⚔️ <b>${esc(target.name)}</b> went for the crown — <span class="amt">${fmt(amount)}</span>!`);
       if (amount >= 500) award(target, "🐋 Whale");
       trackRivalry(target);
@@ -1320,7 +1349,6 @@ function openDetail(id){
   const t = tier(e);
   const rank = rankMap()[e.id];
   const clicks = e.clicks||0;
-  const cpc = clicks > 0 ? (e.total/clicks) : null;
   const avg = e.bids ? Math.round(e.total/e.bids) : e.total;
   const badges = [
     `<span class="badge title">${t.name}</span>`,
@@ -1332,7 +1360,8 @@ function openDetail(id){
   $("#detailBody").innerHTML = `
     <div class="d-head">${medallion(e)}
       <div><div class="nm">${esc(e.name)}</div>
-      <div class="t">#${rank} all-time · <a href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>${state.live ? ` · <a href="api/ledger?name=${encodeURIComponent(e.name)}" target="_blank" rel="noopener">public ledger</a>` : ""}</div></div>
+      <div class="t">#${rank} all-time · <a href="https://${esc(e.url)}" target="_blank" rel="noopener nofollow">${esc(e.url)}</a>${state.live ? ` · <a href="api/ledger?name=${encodeURIComponent(e.name)}" target="_blank" rel="noopener">public ledger</a>` : ""}</div>
+      ${e.decree ? `<div class="says">${esc(e.decree)}</div>` : ""}</div>
     </div>
     <div class="d-badges">${badges}</div>
     ${sparkBig(e.history)}
@@ -1340,9 +1369,9 @@ function openDetail(id){
       <div class="d-cell"><b class="num">${fmt(e.total)}</b><span>All-time</span></div>
       <div class="d-cell"><b class="num">${fmt(e.todayTotal||0)}</b><span>Today</span></div>
       <div class="d-cell"><b class="num">${e.bids}</b><span>Bids</span></div>
-      <div class="d-cell"><b class="num">${clicks.toLocaleString()}</b><span>Clicks out</span></div>
+      <div class="d-cell"><b class="num">${clicks.toLocaleString()}</b><span>Your clicks</span></div>
       <div class="d-cell"><b class="num">${fmt(avg)}</b><span>Avg bid</span></div>
-      <div class="d-cell"><b class="num">${cpc ? "$"+cpc.toFixed(2) : "—"}</b><span>Cost / click</span></div>
+      <div class="d-cell"><b class="num">${fmt(e.topBid||0)}</b><span>Top bid</span></div>
     </div>
     <div class="trophies">
       <div class="t-head">Trophy case — <b>${(e.titles||[]).length}</b> of ${TITLES.length} titles</div>
@@ -1351,7 +1380,7 @@ function openDetail(id){
         return `<div class="t-row${got?" got":""}"><span class="t-name">${got?"":"🔒 "}${t.id}</span><span class="t-how">${got?"earned":esc(t.how)}</span></div>`;
       }).join("")}
     </div>
-    ${cpc ? `<div class="d-cpc">This spot has delivered clicks at <b>$${cpc.toFixed(2)} each</b> — typical search-ad CPCs for tech keywords run $2 and up. Rank is an ad that everyone screenshots.</div>` : ""}
+    <div class="d-cpc">Clicks counted here are only the ones from <b>this browser</b>. Placement is deliberately not click-tracked: the board is computed from the Stripe ledger and there is no server logging who went where. What this listing can prove is on its <b>public ledger</b> — every payment, dated.</div>
     <div class="d-cpc" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span style="display:inline-flex">${badgeSVG(e, rank)}</span>
       <span style="flex:1;min-width:140px">Put your live rank on your own site.</span>
@@ -1444,7 +1473,7 @@ $("#bidForm").addEventListener("submit", e=>{
     err.textContent = "Checkout isn't connected yet — the operator still has to paste the Stripe Payment Link.";
     err.classList.add("show"); return;
   }
-  const res = placeBid({name,url,amount,defendBudget});
+  const res = placeBid({name,url,amount,defendBudget,decree});
   if (!res.ok){ err.textContent=res.msg; err.classList.add("show"); return; }
   if (decree){
     if (state.crownId === res.entry.id){
@@ -1962,7 +1991,7 @@ async function mergeBoardFeed(){
          their own record — which is a purchase, not a support ticket. */
       if (url && (!entry.url || entry.url === "—" || amount >= (entry.topBid || 0))) entry.url = url;
     } else {
-      entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, topBid:0};
+      entry = {id:"v"+c.id.slice(-10), name, url: url || "—", total:amount, bids:1, history:[amount], defend:0, mine:false, clicks:0, topBid:0, decree:""};
       state.entries.push(entry);
     }
     /* Attribute by the payment's own timestamp: a ledger replay must not dump
@@ -1987,6 +2016,7 @@ async function mergeBoardFeed(){
     if (amount >= 500) award(entry, "🐋 Whale");
     entry.verified = true;
     state.applied.push(c.id); seen.add(c.id);
+    if (!state.lastBidAt || c.at > state.lastBidAt) state.lastBidAt = c.at;
     state.stats.bids++; state.stats.biggest = Math.max(state.stats.biggest, amount);
     feed(`✔ <b>${esc(name)}</b> payment confirmed — <span class="amt">${fmt(amount)}</span>`);
     /* The decree belongs to the biggest single bid on a listing — a $1 griefer
@@ -1994,6 +2024,12 @@ async function mergeBoardFeed(){
     /* Same largest-bid rule as the decree: a $1 bid under someone else's name
        must not be able to rewrite the budget they committed. */
     if (defend > 0 && amount >= (entry.topBid || 0)) entry.defend = defend;
+    /* The decree is paid for on every bid and was only ever kept when the payer
+       happened to be #1, then deleted on the next crown change — so for every
+       listing below the top it was decoded and thrown away, leaving a visitor to
+       browse rows of "name · hostname" with no idea what anything is. Held under
+       the same largest-single-bid rule as the link and the budget. */
+    if (decree && amount >= (entry.topBid || 0)) entry.decree = decree;
     if (decree && amount >= (entry.topBid || 0)){
       const top = sorted()[0];
       if (top && top.id === entry.id) state.decree = { text: decree, by: entry.name, id: entry.id };
@@ -2026,16 +2062,36 @@ if (!state.feed.length){
 }
 
 /* watching-now: deterministic wobble, no backend needed */
-function watching(){
-  const base = 1200 + Math.floor(400*Math.sin(Date.now()/60000));
-  $("#statWatching").innerHTML = `<span class="live-dot"></span>${(base+Math.floor(Math.random()*90)).toLocaleString()}`;
+/* This tile used to render 1200 + 400*sin(now) + random()*90 behind a pulsing
+   live dot labelled "Watching now", on a 5s interval with no live guard — so a
+   board taking real money permanently advertised 1,200-1,600 concurrent viewers
+   who did not exist, to the people deciding whether to spend $500 on it. The
+   codebase already states the rule it was breaking: simulate() refuses to run
+   when state.live, commented "never fake traffic on a live board". Replaced with
+   the freshest fact the ledger can actually prove. */
+function ago(sec){
+  if (!sec) return "—";
+  const d = Math.max(0, Math.floor(Date.now()/1000) - sec);
+  if (d < 60) return "just now";
+  if (d < 3600) return Math.floor(d/60) + "m ago";
+  if (d < 86400) return Math.floor(d/3600) + "h ago";
+  return Math.floor(d/86400) + "d ago";
+}
+/* Called wherever a bid is actually recorded. simulate() mutates entries
+   directly rather than going through placeBid, so without this the demo board
+   showed "—" under a ticker visibly scrolling with activity. */
+function stampBid(){ state.lastBidAt = Math.floor(Date.now()/1000); }
+function lastBid(){
+  const el = $("#statLast");
+  if (!el) return;
+  el.innerHTML = `<span class="live-dot"></span>${ago(state.lastBidAt)}`;
 }
 
 document.body.classList.add("boot");
-render(); watching();
+render(); lastBid();
 setTimeout(()=>document.body.classList.remove("boot"), 1400);
 setInterval(()=>{ const el=$("#reignClock"); if(el) el.textContent = dur(Date.now()-state.crownedAt); }, 30000);
-setInterval(watching, 5000);
+setInterval(lastBid, 5000);
 setInterval(simulate, 4200);
 </script>
 </body>
