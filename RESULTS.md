@@ -28,7 +28,7 @@ refunds. Nothing else.
 | Rules on the same page | ❌ (separate /rules page) | ✅ |
 | State survives reload | n/a (server) | ✅ tested |
 | XSS-hardened listing names | unknown | ✅ tested |
-| Automated test suite | none public | ✅ 68 tests, run on CI |
+| Automated test suite | none public | ✅ 70 tests, run on CI |
 | Live multi-user demo without any backend server | ❌ (needs its server) | ✅ self-republishing artifact |
 
 Updated Aug 25 against outbid.lol's post-launch additions (a retrofitted /today page,
@@ -37,7 +37,7 @@ product titles, public click counts):
 | Capability (current race) | outbid.lol now | OUTRANKED |
 |---|---|---|
 | Daily-reset board | ✅ separate /today page, added day 4 | ✅ the default view, with Final Hour endgame |
-| Public click counts | ✅ raw number | ✅ plus computed cost-per-click vs search ads |
+| Public click counts | ✅ raw number | ❌ deliberately not claimed — counting outbound clicks needs a server-side write, and this has no server. Rows carry a description instead, and value is evidenced by the dated public ledger. |
 | Status progression (tiers, titles, streaks) | ❌ | ✅ 5 nobility tiers, 7 titles in a trophy case, presence flames |
 | Permanent record (Hall of Fame) | ❌ | ✅ midnight rollover engraves each day's king |
 | Rivalry/war detection | ❌ | ✅ tested |
@@ -51,7 +51,7 @@ product titles, public click counts):
 | Daily-return loop for people who have not paid | ❌ | ✅ the Oracle prediction game |
 | Public per-listing payment receipts | ❌ | ✅ /api/ledger, tested for zero PII leakage |
 
-## 2. Functional correctness — 68/68 passing
+## 2. Functional correctness — 70/70 passing
 
 `node test/run-tests.mjs` — the full UI driven in real headless Chromium, plus
 the Stripe ledger reader exercised against a mock Stripe. This suite also runs
@@ -86,7 +86,7 @@ PASS  nobility tiers render with medallions and tier names
 PASS  dethroning #1 awards the Kingslayer title
 PASS  Hall of Fame shelf and Your Empire chip render
 PASS  Watch Mode opens as a live broadcast view and closes on Escape
-PASS  clicking a row opens the dossier with cost-per-click math
+PASS  clicking a row opens a dossier that only claims what it can prove
 PASS  crowning bid with a decree shows the taunt on the crown card
 PASS  dossier offers an embeddable rank badge with copyable HTML
 PASS  trophy case shows every title, locked ones with how to earn them
@@ -113,6 +113,8 @@ PASS  a live board reconstructs its Hall of Fame from the ledger
 PASS  a dare link finds its target on a live board, not just the demo one
 PASS  the empire strip sells the next tier and a dying flame with one tap
 PASS  ledger notices clear when the ledger recovers
+PASS  the board never invents an audience
+PASS  a listing says what it is, on the board and in search
 PASS  API decodes both the encoded and legacy reference formats
 PASS  API ranks by cumulative payment, breaking ties by who paid first
 PASS  a cheap bid cannot hijack an established listing's link or decree
@@ -127,7 +129,7 @@ PASS  the ledger window pages completed sessions, not abandoned carts
 PASS  walking ?name= cannot amplify one laptop into unlimited Stripe reads
 PASS  public ledger page renders a listing's payments without leaking full session IDs
 
-68/68 tests passed
+70/70 tests passed
 ```
 
 Raw data: [`test/results.json`](test/results.json).
@@ -136,10 +138,10 @@ Raw data: [`test/results.json`](test/results.json).
 
 | Metric | OUTRANKED |
 |---|---|
-| First Contentful Paint | **112 ms** |
-| DOMContentLoaded | **80 ms** |
+| First Contentful Paint | **132 ms** |
+| DOMContentLoaded | **95 ms** |
 | HTTP requests | **3** (the page, plus the Google Fonts stylesheet) |
-| Page weight | **110.1 KB raw / 33.4 KB gzipped** |
+| Page weight | **113.8 KB raw / 34.7 KB gzipped** |
 | JS dependencies | **0** — no framework, no CDN, no bundler, no tracker |
 | Backend | **none** — the board is computed from the Stripe ledger |
 
