@@ -7,9 +7,9 @@
  * the client was never sent, and an unsigned contract presented as authorized.
  */
 import { renderProposal, renderContractStatement, renderChangeOrder, renderProgressReport,
-  renderReviewNote } from './proposal.js';
+  renderReviewNote, renderAuditNote } from './proposal.js';
 import { priceEstimate, summarizeContract, priceChangeOrder, defaultSettings, formatMoney,
-  summarizeRunning } from './pricing.js';
+  summarizeRunning, summarizePortfolio } from './pricing.js';
 const S = defaultSettings();
 let pass=0, fail=0;
 const check=(n,c,x='')=>{c?(pass++,console.log('  ok    '+n)):(fail++,console.log('  FAIL  '+n+' '+x));};
@@ -166,6 +166,55 @@ const note = (ests) => renderReviewNote({ review: summarizeRunning(ests, S), com
   })]);
   check('a clean week says so rather than manufacturing urgency',
     /nothing is sitting there to be recovered/.test(h) && !/The one to deal with/.test(h));
+}
+
+/* --- the covering note for the audit, the larger of the two sales ------- */
+
+const auditedJob = (over = {}) => ({
+  id: 'aj', title: 'Bathroom — Cedar Ave', isAudit: true, status: 'accepted',
+  client: { name: "O'Brien & Sons" }, progress: { pct: 1 },
+  items: [
+    { id: '1', qty: 1, unitCost: 9000, category: 'labor', markup: 0.15 },
+    { id: '2', qty: 1, unitCost: 6500, category: 'material', markup: 0.15 },
+  ],
+  changeOrders: [], actuals: [{ id: 'a', date: '2026-04-01', category: 'labor', amount: 11800 }],
+  ...over,
+});
+const auditNote = (ests) => renderAuditNote({
+  portfolio: summarizePortfolio(ests, S), company: CO, settings: S,
+});
+
+{
+  const h = auditNote([auditedJob(), auditedJob({ id: 'b', title: 'Deck — 7 Oak' })]);
+  check('the audit note leads with what was earned and not kept',
+    /was earned and not kept/.test(h));
+  check('it names which leak dominates', /Most of it — \d+% /.test(h), `(${h.slice(0, 200)})`);
+  check('it gives one change to make', /The one change:/.test(h));
+  check('it states the limit of what was measured',
+    /not from your books/.test(h) && /overhead is applied at your stated rate/.test(h));
+  check('it ends by asking about live jobs rather than pitching a price',
+    /Which jobs do you have running right now\?/.test(h) && !/\$\d+\/mo/.test(h),
+    '(the app does not know what the operator charges, so it must not invent one)');
+  check('it is plain text for an email', !/<[a-z]/.test(h));
+}
+
+{
+  // A clean audit must still produce a sendable note, and must not manufacture a leak.
+  const clean = auditedJob({
+    items: [{ id: '1', qty: 1, unitCost: 10000, category: 'labor', markup: 1 }],
+    actuals: [{ id: 'a', date: '2026-04-01', category: 'labor', amount: 9000 }],
+  });
+  const h = auditNote([clean]);
+  check('a clean audit says so plainly', /could not find money that was earned and not kept/.test(h));
+  check('and points at the next real question', /volume and overhead/.test(h));
+  check('without inventing a leak', !/The one change:/.test(h));
+}
+
+{
+  // Missing actuals change what the report can see, and the note must say so.
+  const h = auditNote([auditedJob({ actuals: [] }), auditedJob({ id: 'b', title: 'D' })]);
+  check('the note discloses jobs with no actual costs supplied',
+    /no actual costs supplied/.test(h), `(${h.slice(-320)})`);
 }
 
 console.log(`\n  documents: ${pass} passed, ${fail} failed\n`);

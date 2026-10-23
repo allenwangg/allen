@@ -946,6 +946,66 @@ export function renderPortfolioReport({ portfolio: pf, company, settings }) {
 </div>`;
 }
 
+/* =================================================== the audit's note ==== */
+
+/**
+ * The covering note for a margin audit.
+ *
+ * The audit report is the deliverable; this is what goes above it in the email.
+ * The weekly review already had one and the audit — the larger sale, and the
+ * document a contractor reads once and decides everything from — did not.
+ *
+ * It states the found figure, names the leak that dominates and whether it is a
+ * habit or one bad job, gives the one change to make, and ends on the honest
+ * limit of what was measured. It quotes no price: the app does not know what
+ * the operator charges, and inventing one here would put a number in front of
+ * a client that nothing in the app can stand behind.
+ */
+export function renderAuditNote({ portfolio: pf, company, settings }) {
+  const who = company?.name ? `— ${company.name}` : '';
+  const head = `Margin audit — ${pf.count} job${pf.count === 1 ? '' : 's'}`;
+  const lines = [head, ''];
+
+  if (pf.foundCents === 0) {
+    lines.push(
+      `Across the ${pf.count} job${pf.count === 1 ? '' : 's'} you sent, I could not find money that was earned and not kept. The jobs priced correctly, the changes were signed, and the work came in on budget.`,
+      '',
+      'That is a real finding and it is rarer than you would think. It also means the next place to look is volume and overhead rather than pricing — which is a different conversation, and a shorter one.',
+      '', 'The full report is attached.', '', who);
+    return lines.join('\n').trimEnd();
+  }
+
+  lines.push(`Across the ${pf.count} job${pf.count === 1 ? '' : 's'} you sent, ${formatMoney(pf.foundCents)} was earned and not kept — ${formatPercent(pf.foundShare, 0)} of everything you billed on them.`);
+
+  const share = pf.dominant.cents / pf.foundCents;
+  const WHERE = {
+    pricing: 'was gone before anyone picked up a tool: the jobs were sold below the price their own budgets required',
+    unsigned: 'is work you did with nothing signed behind it',
+    fade: 'was spent past budget with nobody left to bill for it',
+  }[pf.dominant.key];
+  lines.push('', `Most of it — ${formatPercent(share, 0)} — ${WHERE}.`);
+
+  lines.push('', pf.systematic
+    ? `This is a habit rather than a bad week: ${pf.jobsAffected} of the ${pf.count} jobs show it and no single one carries the bulk, which means the next job does the same thing unless something changes.`
+    : `One job carries most of this — ${pf.jobsAffected} of ${pf.count} are affected and the worst accounts for ${formatPercent(pf.concentration, 0)} of it. Worth fixing the specific cause rather than rewriting how you price everything.`);
+
+  const FIX = {
+    pricing: `To keep ${formatPercent(pf.targetMargin, 0)} you have to mark up ${formatPercent(marginToMarkup(pf.targetMargin), 0)} on cost, not ${formatPercent(pf.targetMargin, 0)}. Those are different numbers and the difference is close to what went missing.`,
+    unsigned: 'No markup fixes this one. The remedy is a signature before the crew starts, every time, including with the clients you like.',
+    fade: 'Two causes look identical on paper and need opposite fixes: where the overrun followed a client request it belonged on a change order, and where it followed your own estimate, that estimate needs correcting before the next bid repeats it.',
+  }[pf.dominant.key];
+  lines.push('', `The one change: ${FIX}`);
+
+  lines.push('', `The report is attached. It is built from the figures you gave me, not from your books — overhead is applied at your stated rate rather than measured, and it says so on its face.${
+    pf.jobsMissingActuals ? ` ${pf.jobsMissingActuals} job${pf.jobsMissingActuals === 1 ? ' had' : 's had'} no actual costs supplied, so the estimate stood in for what was really paid and margin fade cannot be seen there.` : ''}`);
+
+  // Every figure above is history. The natural next question is the jobs still
+  // running, and the honest version of that sentence is a question, not an offer.
+  lines.push('', 'One thing worth saying: every number above was knowable before the final invoice. Which jobs do you have running right now?');
+  lines.push('', who);
+  return lines.join('\n').trimEnd();
+}
+
 /* ================================================== weekly job review ===== */
 
 const ACTION_COPY = {

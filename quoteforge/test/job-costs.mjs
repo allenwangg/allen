@@ -717,6 +717,24 @@ console.log('\n  finished and running stay apart');
   await page.waitForTimeout(500);
   const pfText = await page.locator('#pfPrint').textContent();
   check('the audit report covers the finished jobs', /Deck — 7 Oak/.test(pfText));
+
+  // The audit is the larger sale, and until now only the weekly review had a
+  // drafted email to go with it.
+  await page.locator('#btnAuditNote').click();
+  await page.waitForTimeout(400);
+  const an = await page.locator('#noteText').inputValue();
+  check('the audit has a covering note of its own',
+    /Margin audit — \d+ job/.test(an), `(${an.slice(0, 70)})`);
+  check('it leads with the found figure', /was earned and not kept/.test(an));
+  check('it names the leak and whether it is a habit',
+    /Most of it — \d+%/.test(an) && /(habit rather than a bad week|One job carries most)/.test(an));
+  check('it quotes no price it cannot stand behind',
+    !/\$\d+\/mo/.test(an) && !/\$400/.test(an),
+    '(the app does not know what the operator charges)');
+  check('it ends on the question that opens the second sale',
+    /jobs do you have running right now/.test(an));
+  await page.locator('#dlgNote button[data-close]').first().click();
+  await page.waitForTimeout(250);
   check('and leaves out the job still on site',
     !/loft conversion/i.test(pfText),
     '(spend to date read as final cost showed a quarter-built job keeping 81%)');

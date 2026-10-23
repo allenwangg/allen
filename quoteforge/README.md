@@ -82,12 +82,14 @@ To charge money with it, see [SELL.md](../SELL.md) and [REVENUE.md](../REVENUE.m
   nothing. Its headline is the opposite of the audit report's: money still in
   play rather than money already lost. Already-spent overrun is deliberately left
   out of that total, because nothing done this week gets it back.
-- **A covering note, drafted.** The review is a page of figures; what makes
-  someone act on it is three sentences at the top of an email. The app writes
-  them from the same review — the one number, the one job to deal with, and the
-  one thing you need back — and you edit them before sending. It was the last
-  part of the weekly hour still done by hand, which made it the part most likely
-  to be skipped on a busy Monday.
+- **Covering notes, drafted.** A report is a page of figures; what makes someone
+  act on it is the few sentences above it in the email. The app writes them for
+  both reports — for the weekly review, the one number, the one job to deal with
+  and the one thing you need back; for the audit, what was earned and not kept,
+  which leak dominates, whether it is a habit or one bad job, and the single
+  change to make. You edit them before sending. Neither quotes a price: the app
+  does not know what the operator charges, and a number it cannot stand behind
+  has no business in front of a client.
 - **One form for both.** The link a contractor fills in says whether the job is
   finished or still on site, and how far along it is. Finished, it becomes an
   audit; running, it joins the weekly review with its forecast already built.
@@ -154,7 +156,7 @@ afterthought, and the UI says so.
 node js/pricing.test.js  # just the money math
 ```
 
-273 unit assertions with no test framework and no install step, plus 351 browser
+283 unit assertions with no test framework and no install step, plus 356 browser
 assertions across `test/browser.mjs`, `test/change-orders.mjs`, `test/job-costs.mjs`,
 `test/security.mjs`, `test/accessibility.mjs` — which checks every page in both
 themes for unlabelled controls, unnamed buttons, missing alt text and WCAG AA contrast —

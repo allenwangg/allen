@@ -24,7 +24,8 @@ import {
 } from './pricebook.js';
 import {
   renderProposal, proposalAsText, renderChangeOrder, renderContractStatement,
-  renderAuditReport, renderPortfolioReport, renderProgressReport, renderReviewNote, esc,
+  renderAuditReport, renderPortfolioReport, renderProgressReport, renderReviewNote,
+  renderAuditNote, esc,
 } from './proposal.js';
 
 const $  = (sel, root = document) => root.querySelector(sel);
@@ -1166,11 +1167,29 @@ function wireJobs() {
     });
   };
 
-  $('#btnNote').onclick = () => {
-    const review = summarizeRunning(store.state.estimates, store.state.settings);
-    $('#noteText').value = renderReviewNote({ review, company: store.state.company });
+  const openNote = (text) => {
+    $('#noteText').value = text;
     $('#dlgNote').showModal();
     requestAnimationFrame(() => $('#noteText').focus());
+  };
+
+  $('#btnNote').onclick = () => {
+    const review = summarizeRunning(store.state.estimates, store.state.settings);
+    openNote(renderReviewNote({ review, company: store.state.company }));
+  };
+
+  $('#btnAuditNote').onclick = () => {
+    // Same set the audit report covers, for the same reason: a job still on
+    // site has no "kept" to report, and a note about one would be nonsense.
+    const audited = store.state.estimates.filter((e) => e.isAudit && isFinished(e));
+    if (!audited.length) {
+      toast('No finished audited jobs yet — build one with "Audit a job" first.', { bad: true });
+      return;
+    }
+    const portfolio = summarizePortfolio(audited, store.state.settings);
+    openNote(renderAuditNote({
+      portfolio, company: store.state.company, settings: store.state.settings,
+    }));
   };
 
   $('#btnCopyNote').onclick = async () => {

@@ -80,6 +80,13 @@ out loud when you ask, because it is true and it is unusual: their figures live
 in the link's fragment, which browsers never transmit — the page has no server
 to send them to.
 
+When the audit is built, **Jobs → Audit note** drafts the email that goes with
+it: the found figure, which leak dominates, whether it is a habit or one bad
+job, and the one change to make. It ends by asking which jobs they have running
+right now — which is the question that opens the second sale, asked as a
+question rather than a pitch. It quotes no price, because the app does not know
+what you charge.
+
 Their answers still need your eyes. Rough numbers are the point, but a missing
 zero in "what you charged" will produce a confident, wrong report.
 
